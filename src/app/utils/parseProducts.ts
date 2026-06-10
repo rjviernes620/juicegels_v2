@@ -59,6 +59,7 @@ function splitCSVRows(raw: string): string[] {
 export function loadProducts(): Product[] {
   const rows = splitCSVRows(csvRaw);
   const header = parseCSVLine(rows[0]).map((h) => h.trim());
+  
 
 // function resolveImagePath(path: string): string {
 //   if (!path) return "";
@@ -69,6 +70,7 @@ export function loadProducts(): Product[] {
 //     ? trimmed
 //     : "";
 // }
+
 
 const col = (row: string[], name: string) => {
     const i = header.indexOf(name);
