@@ -60,16 +60,15 @@ export function loadProducts(): Product[] {
   const rows = splitCSVRows(csvRaw);
   const header = parseCSVLine(rows[0]).map((h) => h.trim());
 
-function resolveImagePath(path: string): string {
-  if (!path) return "";
-  // If it's a local path from CSV, convert to absolute /images/products/...
-  if (path.includes("../../../public/images/products/")) {
-    const filename = path.split("/").pop();
-    return `public/images/products/${filename}`;
-  }
-  // If it's already an absolute URL, keep it
-  return path;
-}
+// function resolveImagePath(path: string): string {
+//   if (!path) return "";
+
+//   const trimmed = path.trim();
+
+//   return trimmed.startsWith("https://juicegels.com/public/images/products/")
+//     ? trimmed
+//     : "";
+// }
 
 const col = (row: string[], name: string) => {
     const i = header.indexOf(name);
@@ -90,10 +89,13 @@ const col = (row: string[], name: string) => {
     const price = parseFloat(col(row, "PRICE")) || 0;
     const description = col(row, "DESCRIPTION").replace(/\n/g, " ").replace(/\s+/g, " ").trim();
 
-    // images: IMAGE1 is the primary (skip it), IMAGE2–IMAGE10 are extras
-    const imageKeys = ["IMAGE1","IMAGE2","IMAGE3","IMAGE4","IMAGE5","IMAGE6","IMAGE7","IMAGE8","IMAGE9","IMAGE10"];
-    const allImages = imageKeys.map((k) => resolveImagePath(col(row, k))).filter(Boolean);
-    const image = allImages[0] ?? "";
+    const imageKeys = ["IMAGE1", "IMAGE2", "IMAGE3", "IMAGE4", "IMAGE5", "IMAGE6", "IMAGE7", "IMAGE8", "IMAGE9", "IMAGE10"];
+
+    const allImages = imageKeys
+      .map((key) => (col(row, key) || "").trim())
+      .filter(Boolean);
+
+    const image = allImages[0] || "";
     const extraImages = allImages.slice(1);
 
     // tags
