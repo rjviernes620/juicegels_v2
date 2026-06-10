@@ -65,7 +65,7 @@ function resolveImagePath(path: string): string {
   // If it's a local path from CSV, convert to absolute /images/products/...
   if (path.includes("../../../public/images/products/")) {
     const filename = path.split("/").pop();
-    return `/images/products/${filename}`;
+    return `public/images/products/${filename}`;
   }
   // If it's already an absolute URL, keep it
   return path;
