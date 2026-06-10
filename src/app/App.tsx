@@ -52,6 +52,11 @@ export default function App() {
       return;
     }
 
+    if (location.pathname === "/home") {
+      setPage("home");
+      return;
+    }
+
     if (location.pathname.startsWith("/product/") && params.id) {
       const product = products.find((p) => p.id === params.id);
       if (product) {
@@ -186,8 +191,8 @@ export default function App() {
   const goBack = () => {
     if (page === "preorder") setPage("basket");
     else if (page === "basket") setPage(selected ? "product" : "home");
-    else if (page === "product") setPage("home");
-    else setPage("home");
+    else if (page === "product") navigate("/home");
+    else navigate("/home");
   };
 
   return (
