@@ -63,27 +63,31 @@ def create_checkout_session():
       'quantity': quantity,
     })
 
-  session = client.v1.checkout.sessions.create(
-    params={
-      'line_items': line_items,
-      'customer_email': form.get('email', ''),
-      'billing_address_collection': 'required',
-      'phone_number_collection': {'enabled': True},
-      'metadata': {
-        'first_name': form.get('firstName', ''),
-        'last_name': form.get('lastName', ''),
-        'phone': form.get('phone', ''),
-        'nail_sizes': form.get('nailSizes', ''),
-        'instagram': form.get('instagram', ''),
-        'notes': form.get('notes', ''),
+  try:
+    session = client.v1.checkout.sessions.create(
+      params={
+        'line_items': line_items,
+        'customer_email': form.get('email', ''),
+        'billing_address_collection': 'required',
+        'phone_number_collection': {'enabled': True},
+        'metadata': {
+          'first_name': form.get('firstName', ''),
+          'last_name': form.get('lastName', ''),
+          'phone': form.get('phone', ''),
+          'nail_sizes': form.get('nailSizes', ''),
+          'instagram': form.get('instagram', ''),
+          'notes': form.get('notes', ''),
+        },
+        'mode': 'payment',
+        'success_url': f"{origin}/checkout/success",
+        'cancel_url': f"{origin}/basket",
       },
-      'mode': 'payment',
-      'success_url': f"{origin}/checkout/success",
-      'cancel_url': f"{origin}/basket",
-    },
-  )
-
-  return jsonify({ 'url': session.url })
+    )
+    return jsonify({ 'url': session.url })
+  except Exception as e:
+    import traceback
+    traceback.print_exc()
+    return jsonify({ 'error': 'internal server error' }), 500
 
 if __name__== '__main__':
-    app.run(port=4242)
+  app.run(port=4242, debug=True)
