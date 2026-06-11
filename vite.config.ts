@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 
 function figmaAssetResolver() {
@@ -18,7 +19,7 @@ function figmaAssetResolver() {
 
 
 export default defineConfig({
-  base: '/juicegels_v2/',
+  base: './',
 
   build: {
     outDir: 'docs',
@@ -29,6 +30,11 @@ export default defineConfig({
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    viteStaticCopy({
+      targets: [
+        { src: 'server.py', dest: './' }
+      ]
+    })
   ],
   resolve: {
     alias: {
@@ -40,4 +46,6 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+
+  
 })
