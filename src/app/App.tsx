@@ -4,13 +4,51 @@ import { ShoppingBag, Heart, Star, ChevronLeft, Check, Trash2, Plus, Minus } fro
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { loadProducts, type Product } from "./utils/parseProducts";
 
-type CartItem = { product: Product; shape: string; quantity: number };
+type NailLength = "Short" | "Medium" | "Long";
+type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
 type Page = "home" | "product" | "basket" | "preorder" | "confirmation";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string;city: string; postcode: string; nailSizes: string; notes: string; };
 
 const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", nailSizes: "", notes: "" };
 
 const products = loadProducts();
+
+function buildBasketItemsParam(items: CartItem[]) {
+  return items
+    .map((item) =>
+      [
+        encodeURIComponent(item.product.id),
+        encodeURIComponent(item.shape),
+        encodeURIComponent(item.length),
+        encodeURIComponent(String(item.quantity)),
+      ].join("|")
+    )
+    .join(",");
+}
+
+function parseBasketItemsParam(itemsParam: string, products: Product[]): CartItem[] {
+  return itemsParam
+    .split(",")
+    .map((entry) => {
+      const [rawId, rawShape, rawLength, rawQty] = entry.split("|");
+
+      const id = decodeURIComponent(rawId ?? "").trim();
+      const shape = decodeURIComponent(rawShape ?? "").trim();
+      const length = decodeURIComponent(rawLength ?? "Medium") as NailLength;
+      const quantity = Math.max(1, Number(decodeURIComponent(rawQty ?? "1")));
+
+      const product = products.find((p) => p.id === id);
+      if (!product || !shape || Number.isNaN(quantity)) return null;
+
+      return {
+        product,
+        shape,
+        length,
+        quantity,
+      };
+    })
+    .filter(Boolean) as CartItem[];
+}
 
 export default function App() {
   const location = useLocation();
@@ -19,6 +57,7 @@ export default function App() {
   const [page, setPage] = useState<Page>("home");
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedShape, setSelectedShape] = useState("");
+  const [selectedLength, setSelectedLength] = useState<NailLength>("Medium");
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window === "undefined") return [];
@@ -41,6 +80,7 @@ export default function App() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+
   useEffect(() => {
     if (location.pathname === "/checkout/success") {
       setPage("confirmation");
@@ -48,6 +88,16 @@ export default function App() {
     }
 
     if (location.pathname === "/basket") {
+      const searchParams = new URLSearchParams(location.search);
+      const itemsParam = searchParams.get("items");
+
+      if (itemsParam) {
+        const parsedItems = parseBasketItemsParam(itemsParam, products);
+        if (parsedItems.length > 0) {
+          setCart(parsedItems);
+        }
+      }
+
       setPage("basket");
       return;
     }
@@ -57,22 +107,35 @@ export default function App() {
       return;
     }
 
-    if (location.pathname.startsWith("/product/") && params.id) {
-      const product = products.find((p) => p.id === params.id);
-      if (product) {
-        setSelected(product);
-        setSelectedShape("");
-        setActiveImg(0);
-        setPage("product");
-        return;
-      }
-    }
+if (location.pathname.startsWith("/product/") && params.id) {
+  const product = products.find((p) => p.id === params.id);
+  if (product) {
+    const searchParams = new URLSearchParams(location.search);
+    const requestedShape = searchParams.get("shape") ?? "";
+    const requestedLength = (searchParams.get("length") ?? "").toLowerCase() as NailLength;
+
+    const shapes = getProductShapes(product);
+    const lengths = getProductLengths(product);
+
+    const nextShape = shapes.includes(requestedShape) ? requestedShape : "";
+    const nextLength = lengths.includes(requestedLength) ? requestedLength : "Medium";
+
+    setSelected(product);
+    setSelectedShape(nextShape);
+    setSelectedLength(nextLength);
+    setActiveImg(0);
+    setPage("product");
+    return;
+  }
+}
 
     setPage("home");
-  }, [location.pathname, params.id]);
+  }, [location.pathname, location.search, params.id, products]);
 
   const cartTotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
+
+  
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -87,43 +150,120 @@ export default function App() {
   const toggleWishlist = (id: string) =>
     setWishlist((p) => (p.includes(id) ? p.filter((w) => w !== id) : [...p, id]));
 
-  const openProduct = (p: Product) => {
-    setSelected(p);
-    setSelectedShape("");
-    setActiveImg(0);
-    setPage("product");
-    navigate(`/product/${p.id}`);
+  const validLengths: NailLength[] = ["Short", "Medium", "Long"];
+
+  const getProductShapes = (product: Product): string[] => {
+    const raw = (product as Product & { shapes?: string[] }).shapes;
+    return Array.isArray(raw) && raw.length > 0 ? raw : ["Short Almond", "Medium Almond", "Long Almond"];
   };
+
+  const getProductLengths = (product: Product): NailLength[] => {
+    const raw = (product as Product & { lengths?: NailLength[] }).lengths;
+    return Array.isArray(raw) && raw.length > 0 ? raw : validLengths;
+  };
+
+  const syncProductUrl = (productId: string, shape: string, length: NailLength) => {
+    const search = new URLSearchParams();
+    if (shape) search.set("shape", shape);
+    if (length) search.set("length", length);
+    navigate(`/product/${productId}?${search.toString()}`, { replace: true });
+  };
+
+  const openProduct = (p: Product) => {
+  const shapes = getProductShapes(p);
+  const lengths = getProductLengths(p);
+
+  const defaultShape = shapes[0] ?? "";
+  const defaultLength = lengths[0] ?? "Medium";
+
+  setSelected(p);
+  setSelectedShape(defaultShape);
+  setSelectedLength(defaultLength);
+  setActiveImg(0);
+  setPage("product");
+  navigate(`/product/${p.id}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
+};
 
   const addToBasket = () => {
-    if (!selected) return;
-    setCart((prev) => {
-      const idx = prev.findIndex((i) => i.product.id === selected.id && i.shape === selectedShape);
-      if (idx >= 0) {
-        const next = [...prev];
-        next[idx] = { ...next[idx], quantity: next[idx].quantity + 1 };
-        return next;
-      }
-      return [...prev, { product: selected, shape: selectedShape, quantity: 1 }];
-    });
-    navigate("/basket");
-  };
+    if (!selected || !selectedShape || !selectedLength) return;
 
-  const updateQty = (idx: number, delta: number) => {
     setCart((prev) => {
-      const next = [...prev];
-      const newQty = next[idx].quantity + delta;
-      if (newQty <= 0) return next.filter((_, i) => i !== idx);
-      next[idx] = { ...next[idx], quantity: newQty };
+      const idx = prev.findIndex(
+        (i) =>
+          i.product.id === selected.id &&
+          i.shape === selectedShape &&
+          i.length === selectedLength
+      );
+
+      let next: CartItem[];
+
+      if (idx >= 0) {
+        next = [...prev];
+        next[idx] = {
+          ...next[idx],
+          quantity: next[idx].quantity + 1,
+        };
+      } else {
+        next = [
+          ...prev,
+          {
+            product: selected,
+            shape: selectedShape,
+            length: selectedLength,
+            quantity: 1,
+          },
+        ];
+      }
+
+      const itemsParam = buildBasketItemsParam(next);
+      navigate(`/basket?items=${itemsParam}`);
+
       return next;
     });
   };
+const updateQty = (idx: number, delta: number) => {
+  setCart((prev) => {
+    const next = [...prev];
+    const newQty = next[idx].quantity + delta;
 
-  const removeItem = (idx: number) => setCart((prev) => prev.filter((_, i) => i !== idx));
+    let updated: CartItem[];
 
+    if (newQty <= 0) {
+      updated = next.filter((_, i) => i !== idx);
+    } else {
+      next[idx] = {
+        ...next[idx],
+        quantity: newQty,
+      };
+      updated = next;
+    }
+
+    navigate(
+      updated.length
+        ? `/basket?items=${buildBasketItemsParam(updated)}`
+        : "/basket"
+    );
+
+    return updated;
+  });
+};
+
+  const removeItem = (idx: number) => {
+    setCart((prev) => {
+      const updated = prev.filter((_, i) => i !== idx);
+
+      navigate(
+        updated.length
+          ? `/basket?items=${buildBasketItemsParam(updated)}`
+          : "/basket"
+      );
+
+      return updated;
+    });
+  };
   const handleFormChange = (field: keyof FormData, value: string) => {
-    setForm((p) => ({ ...p, [field]: value }));
-    if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
+  setForm((p) => ({ ...p, [field]: value }));
+  if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
   };
 
   const validate = (): boolean => {
@@ -142,6 +282,7 @@ export default function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return;
 
     if (cart.length === 0) {
@@ -159,7 +300,9 @@ export default function App() {
     try {
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           items: cart.map((item) => ({
             product: {
@@ -170,20 +313,25 @@ export default function App() {
               image: item.product.image,
             },
             shape: item.shape,
+            length: item.length,
             quantity: item.quantity,
           })),
           form,
+          checkoutPath: "/checkout/success",
         }),
       });
 
       const data = await response.json();
-      if (!response.ok) {
+
+      if (!response.ok || !data.url) {
         throw new Error(data.error || "Failed to create checkout session.");
       }
 
       window.location.href = data.url;
     } catch (error) {
-      setCheckoutError(error instanceof Error ? error.message : "Checkout failed.");
+      setCheckoutError(
+        error instanceof Error ? error.message : "Checkout failed."
+      );
       setIsSubmitting(false);
     }
   };
@@ -271,52 +419,189 @@ export default function App() {
         </main>
       )}
 
-      {/* ── Product Detail ── */}
-      {page === "product" && selected && (
-        <main>
-          <ImageWithFallback src={[selected.image, ...selected.extraImages][activeImg]} alt={selected.name} style={{ width: "100%", height: 320, objectFit: "cover", display: "block", background: "var(--secondary)" }} />
+    {/* ── Product Detail ── */}
+    {page === "product" && selected && (
+      <main>
+        <ImageWithFallback
+          src={[selected.image, ...selected.extraImages][activeImg]}
+          alt={selected.name}
+          style={{ width: "100%", height: 320, objectFit: "cover", display: "block", background: "var(--secondary)" }}
+        />
 
-          {selected.extraImages.length > 0 && (
-            <div style={{ display: "flex", gap: 8, padding: "10px 16px 0", overflowX: "auto" }}>
-              {[selected.image, ...selected.extraImages].map((img, i) => (
-                <button key={i} onClick={() => setActiveImg(i)} style={{ flexShrink: 0, border: `2px solid ${activeImg === i ? "var(--primary)" : "var(--border)"}`, borderRadius: 8, overflow: "hidden", padding: 0, cursor: "pointer", background: "none" }}>
-                  <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "cover", display: "block" }} />
-                </button>
-              ))}
-            </div>
-          )}
+        {selected.extraImages.length > 0 && (
+          <div style={{ display: "flex", gap: 8, padding: "10px 16px 0", overflowX: "auto" }}>
+            {[selected.image, ...selected.extraImages].map((img, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveImg(i)}
+                style={{
+                  flexShrink: 0,
+                  border: `2px solid ${activeImg === i ? "var(--primary)" : "var(--border)"}`,
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  padding: 0,
+                  cursor: "pointer",
+                  background: "none"
+                }}
+              >
+                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "cover", display: "block" }} />
+              </button>
+            ))}
+          </div>
+        )}
 
-          <div style={{ padding: "16px 20px 130px" }}>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", margin: "0 0 4px", fontSize: 22, color: "var(--foreground)" }}>{selected.name}</h2>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 10 }}>
-              {[1,2,3,4,5].map((s) => <Star key={s} size={12} fill="var(--primary)" stroke="none" />)}
-              <span style={{ fontSize: 12, color: "var(--muted-foreground)", marginLeft: 3 }}>Handmade · In stock</span>
-            </div>
-            <span style={{ fontSize: 24, fontWeight: 700, color: "var(--primary)" }}>£{selected.price.toFixed(2)}</span>
-            <p style={{ color: "var(--muted-foreground)", fontSize: 13, lineHeight: 1.7, margin: "12px 0 18px" }}>{selected.description}</p>
+        <div style={{ padding: "16px 20px 130px" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", margin: "0 0 4px", fontSize: 22, color: "var(--foreground)" }}>
+            {selected.name}
+          </h2>
 
-            <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>Nail Shape</p>
-            <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
-              {selected.shapes.map((s) => (
-                <button key={s} onClick={() => setSelectedShape(s)} style={{ border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`, background: selectedShape === s ? "var(--primary)" : "var(--card)", color: selectedShape === s ? "#fff" : "var(--foreground)", borderRadius: 8, padding: "6px 14px", fontSize: 12, cursor: "pointer", transition: "all 0.15s" }}>{s}</button>
-              ))}
-            </div>
-
-            <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
-              🌸 Send your nail sizes after ordering via <strong>@juicegels</strong> on Instagram or through your order notes.
-            </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 10 }}>
+            {[1, 2, 3, 4, 5].map((s) => (
+              <Star key={s} size={12} fill="var(--primary)" stroke="none" />
+            ))}
+            <span style={{ fontSize: 12, color: "var(--muted-foreground)", marginLeft: 3 }}>
+              Handmade · In stock
+            </span>
           </div>
 
-          <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, padding: "14px 18px", background: "var(--card)", borderTop: "1px solid var(--border)", display: "flex", gap: 10, boxSizing: "border-box" }}>
-            <button onClick={() => toggleWishlist(selected.id)} style={{ border: "1.5px solid var(--border)", background: "var(--card)", borderRadius: 12, width: 46, height: 46, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
-              <Heart size={17} fill={wishlist.includes(selected.id) ? "var(--primary)" : "none"} stroke={wishlist.includes(selected.id) ? "var(--primary)" : "var(--muted-foreground)"} />
-            </button>
-            <button onClick={addToBasket} disabled={!selectedShape} style={{ flex: 1, background: selectedShape ? "var(--primary)" : "var(--muted)", color: selectedShape ? "#fff" : "var(--muted-foreground)", border: "none", borderRadius: 12, height: 46, fontWeight: 600, fontSize: 14, cursor: selectedShape ? "pointer" : "not-allowed", transition: "all 0.15s" }}>
-              {selectedShape ? "Add to Basket" : "Select a Shape"}
-            </button>
+          <span style={{ fontSize: 24, fontWeight: 700, color: "var(--primary)" }}>
+            £{selected.price.toFixed(2)}
+          </span>
+
+          <p style={{ color: "var(--muted-foreground)", fontSize: 13, lineHeight: 1.7, margin: "12px 0 18px" }}>
+            {selected.description}
+          </p>
+
+          <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
+            Nail Shape
+          </p>
+
+          <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
+            {selected.shapes.map((s) => (
+              <button
+                key={s}
+                onClick={() => {
+                  setSelectedShape(s);
+                  syncProductUrl(selected.id, s, selectedLength);
+                }}
+                style={{
+                  border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`,
+                  background: selectedShape === s ? "var(--primary)" : "var(--card)",
+                  color: selectedShape === s ? "#fff" : "var(--foreground)",
+                  borderRadius: 8,
+                  padding: "6px 14px",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  transition: "all 0.15s"
+                }}
+              >
+                {s}
+              </button>
+            ))}
           </div>
-        </main>
-      )}
+
+          <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
+            Nail Length
+          </p>
+
+          <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
+            {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
+              <button
+                key={length}
+                onClick={() => {
+                  setSelectedLength(length);
+                  syncProductUrl(selected.id, selectedShape, length);
+                }}
+                style={{
+                  border: `1.5px solid ${selectedLength === length ? "var(--primary)" : "var(--border)"}`,
+                  background: selectedLength === length ? "var(--primary)" : "var(--card)",
+                  color: selectedLength === length ? "#fff" : "var(--foreground)",
+                  borderRadius: 8,
+                  padding: "6px 14px",
+                  fontSize: 12,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  textTransform: "capitalize"
+                }}
+              >
+                {length}
+              </button>
+            ))}
+          </div>
+
+          <div
+            style={{
+              background: "var(--muted)",
+              borderRadius: 10,
+              padding: "10px 14px",
+              fontSize: 12,
+              color: "var(--muted-foreground)",
+              lineHeight: 1.5
+            }}
+          >
+            🌸 Send your nail sizes after ordering via <strong>@juicegels</strong> on Instagram or through your order notes.
+          </div>
+        </div>
+
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "100%",
+            maxWidth: 430,
+            padding: "14px 18px",
+            background: "var(--card)",
+            borderTop: "1px solid var(--border)",
+            display: "flex",
+            gap: 10,
+            boxSizing: "border-box"
+          }}
+        >
+          <button
+            onClick={() => toggleWishlist(selected.id)}
+            style={{
+              border: "1.5px solid var(--border)",
+              background: "var(--card)",
+              borderRadius: 12,
+              width: 46,
+              height: 46,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              flexShrink: 0
+            }}
+          >
+            <Heart
+              size={17}
+              fill={wishlist.includes(selected.id) ? "var(--primary)" : "none"}
+              stroke={wishlist.includes(selected.id) ? "var(--primary)" : "var(--muted-foreground)"}
+            />
+          </button>
+
+          <button
+            onClick={addToBasket}
+            disabled={!selectedShape || !selectedLength}
+            style={{
+              flex: 1,
+              background: selectedShape && selectedLength ? "var(--primary)" : "var(--muted)",
+              color: selectedShape && selectedLength ? "#fff" : "var(--muted-foreground)",
+              border: "none",
+              borderRadius: 12,
+              height: 46,
+              fontWeight: 600,
+              fontSize: 14,
+              cursor: selectedShape && selectedLength ? "pointer" : "not-allowed",
+              transition: "all 0.15s"
+            }}
+          >
+            {selectedShape && selectedLength ? "Add to Basket" : "Select shape and length"}
+          </button>
+        </div>
+      </main>
+    )}
 
       {/* ── Basket ── */}
       {page === "basket" && (
@@ -338,6 +623,7 @@ export default function App() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 500, color: "var(--foreground)", lineHeight: 1.3 }}>{item.product.name}</p>
                       <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Shape: {item.shape}</p>
+                      <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Length: {item.length}</p>
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
                           <button onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
