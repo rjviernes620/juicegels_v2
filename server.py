@@ -35,20 +35,23 @@ def create_checkout_session():
     shape = item.get('shape', '')
     quantity = int(item.get('quantity', 1))
     name = product.get('name', 'Product')
+    length = item.get('length', '')
     description = product.get('description', '')
     price = float(product.get('price', 0))
     image_url = product.get('image', '')
 
+    display_name = f"{name} - {shape} - {length}".strip(" -") 
     if image_url.startswith('/'):
       image_url = f"{origin}{image_url}"
 
     product_data = {
-      'name': f"{name} — {shape}",
-      'description': description,
-      'metadata': {
-        'product_id': product.get('id', ''),
-        'shape': shape,
-      },
+        "name": display_name,
+        "description": description,
+        "metadata": {
+            "productid": product.get("id", ""),
+            "shape": shape,
+            "length": length,
+        },
     }
 
     if image_url:
@@ -69,7 +72,7 @@ def create_checkout_session():
         'line_items': line_items,
         'customer_email': form.get('email', ''),
         'billing_address_collection': 'required',
-        'phone_number_collection': {'enabled': True},
+        'phone_number_collection': {'enabled': False},
         'metadata': {
           'first_name': form.get('firstName', ''),
           'last_name': form.get('lastName', ''),
@@ -79,7 +82,7 @@ def create_checkout_session():
           'notes': form.get('notes', ''),
         },
         'mode': 'payment',
-        'success_url': f"{origin}/checkout/success",
+        'success_url': f"{origin}/checkout-success",
         'cancel_url': f"{origin}/basket",
       },
     )

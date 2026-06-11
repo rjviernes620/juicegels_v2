@@ -1,9 +1,9 @@
-import { createHashRouter, RouterProvider, Navigate } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import App from "./app/App.tsx";
 import "./styles/index.css";
 
-const router = createHashRouter([
+const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/home" replace /> },
   { path: "/home", element: <App /> },
   { path: "/basket", element: <App /> },

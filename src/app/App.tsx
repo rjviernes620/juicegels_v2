@@ -87,7 +87,10 @@ export default function App() {
 
 
 useEffect(() => {
-  if (location.pathname === "/checkout-success") {
+  if (
+    location.pathname === "/confirmation" ||
+    location.pathname === "/checkout-success"
+  ) {
     setPage("confirmation");
     return;
   }
@@ -110,15 +113,12 @@ useEffect(() => {
 
   if (location.pathname.startsWith("/product/") && params.id) {
     const product = products.find((p) => p.id === params.id);
-
     if (product) {
       const searchParams = new URLSearchParams(location.search);
       const requestedShape = searchParams.get("shape") ?? "";
       const requestedLength = (searchParams.get("length") ?? "") as NailLength;
-
       const shapes = getProductShapes(product);
       const lengths = getProductLengths(product);
-
       const nextShape = shapes.includes(requestedShape) ? requestedShape : shapes[0] ?? "";
       const nextLength = lengths.includes(requestedLength) ? requestedLength : lengths[0] ?? "Medium";
 
@@ -132,7 +132,7 @@ useEffect(() => {
   }
 
   setPage("home");
-}, [location.pathname, params.id, products]);
+}, [location.pathname, location.search, params.id, products]);
 
     useEffect(() => {
     if (page !== "product" || !selected || !selectedShape || !selectedLength) return;
@@ -355,7 +355,7 @@ const updateQty = (idx: number, delta: number) => {
             quantity: item.quantity,
           })),
           form,
-          checkoutPath: "/checkout/success",
+          checkoutPath: "/confirmation",
         }),
       });
 
