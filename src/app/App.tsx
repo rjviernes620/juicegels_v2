@@ -86,56 +86,66 @@ export default function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-  useEffect(() => {
-    if (location.pathname === "/checkout/success") {
-      setPage("confirmation");
-      return;
-    }
-
-    if (location.pathname === "/basket") {
-      const searchParams = new URLSearchParams(location.search);
-      const itemsParam = searchParams.get("items");
-
-      if (itemsParam) {
-        const parsedItems = parseBasketItemsParam(itemsParam, products);
-        if (parsedItems.length > 0) {
-          setCart(parsedItems);
-        }
-      }
-
-      setPage("basket");
-      return;
-    }
-
-    if (location.pathname === "/home") {
-      setPage("home");
-      return;
-    }
-
-if (location.pathname.startsWith("/product/") && params.id) {
-  const product = products.find((p) => p.id === params.id);
-  if (product) {
-    const searchParams = new URLSearchParams(location.search);
-    const requestedShape = searchParams.get("shape") ?? "";
-    const requestedLength = (searchParams.get("length") ?? "").toLowerCase() as NailLength;
-
-    const shapes = getProductShapes(product);
-    const lengths = getProductLengths(product);
-
-    const nextShape = shapes.includes(requestedShape) ? requestedShape : "";
-    const nextLength = lengths.includes(requestedLength) ? requestedLength : "Medium";
-
-    setSelected(product);
-    setSelectedShape(nextShape);
-    setSelectedLength(nextLength);
-    setActiveImg(0);
-    setPage("product");
+useEffect(() => {
+  if (location.pathname === "/checkout-success") {
+    setPage("confirmation");
     return;
   }
-}
 
+  if (location.pathname === "/basket") {
+    const searchParams = new URLSearchParams(location.search);
+    const itemsParam = searchParams.get("items");
+    if (itemsParam) {
+      const parsedItems = parseBasketItemsParam(itemsParam, products);
+      if (parsedItems.length > 0) setCart(parsedItems);
+    }
+    setPage("basket");
+    return;
+  }
+
+  if (location.pathname === "/") {
     setPage("home");
-  }, [location.pathname, location.search, params.id, products]);
+    return;
+  }
+
+  if (location.pathname.startsWith("/product/") && params.id) {
+    const product = products.find((p) => p.id === params.id);
+
+    if (product) {
+      const searchParams = new URLSearchParams(location.search);
+      const requestedShape = searchParams.get("shape") ?? "";
+      const requestedLength = (searchParams.get("length") ?? "") as NailLength;
+
+      const shapes = getProductShapes(product);
+      const lengths = getProductLengths(product);
+
+      const nextShape = shapes.includes(requestedShape) ? requestedShape : shapes[0] ?? "";
+      const nextLength = lengths.includes(requestedLength) ? requestedLength : lengths[0] ?? "Medium";
+
+      setSelected(product);
+      setSelectedShape(nextShape);
+      setSelectedLength(nextLength);
+      setActiveImg(0);
+      setPage("product");
+      return;
+    }
+  }
+
+  setPage("home");
+}, [location.pathname, params.id, products]);
+
+    useEffect(() => {
+    if (page !== "product" || !selected || !selectedShape || !selectedLength) return;
+
+    const search = new URLSearchParams(location.search);
+    const currentShape = search.get("shape") ?? "";
+    const currentLength = search.get("length") ?? "";
+
+    if (currentShape === selectedShape && currentLength === selectedLength) return;
+
+    syncProductUrl(selected.id, selectedShape, selectedLength);
+  }, [page, selected, selectedShape, selectedLength]);
+
 
   const cartTotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
@@ -189,6 +199,20 @@ if (location.pathname.startsWith("/product/") && params.id) {
   navigate(`/product/${p.id}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
 };
 
+  const openBasketItemProduct = (item: CartItem) => {
+    setSelected(item.product);
+    setSelectedShape(item.shape);
+    setSelectedLength(item.length);
+    setActiveImg(0);
+    setPage("product");
+
+    const search = new URLSearchParams();
+    search.set("shape", item.shape);
+    search.set("length", item.length);
+
+    navigate(`/product/${item.product.id}?${search.toString()}`);
+  };
+  
   const addToBasket = () => {
     if (!selected || !selectedShape || !selectedLength) return;
 
@@ -226,6 +250,15 @@ if (location.pathname.startsWith("/product/") && params.id) {
       return next;
     });
   };
+
+  const findVariant = (groupId: string, shape: string, length: NailLength) => {
+  return products.find(
+    (p) =>
+      p.groupId === groupId &&
+      p.shape === shape &&
+      p.length === length
+  );
+};
 const updateQty = (idx: number, delta: number) => {
   setCart((prev) => {
     const next = [...prev];
@@ -486,8 +519,14 @@ const updateQty = (idx: number, delta: number) => {
               <button
                 key={s}
                 onClick={() => {
-                  setSelectedShape(s);
-                  syncProductUrl(selected.id, s, selectedLength);
+                  if (!selected) return;
+
+                  const next = findVariant(selected.groupId, s, selectedLength);
+                  if (next) {
+                    setSelected(next);
+                    setSelectedShape(s);
+                    setSelectedLength(next.length);
+                  }
                 }}
                 style={{
                   border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`,
@@ -514,8 +553,14 @@ const updateQty = (idx: number, delta: number) => {
               <button
                 key={length}
                 onClick={() => {
-                  setSelectedLength(length);
-                  syncProductUrl(selected.id, selectedShape, length);
+                  if (!selected) return;
+
+                  const next = findVariant(selected.groupId, selectedShape, length);
+                  if (next) {
+                    setSelected(next);
+                    setSelectedLength(length);
+                    setSelectedShape(next.shape);
+                  }
                 }}
                 style={{
                   border: `1.5px solid ${selectedLength === length ? "var(--primary)" : "var(--border)"}`,

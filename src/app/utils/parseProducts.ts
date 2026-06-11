@@ -1,5 +1,7 @@
 import csvRaw from "../../imports/meta_final.csv?raw";
 
+export type NailLength = "Short" | "Medium" | "Long";
+
 export type Product = {
   id: string;
   groupId: string;
@@ -10,6 +12,8 @@ export type Product = {
   extraImages: string[];
   shapes: string[];
   tags: string[];
+  shape: string;
+  length: NailLength;
 };
 
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
@@ -73,7 +77,6 @@ function splitCSVRows(raw: string): string[] {
 export function loadProducts(): Product[] {
   const rows = splitCSVRows(csvRaw);
   const header = parseCSVLine(rows[0]).map((h) => h.trim());
-
   const col = (row: string[], name: string) => {
     const i = header.indexOf(name);
     return i >= 0 ? row[i]?.trim() ?? "" : "";
@@ -131,7 +134,11 @@ export function loadProducts(): Product[] {
     } else if (varType || varName) {
       shapes = DEFAULT_SHAPES;
     }
-
+    
+    const shape = col(row, "shape");
+    const rawLength = col(row, "length");
+    const length = (rawLength.charAt(0).toUpperCase() + rawLength.slice(1).toLowerCase()) as NailLength;
+    
     products.push({
       id,
       groupId,
@@ -142,6 +149,8 @@ export function loadProducts(): Product[] {
       extraImages,
       shapes,
       tags,
+      shape,
+      length,
     });
   }
 
