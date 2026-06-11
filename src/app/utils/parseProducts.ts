@@ -1,8 +1,8 @@
 import csvRaw from "../../imports/meta_final.csv?raw";
 
-
 export type Product = {
   id: string;
+  groupId: string;
   name: string;
   price: number;
   description: string;
@@ -18,11 +18,17 @@ function parseCSVLine(line: string): string[] {
   const fields: string[] = [];
   let cur = "";
   let inQuotes = false;
+
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
+
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
-      else inQuotes = !inQuotes;
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
     } else if (ch === "," && !inQuotes) {
       fields.push(cur);
       cur = "";
@@ -30,6 +36,7 @@ function parseCSVLine(line: string): string[] {
       cur += ch;
     }
   }
+
   fields.push(cur);
   return fields;
 }
@@ -38,11 +45,17 @@ function splitCSVRows(raw: string): string[] {
   const rows: string[] = [];
   let current = "";
   let inQuotes = false;
+
   for (let i = 0; i < raw.length; i++) {
     const ch = raw[i];
+
     if (ch === '"') {
-      if (inQuotes && raw[i + 1] === '"') { current += '"'; i++; }
-      else inQuotes = !inQuotes;
+      if (inQuotes && raw[i + 1] === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
       current += ch;
     } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
       if (ch === "\r" && raw[i + 1] === "\n") i++;
@@ -52,6 +65,7 @@ function splitCSVRows(raw: string): string[] {
       current += ch;
     }
   }
+
   if (current.trim()) rows.push(current);
   return rows;
 }
@@ -59,20 +73,8 @@ function splitCSVRows(raw: string): string[] {
 export function loadProducts(): Product[] {
   const rows = splitCSVRows(csvRaw);
   const header = parseCSVLine(rows[0]).map((h) => h.trim());
-  
 
-// function resolveImagePath(path: string): string {
-//   if (!path) return "";
-
-//   const trimmed = path.trim();
-
-//   return trimmed.startsWith("https://juicegels.com/public/images/products/")
-//     ? trimmed
-//     : "";
-// }
-
-
-const col = (row: string[], name: string) => {
+  const col = (row: string[], name: string) => {
     const i = header.indexOf(name);
     return i >= 0 ? row[i]?.trim() ?? "" : "";
   };
@@ -84,14 +86,28 @@ const col = (row: string[], name: string) => {
     const id = col(row, "id");
     if (!id) continue;
 
-    // availability guard
     if (col(row, "availability") === "out of stock") continue;
 
+    const groupId = col(row, "item_group_id") || id;
     const name = col(row, "TITLE");
     const price = parseFloat(col(row, "PRICE")) || 0;
-    const description = col(row, "DESCRIPTION").replace(/\n/g, " ").replace(/\s+/g, " ").trim();
+    const description = col(row, "DESCRIPTION")
+      .replace(/\n/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
 
-    const imageKeys = ["IMAGE1", "IMAGE2", "IMAGE3", "IMAGE4", "IMAGE5", "IMAGE6", "IMAGE7", "IMAGE8", "IMAGE9", "IMAGE10"];
+    const imageKeys = [
+      "IMAGE1",
+      "IMAGE2",
+      "IMAGE3",
+      "IMAGE4",
+      "IMAGE5",
+      "IMAGE6",
+      "IMAGE7",
+      "IMAGE8",
+      "IMAGE9",
+      "IMAGE10",
+    ];
 
     const allImages = imageKeys
       .map((key) => (col(row, key) || "").trim())
@@ -100,11 +116,11 @@ const col = (row: string[], name: string) => {
     const image = allImages[0] || "";
     const extraImages = allImages.slice(1);
 
-    // tags
     const tagStr = col(row, "TAGS");
-    const tags = tagStr ? tagStr.split(",").map((t) => t.trim()).filter(Boolean) : [];
+    const tags = tagStr
+      ? tagStr.split(",").map((t) => t.trim()).filter(Boolean)
+      : [];
 
-    // shapes from variation values (Nail Shapes custom property)
     const varType = col(row, "VARIATION 1 TYPE") || col(row, "VARIATION 2 TYPE");
     const varName = col(row, "VARIATION 1 NAME") || col(row, "VARIATION 2 NAME");
     const varValues = col(row, "VARIATION 1 VALUES") || col(row, "VARIATION 2 VALUES");
@@ -116,7 +132,17 @@ const col = (row: string[], name: string) => {
       shapes = DEFAULT_SHAPES;
     }
 
-    products.push({ id, name, price, description, image, extraImages, shapes, tags });
+    products.push({
+      id,
+      groupId,
+      name,
+      price,
+      description,
+      image,
+      extraImages,
+      shapes,
+      tags,
+    });
   }
 
   return products;

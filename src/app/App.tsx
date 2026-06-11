@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ShoppingBag, Heart, Star, ChevronLeft, Check, Trash2, Plus, Minus } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { loadProducts, type Product } from "./utils/parseProducts";
+
 
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
@@ -12,6 +13,10 @@ type FormData = { firstName: string; lastName: string; email: string; phone: str
 const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", nailSizes: "", notes: "" };
 
 const products = loadProducts();
+const uniqueProducts = products.filter(
+  (product, index, self) =>
+    index === self.findIndex((p) => p.groupId === product.groupId)
+);
 
 function buildBasketItemsParam(items: CartItem[]) {
   return items
@@ -397,8 +402,8 @@ const updateQty = (idx: number, delta: number) => {
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons · Send your nail sizes for a perfect fit</p>
           </div>
 
-          <div style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {products.map((p) => (
+            <div style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              {uniqueProducts.map((p) => (
               <button key={p.id} onClick={() => openProduct(p)} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
                 <button onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }} style={{ position: "absolute", top: 7, right: 7, background: "rgba(255,255,255,0.88)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }} aria-label="Wishlist">
                   <Heart size={13} fill={wishlist.includes(p.id) ? "var(--primary)" : "none"} stroke={wishlist.includes(p.id) ? "var(--primary)" : "var(--muted-foreground)"} />
