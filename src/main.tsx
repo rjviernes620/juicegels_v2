@@ -8,7 +8,7 @@ const router = createBrowserRouter([
   { path: "/home", element: <App /> },
   { path: "/basket", element: <App /> },
   { path: "/product/:id", element: <App /> },
-  { path: "/checkout/success", element: <App /> },
+  { path: "/confirmation", element: <App /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(
