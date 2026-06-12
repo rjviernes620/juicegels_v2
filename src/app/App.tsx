@@ -55,7 +55,6 @@ function parseBasketItemsParam(itemsParam: string, products: Product[]): CartIte
     .filter(Boolean) as CartItem[];
 }
 
-
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -99,27 +98,10 @@ useEffect(() => {
   if (location.pathname === "/basket") {
     const searchParams = new URLSearchParams(location.search);
     const itemsParam = searchParams.get("items");
-    const metaProductsParam = searchParams.get("products");
-    const couponParam = searchParams.get("coupon");
-    const cartOrigin = searchParams.get("cart_origin");
-
     if (itemsParam) {
       const parsedItems = parseBasketItemsParam(itemsParam, products);
-      if (parsedItems.length > 0) {
-        setCart(parsedItems);
-      }
-    } else if (metaProductsParam) {
-      const parsedMetaItems = parseMetaProductsParam(metaProductsParam, products);
-      if (parsedMetaItems.length > 0) {
-        setCart(parsedMetaItems);
-      }
+      if (parsedItems.length > 0) setCart(parsedItems);
     }
-
-    console.log("Meta basket context", {
-      coupon: couponParam,
-      cartOrigin,
-    });
-
     setPage("basket");
     return;
   }
@@ -128,29 +110,7 @@ useEffect(() => {
     setPage("home");
     return;
   }
-  function parseMetaProductsParam(productsParam: string, products: Product[]): CartItem[] {
-    return productsParam
-      .split(",")
-      .map((entry) => {
-        const [rawId, rawQty] = entry.split(":");
-        const id = decodeURIComponent(rawId ?? "").trim();
-        const quantity = Math.max(1, Number(rawQty ?? "1"));
 
-        const product = products.find((p) => p.id === id);
-        if (!product || Number.isNaN(quantity)) return null;
-
-        const shapes = getProductShapes(product);
-        const lengths = getProductLengths(product);
-
-        return {
-          product,
-          shape: shapes[0] ?? "",
-          length: lengths[0] ?? "Medium",
-          quantity,
-        };
-      })
-      .filter(Boolean) as CartItem[];
-  }
   if (location.pathname.startsWith("/product/") && params.id) {
     const product = products.find((p) => p.id === params.id);
     if (product) {
