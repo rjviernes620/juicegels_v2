@@ -32,7 +32,6 @@ export default defineConfig({
     tailwindcss(),
     viteStaticCopy({
       targets: [
-        { src: 'server.py', dest: './' },
         { src: 'CNAME', dest: './' }
       ]
     })
