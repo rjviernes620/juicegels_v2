@@ -53,7 +53,6 @@ def create_checkout_session():
     quantity = int(item.get('quantity', 1))
     name = product.get('name', 'Product')
     length = item.get('length', '')
-    description = product.get('description', '')
     price = float(product.get('price', 0))
     image_url = product.get('image', '')
 
@@ -63,7 +62,6 @@ def create_checkout_session():
 
     product_data = {
         "name": display_name,
-        "description": description,
         "metadata": {
             "productid": product.get("id", ""),
             "shape": shape,
