@@ -560,7 +560,7 @@ const updateQty = (idx: number, delta: number) => {
         <ImageWithFallback
           src={[selected.image, ...selected.extraImages][activeImg]}
           alt={selected.name}
-          style={{ width: "100%", height: 320, objectFit: "cover", display: "block", background: "var(--secondary)" }}
+          style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "var(--secondary)" }}
         />
 
         {selected.extraImages.length > 0 && (
@@ -579,7 +579,7 @@ const updateQty = (idx: number, delta: number) => {
                   background: "none"
                 }}
               >
-                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "cover", display: "block" }} />
+                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "var(--secondary)" }} />
               </button>
             ))}
           </div>
