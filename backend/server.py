@@ -13,13 +13,39 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Don't put any keys in code. See https://docs.stripe.com/keys-best-practices.
-# Find your keys at https://dashboard.stripe.com/apikeys.
-client = stripe.StripeClient('sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx')
-
 PINGRAM_DEFAULT_BASE_URL = 'https://api.pingram.io'
 PINGRAM_ORDER_EMAIL_TYPE = 'juicegels_order'
 PINGRAM_ORDER_RECIPIENT = 'juicegels@gmail.com'
+RENDER_SECRET_DIR = '/etc/secrets'
+
+
+def read_secret(secret_name, env_var_name=None):
+  candidate_names = [name for name in [env_var_name, secret_name, str(secret_name or '').upper()] if name]
+
+  for candidate_name in candidate_names:
+    candidate_value = str(os.environ.get(candidate_name, '') or '').strip()
+    if not candidate_value:
+      continue
+
+    if os.path.isfile(candidate_value):
+      with open(candidate_value, 'r', encoding='utf-8') as secret_file:
+        return secret_file.read().strip()
+
+    return candidate_value
+
+  secret_path = os.path.join(RENDER_SECRET_DIR, secret_name)
+  if os.path.isfile(secret_path):
+    with open(secret_path, 'r', encoding='utf-8') as secret_file:
+      return secret_file.read().strip()
+
+  return ''
+
+
+stripe_api_key = read_secret('stripe_test_v1', 'STRIPE_SECRET_KEY')
+if not stripe_api_key:
+  raise RuntimeError('Missing Stripe secret file stripe_test_v1.')
+
+client = stripe.StripeClient(stripe_api_key)
 
 
 def build_checkout_items_param(items):
@@ -234,9 +260,9 @@ def build_order_email_html(order_summary):
 
 
 def send_pingram_order_email(order_summary):
-  pingram_api_key = 'pingram_sk_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJrZXlfYmIyMjliMTliOGI1Y2JmNzdhODI2NmZlZDYzYzBiYWIiLCJ2ZXJzaW9uIjoxLCJhY2NvdW50SWQiOiJ2cXU0OHNybDgydmhrMWJqc3huZjN0ZXEyMyIsImtleVR5cGUiOiJzZWNyZXQiLCJlbnZpcm9ubWVudElkIjoidnF1NDhzcmw4MnZoazFianN4bmYzdGVxMjMifQ.xWcZX-0AFgVEu2Kbplh6ujoe52g8rLWH1At7jhl2f0Y'
+  pingram_api_key = read_secret('pingram_v1', 'PINGRAM_API_KEY')
   if not pingram_api_key:
-    raise RuntimeError('Missing PINGRAM_API_KEY environment variable.')
+    raise RuntimeError('Missing Pingram secret file pingram_v1.')
 
   from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or '').strip()
   from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or '').strip()
@@ -383,9 +409,9 @@ def validate_coupon():
 
 @app.route('/stripe-webhook', methods=['POST'])
 def stripe_webhook():
-  webhook_secret = "whsec_c3xvvXkbHLI9mTt3Y5oYV5Gd3WO9JWHN"
+  webhook_secret = read_secret('stripe_webhook', 'STRIPE_WEBHOOK_SECRET')
   if not webhook_secret:
-    return jsonify({ 'error': 'Missing STRIPE_WEBHOOK_SECRET environment variable.' }), 500
+    return jsonify({ 'error': 'Missing Stripe webhook secret file stripe_webhook.' }), 500
 
   payload = request.get_data(as_text=True)
   signature = request.headers.get('Stripe-Signature', '')
