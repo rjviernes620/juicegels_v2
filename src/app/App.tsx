@@ -148,6 +148,9 @@ useEffect(() => {
     searchParams.get("checkout") === "success" ||
     searchParams.has("session_id");
 
+  const itemsParam = searchParams.get("items");
+  const productsParam = searchParams.get("products");
+
   if (
     normalizedPath === "/confirmation" ||
     normalizedPath === "/checkout-success" ||
@@ -155,6 +158,14 @@ useEffect(() => {
     redirectedPathFromSearch === "/checkout-success" ||
     (normalizedPath === "/" && hasCheckoutSuccessFlag)
   ) {
+    if (itemsParam) {
+      const parsedItems = parseBasketItemsParam(itemsParam, products);
+      if (parsedItems.length > 0) setCart(parsedItems);
+    } else if (productsParam) {
+      const parsedItems = parseMetaBasketProductsParam(productsParam, products);
+      if (parsedItems.length > 0) setCart(parsedItems);
+    }
+
     setPage("confirmation");
     return;
   }

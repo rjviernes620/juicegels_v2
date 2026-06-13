@@ -3,6 +3,7 @@
 
 import os
 import stripe
+from urllib.parse import quote
 
 from flask import Flask, redirect, request, jsonify
 
@@ -11,6 +12,21 @@ app = Flask(__name__)
 # Don't put any keys in code. See https://docs.stripe.com/keys-best-practices.
 # Find your keys at https://dashboard.stripe.com/apikeys.
 client = stripe.StripeClient('sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx')
+
+
+def build_checkout_items_param(items):
+  encoded_items = []
+
+  for item in items:
+    product = item.get('product', {})
+    product_id = quote(str(product.get('id', '')).strip(), safe='')
+    shape = quote(str(item.get('shape', '')).strip(), safe='')
+    length = quote(str(item.get('length', '')).strip(), safe='')
+    quantity = quote(str(int(item.get('quantity', 1))), safe='')
+
+    encoded_items.append('|'.join([product_id, shape, length, quantity]))
+
+  return ','.join(encoded_items)
 
 @app.after_request
 def add_cors_headers(response):
@@ -28,6 +44,7 @@ def create_checkout_session():
   items = payload.get('items', [])
   form = payload.get('form', {})
   origin = request.headers.get('Origin') or 'http://localhost:4173'
+  items_param = build_checkout_items_param(items)
 
   line_items = []
   for item in items:
@@ -82,7 +99,7 @@ def create_checkout_session():
           'notes': form.get('notes', ''),
         },
         'mode': 'payment',
-        'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}",
+        'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
         'cancel_url': f"{origin}/basket",
       },
     )
