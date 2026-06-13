@@ -23,12 +23,6 @@ const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0301"]);
 const META_CART_ORIGIN = "meta_shops";
 const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
 
-const products = loadProducts();
-const uniqueProducts = products.filter(
-  (product, index, self) =>
-    index === self.findIndex((p) => p.groupId === product.groupId)
-);
-
 function buildMetaBasketProductsParam(items: CartItem[]) {
   return items
     .map((item) => `${encodeURIComponent(item.product.id)}:${encodeURIComponent(String(item.quantity))}`)
@@ -134,6 +128,9 @@ export default function App() {
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedShape, setSelectedShape] = useState("");
   const [selectedLength, setSelectedLength] = useState<NailLength>("Medium");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
+  const [productsLoadError, setProductsLoadError] = useState<string | null>(null);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window === "undefined") return [];
@@ -162,6 +159,11 @@ export default function App() {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
 
+  const uniqueProducts = useMemo(
+    () => products.filter((product, index, self) => index === self.findIndex((p) => p.groupId === product.groupId)),
+    [products]
+  );
+
   const currentBasketUrl = (items: CartItem[]) =>
     buildBasketUrl(items, {
       coupon: searchParams.get("coupon"),
@@ -171,6 +173,40 @@ export default function App() {
 
 
 useEffect(() => {
+  let isCancelled = false;
+
+  const fetchProducts = async () => {
+    setIsProductsLoading(true);
+    setProductsLoadError(null);
+
+    try {
+      const loadedProducts = await loadProducts();
+      if (!isCancelled) {
+        setProducts(loadedProducts);
+      }
+    } catch (error) {
+      if (!isCancelled) {
+        setProducts([]);
+        setProductsLoadError(error instanceof Error ? error.message : "Failed to load products.");
+      }
+    } finally {
+      if (!isCancelled) {
+        setIsProductsLoading(false);
+      }
+    }
+  };
+
+  fetchProducts();
+
+  return () => {
+    isCancelled = true;
+  };
+}, []);
+
+
+useEffect(() => {
+  if (isProductsLoading) return;
+
   const redirectedPathFromSearch = (() => {
     if (!location.search.startsWith("?/")) return "";
 
@@ -263,7 +299,7 @@ useEffect(() => {
   }
 
   setPage("home");
-}, [location.search, normalizedPath, params.id, products, searchParams]);
+}, [isProductsLoading, location.search, normalizedPath, params.id, products, searchParams]);
 
     useEffect(() => {
     if (page !== "product" || !selected || !selectedShape || !selectedLength) return;
@@ -759,13 +795,25 @@ const updateQty = (idx: number, delta: number) => {
       )}
 
       {/* ── Home ── */}
-      {page === "home" && (
+      {isProductsLoading && (
+        <main style={{ padding: "48px 20px", textAlign: "center" }}>
+          <p style={{ color: "var(--muted-foreground)", fontSize: 14 }}>Loading products...</p>
+        </main>
+      )}
+
+      {!isProductsLoading && page === "home" && (
         <main>
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 30, color: "var(--foreground)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons · We will confirm your sizing after checkout</p>
           </div>
+
+          {productsLoadError && (
+            <div style={{ margin: "12px 14px 0", background: "#fff1f2", border: "1px solid #f4c2cb", borderRadius: 14, padding: "14px 16px", color: "var(--destructive)", fontSize: 12 }}>
+              {productsLoadError}
+            </div>
+          )}
 
             <div style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {uniqueProducts.map((p) => (

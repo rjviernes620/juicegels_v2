@@ -1,5 +1,3 @@
-import csvRaw from "../../imports/meta_final.csv?raw";
-
 export type NailLength = "Short" | "Medium" | "Long";
 
 export type Product = {
@@ -17,6 +15,19 @@ export type Product = {
 };
 
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
+const PRODUCTS_SHEET_SHARE_URL = "https://docs.google.com/spreadsheets/d/12H5OJ94iSaoe5yOwkJnUuSHpRc0nA0GR1Tm7_FBzbLM/edit?usp=sharing";
+
+function buildGoogleSheetCsvUrl(shareUrl: string): string {
+  const match = shareUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+
+  if (!match) {
+    throw new Error("Invalid Google Sheets URL.");
+  }
+
+  return `https://docs.google.com/spreadsheets/d/${match[1]}/export?format=csv`;
+}
+
+const PRODUCTS_SHEET_CSV_URL = buildGoogleSheetCsvUrl(PRODUCTS_SHEET_SHARE_URL);
 
 function parseCSVLine(line: string): string[] {
   const fields: string[] = [];
@@ -74,8 +85,10 @@ function splitCSVRows(raw: string): string[] {
   return rows;
 }
 
-export function loadProducts(): Product[] {
+function parseProductsCsv(csvRaw: string): Product[] {
   const rows = splitCSVRows(csvRaw);
+  if (rows.length === 0) return [];
+
   const header = parseCSVLine(rows[0]).map((h) => h.trim());
   const col = (row: string[], name: string) => {
     const i = header.indexOf(name);
@@ -155,4 +168,16 @@ export function loadProducts(): Product[] {
   }
 
   return products;
+}
+
+export async function loadProducts(): Promise<Product[]> {
+  const response = await fetch(PRODUCTS_SHEET_CSV_URL, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to load products: ${response.status}`);
+  }
+
+  return parseProductsCsv(await response.text());
 }
