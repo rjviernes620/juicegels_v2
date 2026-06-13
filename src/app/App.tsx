@@ -9,6 +9,7 @@ type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
 type Page = "home" | "product" | "basket" | "preorder" | "confirmation";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string;city: string; postcode: string; notes: string; };
+type ShippingOptionId = "tracked24" | "tracked48";
 
 type CouponSummary = {
   code: string;
@@ -17,11 +18,57 @@ type CouponSummary = {
   discountAmount: number;
 };
 
+type ShippingOption = {
+  id: ShippingOptionId;
+  stripeRateId: string;
+  label: string;
+  description: string;
+  estimate: string;
+  amount: number;
+  isFree: boolean;
+};
+
 const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", notes: "" };
 
 const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0301"]);
 const META_CART_ORIGIN = "meta_shops";
 const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
+const SHIPPING_FREE_THRESHOLD = 30;
+const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {
+  tracked24: "shr_1Ti0hyK4CROOpWXUhiIhLqWy",
+  tracked48: "shr_1Ti0ieK4CROOpWXU5Cbop3Ii",
+};
+
+function formatMoney(amount: number) {
+  return `£${amount.toFixed(2)}`;
+}
+
+function buildShippingOptions(itemsTotal: number): ShippingOption[] {
+  const tracked48IsFree = itemsTotal >= SHIPPING_FREE_THRESHOLD;
+
+  return [
+    {
+      id: "tracked48",
+      stripeRateId: SHIPPING_RATE_IDS.tracked48,
+      label: "Royal Mail Tracked 48",
+      description: tracked48IsFree
+        ? `Free on orders of ${formatMoney(SHIPPING_FREE_THRESHOLD)} or more.`
+        : "Economy tracked delivery.",
+      estimate: "Estimated delivery within 2 days after your order is finished.",
+      amount: tracked48IsFree ? 0 : 1.99,
+      isFree: tracked48IsFree,
+    },
+    {
+      id: "tracked24",
+      stripeRateId: SHIPPING_RATE_IDS.tracked24,
+      label: "Royal Mail Tracked 24",
+      description: "Priority tracked delivery.",
+      estimate: "Estimated delivery within 1 business day after your order is finished.",
+      amount: 4,
+      isFree: false,
+    },
+  ];
+}
 
 function buildMetaBasketProductsParam(items: CartItem[]) {
   return items
@@ -162,6 +209,7 @@ export default function App() {
   const [couponSummary, setCouponSummary] = useState<CouponSummary | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
+  const [shippingOptionId, setShippingOptionId] = useState<ShippingOptionId>("tracked48");
 
   const uniqueProducts = useMemo(
     () => products.filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId))),
@@ -324,6 +372,10 @@ useEffect(() => {
   const discountTotal = couponSummary?.discountAmount ?? 0;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
+  const shippingOptions = useMemo(() => buildShippingOptions(orderTotal), [orderTotal]);
+  const selectedShippingOption = shippingOptions.find((option) => option.id === shippingOptionId) ?? shippingOptions[0];
+  const shippingTotal = selectedShippingOption?.amount ?? 0;
+  const checkoutTotal = orderTotal + shippingTotal;
 
   
 
@@ -678,6 +730,8 @@ const updateQty = (idx: number, delta: number) => {
           form,
           coupon: couponSummary?.code ?? null,
           promotionCodeId: couponSummary?.promotionCodeId ?? null,
+          shippingRateId: selectedShippingOption?.stripeRateId ?? SHIPPING_RATE_IDS.tracked48,
+          shippingOptionId: selectedShippingOption?.id ?? "tracked48",
           checkoutPath: "/confirmation",
         }),
       });
@@ -1171,10 +1225,10 @@ const updateQty = (idx: number, delta: number) => {
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
                   <span style={{ color: "var(--muted-foreground)" }}>Delivery</span>
-                  <span style={{ color: "var(--primary)" }}>Free</span>
+                  <span style={{ color: "var(--muted-foreground)" }}>Choose on next step</span>
                 </div>
                 <div style={{ borderTop: "1px solid var(--border)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 15 }}>
-                  <span>Total</span>
+                  <span>Items total</span>
                   <span>£{orderTotal.toFixed(2)}</span>
                 </div>
               </div>
@@ -1200,7 +1254,7 @@ const updateQty = (idx: number, delta: number) => {
       {page === "preorder" && (
         <main style={{ padding: "18px 18px 48px" }}>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 4px" }}>Your Details</h2>
-          <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 18px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · £{orderTotal.toFixed(2)} total</p>
+          <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 18px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · {formatMoney(checkoutTotal)} total including shipping</p>
 
           <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: 13 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -1240,6 +1294,49 @@ const updateQty = (idx: number, delta: number) => {
               <textarea placeholder="Any special requests, colour preferences, or custom details..." value={form.notes} onChange={(e) => handleFormChange("notes", e.target.value)} rows={3} style={{ ...mkInput(false), resize: "none" }} />
             </Field>
 
+            <Field label="Shipping method">
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {shippingOptions.map((option) => {
+                  const isSelected = option.id === shippingOptionId;
+
+                  return (
+                    <label
+                      key={option.id}
+                      style={{
+                        display: "flex",
+                        gap: 12,
+                        alignItems: "flex-start",
+                        padding: "12px 13px",
+                        borderRadius: 12,
+                        border: `1.5px solid ${isSelected ? "var(--primary)" : "var(--border)"}`,
+                        background: isSelected ? "rgba(208, 111, 144, 0.08)" : "var(--card)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="shipping-method"
+                        value={option.id}
+                        checked={isSelected}
+                        onChange={() => setShippingOptionId(option.id)}
+                        style={{ marginTop: 3 }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline", marginBottom: 4 }}>
+                          <strong style={{ color: "var(--foreground)", fontSize: 13 }}>{option.label}</strong>
+                          <span style={{ color: "var(--primary)", fontWeight: 700, fontSize: 13 }}>
+                            {option.isFree ? "Free" : formatMoney(option.amount)}
+                          </span>
+                        </div>
+                        <p style={{ margin: "0 0 3px", fontSize: 12, lineHeight: 1.5, color: "var(--muted-foreground)" }}>{option.description}</p>
+                        <p style={{ margin: 0, fontSize: 11, lineHeight: 1.5, color: "var(--muted-foreground)" }}>{option.estimate}</p>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            </Field>
+
             <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
               You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.
             </div>
@@ -1252,8 +1349,20 @@ const updateQty = (idx: number, delta: number) => {
                   <span>£{(item.product.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
+              {couponSummary && discountTotal > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--muted-foreground)" }}>
+                  <span>Discount ({couponSummary.code})</span>
+                  <span>-{formatMoney(discountTotal)}</span>
+                </div>
+              )}
+              {selectedShippingOption && (
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--muted-foreground)" }}>
+                  <span>{selectedShippingOption.label}</span>
+                  <span>{selectedShippingOption.isFree ? "Free" : formatMoney(selectedShippingOption.amount)}</span>
+                </div>
+              )}
               <div style={{ borderTop: "1px solid var(--border)", marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
-                <span>Total</span><span>£{orderTotal.toFixed(2)}</span>
+                <span>Total</span><span>{formatMoney(checkoutTotal)}</span>
               </div>
             </div>
 

@@ -18,6 +18,22 @@ PINGRAM_ORDER_EMAIL_TYPE = 'juicegels_order'
 PINGRAM_ORDER_RECIPIENT = 'juicegels@gmail.com'
 RENDER_SECRET_DIR = '/etc/secrets'
 NAIL_SIZE_GUIDE_PRODUCT_ID = 'JUICEGELS-0301'
+FREE_TRACKED48_THRESHOLD_PENCE = 3000
+SHIPPING_OPTIONS = {
+  'tracked24': {
+    'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
+    'label': 'Royal Mail Tracked 24',
+    'amount_pence': 400,
+    'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
+  },
+  'tracked48': {
+    'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
+    'label': 'Royal Mail Tracked 48',
+    'amount_pence': 199,
+    'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
+    'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
+  },
+}
 
 
 def read_secret(secret_name, env_var_name=None):
@@ -99,6 +115,13 @@ def format_unix_timestamp(timestamp):
   return datetime.fromtimestamp(int(timestamp), timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
 
 
+def parse_int(value, default=0):
+  try:
+    return int(value)
+  except (TypeError, ValueError):
+    return default
+
+
 def escape_html(value):
   return html.escape(str(value or ''))
 
@@ -175,6 +198,69 @@ def get_pingram_base_url():
   return (os.environ.get('PINGRAM_BASE_URL') or PINGRAM_DEFAULT_BASE_URL).rstrip('/')
 
 
+def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence):
+  shipping_option_id = str(raw_shipping_option_id or '').strip()
+  option = SHIPPING_OPTIONS.get(shipping_option_id)
+
+  if option is None:
+    raise ValueError('Choose a shipping method.')
+
+  free_threshold_pence = option.get('free_threshold_pence')
+  amount_pence = int(option['amount_pence'])
+  is_free = bool(free_threshold_pence is not None and discounted_subtotal_pence >= int(free_threshold_pence))
+
+  if is_free:
+    amount_pence = 0
+
+  stripe_shipping_option = (
+    {
+      'shipping_rate_data': {
+        'type': 'fixed_amount',
+        'fixed_amount': {
+          'amount': amount_pence,
+          'currency': 'gbp',
+        },
+        'display_name': option['label'],
+        'delivery_estimate': {
+          'minimum': {
+            'unit': 'day',
+            'value': 2,
+          },
+          'maximum': {
+            'unit': 'day',
+            'value': 2,
+          },
+        },
+      },
+    }
+    if shipping_option_id == 'tracked48' and is_free
+    else {
+      'shipping_rate': option['stripe_rate_id'],
+    }
+  )
+
+  return {
+    'id': shipping_option_id,
+    'label': option['label'],
+    'amount_pence': amount_pence,
+    'estimate_text': option['estimate_text'],
+    'stripe_shipping_option': stripe_shipping_option,
+  }
+
+
+def resolve_shipping_label(shipping_option_id, shipping_rate_id=''):
+  option = SHIPPING_OPTIONS.get(str(shipping_option_id or '').strip())
+  if option is not None:
+    return option['label']
+
+  shipping_rate_id = str(shipping_rate_id or '').strip()
+  for entry in SHIPPING_OPTIONS.values():
+    if entry['stripe_rate_id'] == shipping_rate_id:
+      return entry['label']
+
+  return ''
+
+
 def fetch_checkout_line_items(session_id):
   response = client.v1.checkout.sessions.retrieve(
     session_id,
@@ -204,7 +290,16 @@ def build_order_summary(checkout_session):
   metadata = get_value(checkout_session, 'metadata', {}) or {}
   customer_details = get_value(checkout_session, 'customer_details', {}) or {}
   total_details = get_value(checkout_session, 'total_details', {}) or {}
+  shipping_cost = get_value(checkout_session, 'shipping_cost', {}) or {}
   session_id = get_value(checkout_session, 'id', '')
+  shipping_amount_pence = parse_int(
+    get_value(shipping_cost, 'amount_total', get_value(metadata, 'shipping_amount_pence', 0))
+  )
+  shipping_rate_id = get_value(shipping_cost, 'shipping_rate', '')
+  shipping_method = (
+    get_value(metadata, 'shipping_method', '')
+    or resolve_shipping_label(get_value(metadata, 'shipping_option_id', ''), shipping_rate_id)
+  )
 
   return {
     'session_id': session_id,
@@ -218,6 +313,8 @@ def build_order_summary(checkout_session):
     'notes': get_value(metadata, 'notes', ''),
     'coupon_code': get_value(metadata, 'coupon_code', ''),
     'billing_address': format_address(get_value(customer_details, 'address', {}) or {}),
+    'shipping_method': shipping_method,
+    'shipping': format_money_from_pence(shipping_amount_pence),
     'subtotal': format_money_from_pence(get_value(checkout_session, 'amount_subtotal', 0)),
     'discount': format_money_from_pence(get_value(total_details, 'amount_discount', 0)),
     'total': format_money_from_pence(get_value(checkout_session, 'amount_total', 0)),
@@ -238,6 +335,8 @@ def build_order_email_html(order_summary):
     ('Currency', order_summary.get('currency', '')),
     ('Subtotal', order_summary.get('subtotal', '')),
     ('Discount', order_summary.get('discount', '')),
+    ('Shipping method', order_summary.get('shipping_method', '')),
+    ('Shipping', order_summary.get('shipping', '')),
     ('Total', order_summary.get('total', '')),
     ('Coupon', order_summary.get('coupon_code', '')),
   ])
@@ -446,6 +545,7 @@ def create_checkout_session():
   items = payload.get('items', [])
   form = payload.get('form', {})
   raw_coupon_code = payload.get('coupon', '')
+  shipping_option_id = payload.get('shippingOptionId', '')
   origin = request.headers.get('Origin') or 'http://localhost:4173'
   items_param = build_checkout_items_param(items)
   subtotal_pence = 0
@@ -497,12 +597,26 @@ def create_checkout_session():
     except ValueError as error:
       return jsonify({ 'error': str(error) }), 400
 
+  discounted_subtotal_pence = max(
+    0,
+    subtotal_pence - (coupon_summary['discount_pence'] if coupon_summary else 0),
+  )
+
+  try:
+    shipping_option = resolve_shipping_option(shipping_option_id, discounted_subtotal_pence)
+  except ValueError as error:
+    return jsonify({ 'error': str(error) }), 400
+
   try:
     session_params = {
       'line_items': line_items,
       'customer_email': form.get('email', ''),
       'billing_address_collection': 'required',
+      'shipping_address_collection': {
+        'allowed_countries': ['GB'],
+      },
       'phone_number_collection': {'enabled': False},
+      'shipping_options': [shipping_option['stripe_shipping_option']],
       'metadata': {
         'first_name': form.get('firstName', ''),
         'last_name': form.get('lastName', ''),
@@ -510,6 +624,9 @@ def create_checkout_session():
         'instagram': form.get('instagram', ''),
         'notes': form.get('notes', ''),
         'coupon_code': coupon_summary['code'] if coupon_summary else '',
+        'shipping_option_id': shipping_option['id'],
+        'shipping_method': shipping_option['label'],
+        'shipping_amount_pence': str(shipping_option['amount_pence']),
       },
       'mode': 'payment',
       'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
