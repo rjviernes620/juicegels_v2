@@ -1,5 +1,7 @@
 export type NailLength = "Short" | "Medium" | "Long";
 
+declare const __PRODUCTS_SHEET_SHARE_URL__: string;
+
 export type Product = {
   id: string;
   groupId: string;
@@ -15,7 +17,8 @@ export type Product = {
 };
 
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
-const PRODUCTS_SHEET_SHARE_URL = "https://docs.google.com/spreadsheets/d/12H5OJ94iSaoe5yOwkJnUuSHpRc0nA0GR1Tm7_FBzbLM/edit?usp=sharing";
+const DEFAULT_PRODUCTS_SHEET_SHARE_URL = "https://docs.google.com/spreadsheets/d/12H5OJ94iSaoe5yOwkJnUuSHpRc0nA0GR1Tm7_FBzbLM/edit?usp=sharing";
+const PRODUCTS_SHEET_SHARE_URL = __PRODUCTS_SHEET_SHARE_URL__ || DEFAULT_PRODUCTS_SHEET_SHARE_URL;
 
 function normalizeGroupKey(value: string): string {
   return value.trim().toLowerCase();

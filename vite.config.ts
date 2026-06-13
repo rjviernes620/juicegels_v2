@@ -20,6 +20,11 @@ function figmaAssetResolver() {
 
 export default defineConfig({
   base: './',
+  define: {
+    __PRODUCTS_SHEET_SHARE_URL__: JSON.stringify(
+      process.env.SECRET || process.env.secret || ''
+    ),
+  },
   build: {
     outDir: 'docs',
   },
