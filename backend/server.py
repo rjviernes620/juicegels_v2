@@ -41,9 +41,9 @@ def read_secret(secret_name, env_var_name=None):
   return ''
 
 
-stripe_api_key = read_secret('stripe_test_v1', 'STRIPE_SECRET_KEY')
+stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
 if not stripe_api_key:
-  raise RuntimeError('Missing Stripe secret file stripe_test_v1.')
+  raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
 
 client = stripe.StripeClient(stripe_api_key)
 
