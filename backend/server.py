@@ -274,8 +274,8 @@ def send_pingram_order_email(order_summary):
     'email': {
       'subject': f"New Juice Gels order {order_summary.get('session_id', '')}",
       'html': build_order_email_html(order_summary),
-      'senderName': from_name or 'Pingram',
-      'senderEmail': from_address or 'noreply@juicegels.com',
+      'senderName': from_name or 'OnlineOrder',
+      'senderEmail': from_address or 'neworder@juicegels.com',
     },
   }
 
