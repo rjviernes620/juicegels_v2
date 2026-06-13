@@ -1,14 +1,13 @@
 # This example sets up an endpoint using the Flask framework.
 # Watch this video to get started: https://youtu.be/7Ul1vfmsDck.
 
+import asyncio
 import html
-import json
 import os
 from datetime import datetime, timezone
+from pingram import Pingram
 import stripe
-from urllib.error import HTTPError, URLError
 from urllib.parse import quote
-from urllib.request import Request, urlopen
 
 from flask import Flask, request, jsonify
 
@@ -236,45 +235,35 @@ def build_order_email_html(order_summary):
 
 def send_pingram_order_email(order_summary):
   pingram_api_key = 'pingram_sk_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJrZXlfYmIyMjliMTliOGI1Y2JmNzdhODI2NmZlZDYzYzBiYWIiLCJ2ZXJzaW9uIjoxLCJhY2NvdW50SWQiOiJ2cXU0OHNybDgydmhrMWJqc3huZjN0ZXEyMyIsImtleVR5cGUiOiJzZWNyZXQiLCJlbnZpcm9ubWVudElkIjoidnF1NDhzcmw4MnZoazFianN4bmYzdGVxMjMifQ.xWcZX-0AFgVEu2Kbplh6ujoe52g8rLWH1At7jhl2f0Y'
-  pingram_base_url = 'https://api.eu.pingram.io'
   if not pingram_api_key:
     raise RuntimeError('Missing PINGRAM_API_KEY environment variable.')
 
-  payload = {
-    'type': PINGRAM_ORDER_EMAIL_TYPE,
-    'to': PINGRAM_ORDER_RECIPIENT,
-    'subject': f"New Juice Gels order {order_summary.get('session_id', '')}",
-    'html': build_order_email_html(order_summary),
-  }
-
   from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or '').strip()
   from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or '').strip()
-  if from_name:
-    payload['fromName'] = from_name
-  if from_address:
-    payload['fromAddress'] = from_address
-
-  request_body = json.dumps(payload).encode('utf-8')
-  request_url = f"{pingram_base_url.rstrip('/')}/email/send"
-  outbound_request = Request(
-    request_url,
-    data=request_body,
-    headers={
-      'Authorization': f'Bearer {pingram_api_key}',
-      'Content-Type': 'application/json',
+  notification_payload = {
+    'type': 'email_compose_preview',
+    'to': {
+      'email': PINGRAM_ORDER_RECIPIENT,
     },
-    method='POST',
-  )
+    'email': {
+      'subject': f"New Juice Gels order {order_summary.get('session_id', '')}",
+      'html': build_order_email_html(order_summary),
+      'senderName': from_name or 'Pingram',
+      'senderEmail': from_address or 'noreply@juicegels.com',
+    },
+  }
+
+  async def _send():
+    async with Pingram(
+      api_key=pingram_api_key,
+      base_url='https://api.eu.pingram.io',
+    ) as client:
+      return await client.send(notification_payload)
 
   try:
-    with urlopen(outbound_request, timeout=20) as response:
-      if response.status >= 300:
-        raise RuntimeError(f'Pingram returned unexpected status {response.status}.')
-  except HTTPError as error:
-    response_body = error.read().decode('utf-8', errors='replace')
-    raise RuntimeError(f'Pingram email request failed with status {error.code}: {response_body}') from error
-  except URLError as error:
-    raise RuntimeError(f'Pingram email request failed: {error.reason}') from error
+    return asyncio.run(_send())
+  except Exception as error:
+    raise RuntimeError(f'Pingram email request failed: {error}') from error
 
 
 def handle_completed_checkout_session(checkout_session):
