@@ -8,12 +8,20 @@ import { loadProducts, type Product } from "./utils/parseProducts";
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
 type Page = "home" | "product" | "basket" | "preorder" | "confirmation";
-type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string;city: string; postcode: string; nailSizes: string; notes: string; };
+type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string;city: string; postcode: string; notes: string; };
 
-const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", nailSizes: "", notes: "" };
+type CouponSummary = {
+  code: string;
+  promotionCodeId: string;
+  description: string;
+  discountAmount: number;
+};
+
+const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", notes: "" };
 
 const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0301"]);
 const META_CART_ORIGIN = "meta_shops";
+const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
 
 const products = loadProducts();
 const uniqueProducts = products.filter(
@@ -127,6 +135,11 @@ export default function App() {
   const [activeImg, setActiveImg] = useState(0);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showStripeRedirectModal, setShowStripeRedirectModal] = useState(false);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponSummary, setCouponSummary] = useState<CouponSummary | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [isCouponLoading, setIsCouponLoading] = useState(false);
 
   const currentBasketUrl = (items: CartItem[]) =>
     buildBasketUrl(items, {
@@ -238,6 +251,9 @@ useEffect(() => {
 
   const cartTotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
+  const discountTotal = couponSummary?.discountAmount ?? 0;
+  const orderTotal = Math.max(0, cartTotal - discountTotal);
+  const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
 
   
 
@@ -250,6 +266,84 @@ useEffect(() => {
     if (typeof window === "undefined") return;
     localStorage.setItem("juicegels_form", JSON.stringify(form));
   }, [form]);
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      setShowStripeRedirectModal(false);
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      setShowStripeRedirectModal(true);
+    }, 5000);
+
+    return () => window.clearTimeout(timerId);
+  }, [isSubmitting]);
+
+  useEffect(() => {
+    const currentCoupon = searchParams.get("coupon")?.trim() ?? "";
+    setCouponInput(currentCoupon);
+
+    if (!currentCoupon) {
+      setCouponSummary(null);
+      setCouponError(null);
+      setIsCouponLoading(false);
+      return;
+    }
+
+    if (cart.length === 0) {
+      setCouponSummary(null);
+      setCouponError(null);
+      setIsCouponLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const validateCoupon = async () => {
+      setIsCouponLoading(true);
+      setCouponError(null);
+
+      try {
+        const response = await fetch(`${CHECKOUT_API_BASE}/validate-coupon`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            coupon: currentCoupon,
+            subtotal: cartTotal,
+          }),
+          signal: controller.signal,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Coupon code could not be applied.");
+        }
+
+        setCouponSummary({
+          code: data.code,
+          promotionCodeId: data.promotionCodeId,
+          description: data.description,
+          discountAmount: data.discountAmount,
+        });
+      } catch (error) {
+        if (controller.signal.aborted) return;
+
+        setCouponSummary(null);
+        setCouponError(error instanceof Error ? error.message : "Coupon code could not be applied.");
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsCouponLoading(false);
+        }
+      }
+    };
+
+    validateCoupon();
+
+    return () => controller.abort();
+  }, [cart.length, cartTotal, searchParams]);
 
   const toggleWishlist = (id: string) =>
     setWishlist((p) => (p.includes(id) ? p.filter((w) => w !== id) : [...p, id]));
@@ -403,6 +497,33 @@ const updateQty = (idx: number, delta: number) => {
   if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
   };
 
+  const applyCoupon = () => {
+    const trimmedCode = couponInput.trim();
+
+    setCouponError(null);
+
+    navigate(
+      buildBasketUrl(cart, {
+        coupon: trimmedCode || null,
+        includeCoupon: Boolean(trimmedCode),
+        cartOrigin: searchParams.get("cart_origin") ?? META_CART_ORIGIN,
+      })
+    );
+  };
+
+  const removeCoupon = () => {
+    setCouponInput("");
+    setCouponSummary(null);
+    setCouponError(null);
+
+    navigate(
+      buildBasketUrl(cart, {
+        includeCoupon: false,
+        cartOrigin: searchParams.get("cart_origin") ?? META_CART_ORIGIN,
+      })
+    );
+  };
+
   const validate = (): boolean => {
     const e: Partial<FormData> = {};
     if (!form.firstName.trim()) e.firstName = "Required";
@@ -428,9 +549,10 @@ const updateQty = (idx: number, delta: number) => {
     }
 
     setCheckoutError(null);
+    setShowStripeRedirectModal(false);
     setIsSubmitting(true);
 
-    const endpoint = "https://juicegels-v2.onrender.com/create-checkout-session";
+    const endpoint = `${CHECKOUT_API_BASE}/create-checkout-session`;
 
     try {
       const response = await fetch(endpoint, {
@@ -452,6 +574,8 @@ const updateQty = (idx: number, delta: number) => {
             quantity: item.quantity,
           })),
           form,
+          coupon: couponSummary?.code ?? null,
+          promotionCodeId: couponSummary?.promotionCodeId ?? null,
           checkoutPath: "/confirmation",
         }),
       });
@@ -467,6 +591,7 @@ const updateQty = (idx: number, delta: number) => {
       setCheckoutError(
         error instanceof Error ? error.message : "Checkout failed."
       );
+      setShowStripeRedirectModal(false);
       setIsSubmitting(false);
     }
   };
@@ -480,6 +605,54 @@ const updateQty = (idx: number, delta: number) => {
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: 430, margin: "0 auto", minHeight: "100vh", background: "var(--background)" }}>
+      {showStripeRedirectModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(34, 18, 25, 0.42)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+            zIndex: 100,
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 340,
+              background: "var(--card)",
+              borderRadius: 18,
+              padding: "22px 20px",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.18)",
+              border: "1px solid var(--border)",
+              textAlign: "center",
+            }}
+          >
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: "50%",
+                border: "3px solid var(--border)",
+                borderTopColor: "var(--primary)",
+                margin: "0 auto 14px",
+                animation: "juicegels-spin 1s linear infinite",
+              }}
+            />
+            <h3 style={{ margin: "0 0 8px", fontFamily: "'Playfair Display', serif", fontSize: 22, color: "var(--foreground)" }}>
+              Redirecting to Stripe
+            </h3>
+            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "var(--muted-foreground)" }}>
+              You&apos;ll be redirected to Stripe to complete your order. Please wait a moment while we prepare your secure checkout.
+            </p>
+          </div>
+        </div>
+      )}
+
+      <style>{`@keyframes juicegels-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+
       {/* ── Header ── */}
       <header style={{ background: "var(--card)", borderBottom: "1px solid var(--border)", position: "sticky", top: 0, zIndex: 50, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         {page !== "home" ? (
@@ -529,7 +702,7 @@ const updateQty = (idx: number, delta: number) => {
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
             <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 30, color: "var(--foreground)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
-            <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons · Send your nail sizes for a perfect fit</p>
+            <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons · We will confirm your sizing after checkout</p>
           </div>
 
             <div style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -691,7 +864,7 @@ const updateQty = (idx: number, delta: number) => {
                 lineHeight: 1.5
               }}
             >
-              🌸 Send your nail sizes after ordering via <strong>@juicegels</strong> on Instagram or through your order notes.
+              You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.
             </div>
           ) : null}
         </div>
@@ -792,22 +965,109 @@ const updateQty = (idx: number, delta: number) => {
               </div>
 
               <div style={{ background: "var(--secondary)", borderRadius: 14, padding: "14px 16px", marginBottom: 14 }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "flex-end", marginBottom: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <Field label="Coupon code" error={couponError ?? undefined}>
+                      <input
+                        type="text"
+                        placeholder="Enter coupon code"
+                        value={couponInput}
+                        onChange={(e) => {
+                          setCouponInput(e.target.value.toUpperCase());
+                          if (couponError) setCouponError(null);
+                        }}
+                        style={mkInput(!!couponError)}
+                      />
+                    </Field>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={applyCoupon}
+                    disabled={isCouponLoading || !couponInput.trim()}
+                    style={{
+                      height: 42,
+                      borderRadius: 10,
+                      border: "1px solid var(--border)",
+                      background: "var(--card)",
+                      padding: "0 14px",
+                      cursor: isCouponLoading || !couponInput.trim() ? "not-allowed" : "pointer",
+                      color: "var(--foreground)",
+                      fontWeight: 600,
+                      opacity: isCouponLoading || !couponInput.trim() ? 0.6 : 1,
+                    }}
+                  >
+                    {isCouponLoading ? "Checking..." : "Apply"}
+                  </button>
+                </div>
+
+                {hasCouponFeedback && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      gap: 12,
+                      fontSize: 12,
+                      background: couponError ? "#fff1f2" : couponSummary ? "#f3fbf6" : "var(--card)",
+                      border: `1px solid ${couponError ? "#f4c2cb" : couponSummary ? "#b9e3c6" : "var(--border)"}`,
+                      borderRadius: 10,
+                      padding: "11px 12px",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <div>
+                      {isCouponLoading && (
+                        <>
+                          <strong style={{ display: "block", color: "var(--foreground)", marginBottom: 2 }}>Checking coupon...</strong>
+                          <span style={{ color: "var(--muted-foreground)" }}>Validating your discount before checkout.</span>
+                        </>
+                      )}
+
+                      {!isCouponLoading && couponError && (
+                        <>
+                          <strong style={{ display: "block", color: "var(--destructive)", marginBottom: 2 }}>Coupon not applied</strong>
+                          <span style={{ color: "var(--destructive)" }}>{couponError}</span>
+                        </>
+                      )}
+
+                      {!isCouponLoading && couponSummary && !couponError && (
+                        <>
+                          <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>{couponSummary.code} applied</strong>
+                          <span style={{ color: "#2f5d46" }}>
+                            {couponSummary.description} saved you £{discountTotal.toFixed(2)} on this order.
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {couponSummary && !couponError && !isCouponLoading && (
+                      <button type="button" onClick={removeCoupon} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontWeight: 600, padding: 0, flexShrink: 0 }}>Remove</button>
+                    )}
+                  </div>
+                )}
+
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
                   <span style={{ color: "var(--muted-foreground)" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
                   <span>£{cartTotal.toFixed(2)}</span>
                 </div>
+                {couponSummary && discountTotal > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
+                    <span style={{ color: "var(--muted-foreground)" }}>Discount ({couponSummary.code})</span>
+                    <span style={{ color: "var(--primary)" }}>-£{discountTotal.toFixed(2)}</span>
+                  </div>
+                )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
                   <span style={{ color: "var(--muted-foreground)" }}>Delivery</span>
                   <span style={{ color: "var(--primary)" }}>Free</span>
                 </div>
                 <div style={{ borderTop: "1px solid var(--border)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 15 }}>
                   <span>Total</span>
-                  <span>£{cartTotal.toFixed(2)}</span>
+                  <span>£{orderTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5, marginBottom: 4 }}>
-                💅 Remember to send your nail sizes after ordering via <strong>@juicegels</strong> on Instagram or in your order notes.
+                You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.
               </div>
             </>
           )}
@@ -818,7 +1078,7 @@ const updateQty = (idx: number, delta: number) => {
         <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, padding: "14px 18px", background: "var(--card)", borderTop: "1px solid var(--border)", display: "flex", gap: 10, boxSizing: "border-box" }}>
           <button onClick={() => navigate("/")} style={{ border: "1.5px solid var(--border)", background: "var(--card)", borderRadius: 12, height: 46, padding: "0 16px", fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0 }}>+ Add more</button>
           <button onClick={() => { setForm(initialForm); setErrors({}); setPage("preorder"); }} style={{ flex: 1, background: "var(--primary)", color: "#fff", border: "none", borderRadius: 12, height: 46, fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
-            Pre-order · £{cartTotal.toFixed(2)}
+            Pre-order · £{orderTotal.toFixed(2)}
           </button>
         </div>
       )}
@@ -827,7 +1087,7 @@ const updateQty = (idx: number, delta: number) => {
       {page === "preorder" && (
         <main style={{ padding: "18px 18px 48px" }}>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 4px" }}>Your Details</h2>
-          <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 18px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · £{cartTotal.toFixed(2)} total</p>
+          <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 18px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · £{orderTotal.toFixed(2)} total</p>
 
           <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: 13 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -863,14 +1123,13 @@ const updateQty = (idx: number, delta: number) => {
               </Field>
             </div>
 
-            <Field label="Your nail sizes (e.g. R: 3,5,4,6,4 · L: 3,5,4,6,4)">
-              <input type="text" placeholder="Right: 3,5,4,6,4  Left: 3,5,4,6,4" value={form.nailSizes} onChange={(e) => handleFormChange("nailSizes", e.target.value)} style={mkInput(false)} />
-              <span style={{ fontSize: 11, color: "var(--muted-foreground)", lineHeight: 1.4 }}>Not sure? Order the Nail Sizing Guide first — or send your sizes via @juicegels on Instagram after ordering.</span>
-            </Field>
-
             <Field label="Additional notes (optional)">
               <textarea placeholder="Any special requests, colour preferences, or custom details..." value={form.notes} onChange={(e) => handleFormChange("notes", e.target.value)} rows={3} style={{ ...mkInput(false), resize: "none" }} />
             </Field>
+
+            <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
+              You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.
+            </div>
 
             <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "var(--foreground)" }}>
               <strong style={{ display: "block", marginBottom: 6 }}>Order Summary</strong>
@@ -881,7 +1140,7 @@ const updateQty = (idx: number, delta: number) => {
                 </div>
               ))}
               <div style={{ borderTop: "1px solid var(--border)", marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
-                <span>Total</span><span>£{cartTotal.toFixed(2)}</span>
+                <span>Total</span><span>£{orderTotal.toFixed(2)}</span>
               </div>
             </div>
 
@@ -905,7 +1164,7 @@ const updateQty = (idx: number, delta: number) => {
           </p>
           <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
             A confirmation will be sent to <strong>{form.email}</strong>.<br />
-            {!form.nailSizes && <span style={{ color: "var(--primary)" }}>📏 Don't forget to DM your nail sizes to <strong>@juicegels</strong> on Instagram!</span>}
+            <span style={{ color: "var(--primary)" }}>You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.</span>
           </p>
 
           <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>
