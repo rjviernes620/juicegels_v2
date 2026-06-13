@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ShoppingBag, Heart, Star, ChevronLeft, Check, Trash2, Plus, Minus } from "lucide-react";
+import { ShoppingBag, Heart, ChevronLeft, Check, Trash2, Plus, Minus } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { loadProducts, type Product } from "./utils/parseProducts";
 
@@ -773,14 +773,9 @@ const updateQty = (idx: number, delta: number) => {
             {selected.name}
           </h2>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 10 }}>
-            {[1, 2, 3, 4, 5].map((s) => (
-              <Star key={s} size={12} fill="var(--primary)" stroke="none" />
-            ))}
-            <span style={{ fontSize: 12, color: "var(--muted-foreground)", marginLeft: 3 }}>
-              Handmade · In stock
-            </span>
-          </div>
+          <p style={{ fontSize: 12, color: "var(--muted-foreground)", margin: "0 0 10px" }}>
+            Handmade · In stock
+          </p>
 
           <span style={{ fontSize: 24, fontWeight: 700, color: "var(--primary)" }}>
             £{selected.price.toFixed(2)}
