@@ -17,6 +17,10 @@ export type Product = {
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
 const PRODUCTS_SHEET_SHARE_URL = "https://docs.google.com/spreadsheets/d/12H5OJ94iSaoe5yOwkJnUuSHpRc0nA0GR1Tm7_FBzbLM/edit?usp=sharing";
 
+function normalizeGroupKey(value: string): string {
+  return value.trim().toLowerCase();
+}
+
 function buildGoogleSheetCsvUrl(shareUrl: string): string {
   const match = shareUrl.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
 
@@ -28,6 +32,26 @@ function buildGoogleSheetCsvUrl(shareUrl: string): string {
 }
 
 const PRODUCTS_SHEET_CSV_URL = buildGoogleSheetCsvUrl(PRODUCTS_SHEET_SHARE_URL);
+
+function deriveGroupId(row: string[], getColumn: (row: string[], name: string) => string, id: string): string {
+  const rootLink = getColumn(row, "root links");
+  const rootLinkMatch = rootLink.match(/\/product\/([^?&#/]+)/);
+  if (rootLinkMatch?.[1]) {
+    return rootLinkMatch[1].trim();
+  }
+
+  const rawGroupId = getColumn(row, "item_group_id");
+  if (rawGroupId) {
+    return normalizeGroupKey(rawGroupId);
+  }
+
+  const name = getColumn(row, "TITLE");
+  if (name) {
+    return normalizeGroupKey(name);
+  }
+
+  return id.trim();
+}
 
 function parseCSVLine(line: string): string[] {
   const fields: string[] = [];
@@ -104,7 +128,7 @@ function parseProductsCsv(csvRaw: string): Product[] {
 
     if (col(row, "availability") === "out of stock") continue;
 
-    const groupId = col(row, "item_group_id") || id;
+    const groupId = deriveGroupId(row, col, id);
     const name = col(row, "TITLE");
     const price = parseFloat(col(row, "PRICE")) || 0;
     const description = col(row, "DESCRIPTION")

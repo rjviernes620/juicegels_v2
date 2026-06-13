@@ -115,6 +115,10 @@ function getOrderSummaryLabel(item: CartItem) {
   return `${item.product.name} (${item.shape} · ${item.length}) ×${item.quantity}`;
 }
 
+function normalizeGroupKey(value: string) {
+  return value.trim().toLowerCase();
+}
+
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -160,7 +164,7 @@ export default function App() {
   const [isCouponLoading, setIsCouponLoading] = useState(false);
 
   const uniqueProducts = useMemo(
-    () => products.filter((product, index, self) => index === self.findIndex((p) => p.groupId === product.groupId)),
+    () => products.filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId))),
     [products]
   );
 
