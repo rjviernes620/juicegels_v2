@@ -101,6 +101,26 @@ function parseBasketItemsParam(itemsParam: string, products: Product[]): CartIte
     .filter(Boolean) as CartItem[];
 }
 
+function isNailSizeGuideItem(item: CartItem) {
+  return item.product.id === "JUICEGELS-0301";
+}
+
+function getCartItemDetailText(item: CartItem) {
+  if (isNailSizeGuideItem(item)) {
+    return `×${item.quantity} · £${(item.product.price * item.quantity).toFixed(2)}`;
+  }
+
+  return `${item.shape} · ${item.length} · ×${item.quantity} · £${(item.product.price * item.quantity).toFixed(2)}`;
+}
+
+function getOrderSummaryLabel(item: CartItem) {
+  if (isNailSizeGuideItem(item)) {
+    return `${item.product.name} ×${item.quantity}`;
+  }
+
+  return `${item.product.name} (${item.shape} · ${item.length}) ×${item.quantity}`;
+}
+
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -289,6 +309,38 @@ useEffect(() => {
 
     return () => window.clearTimeout(timerId);
   }, [isSubmitting]);
+
+  useEffect(() => {
+    if (!isSubmitting) return;
+
+    const resetCheckoutUi = () => {
+      setShowStripeRedirectModal(false);
+      setIsSubmitting(false);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        resetCheckoutUi();
+      }
+    };
+
+    const handlePageHide = () => {
+      resetCheckoutUi();
+    };
+
+    if (page !== "preorder") {
+      resetCheckoutUi();
+      return;
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pagehide", handlePageHide);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pagehide", handlePageHide);
+    };
+  }, [isSubmitting, page]);
 
   useEffect(() => {
     const currentCoupon = searchParams.get("coupon")?.trim() ?? "";
@@ -953,8 +1005,12 @@ const updateQty = (idx: number, delta: number) => {
                     <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--secondary)" }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 500, color: "var(--foreground)", lineHeight: 1.3 }}>{item.product.name}</p>
-                      <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Shape: {item.shape}</p>
-                      <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Length: {item.length}</p>
+                      {!isNailSizeGuideItem(item) && (
+                        <>
+                          <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Shape: {item.shape}</p>
+                          <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Length: {item.length}</p>
+                        </>
+                      )}
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
                           <button onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
@@ -1140,7 +1196,7 @@ const updateQty = (idx: number, delta: number) => {
               <strong style={{ display: "block", marginBottom: 6 }}>Order Summary</strong>
               {cart.map((item, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--muted-foreground)" }}>
-                  <span>{item.product.name} ({item.shape}) ×{item.quantity}</span>
+                  <span>{getOrderSummaryLabel(item)}</span>
                   <span>£{(item.product.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
@@ -1179,7 +1235,7 @@ const updateQty = (idx: number, delta: number) => {
                 <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 40, height: 40, borderRadius: 7, objectFit: "cover", background: "var(--muted)" }} />
                 <div>
                   <p style={{ margin: 0, fontSize: 12, fontWeight: 500, color: "var(--foreground)" }}>{item.product.name}</p>
-                  <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>{item.shape} · ×{item.quantity} · £{(item.product.price * item.quantity).toFixed(2)}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>{getCartItemDetailText(item)}</p>
                 </div>
               </div>
             ))}
