@@ -31,7 +31,8 @@ export default defineConfig({
     tailwindcss(),
     viteStaticCopy({
       targets: [
-        { src: 'CNAME', dest: './' }
+        { src: 'CNAME', dest: './' },
+        { src: '404.html', dest: './' }
       ]
     })
   ],

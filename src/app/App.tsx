@@ -12,6 +12,8 @@ type FormData = { firstName: string; lastName: string; email: string; phone: str
 
 const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", nailSizes: "", notes: "" };
 
+const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0301"]);
+
 const products = loadProducts();
 const uniqueProducts = products.filter(
   (product, index, self) =>
@@ -114,6 +116,15 @@ useEffect(() => {
   if (location.pathname.startsWith("/product/") && params.id) {
     const product = products.find((p) => p.id === params.id);
     if (product) {
+      if (isVariationLocked(product)) {
+        setSelected(product);
+        setSelectedShape(product.shape);
+        setSelectedLength(product.length);
+        setActiveImg(0);
+        setPage("product");
+        return;
+      }
+
       const searchParams = new URLSearchParams(location.search);
       const requestedShape = searchParams.get("shape") ?? "";
       const requestedLength = (searchParams.get("length") ?? "") as NailLength;
@@ -167,6 +178,9 @@ useEffect(() => {
 
   const validLengths: NailLength[] = ["Short", "Medium", "Long"];
 
+  const isVariationLocked = (product: Product) =>
+    LOCKED_VARIATION_PRODUCT_IDS.has(product.id);
+
   const getProductShapes = (product: Product): string[] => {
     const raw = (product as Product & { shapes?: string[] }).shapes;
     return Array.isArray(raw) && raw.length > 0 ? raw : ["Short Almond", "Medium Almond", "Long Almond"];
@@ -178,6 +192,11 @@ useEffect(() => {
   };
 
   const syncProductUrl = (productId: string, shape: string, length: NailLength) => {
+    if (LOCKED_VARIATION_PRODUCT_IDS.has(productId)) {
+      navigate(`/product/${productId}`, { replace: true });
+      return;
+    }
+
     const search = new URLSearchParams();
     if (shape) search.set("shape", shape);
     if (length) search.set("length", length);
@@ -185,19 +204,25 @@ useEffect(() => {
   };
 
   const openProduct = (p: Product) => {
-  const shapes = getProductShapes(p);
-  const lengths = getProductLengths(p);
+    const shapes = getProductShapes(p);
+    const lengths = getProductLengths(p);
 
-  const defaultShape = shapes[0] ?? "";
-  const defaultLength = lengths[0] ?? "Medium";
+    const defaultShape = isVariationLocked(p) ? p.shape : shapes[0] ?? "";
+    const defaultLength = isVariationLocked(p) ? p.length : lengths[0] ?? "Medium";
 
-  setSelected(p);
-  setSelectedShape(defaultShape);
-  setSelectedLength(defaultLength);
-  setActiveImg(0);
-  setPage("product");
-  navigate(`/product/${p.id}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
-};
+    setSelected(p);
+    setSelectedShape(defaultShape);
+    setSelectedLength(defaultLength);
+    setActiveImg(0);
+    setPage("product");
+
+    if (isVariationLocked(p)) {
+      navigate(`/product/${p.id}`);
+      return;
+    }
+
+    navigate(`/product/${p.id}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
+  };
 
   const openBasketItemProduct = (item: CartItem) => {
     setSelected(item.product);
@@ -205,6 +230,11 @@ useEffect(() => {
     setSelectedLength(item.length);
     setActiveImg(0);
     setPage("product");
+
+    if (isVariationLocked(item.product)) {
+      navigate(`/product/${item.product.id}`);
+      return;
+    }
 
     const search = new URLSearchParams();
     search.set("shape", item.shape);
@@ -508,87 +538,93 @@ const updateQty = (idx: number, delta: number) => {
             {selected.description}
           </p>
 
-          <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
-            Nail Shape
-          </p>
+          {!isVariationLocked(selected) ? (
+            <>
+              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
+                Nail Shape
+              </p>
 
-          <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
-            {selected.shapes.map((s) => (
-              <button
-                key={s}
-                onClick={() => {
-                  if (!selected) return;
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
+                {selected.shapes.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      if (!selected) return;
 
-                  const next = findVariant(selected.groupId, s, selectedLength);
-                  if (next) {
-                    setSelected(next);
-                    setSelectedShape(s);
-                    setSelectedLength(next.length);
-                  }
-                }}
-                style={{
-                  border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`,
-                  background: selectedShape === s ? "var(--primary)" : "var(--card)",
-                  color: selectedShape === s ? "#fff" : "var(--foreground)",
-                  borderRadius: 8,
-                  padding: "6px 14px",
-                  fontSize: 12,
-                  cursor: "pointer",
-                  transition: "all 0.15s"
-                }}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+                      const next = findVariant(selected.groupId, s, selectedLength);
+                      if (next) {
+                        setSelected(next);
+                        setSelectedShape(s);
+                        setSelectedLength(next.length);
+                      }
+                    }}
+                    style={{
+                      border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`,
+                      background: selectedShape === s ? "var(--primary)" : "var(--card)",
+                      color: selectedShape === s ? "#fff" : "var(--foreground)",
+                      borderRadius: 8,
+                      padding: "6px 14px",
+                      fontSize: 12,
+                      cursor: "pointer",
+                      transition: "all 0.15s"
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
 
-          <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
-            Nail Length
-          </p>
+              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
+                Nail Length
+              </p>
 
-          <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
-            {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
-              <button
-                key={length}
-                onClick={() => {
-                  if (!selected) return;
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
+                {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
+                  <button
+                    key={length}
+                    onClick={() => {
+                      if (!selected) return;
 
-                  const next = findVariant(selected.groupId, selectedShape, length);
-                  if (next) {
-                    setSelected(next);
-                    setSelectedLength(length);
-                    setSelectedShape(next.shape);
-                  }
-                }}
-                style={{
-                  border: `1.5px solid ${selectedLength === length ? "var(--primary)" : "var(--border)"}`,
-                  background: selectedLength === length ? "var(--primary)" : "var(--card)",
-                  color: selectedLength === length ? "#fff" : "var(--foreground)",
-                  borderRadius: 8,
-                  padding: "6px 14px",
-                  fontSize: 12,
-                  cursor: "pointer",
-                  transition: "all 0.15s",
-                  textTransform: "capitalize"
-                }}
-              >
-                {length}
-              </button>
-            ))}
-          </div>
+                      const next = findVariant(selected.groupId, selectedShape, length);
+                      if (next) {
+                        setSelected(next);
+                        setSelectedLength(length);
+                        setSelectedShape(next.shape);
+                      }
+                    }}
+                    style={{
+                      border: `1.5px solid ${selectedLength === length ? "var(--primary)" : "var(--border)"}`,
+                      background: selectedLength === length ? "var(--primary)" : "var(--card)",
+                      color: selectedLength === length ? "#fff" : "var(--foreground)",
+                      borderRadius: 8,
+                      padding: "6px 14px",
+                      fontSize: 12,
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                      textTransform: "capitalize"
+                    }}
+                  >
+                    {length}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : null}
 
-          <div
-            style={{
-              background: "var(--muted)",
-              borderRadius: 10,
-              padding: "10px 14px",
-              fontSize: 12,
-              color: "var(--muted-foreground)",
-              lineHeight: 1.5
-            }}
-          >
-            🌸 Send your nail sizes after ordering via <strong>@juicegels</strong> on Instagram or through your order notes.
-          </div>
+          {!isVariationLocked(selected) ? (
+            <div
+              style={{
+                background: "var(--muted)",
+                borderRadius: 10,
+                padding: "10px 14px",
+                fontSize: 12,
+                color: "var(--muted-foreground)",
+                lineHeight: 1.5
+              }}
+            >
+              🌸 Send your nail sizes after ordering via <strong>@juicegels</strong> on Instagram or through your order notes.
+            </div>
+          ) : null}
         </div>
 
         <div
