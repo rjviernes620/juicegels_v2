@@ -235,7 +235,8 @@ def build_order_email_html(order_summary):
 
 
 def send_pingram_order_email(order_summary):
-  pingram_api_key = "pingram_sk_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJrZXlfYmIyMjliMTliOGI1Y2JmNzdhODI2NmZlZDYzYzBiYWIiLCJ2ZXJzaW9uIjoxLCJhY2NvdW50SWQiOiJ2cXU0OHNybDgydmhrMWJqc3huZjN0ZXEyMyIsImtleVR5cGUiOiJzZWNyZXQiLCJlbnZpcm9ubWVudElkIjoidnF1NDhzcmw4MnZoazFianN4bmYzdGVxMjMifQ.xWcZX-0AFgVEu2Kbplh6ujoe52g8rLWH1At7jhl2f0Y", base_url="https://api.eu.pingram.io"
+  pingram_api_key = 'pingram_sk_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJrZXlfYmIyMjliMTliOGI1Y2JmNzdhODI2NmZlZDYzYzBiYWIiLCJ2ZXJzaW9uIjoxLCJhY2NvdW50SWQiOiJ2cXU0OHNybDgydmhrMWJqc3huZjN0ZXEyMyIsImtleVR5cGUiOiJzZWNyZXQiLCJlbnZpcm9ubWVudElkIjoidnF1NDhzcmw4MnZoazFianN4bmYzdGVxMjMifQ.xWcZX-0AFgVEu2Kbplh6ujoe52g8rLWH1At7jhl2f0Y'
+  pingram_base_url = 'https://api.eu.pingram.io'
   if not pingram_api_key:
     raise RuntimeError('Missing PINGRAM_API_KEY environment variable.')
 
@@ -254,7 +255,7 @@ def send_pingram_order_email(order_summary):
     payload['fromAddress'] = from_address
 
   request_body = json.dumps(payload).encode('utf-8')
-  request_url = f"{get_pingram_base_url()}/email/send"
+  request_url = f"{pingram_base_url.rstrip('/')}/email/send"
   outbound_request = Request(
     request_url,
     data=request_body,
