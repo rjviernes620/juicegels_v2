@@ -13,6 +13,7 @@ type FormData = { firstName: string; lastName: string; email: string; phone: str
 const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", nailSizes: "", notes: "" };
 
 const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0301"]);
+const META_CART_ORIGIN = "meta_shops";
 
 const products = loadProducts();
 const uniqueProducts = products.filter(
@@ -20,17 +21,52 @@ const uniqueProducts = products.filter(
     index === self.findIndex((p) => p.groupId === product.groupId)
 );
 
-function buildBasketItemsParam(items: CartItem[]) {
+function buildMetaBasketProductsParam(items: CartItem[]) {
   return items
-    .map((item) =>
-      [
-        encodeURIComponent(item.product.id),
-        encodeURIComponent(item.shape),
-        encodeURIComponent(item.length),
-        encodeURIComponent(String(item.quantity)),
-      ].join("|")
-    )
+    .map((item) => `${encodeURIComponent(item.product.id)}:${encodeURIComponent(String(item.quantity))}`)
     .join(",");
+}
+
+function buildBasketUrl(
+  items: CartItem[],
+  options?: { coupon?: string | null; includeCoupon?: boolean; cartOrigin?: string | null }
+) {
+  if (items.length === 0) return "/basket";
+
+  const params = [
+    `products=${buildMetaBasketProductsParam(items)}`,
+  ];
+
+  if (options?.includeCoupon) {
+    params.push(options.coupon ? `coupon=${encodeURIComponent(options.coupon)}` : "coupon");
+  }
+
+  if (options?.cartOrigin) {
+    params.push(`cart_origin=${encodeURIComponent(options.cartOrigin)}`);
+  }
+
+  return `/basket?${params.join("&")}`;
+}
+
+function parseMetaBasketProductsParam(productsParam: string, products: Product[]): CartItem[] {
+  return productsParam
+    .split(",")
+    .map((entry) => {
+      const [rawId, rawQty] = entry.split(":");
+      const id = decodeURIComponent(rawId ?? "").trim();
+      const quantity = Math.max(1, Number(decodeURIComponent(rawQty ?? "1")));
+
+      const product = products.find((p) => p.id === id);
+      if (!product || Number.isNaN(quantity)) return null;
+
+      return {
+        product,
+        shape: product.shape,
+        length: product.length,
+        quantity,
+      };
+    })
+    .filter(Boolean) as CartItem[];
 }
 
 function parseBasketItemsParam(itemsParam: string, products: Product[]): CartItem[] {
@@ -92,6 +128,13 @@ export default function App() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const currentBasketUrl = (items: CartItem[]) =>
+    buildBasketUrl(items, {
+      coupon: searchParams.get("coupon"),
+      includeCoupon: searchParams.has("coupon") || items.length > 0,
+      cartOrigin: searchParams.get("cart_origin") ?? META_CART_ORIGIN,
+    });
+
 
 useEffect(() => {
   const redirectedPathFromSearch = (() => {
@@ -118,11 +161,16 @@ useEffect(() => {
 
   if (normalizedPath === "/basket") {
     const searchParams = new URLSearchParams(location.search);
+    const productsParam = searchParams.get("products");
     const itemsParam = searchParams.get("items");
-    if (itemsParam) {
+
+    if (productsParam !== null) {
+      setCart(parseMetaBasketProductsParam(productsParam, products));
+    } else if (itemsParam) {
       const parsedItems = parseBasketItemsParam(itemsParam, products);
       if (parsedItems.length > 0) setCart(parsedItems);
     }
+
     setPage("basket");
     return;
   }
@@ -293,8 +341,7 @@ useEffect(() => {
         ];
       }
 
-      const itemsParam = buildBasketItemsParam(next);
-      navigate(`/basket?items=${itemsParam}`);
+      navigate(currentBasketUrl(next));
 
       return next;
     });
@@ -325,11 +372,7 @@ const updateQty = (idx: number, delta: number) => {
       updated = next;
     }
 
-    navigate(
-      updated.length
-        ? `/basket?items=${buildBasketItemsParam(updated)}`
-        : "/basket"
-    );
+    navigate(currentBasketUrl(updated));
 
     return updated;
   });
@@ -339,11 +382,7 @@ const updateQty = (idx: number, delta: number) => {
     setCart((prev) => {
       const updated = prev.filter((_, i) => i !== idx);
 
-      navigate(
-        updated.length
-          ? `/basket?items=${buildBasketItemsParam(updated)}`
-          : "/basket"
-      );
+      navigate(currentBasketUrl(updated));
 
       return updated;
     });
@@ -442,7 +481,7 @@ const updateQty = (idx: number, delta: number) => {
           Juice Gels
         </h1>
 
-        <button onClick={() => navigate("/basket")} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4 }} aria-label="Basket">
+        <button onClick={() => navigate(currentBasketUrl(cart))} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4 }} aria-label="Basket">
           <ShoppingBag size={22} style={{ color: "var(--primary)" }} />
           {cartCount > 0 && (
             <span style={{ position: "absolute", top: -4, right: -4, background: "var(--primary)", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
