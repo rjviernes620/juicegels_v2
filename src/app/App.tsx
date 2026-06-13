@@ -61,6 +61,7 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
   const [page, setPage] = useState<Page>("home");
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedShape, setSelectedShape] = useState("");
@@ -89,9 +90,14 @@ export default function App() {
 
 
 useEffect(() => {
+  const hasCheckoutSuccessFlag =
+    searchParams.get("checkout") === "success" ||
+    searchParams.has("session_id");
+
   if (
     location.pathname === "/confirmation" ||
-    location.pathname === "/checkout-success"
+    location.pathname === "/checkout-success" ||
+    (location.pathname === "/" && hasCheckoutSuccessFlag)
   ) {
     setPage("confirmation");
     return;
@@ -143,7 +149,7 @@ useEffect(() => {
   }
 
   setPage("home");
-}, [location.pathname, location.search, params.id, products]);
+}, [location.pathname, params.id, products, searchParams]);
 
     useEffect(() => {
     if (page !== "product" || !selected || !selectedShape || !selectedLength) return;

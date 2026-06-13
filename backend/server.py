@@ -82,7 +82,7 @@ def create_checkout_session():
           'notes': form.get('notes', ''),
         },
         'mode': 'payment',
-        'success_url': f"{origin}/confirmation",
+        'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}",
         'cancel_url': f"{origin}/basket",
       },
     )
