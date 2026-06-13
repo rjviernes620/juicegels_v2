@@ -53,7 +53,7 @@ function buildShippingOptions(itemsTotal: number): ShippingOption[] {
       label: "Royal Mail Tracked 48",
       description: tracked48IsFree
         ? `Free on orders of ${formatMoney(SHIPPING_FREE_THRESHOLD)} or more.`
-        : "Economy tracked delivery.",
+        : "Standard tracked delivery. (Free on Orders over £30)",
       estimate: "Estimated delivery within 2 days after your order is finished.",
       amount: tracked48IsFree ? 0 : 1.99,
       isFree: tracked48IsFree,
