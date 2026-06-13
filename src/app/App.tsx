@@ -331,9 +331,7 @@ const updateQty = (idx: number, delta: number) => {
     setCheckoutError(null);
     setIsSubmitting(true);
 
-    const endpoint = import.meta.env.DEV
-      ? "https://juicegels-v2.onrender.com/create-checkout-session"
-      : "/create-checkout-session";
+    const endpoint = "https://juicegels-v2.onrender.com/create-checkout-session";
 
     try {
       const response = await fetch(endpoint, {
