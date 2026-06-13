@@ -19,7 +19,7 @@ function figmaAssetResolver() {
 
 
 export default defineConfig({
-  base: '',
+  base: './',
   build: {
     outDir: 'docs',
   },
