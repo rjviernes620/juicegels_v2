@@ -12,11 +12,13 @@
       <script>
         (function(l) {
           if (l.search[1] === '/') {
-            var decoded = l.search
+            var decodedSearch = l.search
               .slice(1)
-              .split('&')
-              .map(function(s) { return s.replace(/~and~/g, '&'); })
-              .join('?');
+              .replace(/~and~/g, '&');
+
+            var routeAndQuery = decodedSearch.split('&');
+            var route = routeAndQuery.shift() || '';
+            var decoded = route + (routeAndQuery.length ? '?' + routeAndQuery.join('&') : '');
 
             window.history.replaceState(
               null,
