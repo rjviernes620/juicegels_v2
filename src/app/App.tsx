@@ -131,6 +131,7 @@ export default function App() {
       return initialForm;
     }
   });
+  const [confirmationItems, setConfirmationItems] = useState<CartItem[]>([]);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [activeImg, setActiveImg] = useState(0);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -171,14 +172,22 @@ useEffect(() => {
     redirectedPathFromSearch === "/checkout-success" ||
     (normalizedPath === "/" && hasCheckoutSuccessFlag)
   ) {
+    let purchasedItems: CartItem[] = [];
+
     if (itemsParam) {
-      const parsedItems = parseBasketItemsParam(itemsParam, products);
-      if (parsedItems.length > 0) setCart(parsedItems);
+      purchasedItems = parseBasketItemsParam(itemsParam, products);
     } else if (productsParam) {
-      const parsedItems = parseMetaBasketProductsParam(productsParam, products);
-      if (parsedItems.length > 0) setCart(parsedItems);
+      purchasedItems = parseMetaBasketProductsParam(productsParam, products);
+    } else if (typeof window !== "undefined") {
+      try {
+        purchasedItems = JSON.parse(localStorage.getItem("juicegels_cart") ?? "[]") as CartItem[];
+      } catch {
+        purchasedItems = [];
+      }
     }
 
+    setConfirmationItems(purchasedItems);
+    setCart([]);
     setPage("confirmation");
     return;
   }
@@ -251,6 +260,7 @@ useEffect(() => {
 
   const cartTotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
+  const confirmationCount = confirmationItems.reduce((s, i) => s + i.quantity, 0);
   const discountTotal = couponSummary?.discountAmount ?? 0;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
@@ -1160,7 +1170,7 @@ const updateQty = (idx: number, delta: number) => {
           </div>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: "var(--foreground)", margin: "0 0 8px" }}>Order Placed!</h2>
           <p style={{ color: "var(--muted-foreground)", fontSize: 13, lineHeight: 1.7, margin: "0 0 6px" }}>
-            Thank you, <strong>{form.firstName}</strong>! Your pre-order of {cartCount} item{cartCount !== 1 ? "s" : ""} is confirmed.
+            Thank you, <strong>{form.firstName}</strong>! Your pre-order of {confirmationCount} item{confirmationCount !== 1 ? "s" : ""} is confirmed.
           </p>
           <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
             A confirmation will be sent to <strong>{form.email}</strong>.<br />
@@ -1169,7 +1179,7 @@ const updateQty = (idx: number, delta: number) => {
 
           <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>
             <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 13 }}>Items ordered</p>
-            {cart.map((item, i) => (
+            {confirmationItems.map((item, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                 <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 40, height: 40, borderRadius: 7, objectFit: "cover", background: "var(--muted)" }} />
                 <div>
