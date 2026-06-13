@@ -9,8 +9,25 @@
       <meta name="description" content="A mobile-optimized pink-themed online store featuring an interactive pre-order form for seamless customer engagement and easy product reservations." />
       <meta name="robots" content="noindex, nofollow" />
       <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
+      <script>
+        (function(l) {
+          if (l.search[1] === '/') {
+            var decoded = l.search
+              .slice(1)
+              .split('&')
+              .map(function(s) { return s.replace(/~and~/g, '&'); })
+              .join('?');
+
+            window.history.replaceState(
+              null,
+              null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+            );
+          }
+        })(window.location);
+      </script>
       
-      <script type="module" crossorigin src="./assets/index-46ZfXGxc.js"></script>
+      <script type="module" crossorigin src="./assets/index-BnrHuf5x.js"></script>
       <link rel="stylesheet" crossorigin href="./assets/index-CdDq6FbW.css">
     </head>
 

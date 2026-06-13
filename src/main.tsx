@@ -9,6 +9,7 @@ const router = createBrowserRouter([
   { path: "/basket", element: <App /> },
   { path: "/product/:id", element: <App /> },
   { path: "/confirmation", element: <App /> },
+  { path: "*", element: <App /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(

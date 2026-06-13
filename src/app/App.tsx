@@ -62,6 +62,10 @@ export default function App() {
   const navigate = useNavigate();
   const params = useParams<{ id: string }>();
   const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const normalizedPath = useMemo(() => {
+    const path = location.pathname.replace(/\/+$/, "");
+    return path || "/";
+  }, [location.pathname]);
   const [page, setPage] = useState<Page>("home");
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedShape, setSelectedShape] = useState("");
@@ -90,20 +94,29 @@ export default function App() {
 
 
 useEffect(() => {
+  const redirectedPathFromSearch = (() => {
+    if (!location.search.startsWith("?/")) return "";
+
+    const [pathPart] = location.search.slice(1).split("&");
+    return pathPart.startsWith("/") ? pathPart : `/${pathPart}`;
+  })();
+
   const hasCheckoutSuccessFlag =
     searchParams.get("checkout") === "success" ||
     searchParams.has("session_id");
 
   if (
-    location.pathname === "/confirmation" ||
-    location.pathname === "/checkout-success" ||
-    (location.pathname === "/" && hasCheckoutSuccessFlag)
+    normalizedPath === "/confirmation" ||
+    normalizedPath === "/checkout-success" ||
+    redirectedPathFromSearch === "/confirmation" ||
+    redirectedPathFromSearch === "/checkout-success" ||
+    (normalizedPath === "/" && hasCheckoutSuccessFlag)
   ) {
     setPage("confirmation");
     return;
   }
 
-  if (location.pathname === "/basket") {
+  if (normalizedPath === "/basket") {
     const searchParams = new URLSearchParams(location.search);
     const itemsParam = searchParams.get("items");
     if (itemsParam) {
@@ -114,12 +127,12 @@ useEffect(() => {
     return;
   }
 
-  if (location.pathname === "/") {
+  if (normalizedPath === "/") {
     setPage("home");
     return;
   }
 
-  if (location.pathname.startsWith("/product/") && params.id) {
+  if (normalizedPath.startsWith("/product/") && params.id) {
     const product = products.find((p) => p.id === params.id);
     if (product) {
       if (isVariationLocked(product)) {
@@ -149,7 +162,7 @@ useEffect(() => {
   }
 
   setPage("home");
-}, [location.pathname, params.id, products, searchParams]);
+}, [location.search, normalizedPath, params.id, products, searchParams]);
 
     useEffect(() => {
     if (page !== "product" || !selected || !selectedShape || !selectedLength) return;
