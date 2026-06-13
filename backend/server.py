@@ -17,6 +17,7 @@ PINGRAM_DEFAULT_BASE_URL = 'https://api.pingram.io'
 PINGRAM_ORDER_EMAIL_TYPE = 'juicegels_order'
 PINGRAM_ORDER_RECIPIENT = 'juicegels@gmail.com'
 RENDER_SECRET_DIR = '/etc/secrets'
+NAIL_SIZE_GUIDE_PRODUCT_ID = 'JUICEGELS-0301'
 
 
 def read_secret(secret_name, env_var_name=None):
@@ -41,9 +42,9 @@ def read_secret(secret_name, env_var_name=None):
   return ''
 
 
-stripe_api_key = read_secret('stripe_test_v1', 'STRIPE_SECRET_KEY')
+stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
 if not stripe_api_key:
-  raise RuntimeError('Missing Stripe secret file stripe_test_v1.')
+  raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
 
 client = stripe.StripeClient(stripe_api_key)
 
@@ -61,6 +62,11 @@ def build_checkout_items_param(items):
     encoded_items.append('|'.join([product_id, shape, length, quantity]))
 
   return ','.join(encoded_items)
+
+
+def is_nail_size_guide_product(product):
+  product_id = str(get_value(product, 'id', '') or '').strip()
+  return product_id == NAIL_SIZE_GUIDE_PRODUCT_ID
 
 
 def get_value(source, key, default=None):
@@ -456,17 +462,20 @@ def create_checkout_session():
     unit_amount = round(price * 100)
     subtotal_pence += unit_amount * quantity
 
-    display_name = f"{name} - {shape} - {length}".strip(" -") 
+    display_name = name if is_nail_size_guide_product(product) else f"{name} - {shape} - {length}".strip(" -")
     if image_url.startswith('/'):
       image_url = f"{origin}{image_url}"
 
+    product_metadata = {
+        "productid": product.get("id", ""),
+    }
+    if not is_nail_size_guide_product(product):
+      product_metadata["shape"] = shape
+      product_metadata["length"] = length
+
     product_data = {
         "name": display_name,
-        "metadata": {
-            "productid": product.get("id", ""),
-            "shape": shape,
-            "length": length,
-        },
+        "metadata": product_metadata,
     }
 
     if image_url:
