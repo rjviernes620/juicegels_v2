@@ -30,7 +30,7 @@ type ShippingOption = {
 
 const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", notes: "" };
 
-const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0301"]);
+const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 const META_CART_ORIGIN = "meta_shops";
 const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
 const SHIPPING_FREE_THRESHOLD = 30;
@@ -143,7 +143,7 @@ function parseBasketItemsParam(itemsParam: string, products: Product[]): CartIte
 }
 
 function isNailSizeGuideItem(item: CartItem) {
-  return item.product.id === "JUICEGELS-0301";
+  return item.product.id === "JUICEGELS-0286";
 }
 
 function getCartItemDetailText(item: CartItem) {
@@ -524,7 +524,7 @@ useEffect(() => {
     LOCKED_VARIATION_PRODUCT_IDS.has(product.id);
 
   const getProductRouteId = (product: Product) =>
-    isVariationLocked(product) ? product.id : product.groupId;
+    product.id;
 
   const getProductShapes = (product: Product): string[] => {
     const raw = (product as Product & { shapes?: string[] }).shapes;
@@ -564,31 +564,31 @@ useEffect(() => {
     setPage("product");
 
     if (isVariationLocked(p)) {
-      navigate(`/product/${p.id}`);
+      navigate(`/product/${getProductRouteId(p)}`);
       return;
     }
 
     navigate(`/product/${getProductRouteId(p)}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
   };
 
-  const openBasketItemProduct = (item: CartItem) => {
-    setSelected(item.product);
-    setSelectedShape(item.shape);
-    setSelectedLength(item.length);
-    setActiveImg(0);
-    setPage("product");
+  // const openBasketItemProduct = (item: CartItem) => {
+  //   setSelected(item.product);
+  //   setSelectedShape(item.shape);
+  //   setSelectedLength(item.length);
+  //   setActiveImg(0);
+  //   setPage("product");
 
-    if (isVariationLocked(item.product)) {
-      navigate(`/product/${item.product.id}`);
-      return;
-    }
+  //   if (isVariationLocked(item.product)) {
+  //     navigate(`/product/${item.product.id}`);
+  //     return;
+  //   }
 
-    const search = new URLSearchParams();
-    search.set("shape", item.shape);
-    search.set("length", item.length);
+  //   const search = new URLSearchParams();
+  //   search.set("shape", item.shape);
+  //   search.set("length", item.length);
 
-    navigate(`/product/${getProductRouteId(item.product)}?${search.toString()}`);
-  };
+  //   navigate(`/product/${getProductRouteId(item.product)}?${search.toString()}`);
+  // };
   
   const addToBasket = () => {
     if (!selected || !selectedShape || !selectedLength) return;
