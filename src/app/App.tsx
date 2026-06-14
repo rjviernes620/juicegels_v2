@@ -818,7 +818,7 @@ const updateQty = (idx: number, delta: number) => {
                 animation: "juicegels-spin 1s linear infinite",
               }}
             />
-            <h3 style={{ margin: "0 0 8px", fontFamily: "'Playfair Display', serif", fontSize: 22, color: "var(--foreground)" }}>
+            <h3 style={{ margin: "0 0 8px", fontFamily: "'Lobster', serif", fontSize: 22, color: "var(--foreground)" }}>
               Redirecting to Stripe
             </h3>
             <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "var(--muted-foreground)" }}>
@@ -838,7 +838,7 @@ const updateQty = (idx: number, delta: number) => {
           </button>
         ) : <div style={{ width: 30 }} />}
 
-        <h1 style={{ fontFamily: "'Playfair Display', serif", color: "var(--primary)", margin: 0, letterSpacing: "0.04em", fontSize: 22 }}>
+        <h1 style={{ fontFamily: "'Lobster', serif", color: "var(--primary)", margin: 0, letterSpacing: "0.04em", fontSize: 22 }}>
           Juice Gels
         </h1>
 
@@ -884,7 +884,7 @@ const updateQty = (idx: number, delta: number) => {
         <main>
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 30, color: "var(--foreground)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
+            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "var(--foreground)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons · We will confirm your sizing after checkout</p>
           </div>
 
@@ -910,7 +910,7 @@ const updateQty = (idx: number, delta: number) => {
           </div>
 
           <div style={{ margin: "4px 14px 32px", background: "var(--secondary)", borderRadius: 14, padding: "16px 18px", textAlign: "center" }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", color: "var(--foreground)", margin: "0 0 3px", fontSize: 16 }}>Need your nail sizes?</p>
+            <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 3px", fontSize: 16 }}>Need your nail sizes?</p>
             <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12 }}>Pick up the Nail Sizing Guide — £4 deducted from your first set 🌸</p>
           </div>
         </main>
@@ -948,7 +948,7 @@ const updateQty = (idx: number, delta: number) => {
         )}
 
         <div style={{ padding: "16px 20px 130px" }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", margin: "0 0 4px", fontSize: 22, color: "var(--foreground)" }}>
+          <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "var(--foreground)" }}>
             {selected.name}
           </h2>
 
@@ -1116,7 +1116,7 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Basket ── */}
       {page === "basket" && (
         <main style={{ padding: "16px 16px 100px" }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 14px" }}>Your Basket</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 14px" }}>Your Basket</h2>
 
           {cart.length === 0 ? (
             <div style={{ textAlign: "center", padding: "48px 20px" }}>
@@ -1274,7 +1274,7 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Pre-order Form ── */}
       {page === "preorder" && (
         <main style={{ padding: "18px 18px 48px" }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 4px" }}>Your Details</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 4px" }}>Your Details</h2>
           <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 18px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · {formatMoney(checkoutTotal)} total including shipping</p>
 
           <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: 13 }}>
@@ -1401,7 +1401,7 @@ const updateQty = (idx: number, delta: number) => {
           <div style={{ width: 68, height: 68, borderRadius: "50%", background: "var(--secondary)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
             <Check size={30} style={{ color: "var(--primary)" }} />
           </div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, color: "var(--foreground)", margin: "0 0 8px" }}>Order Placed!</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 24, color: "var(--foreground)", margin: "0 0 8px" }}>Order Placed!</h2>
           <p style={{ color: "var(--muted-foreground)", fontSize: 13, lineHeight: 1.7, margin: "0 0 6px" }}>
             Thank you, <strong>{form.firstName}</strong>! Your pre-order of {confirmationCount} item{confirmationCount !== 1 ? "s" : ""} is confirmed.
           </p>
