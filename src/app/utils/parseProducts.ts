@@ -37,15 +37,15 @@ function buildGoogleSheetCsvUrl(shareUrl: string): string {
 const PRODUCTS_SHEET_CSV_URL = buildGoogleSheetCsvUrl(PRODUCTS_SHEET_SHARE_URL);
 
 function deriveGroupId(row: string[], getColumn: (row: string[], name: string) => string, id: string): string {
-  const rawGroupId = getColumn(row, "item_group_id");
-  if (rawGroupId) {
-    return normalizeGroupKey(rawGroupId);
-  }
-
   const rootLink = getColumn(row, "root links");
   const rootLinkMatch = rootLink.match(/\/product\/([^?&#/]+)/);
   if (rootLinkMatch?.[1]) {
-    return rootLinkMatch[1].trim();
+    return normalizeGroupKey(rootLinkMatch[1]);
+  }
+
+  const rawGroupId = getColumn(row, "item_group_id");
+  if (rawGroupId) {
+    return normalizeGroupKey(rawGroupId);
   }
 
   const name = getColumn(row, "TITLE");
