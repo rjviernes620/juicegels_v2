@@ -265,6 +265,13 @@ useEffect(() => {
     const [pathPart] = location.search.slice(1).split("&");
     return pathPart.startsWith("/") ? pathPart : `/${pathPart}`;
   })();
+  const effectivePath = redirectedPathFromSearch || normalizedPath;
+  const routeProductId = (() => {
+    if (params.id) return params.id;
+
+    const productMatch = effectivePath.match(/^\/product\/([^/?#]+)/);
+    return productMatch?.[1] ? decodeURIComponent(productMatch[1]) : "";
+  })();
 
   const hasCheckoutSuccessFlag =
     searchParams.get("checkout") === "success" ||
@@ -274,11 +281,9 @@ useEffect(() => {
   const productsParam = searchParams.get("products");
 
   if (
-    normalizedPath === "/confirmation" ||
-    normalizedPath === "/checkout-success" ||
-    redirectedPathFromSearch === "/confirmation" ||
-    redirectedPathFromSearch === "/checkout-success" ||
-    (normalizedPath === "/" && hasCheckoutSuccessFlag)
+    effectivePath === "/confirmation" ||
+    effectivePath === "/checkout-success" ||
+    (effectivePath === "/" && hasCheckoutSuccessFlag)
   ) {
     let purchasedItems: CartItem[] = [];
 
@@ -300,7 +305,7 @@ useEffect(() => {
     return;
   }
 
-  if (normalizedPath === "/basket") {
+  if (effectivePath === "/basket") {
     const searchParams = new URLSearchParams(location.search);
     const productsParam = searchParams.get("products");
     const itemsParam = searchParams.get("items");
@@ -316,13 +321,17 @@ useEffect(() => {
     return;
   }
 
-  if (normalizedPath === "/") {
+  if (effectivePath === "/") {
     setPage("home");
     return;
   }
 
-  if (normalizedPath.startsWith("/product/") && params.id) {
-    const product = products.find((p) => p.id === params.id);
+  if (effectivePath.startsWith("/product/") && routeProductId) {
+    const normalizedRouteProductId = normalizeGroupKey(routeProductId);
+    const product =
+      products.find((p) => normalizeGroupKey(p.id) === normalizedRouteProductId) ??
+      products.find((p) => normalizeGroupKey(p.groupId) === normalizedRouteProductId);
+
     if (product) {
       if (isVariationLocked(product)) {
         setSelected(product);
@@ -340,8 +349,15 @@ useEffect(() => {
       const lengths = getProductLengths(product);
       const nextShape = shapes.includes(requestedShape) ? requestedShape : shapes[0] ?? "";
       const nextLength = lengths.includes(requestedLength) ? requestedLength : lengths[0] ?? "Medium";
+      const nextVariant =
+        products.find(
+          (p) =>
+            normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId) &&
+            p.shape === nextShape &&
+            p.length === nextLength
+        ) ?? product;
 
-      setSelected(product);
+      setSelected(nextVariant);
       setSelectedShape(nextShape);
       setSelectedLength(nextLength);
       setActiveImg(0);
@@ -362,7 +378,7 @@ useEffect(() => {
 
     if (currentShape === selectedShape && currentLength === selectedLength) return;
 
-    syncProductUrl(selected.id, selectedShape, selectedLength);
+    syncProductUrl(selected, selectedShape, selectedLength);
   }, [page, selected, selectedShape, selectedLength]);
 
 
@@ -507,6 +523,9 @@ useEffect(() => {
   const isVariationLocked = (product: Product) =>
     LOCKED_VARIATION_PRODUCT_IDS.has(product.id);
 
+  const getProductRouteId = (product: Product) =>
+    isVariationLocked(product) ? product.id : product.groupId;
+
   const getProductShapes = (product: Product): string[] => {
     const raw = (product as Product & { shapes?: string[] }).shapes;
     return Array.isArray(raw) && raw.length > 0 ? raw : ["Short Almond", "Medium Almond", "Long Almond"];
@@ -517,16 +536,18 @@ useEffect(() => {
     return Array.isArray(raw) && raw.length > 0 ? raw : validLengths;
   };
 
-  const syncProductUrl = (productId: string, shape: string, length: NailLength) => {
-    if (LOCKED_VARIATION_PRODUCT_IDS.has(productId)) {
-      navigate(`/product/${productId}`, { replace: true });
+  const syncProductUrl = (product: Product, shape: string, length: NailLength) => {
+    const productRouteId = getProductRouteId(product);
+
+    if (isVariationLocked(product)) {
+      navigate(`/product/${productRouteId}`, { replace: true });
       return;
     }
 
     const search = new URLSearchParams();
     if (shape) search.set("shape", shape);
     if (length) search.set("length", length);
-    navigate(`/product/${productId}?${search.toString()}`, { replace: true });
+    navigate(`/product/${productRouteId}?${search.toString()}`, { replace: true });
   };
 
   const openProduct = (p: Product) => {
@@ -547,7 +568,7 @@ useEffect(() => {
       return;
     }
 
-    navigate(`/product/${p.id}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
+    navigate(`/product/${getProductRouteId(p)}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
   };
 
   const openBasketItemProduct = (item: CartItem) => {
@@ -566,7 +587,7 @@ useEffect(() => {
     search.set("shape", item.shape);
     search.set("length", item.length);
 
-    navigate(`/product/${item.product.id}?${search.toString()}`);
+    navigate(`/product/${getProductRouteId(item.product)}?${search.toString()}`);
   };
   
   const addToBasket = () => {
