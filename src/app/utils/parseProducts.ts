@@ -36,16 +36,27 @@ function buildGoogleSheetCsvUrl(shareUrl: string): string {
 
 const PRODUCTS_SHEET_CSV_URL = buildGoogleSheetCsvUrl(PRODUCTS_SHEET_SHARE_URL);
 
+function normalizeItemGroupId(value: string, shape: string): string {
+  const normalizedValue = normalizeGroupKey(value);
+  const normalizedShape = normalizeGroupKey(shape).replace(/\s+/g, "_");
+
+  if (normalizedShape && normalizedValue.endsWith(`_${normalizedShape}`)) {
+    return normalizedValue.slice(0, -(normalizedShape.length + 1));
+  }
+
+  return normalizedValue;
+}
+
 function deriveGroupId(row: string[], getColumn: (row: string[], name: string) => string, id: string): string {
+  const rawGroupId = getColumn(row, "item_group_id");
+  if (rawGroupId) {
+    return normalizeItemGroupId(rawGroupId, getColumn(row, "shape"));
+  }
+
   const rootLink = getColumn(row, "root links");
   const rootLinkMatch = rootLink.match(/\/product\/([^?&#/]+)/);
   if (rootLinkMatch?.[1]) {
     return normalizeGroupKey(rootLinkMatch[1]);
-  }
-
-  const rawGroupId = getColumn(row, "item_group_id");
-  if (rawGroupId) {
-    return normalizeGroupKey(rawGroupId);
   }
 
   const name = getColumn(row, "TITLE");
