@@ -22,7 +22,7 @@ export default defineConfig({
   base: './',
   define: {
     __PRODUCTS_SHEET_SHARE_URL__: JSON.stringify(
-      process.env.SECRET || process.env.secret || ''
+      process.env.VITE_PRODUCTS_SHEET_SHARE_URL || process.env.PRODUCTS_SHEET_SHARE_URL || ''
     ),
   },
   build: {
