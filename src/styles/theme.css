@@ -3,7 +3,7 @@
 :root {
   --font-size: 16px;
   --background: #d8a6af;
-  --foreground: #3d1a24;
+  --foreground: #d41047;
   --card: #fc6587;
   --card-foreground: #3d1a24;
   --popover: #fff5f7;
@@ -13,7 +13,7 @@
   --secondary: #e0a2b4;
   --secondary-foreground: #3d1a24;
   --muted: #fce4ea;
-  --muted-foreground: #9e6070;
+  --muted-foreground: #4f444a;
   --accent: #f7b8ca;
   --accent-foreground: #3d1a24;
   --destructive: #c0392b;

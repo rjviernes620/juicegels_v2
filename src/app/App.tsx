@@ -1048,7 +1048,7 @@ const updateQty = (idx: number, delta: number) => {
                 lineHeight: 1.5
               }}
             >
-              You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.
+              You will be contacted via Instagram from <strong>@juicegels</strong> up to 24 hours after payment to confirm your nail sizes.
             </div>
           ) : null}
         </div>
@@ -1255,7 +1255,7 @@ const updateQty = (idx: number, delta: number) => {
               </div>
 
               <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5, marginBottom: 4 }}>
-                You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.
+                You will be contacted via Instagram from <strong>@juicegels</strong> up to 24 hours after payment to confirm your nail sizes.
               </div>
             </>
           )}
@@ -1359,7 +1359,7 @@ const updateQty = (idx: number, delta: number) => {
             </Field>
 
             <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
-              You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.
+              You will be contacted via Instagram from <strong>@juicegels</strong> up to 24 hours after payment to confirm your nail sizes.
             </div>
 
             <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "var(--foreground)" }}>
@@ -1407,7 +1407,7 @@ const updateQty = (idx: number, delta: number) => {
           </p>
           <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
             A confirmation will be sent to <strong>{form.email}</strong>.<br />
-            <span style={{ color: "var(--primary)" }}>You will be contacted via Instagram from <strong>@juicegels</strong> after payment to process your order.</span>
+            <span style={{ color: "var(--primary)" }}>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
           </p>
 
           <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>
