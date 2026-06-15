@@ -550,6 +550,20 @@ useEffect(() => {
     navigate(`/product/${productRouteId}?${search.toString()}`, { replace: true });
   };
 
+  const navigateToProduct = (product: Product, shape: string, length: NailLength) => {
+    const productRouteId = getProductRouteId(product);
+
+    if (isVariationLocked(product)) {
+      navigate(`/product/${productRouteId}`);
+      return;
+    }
+
+    const search = new URLSearchParams();
+    if (shape) search.set("shape", shape);
+    if (length) search.set("length", length);
+    navigate(`/product/${productRouteId}?${search.toString()}`);
+  };
+
   const openProduct = (p: Product) => {
     const shapes = getProductShapes(p);
     const lengths = getProductLengths(p);
@@ -563,32 +577,22 @@ useEffect(() => {
     setActiveImg(0);
     setPage("product");
 
-    if (isVariationLocked(p)) {
-      navigate(`/product/${getProductRouteId(p)}`);
-      return;
-    }
-
-    navigate(`/product/${getProductRouteId(p)}?shape=${encodeURIComponent(defaultShape)}&length=${encodeURIComponent(defaultLength)}`);
+    navigateToProduct(p, defaultShape, defaultLength);
   };
 
-  // const openBasketItemProduct = (item: CartItem) => {
-  //   setSelected(item.product);
-  //   setSelectedShape(item.shape);
-  //   setSelectedLength(item.length);
-  //   setActiveImg(0);
-  //   setPage("product");
+  const openBasketItemProduct = (item: CartItem) => {
+    const variant = isVariationLocked(item.product)
+      ? item.product
+      : findVariant(item.product.groupId, item.shape, item.length) ?? item.product;
 
-  //   if (isVariationLocked(item.product)) {
-  //     navigate(`/product/${item.product.id}`);
-  //     return;
-  //   }
+    setSelected(variant);
+    setSelectedShape(item.shape);
+    setSelectedLength(item.length);
+    setActiveImg(0);
+    setPage("product");
 
-  //   const search = new URLSearchParams();
-  //   search.set("shape", item.shape);
-  //   search.set("length", item.length);
-
-  //   navigate(`/product/${getProductRouteId(item.product)}?${search.toString()}`);
-  // };
+    navigateToProduct(variant, item.shape, item.length);
+  };
   
   const addToBasket = () => {
     if (!selected || !selectedShape || !selectedLength) return;
@@ -1129,25 +1133,42 @@ const updateQty = (idx: number, delta: number) => {
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
                 {cart.map((item, idx) => (
                   <div key={`${item.product.id}-${item.shape}`} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 14, padding: "12px", display: "flex", gap: 12, alignItems: "center" }}>
-                    <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--secondary)" }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 500, color: "var(--foreground)", lineHeight: 1.3 }}>{item.product.name}</p>
-                      {!isNailSizeGuideItem(item) && (
-                        <>
-                          <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Shape: {item.shape}</p>
-                          <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Length: {item.length}</p>
-                        </>
-                      )}
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <button onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
-                          <span style={{ minWidth: 28, textAlign: "center", fontSize: 13, fontWeight: 600 }}>{item.quantity}</span>
-                          <button onClick={() => updateQty(idx, 1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
-                        </div>
-                        <span style={{ color: "var(--primary)", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
+                    <button
+                      type="button"
+                      onClick={() => openBasketItemProduct(item)}
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                        display: "flex",
+                        gap: 12,
+                        alignItems: "center",
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        textAlign: "left",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--secondary)" }} />
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 500, color: "var(--foreground)", lineHeight: 1.3 }}>{item.product.name}</p>
+                        {!isNailSizeGuideItem(item) && (
+                          <>
+                            <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Shape: {item.shape}</p>
+                            <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>Length: {item.length}</p>
+                          </>
+                        )}
                       </div>
+                    </button>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
+                      <span style={{ color: "var(--primary)", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
+                        <span style={{ minWidth: 28, textAlign: "center", fontSize: 13, fontWeight: 600 }}>{item.quantity}</span>
+                        <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
+                      </div>
+                      <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={15} style={{ color: "var(--muted-foreground)" }} /></button>
                     </div>
-                    <button onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={15} style={{ color: "var(--muted-foreground)" }} /></button>
                   </div>
                 ))}
               </div>
