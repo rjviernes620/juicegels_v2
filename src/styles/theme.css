@@ -3,7 +3,7 @@
 :root {
   --font-size: 16px;
   --background: #ffd2e6;
-  --foreground: #d41047;
+  --foreground: #fff9fb;
   --card: #fc6587;
   --card-foreground: #3d1a24;
   --popover: #fff5f7;
@@ -39,6 +39,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  --nail-the-look-color: #fc6587;
+  --product-title: #ae3c6f;
+  --variation-button-text-selected: #ffffff;
+  --variation-button-text-unselected: var(--foreground);
+  --basket-title-color: var(--foreground);
 }
 
 .dark {
@@ -76,6 +82,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  --nail-the-look-color: var(--foreground);
+  --variation-button-text-selected: oklch(0.205 0 0);
+  --variation-button-text-unselected: var(--foreground);
+  --basket-title-color: var(--foreground);
 }
 
 @theme inline {

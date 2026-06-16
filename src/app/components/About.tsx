@@ -2,6 +2,24 @@ import React from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Instagram } from "lucide-react";
 
+function TiktokIcon({ size = 16, ...props }: React.SVGProps<SVGSVGElement> & { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+  );
+}
+
 export function About() {
   return (
     <div style={{ background: "var(--background)", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
@@ -62,7 +80,7 @@ export function About() {
             style={{ 
               fontFamily: "'Lobster', serif", 
               fontSize: 32, 
-              color: "var(--foreground)", 
+              color: "var(--nail-the-look-color)", 
               margin: "0 0 6px",
               lineHeight: 1.2
             }}
@@ -252,27 +270,52 @@ export function About() {
           <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", fontWeight: 500 }}>
             Want to see daily updates & new nail drops?
           </p>
-          <a 
-            href="https://instagram.com/juicegels" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            style={{ 
-              display: "inline-flex", 
-              alignItems: "center", 
-              gap: 8, 
-              background: "var(--foreground)", 
-              color: "#fff", 
-              padding: "10px 20px", 
-              borderRadius: 24, 
-              fontSize: 13, 
-              fontWeight: 600, 
-              textDecoration: "none",
-              boxShadow: "0 4px 12px rgba(212, 16, 71, 0.15)"
-            }}
-          >
-            <Instagram size={16} />
-            Follow @juicegels
-          </a>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
+            <a 
+              href="https://instagram.com/juicegels" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ 
+                display: "inline-flex", 
+                alignItems: "center", 
+                justifyContent: "center",
+                gap: 8, 
+                background: "#f24e77", 
+                color: "#fff", 
+                padding: "10px 20px", 
+                borderRadius: 24, 
+                fontSize: 13, 
+                fontWeight: 600, 
+                textDecoration: "none",
+                boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)"
+              }}
+            >
+              <Instagram size={16} />
+              Follow @juicegels
+            </a>
+            <a 
+              href="https://tiktok.com/@juice.gels" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ 
+                display: "inline-flex", 
+                alignItems: "center", 
+                justifyContent: "center",
+                gap: 8, 
+                background: "#f24e77", 
+                color: "#fff", 
+                padding: "10px 20px", 
+                borderRadius: 24, 
+                fontSize: 13, 
+                fontWeight: 600, 
+                textDecoration: "none",
+                boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)"
+              }}
+            >
+              <TiktokIcon size={16} />
+              Follow me on TikTok
+            </a>
+          </div>
         </div>
       </div>
     </div>

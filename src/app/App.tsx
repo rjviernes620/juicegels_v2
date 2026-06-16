@@ -1022,7 +1022,7 @@ const updateQty = (idx: number, delta: number) => {
         <main>
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
-            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "var(--foreground)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
+            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "var(--nail-the-look-color)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons <br /> We will confirm your sizing after checkout</p>
           </div>
 
@@ -1121,7 +1121,7 @@ const updateQty = (idx: number, delta: number) => {
         )}
 
         <div style={{ padding: "16px 20px 130px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "var(--foreground)" }}>
+          <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "var(--product-title)" }}>
             {selected.name}
           </h2>
 
@@ -1160,7 +1160,7 @@ const updateQty = (idx: number, delta: number) => {
                     style={{
                       border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`,
                       background: selectedShape === s ? "var(--primary)" : "var(--card)",
-                      color: selectedShape === s ? "#fff" : "var(--foreground)",
+                      color: selectedShape === s ? "var(--variation-button-text-selected)" : "var(--variation-button-text-unselected)",
                       borderRadius: 8,
                       padding: "6px 14px",
                       fontSize: 12,
@@ -1194,7 +1194,7 @@ const updateQty = (idx: number, delta: number) => {
                     style={{
                       border: `1.5px solid ${selectedLength === length ? "var(--primary)" : "var(--border)"}`,
                       background: selectedLength === length ? "var(--primary)" : "var(--card)",
-                      color: selectedLength === length ? "#fff" : "var(--foreground)",
+                      color: selectedLength === length ? "var(--variation-button-text-selected)" : "var(--variation-button-text-unselected)",
                       borderRadius: 8,
                       padding: "6px 14px",
                       fontSize: 12,
@@ -1289,7 +1289,7 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Basket ── */}
       {page === "basket" && (
         <main style={{ padding: "16px 16px 100px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 14px" }}>Your Basket</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--basket-title-color)", margin: "0 0 14px" }}>Your Basket</h2>
 
           {cart.length === 0 ? (
             <div style={{ textAlign: "center", padding: "48px 20px" }}>
