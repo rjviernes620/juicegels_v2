@@ -532,6 +532,21 @@ def validate_coupon():
     return jsonify({ 'error': 'internal server error' }), 500
 
 
+@app.route('/check-eligibility', methods=['POST', 'OPTIONS'])
+def check_eligibility():
+  if request.method == 'OPTIONS':
+    return jsonify({}), 204
+
+  payload = request.get_json(force=True)
+  email = str(payload.get('email', '')).strip()
+
+  if not email:
+    return jsonify({ 'eligible': False }), 400
+
+  eligible = is_first_time_buyer(email)
+  return jsonify({ 'eligible': eligible })
+
+
 @app.route('/stripe-webhook', methods=['POST'])
 def stripe_webhook():
   webhook_secret = read_secret('stripe_webhook_live', 'STRIPE_WEBHOOK_SECRET')

@@ -214,6 +214,9 @@ export default function App() {
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
   const [shippingOptionId, setShippingOptionId] = useState<ShippingOptionId>("tracked48");
+  const [isSizeGuideDiscountApplied, setIsSizeGuideDiscountApplied] = useState(false);
+  const [isSizeGuideLoading, setIsSizeGuideLoading] = useState(false);
+
 
   const uniqueProducts = useMemo(
     () => products.filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId))),
@@ -404,7 +407,13 @@ useEffect(() => {
   const cartTotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
   const confirmationCount = confirmationItems.reduce((s, i) => s + i.quantity, 0);
-  const discountTotal = couponSummary?.discountAmount ?? 0;
+
+  const hasSizeGuide = cart.some(item => item.product.id === "JUICEGELS-0286");
+  const sizeGuideItem = cart.find(item => item.product.id === "JUICEGELS-0286");
+  const sizeGuideDiscountAmount = isSizeGuideDiscountApplied && sizeGuideItem ? sizeGuideItem.product.price * sizeGuideItem.quantity : 0;
+
+  const couponDiscount = couponSummary?.discountAmount ?? 0;
+  const discountTotal = couponDiscount + sizeGuideDiscountAmount;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
   const shippingOptions = useMemo(() => buildShippingOptions(orderTotal), [orderTotal]);
@@ -423,6 +432,45 @@ useEffect(() => {
     if (typeof window === "undefined") return;
     localStorage.setItem("juicegels_form", JSON.stringify(form));
   }, [form]);
+
+  useEffect(() => {
+    const email = form.email.trim();
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!hasSizeGuide || !email || !emailRegex.test(email)) {
+      setIsSizeGuideDiscountApplied(false);
+      return;
+    }
+
+    let active = true;
+    const checkEligibility = async () => {
+      setIsSizeGuideLoading(true);
+      try {
+        const response = await fetch(`${CHECKOUT_API_BASE}/check-eligibility`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
+        if (!response.ok) throw new Error("Failed to check eligibility");
+        const data = await response.json();
+        if (active) {
+          setIsSizeGuideDiscountApplied(data.eligible);
+        }
+      } catch (err) {
+        console.error("Error checking size guide discount eligibility:", err);
+      } finally {
+        if (active) {
+          setIsSizeGuideLoading(false);
+        }
+      }
+    };
+
+    checkEligibility();
+    return () => {
+      active = false;
+    };
+  }, [form.email, hasSizeGuide]);
 
   useEffect(() => {
     if (!isSubmitting) {
@@ -1081,7 +1129,7 @@ const updateQty = (idx: number, delta: number) => {
             />
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 2px", fontSize: 16 }}>Need your nail sizes?</p>
-              <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12, lineHeight: 1.4 }}>Click here and pick up the Nail Sizing Guide — £4 deducted from your first set with code "4IRST" at checkout 🌸</p>
+              <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12, lineHeight: 1.4 }}>Click here and pick up the Nail Sizing Guide — £4 deducted from your first set <br /> Discount Applied at Checkout 🌸</p>
             </div>
           </button>
 
@@ -1461,7 +1509,7 @@ const updateQty = (idx: number, delta: number) => {
                         <>
                           <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>{couponSummary.code} applied</strong>
                           <span style={{ color: "#2f5d46" }}>
-                            {couponSummary.description} saved you £{discountTotal.toFixed(2)} on this order.
+                            {couponSummary.description} saved you £{couponDiscount.toFixed(2)} on this order.
                           </span>
                         </>
                       )}
@@ -1477,10 +1525,16 @@ const updateQty = (idx: number, delta: number) => {
                   <span style={{ color: "var(--muted-foreground)" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
                   <span>£{cartTotal.toFixed(2)}</span>
                 </div>
-                {couponSummary && discountTotal > 0 && (
+                {couponSummary && couponDiscount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
                     <span style={{ color: "var(--muted-foreground)" }}>Discount ({couponSummary.code})</span>
-                    <span style={{ color: "var(--primary)" }}>-£{discountTotal.toFixed(2)}</span>
+                    <span style={{ color: "var(--primary)" }}>-£{couponDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+                {isSizeGuideDiscountApplied && sizeGuideDiscountAmount > 0 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
+                    <span style={{ color: "#1f6f43", fontWeight: 500 }}>First-time Size Guide Discount</span>
+                    <span style={{ color: "#1f6f43", fontWeight: 700 }}>-£{sizeGuideDiscountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
@@ -1609,10 +1663,16 @@ const updateQty = (idx: number, delta: number) => {
                   <span>£{(item.product.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
-              {couponSummary && discountTotal > 0 && (
+              {couponSummary && couponDiscount > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--muted-foreground)" }}>
                   <span>Discount ({couponSummary.code})</span>
-                  <span>-{formatMoney(discountTotal)}</span>
+                  <span>-{formatMoney(couponDiscount)}</span>
+                </div>
+              )}
+              {isSizeGuideDiscountApplied && sizeGuideDiscountAmount > 0 && (
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1f6f43", fontWeight: 500 }}>
+                  <span>First-time Size Guide Discount</span>
+                  <span>-{formatMoney(sizeGuideDiscountAmount)}</span>
                 </div>
               )}
               {selectedShippingOption && (
