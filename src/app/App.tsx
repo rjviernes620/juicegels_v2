@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ShoppingBag, Heart, ChevronLeft, Check, Trash2, Plus, Minus } from "lucide-react";
+import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { loadProducts, type Product } from "./utils/parseProducts";
+import { About } from "./components/About";
 
 
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
-type Page = "home" | "product" | "basket" | "preorder" | "confirmation";
+type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string;city: string; postcode: string; notes: string; };
 type ShippingOptionId = "tracked24" | "tracked48";
 
@@ -176,6 +177,7 @@ export default function App() {
     return path || "/";
   }, [location.pathname]);
   const [page, setPage] = useState<Page>("home");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedShape, setSelectedShape] = useState("");
   const [selectedLength, setSelectedLength] = useState<NailLength>("Medium");
@@ -318,6 +320,11 @@ useEffect(() => {
     }
 
     setPage("basket");
+    return;
+  }
+
+  if (effectivePath === "/about") {
+    setPage("about");
     return;
   }
 
@@ -834,15 +841,146 @@ const updateQty = (idx: number, delta: number) => {
 
       <style>{`@keyframes juicegels-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
 
+      {/* ── Hamburger Menu Drawer ── */}
+      {/* Background Overlay */}
+      <div
+        onClick={() => setMenuOpen(false)}
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100vh",
+          background: "rgba(0, 0, 0, 0.4)",
+          backdropFilter: "blur(4px)",
+          opacity: menuOpen ? 1 : 0,
+          pointerEvents: menuOpen ? "auto" : "none",
+          transition: "opacity 0.3s ease",
+          zIndex: 99,
+        }}
+      />
+
+      {/* Drawer Panel */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: 280,
+          maxWidth: "80%",
+          height: "100vh",
+          background: "var(--background)",
+          boxShadow: "10px 0 30px rgba(212, 16, 71, 0.1)",
+          transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+          zIndex: 100,
+          display: "flex",
+          flexDirection: "column",
+          padding: "20px 16px",
+          boxSizing: "border-box",
+        }}
+      >
+        {/* Drawer Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
+          <span 
+            style={{ 
+              fontFamily: "Lobster", 
+              fontSize: 26, 
+              color: "#ffffff",
+              WebkitTextStroke: "1px #f24e77",
+              textShadow: "0.5px 0.5px 0px #f24e77"
+            }}
+          >
+            Juice Gels
+          </span>
+          <button
+            onClick={() => setMenuOpen(false)}
+            style={{ background: "none", border: "none", color: "var(--muted-foreground)", cursor: "pointer", padding: 4 }}
+          >
+            <X size={22} />
+          </button>
+        </div>
+
+        {/* Drawer Links */}
+        <nav style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {[
+            { label: "Home", icon: "🌸", onClick: () => { navigate("/"); setMenuOpen(false); } },
+            { label: "Our Story", icon: "📖", onClick: () => { navigate("/about"); setMenuOpen(false); } },
+            { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
+            { label: "Shopping Basket", icon: "🛒", onClick: () => { navigate(currentBasketUrl(cart)); setMenuOpen(false); } },
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              onClick={item.onClick}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                background: "var(--secondary)",
+                border: "1px solid var(--border)",
+                borderRadius: 12,
+                padding: "12px 14px",
+                textAlign: "left",
+                color: "var(--foreground)",
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+                transition: "background 0.2s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--primary)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--secondary)"; }}
+            >
+              <span style={{ fontSize: 16 }}>{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Drawer Footer */}
+        <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 20, borderTop: "1px solid var(--border)" }}>
+          <p style={{ fontSize: 11, color: "var(--muted-foreground)", margin: "0 0 10px" }}>
+            Follow Alyssa&apos;s nail updates 🌸
+          </p>
+          <a
+            href="https://instagram.com/juicegels"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              color: "var(--foreground)",
+              fontWeight: 600,
+              fontSize: 12,
+              textDecoration: "underline",
+            }}
+          >
+            Instagram @juicegels
+          </a>
+        </div>
+      </div>
+
       {/* ── Header ── */}
       <header style={{ background: "var(--card)", borderBottom: "1px solid var(--border)", position: "sticky", top: 0, zIndex: 50, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        {page !== "home" ? (
-          <button onClick={goBack} style={{ color: "var(--primary)", background: "none", border: "none", cursor: "pointer", padding: 4 }} aria-label="Back">
-            <ChevronLeft size={22} />
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button onClick={() => setMenuOpen(true)} style={{ color: "var(--primary)", background: "none", border: "none", cursor: "pointer", padding: 4 }} aria-label="Menu">
+            <Menu size={22} />
           </button>
-        ) : <div style={{ width: 30 }} />}
+        </div>
 
-        <h1 style={{ fontFamily: "'Lobster', serif", color: "var(--primary)", margin: 0, letterSpacing: "0.04em", fontSize: 22 }}>
+        <h1 
+          onClick={() => navigate("/")}
+          style={{ 
+            fontFamily: "Lobster", 
+            color: "#ffffff", 
+            margin: 0, 
+            letterSpacing: "0.02em", 
+            fontSize: 30, 
+            cursor: "pointer",
+            WebkitTextStroke: "2px #f24e77",
+            textShadow: "0.5px 0.5px 0px #f0829e"
+          }}
+        >
           Juice Gels
         </h1>
 
@@ -889,7 +1027,7 @@ const updateQty = (idx: number, delta: number) => {
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
             <p style={{ color: "var(--muted-foreground)", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
             <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "var(--foreground)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
-            <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons · We will confirm your sizing after checkout</p>
+            <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons <br /> We will confirm your sizing after checkout</p>
           </div>
 
           {productsLoadError && (
@@ -913,11 +1051,46 @@ const updateQty = (idx: number, delta: number) => {
             ))}
           </div>
 
-          <div style={{ margin: "4px 14px 32px", background: "var(--secondary)", borderRadius: 14, padding: "16px 18px", textAlign: "center" }}>
+          <button 
+            onClick={() => navigate("/product/JUICEGELS-0286")}
+            style={{ 
+              display: "block",
+              width: "calc(100% - 28px)",
+              margin: "4px 14px 20px", 
+              background: "var(--secondary)", 
+              border: "1px solid var(--border)",
+              borderRadius: 14, 
+              padding: "16px 18px", 
+              textAlign: "center",
+              cursor: "pointer"
+            }}
+          >
             <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 3px", fontSize: 16 }}>Need your nail sizes?</p>
             <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12 }}>Pick up the Nail Sizing Guide — £4 deducted from your first set 🌸</p>
-          </div>
+          </button>
+
+          <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid var(--border)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
+            <p style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 8px" }}>Juice Gels</p>
+            <p style={{ fontSize: 12, color: "var(--muted-foreground)", margin: "0 0 16px" }}>Handmade with love by Alyssa 🌸</p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 16, fontSize: 13, alignItems: "center" }}>
+              <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+                Our Story
+              </button>
+              <span style={{ color: "var(--border)" }}>|</span>
+              <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "var(--foreground)", textDecoration: "underline", fontWeight: 500 }}>
+                Instagram
+              </a>
+            </div>
+            <p style={{ fontSize: 11, color: "var(--muted-foreground)", marginTop: 24, opacity: 0.8 }}>
+              &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
+            </p>
+          </footer>
         </main>
+      )}
+
+      {/* ── About ── */}
+      {page === "about" && (
+        <About />
       )}
 
     {/* ── Product Detail ── */}
