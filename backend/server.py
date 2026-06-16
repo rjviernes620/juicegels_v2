@@ -601,12 +601,32 @@ def create_checkout_session():
     if image_url:
       product_data['images'] = [image_url]
 
+    stripe_product_id = None
+    if is_nail_size_guide_product(product):
+      try:
+        search_res = client.v1.products.search(params={
+          'query': f"metadata['source_sku']:'{NAIL_SIZE_GUIDE_PRODUCT_ID}'",
+          'limit': 1
+        })
+        if search_res.data:
+          stripe_product_id = search_res.data[0].id
+      except Exception as e:
+        print(f"Error searching for existing Stripe product for SKU {NAIL_SIZE_GUIDE_PRODUCT_ID}: {e}")
+      
+      if not stripe_product_id:
+        stripe_product_id = 'prod_UhOWU4BodmJb0F'
+
+    price_data = {
+      'currency': 'gbp',
+      'unit_amount': unit_amount,
+    }
+    if stripe_product_id:
+      price_data['product'] = stripe_product_id
+    else:
+      price_data['product_data'] = product_data
+
     line_items.append({
-      'price_data': {
-        'currency': 'gbp',
-        'product_data': product_data,
-        'unit_amount': unit_amount,
-      },
+      'price_data': price_data,
       'quantity': quantity,
     })
 
