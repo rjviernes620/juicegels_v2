@@ -17,7 +17,7 @@ PINGRAM_DEFAULT_BASE_URL = 'https://api.pingram.io'
 PINGRAM_ORDER_EMAIL_TYPE = 'juicegels_order'
 PINGRAM_ORDER_RECIPIENT = 'juicegels@gmail.com'
 RENDER_SECRET_DIR = '/etc/secrets'
-NAIL_SIZE_GUIDE_PRODUCT_ID = 'JUICEGELS-0301'
+NAIL_SIZE_GUIDE_PRODUCT_ID = 'JUICEGELS-0286'
 FREE_TRACKED48_THRESHOLD_PENCE = 3000
 SHIPPING_OPTIONS = {
   'tracked24': {
@@ -83,6 +83,26 @@ def build_checkout_items_param(items):
 def is_nail_size_guide_product(product):
   product_id = str(get_value(product, 'id', '') or '').strip()
   return product_id == NAIL_SIZE_GUIDE_PRODUCT_ID
+
+
+def is_first_time_buyer(email):
+  if not email:
+    return True
+
+  try:
+    sessions = client.v1.checkout.sessions.list(
+      params={
+        'customer_details': {'email': email},
+        'limit': 100
+      }
+    )
+    for session in sessions.auto_paging_iter():
+      if get_value(session, 'payment_status') == 'paid' or get_value(session, 'status') == 'complete':
+        return False
+    return True
+  except Exception as e:
+    print(f"Error checking first-time buyer status for {email}: {e}")
+    return True
 
 
 def get_value(source, key, default=None):
@@ -597,10 +617,29 @@ def create_checkout_session():
     except ValueError as error:
       return jsonify({ 'error': str(error) }), 400
 
-  discounted_subtotal_pence = max(
-    0,
-    subtotal_pence - (coupon_summary['discount_pence'] if coupon_summary else 0),
-  )
+  customer_email = form.get('email', '').strip()
+  has_size_guide = False
+  size_guide_discount_pence = 0
+  for item in items:
+    product = item.get('product', {})
+    if is_nail_size_guide_product(product):
+      has_size_guide = True
+      price = float(product.get('price', 0))
+      quantity = int(item.get('quantity', 1))
+      size_guide_discount_pence = round(price * 100) * quantity
+      break
+
+  apply_size_guide_coupon = False
+  if has_size_guide and customer_email:
+    if is_first_time_buyer(customer_email):
+      apply_size_guide_coupon = True
+
+  discounted_subtotal_pence = subtotal_pence
+  if coupon_summary:
+    discounted_subtotal_pence -= coupon_summary['discount_pence']
+  if apply_size_guide_coupon:
+    discounted_subtotal_pence -= size_guide_discount_pence
+  discounted_subtotal_pence = max(0, discounted_subtotal_pence)
 
   try:
     shipping_option = resolve_shipping_option(shipping_option_id, discounted_subtotal_pence)
@@ -623,17 +662,21 @@ def create_checkout_session():
         'phone': form.get('phone', ''),
         'instagram': form.get('instagram', ''),
         'notes': form.get('notes', ''),
-        'coupon_code': coupon_summary['code'] if coupon_summary else '',
+        'coupon_code': '60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else ''),
         'shipping_option_id': shipping_option['id'],
         'shipping_method': shipping_option['label'],
         'shipping_amount_pence': str(shipping_option['amount_pence']),
       },
       'mode': 'payment',
       'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
-      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary else ''}",
+      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary and not apply_size_guide_coupon else ''}",
     }
 
-    if coupon_summary:
+    if apply_size_guide_coupon:
+      session_params['discounts'] = [{
+        'coupon': '60pCPsnH',
+      }]
+    elif coupon_summary:
       session_params['discounts'] = [{
         'promotion_code': coupon_summary['promotion_code_id'],
       }]
