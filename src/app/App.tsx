@@ -884,11 +884,9 @@ const updateQty = (idx: number, delta: number) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
           <span 
             style={{ 
-              fontFamily: "Lobster", 
-              fontSize: 26, 
-              color: "#ffffff",
-              WebkitTextStroke: "1px #f24e77",
-              textShadow: "0.5px 0.5px 0px #f24e77"
+              fontFamily: "'Lobster', serif", 
+              fontSize: 24, 
+              color: "#ffffff"
             }}
           >
             Juice Gels
@@ -971,14 +969,12 @@ const updateQty = (idx: number, delta: number) => {
         <h1 
           onClick={() => navigate("/")}
           style={{ 
-            fontFamily: "Lobster", 
+            fontFamily: "'Lobster', serif", 
             color: "#ffffff", 
             margin: 0, 
-            letterSpacing: "0.02em", 
-            fontSize: 30, 
-            cursor: "pointer",
-            WebkitTextStroke: "2px #f24e77",
-            textShadow: "0.5px 0.5px 0px #f0829e"
+            letterSpacing: "0.04em", 
+            fontSize: 26, 
+            cursor: "pointer"
           }}
         >
           Juice Gels
