@@ -4,11 +4,13 @@ import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X } from "lucide-
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { loadProducts, type Product } from "./utils/parseProducts";
 import { About } from "./components/About";
+import { Videos } from "./components/Videos";
+import { Search } from "./components/Search";
 
 
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
-type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about";
+type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string;city: string; postcode: string; notes: string; };
 type ShippingOptionId = "tracked24" | "tracked48";
 
@@ -328,6 +330,16 @@ useEffect(() => {
     return;
   }
 
+  if (effectivePath === "/videos") {
+    setPage("videos");
+    return;
+  }
+
+  if (effectivePath === "/search") {
+    setPage("search");
+    return;
+  }
+
   if (effectivePath === "/") {
     setPage("home");
     return;
@@ -585,6 +597,11 @@ useEffect(() => {
     setPage("product");
 
     navigateToProduct(p, defaultShape, defaultLength);
+  };
+
+  const handleShopProduct = (id: string) => {
+    const product = products.find((p) => p.id === id);
+    if (product) openProduct(product);
   };
 
   const openBasketItemProduct = (item: CartItem) => {
@@ -903,6 +920,8 @@ const updateQty = (idx: number, delta: number) => {
         <nav style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {[
             { label: "Home", icon: "🌸", onClick: () => { navigate("/"); setMenuOpen(false); } },
+            { label: "Search Sets", icon: "🔍", onClick: () => { navigate("/search"); setMenuOpen(false); } },
+            { label: "Nail Videos", icon: "🎬", onClick: () => { navigate("/videos"); setMenuOpen(false); } },
             { label: "Our Story", icon: "📖", onClick: () => { navigate("/about"); setMenuOpen(false); } },
             { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
             { label: "Shopping Basket", icon: "🛒", onClick: () => { navigate(currentBasketUrl(cart)); setMenuOpen(false); } },
@@ -1032,6 +1051,40 @@ const updateQty = (idx: number, delta: number) => {
             </div>
           )}
 
+          <button 
+            onClick={() => navigate("/product/JUICEGELS-0286")}
+            style={{ 
+              display: "flex",
+              width: "calc(100% - 28px)",
+              margin: "12px 14px 4px", 
+              background: "var(--secondary)", 
+              border: "1px solid var(--border)",
+              borderRadius: 14, 
+              padding: "12px 14px", 
+              alignItems: "center",
+              gap: 14,
+              textAlign: "left",
+              cursor: "pointer"
+            }}
+          >
+            <ImageWithFallback 
+              src="images/JUICEGELS-0286.jpg" 
+              alt="Nail Sizing Guide" 
+              style={{ 
+                width: 72, 
+                height: 72, 
+                objectFit: "cover", 
+                borderRadius: 10, 
+                flexShrink: 0,
+                background: "var(--muted)" 
+              }} 
+            />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 2px", fontSize: 16 }}>Need your nail sizes?</p>
+              <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12, lineHeight: 1.4 }}>Click here and pick up the Nail Sizing Guide — £4 deducted from your first set with code "4IRST" at checkout 🌸</p>
+            </div>
+          </button>
+
             <div style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {uniqueProducts.map((p) => (
               <button key={p.id} onClick={() => openProduct(p)} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
@@ -1047,30 +1100,16 @@ const updateQty = (idx: number, delta: number) => {
             ))}
           </div>
 
-          <button 
-            onClick={() => navigate("/product/JUICEGELS-0286")}
-            style={{ 
-              display: "block",
-              width: "calc(100% - 28px)",
-              margin: "4px 14px 20px", 
-              background: "var(--secondary)", 
-              border: "1px solid var(--border)",
-              borderRadius: 14, 
-              padding: "16px 18px", 
-              textAlign: "center",
-              cursor: "pointer"
-            }}
-          >
-            <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 3px", fontSize: 16 }}>Need your nail sizes?</p>
-            <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12 }}>Pick up the Nail Sizing Guide — £4 deducted from your first set 🌸</p>
-          </button>
-
           <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid var(--border)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
             <p style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 8px" }}>Juice Gels</p>
             <p style={{ fontSize: 12, color: "var(--muted-foreground)", margin: "0 0 16px" }}>Handmade with love by Alyssa 🌸</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 16, fontSize: 13, alignItems: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 12, fontSize: 13, alignItems: "center" }}>
               <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
                 Our Story
+              </button>
+              <span style={{ color: "var(--border)" }}>|</span>
+              <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+                Videos
               </button>
               <span style={{ color: "var(--border)" }}>|</span>
               <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "var(--foreground)", textDecoration: "underline", fontWeight: 500 }}>
@@ -1087,6 +1126,16 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── About ── */}
       {page === "about" && (
         <About />
+      )}
+
+      {/* ── Videos (persistently mounted for pre-caching/instant load) ── */}
+      <div style={{ display: page === "videos" ? "block" : "none" }}>
+        <Videos products={products} onShopProduct={handleShopProduct} />
+      </div>
+
+      {/* ── Search ── */}
+      {page === "search" && (
+        <Search products={products} onShopProduct={handleShopProduct} />
       )}
 
     {/* ── Product Detail ── */}
