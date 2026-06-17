@@ -19,21 +19,7 @@ PINGRAM_ORDER_RECIPIENT = 'juicegels@gmail.com'
 RENDER_SECRET_DIR = '/etc/secrets'
 NAIL_SIZE_GUIDE_PRODUCT_ID = 'JUICEGELS-0286'
 FREE_TRACKED48_THRESHOLD_PENCE = 3000
-SHIPPING_OPTIONS = {
-  'tracked24': {
-    'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
-    'label': 'Royal Mail Tracked 24',
-    'amount_pence': 400,
-    'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
-  },
-  'tracked48': {
-    'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
-    'label': 'Royal Mail Tracked 48',
-    'amount_pence': 199,
-    'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
-    'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
-  },
-}
+
 
 
 def read_secret(secret_name, env_var_name=None):
@@ -57,16 +43,48 @@ def read_secret(secret_name, env_var_name=None):
 
   return ''
 
-
-if not stripe_api_key:
-
-  raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
-
 # #Live Mode
+
+# if not stripe_api_key:
+
+#   raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
 # stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
 # client = stripe.StripeClient(stripe_api_key)
 
+# SHIPPING_OPTIONS = {
+#   'tracked24': {
+#     'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
+#     'label': 'Royal Mail Tracked 24',
+#     'amount_pence': 400,
+#     'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
+#   },
+#   'tracked48': {
+#     'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
+#     'label': 'Royal Mail Tracked 48',
+#     'amount_pence': 199,
+#     'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
+#     'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
+#   },
+# }
+
+##Test Mode
 client = stripe.StripeClient("sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx")
+
+SHIPPING_OPTIONS = {
+  'tracked24': {
+    'stripe_rate_id': 'shr_1TjOFhK9S4gHGvxwGcIJ8ICh',
+    'label': 'Royal Mail Tracked 24',
+    'amount_pence': 400,
+    'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
+  },
+  'tracked48': {
+    'stripe_rate_id': 'shr_1TjOJVK9S4gHGvxwRClQMfr1',
+    'label': 'Royal Mail Tracked 48',
+    'amount_pence': 199,
+    'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
+    'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
+  },
+}
 
 def build_checkout_items_param(items):
   encoded_items = []
