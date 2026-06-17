@@ -1528,7 +1528,7 @@ const updateQty = (idx: number, delta: number) => {
                     }}
                     style={{
                       border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`,
-                      background: selectedShape === s ? "var(--primary)" : "var(--card)",
+                      background: selectedShape === s ? "rgba(226, 121, 156, 0.64)" : "var(--card)",
                       color: selectedShape === s ? "var(--variation-button-text-selected)" : "var(--variation-button-text-unselected)",
                       borderRadius: 8,
                       padding: "6px 14px",
@@ -1562,7 +1562,7 @@ const updateQty = (idx: number, delta: number) => {
                     }}
                     style={{
                       border: `1.5px solid ${selectedLength === length ? "var(--primary)" : "var(--border)"}`,
-                      background: selectedLength === length ? "var(--primary)" : "var(--card)",
+                      background: selectedLength === length ? "rgba(226, 121, 156, 0.64)" : "var(--card)",
                       color: selectedLength === length ? "var(--variation-button-text-selected)" : "var(--variation-button-text-unselected)",
                       borderRadius: 8,
                       padding: "6px 14px",
@@ -1638,7 +1638,7 @@ const updateQty = (idx: number, delta: number) => {
             disabled={!selectedShape || !selectedLength}
             style={{
               flex: 1,
-              background: selectedShape && selectedLength ? "var(--primary)" : "var(--muted)",
+              background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "var(--muted)",
               color: selectedShape && selectedLength ? "#fff" : "var(--muted-foreground)",
               border: "none",
               borderRadius: 12,
@@ -1886,8 +1886,8 @@ const updateQty = (idx: number, delta: number) => {
 
       {cart.length > 0 && page === "basket" && (
         <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, padding: "14px 18px", background: "var(--card)", borderTop: "1px solid var(--border)", display: "flex", gap: 10, boxSizing: "border-box" }}>
-          <button onClick={() => navigate("/")} style={{ border: "1.5px solid var(--border)", background: "var(--card)", borderRadius: 12, height: 46, padding: "0 16px", fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0 }}>+ Add more</button>
-          <button onClick={() => { setForm(initialForm); setErrors({}); setPage("preorder"); }} style={{ flex: 1, background: "var(--primary)", color: "#fff", border: "none", borderRadius: 12, height: 46, fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+          <button onClick={() => navigate("/")} style={{ border: "1.5px solid var(--border)", background: "rgba(128, 33, 65, 0.44)", borderRadius: 12, height: 46, padding: "0 16px", fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0 }}>+ Add more</button>
+          <button onClick={() => { setForm(initialForm); setErrors({}); setPage("preorder"); }} style={{ flex: 1, background: "rgba(195, 18, 77, 0.64)", color: "#fff", border: "none", borderRadius: 12, height: 46, fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
             Pre-order · £{orderTotal.toFixed(2)}
           </button>
         </div>
