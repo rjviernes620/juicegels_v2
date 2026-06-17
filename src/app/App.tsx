@@ -2143,7 +2143,7 @@ const updateQty = (idx: number, delta: number) => {
             <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.6 }}>{form.firstName} {form.lastName}<br />{form.address}<br />{form.city}, {form.postcode}</p>
           </div>
 
-          <button onClick={() => { navigate("/"); setCart([]); setForm(initialForm); }} style={{ background: "var(--primary)", color: "#fff", border: "none", borderRadius: 12, height: 46, width: "100%", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+          <button onClick={() => { navigate("/"); setCart([]); setForm(initialForm); }} style={{ background: "#c281a9", color: "#fff", border: "none", borderRadius: 12, height: 46, width: "100%", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
             Continue Shopping
           </button>
         </main>

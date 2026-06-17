@@ -461,8 +461,12 @@ def send_pingram_order_email(order_summary):
       'html': build_order_email_html(order_summary),
       'senderName': from_name or 'OnlineOrder',
       'senderEmail': from_address or 'neworder@juicegels.com',
-      'replyToAddresses': ['juicegels@gmail.com'],
     },
+    'options': {
+      'email': {
+        'replyToAddresses': ['juicegels@gmail.com'],
+      }
+    }
   }
 
   async def _send():
@@ -678,8 +682,12 @@ def send_customer_order_email(order_summary):
         'html': build_customer_email_html(order_summary),
         'senderName': from_name or 'Juice Gels',
         'senderEmail': from_address or 'neworder@juicegels.com',
-        'replyToAddresses': ['juicegels@gmail.com'],
       },
+      'options': {
+        'email': {
+          'replyToAddresses': ['juicegels@gmail.com'],
+        }
+      }
     }
 
     async def _send():
