@@ -973,7 +973,7 @@ const updateQty = (idx: number, delta: number) => {
             { label: "Nail Videos", icon: "🎬", onClick: () => { navigate("/videos"); setMenuOpen(false); } },
             { label: "Our Story", icon: "📖", onClick: () => { navigate("/about"); setMenuOpen(false); } },
             { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
-            { label: "Shopping Basket", icon: "🛒", onClick: () => { navigate(currentBasketUrl(cart)); setMenuOpen(false); } },
+            { label: "Shopping Basket", icon: "🛒", onClick: () => { if (page === "preorder") { setPage("basket"); } else { navigate(currentBasketUrl(cart)); } setMenuOpen(false); } },
           ].map((item, idx) => (
             <button
               key={idx}
@@ -1048,7 +1048,17 @@ const updateQty = (idx: number, delta: number) => {
           Juice Gels
         </h1>
 
-        <button onClick={() => navigate(currentBasketUrl(cart))} style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4 }} aria-label="Basket">
+        <button 
+          onClick={() => {
+            if (page === "preorder") {
+              setPage("basket");
+            } else {
+              navigate(currentBasketUrl(cart));
+            }
+          }}
+          style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4 }} 
+          aria-label="Basket"
+        >
           <ShoppingBag size={22} style={{ color: "var(--primary)" }} />
           {cartCount > 0 && (
             <span style={{ position: "absolute", top: -4, right: -4, background: "var(--primary)", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
@@ -1064,13 +1074,36 @@ const updateQty = (idx: number, delta: number) => {
           {(["Basket", "Details", "Done"] as const).map((label, i) => {
             const active = (page === "basket" && i === 0) || (page === "preorder" && i === 1) || (page === "confirmation" && i === 2);
             const done = (page === "preorder" && i === 0) || (page === "confirmation" && i <= 1);
+            const isClickable = page === "preorder" && i === 0;
             return (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, flex: i < 2 ? 1 : undefined }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div 
+                  onClick={() => {
+                    if (isClickable) {
+                      setPage("basket");
+                    }
+                  }}
+                  style={{ 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: 5,
+                    cursor: isClickable ? "pointer" : "default"
+                  }}
+                  title={isClickable ? "Go back to Basket" : undefined}
+                >
                   <div style={{ width: 22, height: 22, borderRadius: "50%", background: done ? "var(--primary)" : active ? "var(--accent)" : "var(--muted)", border: `2px solid ${active || done ? "var(--primary)" : "var(--border)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {done ? <Check size={11} color="#fff" /> : <span style={{ fontSize: 10, color: active ? "var(--foreground)" : "var(--muted-foreground)", fontWeight: 600 }}>{i + 1}</span>}
                   </div>
-                  <span style={{ fontSize: 11, color: active ? "var(--foreground)" : "var(--muted-foreground)", fontWeight: active ? 600 : 400 }}>{label}</span>
+                  <span 
+                    style={{ 
+                      fontSize: 11, 
+                      color: active ? "var(--foreground)" : "var(--muted-foreground)", 
+                      fontWeight: active ? 600 : 400,
+                      textDecoration: isClickable ? "underline" : "none"
+                    }}
+                  >
+                    {label}
+                  </span>
                 </div>
                 {i < 2 && <div style={{ flex: 1, height: 1.5, background: done ? "var(--primary)" : "var(--border)", borderRadius: 2 }} />}
               </div>
