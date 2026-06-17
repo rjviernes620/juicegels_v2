@@ -43,7 +43,7 @@ def read_secret(secret_name, env_var_name=None):
 
   return ''
 
-# #Live Mode
+# #LIVE Mode
 
 # if not stripe_api_key:
 
@@ -67,7 +67,7 @@ def read_secret(secret_name, env_var_name=None):
 #   },
 # }
 
-##Test Mode
+##TEST Mode
 client = stripe.StripeClient("sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx")
 
 SHIPPING_OPTIONS = {
@@ -730,8 +730,17 @@ def create_checkout_session():
       'line_items': line_items,
       'customer_email': form.get('email', ''),
       'billing_address_collection': 'required',
-      'shipping_address_collection': {
-        'allowed_countries': ['GB'],
+      'payment_intent_data': {
+        'shipping': {
+          'name': f"{form.get('firstName', '')} {form.get('lastName', '')}".strip(),
+          'phone': form.get('phone', ''),
+          'address': {
+            'line1': form.get('address', ''),
+            'city': form.get('city', ''),
+            'postal_code': form.get('postcode', ''),
+            'country': 'GB',
+          }
+        }
       },
       'phone_number_collection': {'enabled': False},
       'shipping_options': [shipping_option['stripe_shipping_option']],
@@ -741,6 +750,9 @@ def create_checkout_session():
         'phone': form.get('phone', ''),
         'instagram': form.get('instagram', ''),
         'notes': form.get('notes', ''),
+        'shipping_address': form.get('address', ''),
+        'shipping_city': form.get('city', ''),
+        'shipping_postcode': form.get('postcode', ''),
         'coupon_code': 'lGKkukJL' if apply_25_percent_discount else ('60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else '')),
         'shipping_option_id': shipping_option['id'],
         'shipping_method': shipping_option['label'],
