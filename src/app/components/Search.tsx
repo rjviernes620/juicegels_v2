@@ -109,7 +109,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
               border: "1px solid var(--border)",
               background: "#fff",
               fontSize: 14,
-              color: "var(--foreground)",
+              color: "#000000",
               outline: "none",
               boxShadow: "0 2px 10px rgba(212, 16, 71, 0.04)",
               transition: "border-color 0.2s ease"

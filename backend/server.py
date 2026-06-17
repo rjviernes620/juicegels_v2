@@ -625,11 +625,23 @@ def create_checkout_session():
         })
         if search_res.data:
           stripe_product_id = search_res.data[0].id
+          product_obj = search_res.data[0]
+          if product_obj.description:
+            try:
+              client.v1.products.update(stripe_product_id, params={'description': ''})
+            except Exception as upd_err:
+              print(f"Error clearing description on searched Stripe product {stripe_product_id}: {upd_err}")
       except Exception as e:
         print(f"Error searching for existing Stripe product for SKU {NAIL_SIZE_GUIDE_PRODUCT_ID}: {e}")
       
       if not stripe_product_id:
         stripe_product_id = 'prod_UhOWU4BodmJb0F'
+        try:
+          fallback_prod = client.v1.products.retrieve(stripe_product_id)
+          if fallback_prod.description:
+            client.v1.products.update(stripe_product_id, params={'description': ''})
+        except Exception as fallback_err:
+          print(f"Error checking/clearing description on fallback Stripe product {stripe_product_id}: {fallback_err}")
 
     price_data = {
       'currency': 'gbp',

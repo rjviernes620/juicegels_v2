@@ -1568,8 +1568,8 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Pre-order Form ── */}
       {page === "preorder" && (
         <main style={{ padding: "18px 18px 48px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 4px" }}>Your Details</h2>
-          <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 18px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · {formatMoney(checkoutTotal)} total including shipping</p>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "#000000", margin: "0 0 4px" }}>Your Details</h2>
+          <p style={{ color: "#000000", fontSize: 12, margin: "0 0 18px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · {formatMoney(checkoutTotal)} total including shipping</p>
 
           <form onSubmit={handleSubmit} noValidate style={{ display: "flex", flexDirection: "column", gap: 13 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
@@ -1748,5 +1748,5 @@ function Field({ label, error, children }: { label: string; error?: string; chil
 }
 
 function mkInput(hasError: boolean): React.CSSProperties {
-  return { background: "var(--input-background)", border: `1.5px solid ${hasError ? "var(--destructive)" : "var(--border)"}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, color: "var(--foreground)", outline: "none", width: "100%", boxSizing: "border-box" };
+  return { background: "var(--input-background)", border: `1.5px solid ${hasError ? "var(--destructive)" : "var(--border)"}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, color: "#000000", outline: "none", width: "100%", boxSizing: "border-box" };
 }
