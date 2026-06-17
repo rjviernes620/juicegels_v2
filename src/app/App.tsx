@@ -1687,7 +1687,7 @@ const updateQty = (idx: number, delta: number) => {
               </div>
             </div>
 
-            <button type="submit" disabled={isSubmitting} style={{ background: isSubmitting ? "var(--border)" : "var(--primary)", color: "#fff", border: "none", borderRadius: 12, height: 48, fontWeight: 600, fontSize: 14, cursor: isSubmitting ? "not-allowed" : "pointer", letterSpacing: "0.02em" }}>
+            <button type="submit" disabled={isSubmitting} style={{ background: isSubmitting ? "var(--border)" : "#c281a9", color: "#ffffff", border: "none", borderRadius: 12, height: 48, fontWeight: 600, fontSize: 14, cursor: isSubmitting ? "not-allowed" : "pointer", letterSpacing: "0.02em" }}>
               {isSubmitting ? "Redirecting to Stripe..." : "Confirm Pre-order 🌸"}
             </button>
             {checkoutError && <p style={{ color: "var(--destructive)", fontSize: 12, marginTop: 10 }}>{checkoutError}</p>}
