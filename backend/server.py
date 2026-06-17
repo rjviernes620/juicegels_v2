@@ -614,47 +614,68 @@ def send_customer_order_email(order_summary):
     print("Warning: customer_email is empty. Skipping customer confirmation email.")
     return None
 
-  pingram_api_key = read_secret('pingram_v1', 'PINGRAM_API_KEY')
-  if not pingram_api_key:
-    raise RuntimeError('Missing Pingram secret file pingram_v1.')
-
-  from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or '').strip()
-  from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or '').strip()
-
-  notification_payload = {
-    'type': 'email_compose_preview',
-    'to': {
-      'email': customer_email,
-    },
-    'email': {
-      'subject': "Order Confirmed - Juice Gels",
-      'html': build_customer_email_html(order_summary),
-      'senderName': from_name or 'Juice Gels',
-      'senderEmail': from_address or 'neworder@juicegels.com',
-    },
-  }
-
-  async def _send():
-    async with Pingram(
-      api_key=pingram_api_key,
-      base_url='https://api.eu.pingram.io',
-    ) as client:
-      return await client.send(notification_payload)
-
   try:
-    return asyncio.run(_send())
+    pingram_api_key = read_secret('pingram_v1', 'PINGRAM_API_KEY')
+    if not pingram_api_key:
+      raise RuntimeError('Missing Pingram secret file pingram_v1.')
+
+    from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or '').strip()
+    from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or '').strip()
+
+    notification_payload = {
+      'type': 'email_compose_preview',
+      'to': {
+        'email': customer_email,
+      },
+      'email': {
+        'subject': "Order Confirmed - Juice Gels",
+        'html': build_customer_email_html(order_summary),
+        'senderName': from_name or 'Juice Gels',
+        'senderEmail': from_address or 'neworder@juicegels.com',
+      },
+    }
+
+    async def _send():
+      async with Pingram(
+        api_key=pingram_api_key,
+        base_url='https://api.eu.pingram.io',
+      ) as client:
+        return await client.send(notification_payload)
+
+    print(f"Triggering async Pingram call to send confirmation email to customer: {customer_email}...")
+    result = asyncio.run(_send())
+    print(f"Customer confirmation email successfully sent. Response: {result}")
+    return result
   except Exception as error:
-    print(f"Error sending customer confirmation email: {error}")
+    print(f"Error sending customer confirmation email to {customer_email}: {error}")
+    import traceback
+    traceback.print_exc()
     return None
 
 
 def handle_completed_checkout_session(checkout_session):
-  if get_value(checkout_session, 'payment_status', '') != 'paid':
+  payment_status = get_value(checkout_session, 'payment_status', '')
+  if payment_status != 'paid':
+    print(f"Skipping handle_completed_checkout_session because payment_status is '{payment_status}' (expected 'paid')")
     return
 
+  print("Building order summary for completed checkout session...")
   order_summary = build_order_summary(checkout_session)
-  send_pingram_order_email(order_summary)
+
+  print("Sending store owner order email notification...")
+  try:
+    send_pingram_order_email(order_summary)
+    print("Store owner order email notification successfully sent.")
+  except Exception as e:
+    print(f"Failed to send store owner email notification: {e}")
+    import traceback
+    traceback.print_exc()
+    # Propagate the error to webhook handler if owner notification fails
+    raise
+
+  print("Sending customer purchase confirmation email...")
   send_customer_order_email(order_summary)
+  print("Customer confirmation email process completed.")
 
 
 def format_coupon_description(coupon):
@@ -781,8 +802,10 @@ def check_eligibility():
 
 @app.route('/stripe-webhook', methods=['POST'])
 def stripe_webhook():
+  print("Stripe webhook endpoint called!")
   webhook_secret = read_secret('stripe_webhook_live', 'STRIPE_WEBHOOK_SECRET')
   if not webhook_secret:
+    print("Error: Missing Stripe webhook secret.")
     return jsonify({ 'error': 'Missing Stripe webhook secret file stripe_webhook.' }), 500
 
   payload = request.get_data(as_text=True)
@@ -790,16 +813,26 @@ def stripe_webhook():
 
   try:
     event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
-  except Exception:
+    print(f"Stripe Webhook event constructed successfully: {get_value(event, 'type')} (ID: {get_value(event, 'id')})")
+  except Exception as e:
+    print(f"Stripe Webhook signature verification failed: {e}")
+    import traceback
+    traceback.print_exc()
     return jsonify({ 'error': 'Invalid webhook signature.' }), 400
 
   if get_value(event, 'type') == 'checkout.session.completed':
     try:
-      handle_completed_checkout_session(get_value(get_value(event, 'data', {}) or {}, 'object', {}) or {})
-    except Exception:
+      checkout_session = get_value(get_value(event, 'data', {}) or {}, 'object', {}) or {}
+      print(f"Stripe webhook: processing checkout.session.completed with payment_status: {get_value(checkout_session, 'payment_status', '')}")
+      handle_completed_checkout_session(checkout_session)
+      print("Stripe webhook: successfully processed checkout.session.completed.")
+    except Exception as e:
+      print(f"Stripe webhook error while processing completed checkout session: {e}")
       import traceback
       traceback.print_exc()
       return jsonify({ 'error': 'Failed to process completed checkout session.' }), 500
+  else:
+    print(f"Stripe webhook: ignoring unhandled event type: {get_value(event, 'type')}")
 
   return jsonify({ 'received': True })
 
