@@ -654,6 +654,7 @@ def create_checkout_session():
 
   customer_email = form.get('email', '').strip()
   has_size_guide = False
+  has_nail_set = False
   size_guide_discount_pence = 0
   for item in items:
     product = item.get('product', {})
@@ -662,10 +663,11 @@ def create_checkout_session():
       price = float(product.get('price', 0))
       quantity = int(item.get('quantity', 1))
       size_guide_discount_pence = round(price * 100) * quantity
-      break
+    else:
+      has_nail_set = True
 
   apply_size_guide_coupon = False
-  if has_size_guide and customer_email:
+  if has_size_guide and has_nail_set and customer_email:
     if is_first_time_buyer(customer_email):
       apply_size_guide_coupon = True
 

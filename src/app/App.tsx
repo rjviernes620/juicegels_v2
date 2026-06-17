@@ -409,6 +409,7 @@ useEffect(() => {
   const confirmationCount = confirmationItems.reduce((s, i) => s + i.quantity, 0);
 
   const hasSizeGuide = cart.some(item => item.product.id === "JUICEGELS-0286");
+  const hasNailSet = cart.some(item => item.product.id !== "JUICEGELS-0286");
   const sizeGuideItem = cart.find(item => item.product.id === "JUICEGELS-0286");
   const sizeGuideDiscountAmount = isSizeGuideDiscountApplied && sizeGuideItem ? sizeGuideItem.product.price * sizeGuideItem.quantity : 0;
 
@@ -436,7 +437,7 @@ useEffect(() => {
   useEffect(() => {
     const email = form.email.trim();
     const emailRegex = /\S+@\S+\.\S+/;
-    if (!hasSizeGuide || !email || !emailRegex.test(email)) {
+    if (!hasSizeGuide || !hasNailSet || !email || !emailRegex.test(email)) {
       setIsSizeGuideDiscountApplied(false);
       return;
     }
@@ -470,7 +471,7 @@ useEffect(() => {
     return () => {
       active = false;
     };
-  }, [form.email, hasSizeGuide]);
+  }, [form.email, hasSizeGuide, hasNailSet]);
 
   useEffect(() => {
     if (!isSubmitting) {
