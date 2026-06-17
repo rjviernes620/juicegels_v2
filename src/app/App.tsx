@@ -1935,7 +1935,7 @@ const updateQty = (idx: number, delta: number) => {
                     padding: "10px 12px",
                     borderRadius: 12,
                     border: `1.5px solid ${form.contactMethod === "instagram" ? "var(--primary)" : "var(--border)"}`,
-                    background: form.contactMethod === "instagram" ? "rgba(208, 111, 144, 0.08)" : "var(--card)",
+                    background: form.contactMethod === "instagram" ? "rgba(128, 33, 65, 0.44)" : "var(--card)",
                     color: form.contactMethod === "instagram" ? "var(--primary)" : "var(--foreground)",
                     fontSize: 13,
                     fontWeight: 600,
@@ -1957,7 +1957,7 @@ const updateQty = (idx: number, delta: number) => {
                     padding: "10px 12px",
                     borderRadius: 12,
                     border: `1.5px solid ${form.contactMethod === "email" ? "var(--primary)" : "var(--border)"}`,
-                    background: form.contactMethod === "email" ? "rgba(208, 111, 144, 0.08)" : "var(--card)",
+                    background: form.contactMethod === "email" ? "rgba(128, 33, 65, 0.44)" : "var(--card)",
                     color: form.contactMethod === "email" ? "var(--primary)" : "var(--foreground)",
                     fontSize: 13,
                     fontWeight: 600,
@@ -2011,7 +2011,7 @@ const updateQty = (idx: number, delta: number) => {
                         padding: "12px 13px",
                         borderRadius: 12,
                         border: `1.5px solid ${isSelected ? "var(--primary)" : "var(--border)"}`,
-                        background: isSelected ? "rgba(208, 111, 144, 0.08)" : "var(--card)",
+                        background: isSelected ? "rgba(128, 33, 65, 0.44)" : "var(--card)",
                         cursor: "pointer",
                       }}
                     >
