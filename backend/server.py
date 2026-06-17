@@ -25,7 +25,8 @@ FREE_TRACKED48_THRESHOLD_PENCE = 3000
 POST_PAYMENT_PROCESS_TEXT = (
     "Since our press-on nails are hand-crafted to fit you perfectly, the next step is confirming your sizes!\n\n"
     "We will contact you via Instagram ({instagram}) or your email within 24 hours to confirm your nail sizes.\n\n"
-    "If you already ordered a Sizing Guide or know your sizes, we will double-check this with you. Once sizes are finalized, we will start hand-crafting your custom set!"
+    "If you already ordered a Sizing Guide or know your sizes, we will double-check this with you. Once sizes are finalized, we will start hand-crafting your custom set!\n\n"
+    "Once your nails have been made, We will send you pictures of your order to confirm you're happy with how they turned out before they're dispatched."
 )
 
 
@@ -310,13 +311,16 @@ def resolve_shipping_label(shipping_option_id, shipping_rate_id=''):
   return ''
 
 
-def fetch_checkout_line_items(session_id):
-  response = client.v1.checkout.sessions.retrieve(
-    session_id,
-    params={
-      'expand': ['line_items'],
-    },
-  )
+def fetch_checkout_line_items(session_or_id):
+  if isinstance(session_or_id, str):
+    response = client.v1.checkout.sessions.retrieve(
+      session_or_id,
+      params={
+        'expand': ['line_items'],
+      },
+    )
+  else:
+    response = session_or_id
 
   line_items = []
   for entry in get_data_list(get_value(response, 'line_items', {}) or {}):
@@ -336,11 +340,25 @@ def fetch_checkout_line_items(session_id):
 
 
 def build_order_summary(checkout_session):
-  metadata = get_value(checkout_session, 'metadata', {}) or {}
-  customer_details = get_value(checkout_session, 'customer_details', {}) or {}
-  total_details = get_value(checkout_session, 'total_details', {}) or {}
-  shipping_cost = get_value(checkout_session, 'shipping_cost', {}) or {}
   session_id = get_value(checkout_session, 'id', '')
+  
+  # Fetch fully expanded checkout session including line items and discounts
+  try:
+    expanded_session = client.v1.checkout.sessions.retrieve(
+      session_id,
+      params={
+        'expand': ['line_items', 'discounts', 'discounts.coupon'],
+      },
+    )
+  except Exception as e:
+    print(f"Warning: Failed to retrieve expanded checkout session from Stripe: {e}")
+    expanded_session = checkout_session
+
+  metadata = get_value(expanded_session, 'metadata', {}) or {}
+  customer_details = get_value(expanded_session, 'customer_details', {}) or {}
+  total_details = get_value(expanded_session, 'total_details', {}) or {}
+  shipping_cost = get_value(expanded_session, 'shipping_cost', {}) or {}
+  
   shipping_amount_pence = parse_int(
     get_value(shipping_cost, 'amount_total', get_value(metadata, 'shipping_amount_pence', 0))
   )
@@ -350,25 +368,36 @@ def build_order_summary(checkout_session):
     or resolve_shipping_label(get_value(metadata, 'shipping_option_id', ''), shipping_rate_id)
   )
 
+  # Retrieve Coupon Name
+  coupon_name = ''
+  discounts = get_value(expanded_session, 'discounts', []) or []
+  if discounts and len(discounts) > 0:
+    coupon = get_value(discounts[0], 'coupon', {}) or {}
+    coupon_name = get_value(coupon, 'name', '') or ''
+  
+  if not coupon_name:
+    coupon_name = get_value(metadata, 'coupon_code', '')
+
   return {
     'session_id': session_id,
-    'created_at': format_unix_timestamp(get_value(checkout_session, 'created')),
-    'payment_status': get_value(checkout_session, 'payment_status', ''),
-    'customer_email': get_value(checkout_session, 'customer_email') or get_value(customer_details, 'email', ''),
+    'created_at': format_unix_timestamp(get_value(expanded_session, 'created')),
+    'payment_status': get_value(expanded_session, 'payment_status', ''),
+    'customer_email': get_value(expanded_session, 'customer_email') or get_value(customer_details, 'email', ''),
     'first_name': get_value(metadata, 'first_name', ''),
     'last_name': get_value(metadata, 'last_name', ''),
     'phone': get_value(metadata, 'phone', '') or get_value(customer_details, 'phone', ''),
     'instagram': get_value(metadata, 'instagram', ''),
     'notes': get_value(metadata, 'notes', ''),
     'coupon_code': get_value(metadata, 'coupon_code', ''),
+    'coupon_name': coupon_name,
     'billing_address': format_address(get_value(customer_details, 'address', {}) or {}),
     'shipping_method': shipping_method,
     'shipping': format_money_from_pence(shipping_amount_pence),
-    'subtotal': format_money_from_pence(get_value(checkout_session, 'amount_subtotal', 0)),
+    'subtotal': format_money_from_pence(get_value(expanded_session, 'amount_subtotal', 0)),
     'discount': format_money_from_pence(get_value(total_details, 'amount_discount', 0)),
-    'total': format_money_from_pence(get_value(checkout_session, 'amount_total', 0)),
-    'currency': str(get_value(checkout_session, 'currency', '') or '').upper(),
-    'line_items': fetch_checkout_line_items(session_id),
+    'total': format_money_from_pence(get_value(expanded_session, 'amount_total', 0)),
+    'currency': str(get_value(expanded_session, 'currency', '') or '').upper(),
+    'line_items': fetch_checkout_line_items(expanded_session),
   }
 
 
@@ -430,6 +459,7 @@ def send_pingram_order_email(order_summary):
       'html': build_order_email_html(order_summary),
       'senderName': from_name or 'OnlineOrder',
       'senderEmail': from_address or 'neworder@juicegels.com',
+      'replyToAddresses': ['juicegels@gmail.com'],
     },
   }
 
@@ -505,7 +535,7 @@ def build_customer_email_html(order_summary):
   # Check if discount exists
   discount_row = ''
   if order_summary.get('discount') and order_summary.get('discount') != '£0.00' and order_summary.get('discount') != '$0.00':
-    coupon_str = f" ({order_summary.get('coupon_code')})" if order_summary.get('coupon_code') else ""
+    coupon_str = f" ({order_summary.get('coupon_name')})" if order_summary.get('coupon_name') else ""
     discount_row = f"""<tr>
   <td style="padding: 6px 0; color: #4f444a;">Discount{escape_html(coupon_str)}</td>
   <td align="right" style="padding: 6px 0; font-weight: 500; color: #c0392b;">-{escape_html(order_summary.get("discount", ""))}</td>
@@ -632,6 +662,7 @@ def send_customer_order_email(order_summary):
         'html': build_customer_email_html(order_summary),
         'senderName': from_name or 'Juice Gels',
         'senderEmail': from_address or 'neworder@juicegels.com',
+        'replyToAddresses': ['juicegels@gmail.com'],
       },
     }
 
