@@ -803,7 +803,7 @@ def check_eligibility():
 @app.route('/stripe-webhook', methods=['POST'])
 def stripe_webhook():
   print("Stripe webhook endpoint called!")
-  webhook_secret = read_secret('stripe_webhook_live', 'STRIPE_WEBHOOK_SECRET')
+  webhook_secret = read_secret('stripe_webhook', 'STRIPE_WEBHOOK_SECRET')
   if not webhook_secret:
     print("Error: Missing Stripe webhook secret.")
     return jsonify({ 'error': 'Missing Stripe webhook secret file stripe_webhook.' }), 500
