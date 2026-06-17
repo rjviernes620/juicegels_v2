@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
@@ -71,6 +71,269 @@ function buildShippingOptions(itemsTotal: number): ShippingOption[] {
       isFree: false,
     },
   ];
+}
+
+interface HomeCarouselProps {
+  navigate: (path: string) => void;
+}
+
+function HomeCarousel({ navigate }: HomeCarouselProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const timerRef = useRef<number | null>(null);
+
+  const isJuly2026Active = () => {
+    const now = new Date();
+    const saleEnd = new Date("2026-08-01T00:00:00");
+    return now < saleEnd;
+  };
+
+  const slides = useMemo(() => {
+    const list = [];
+
+    if (isJuly2026Active()) {
+      list.push({
+        id: "summer-sale",
+        content: (
+          <button 
+            type="button"
+            onClick={() => {
+              const productsEl = document.getElementById("products-grid");
+              if (productsEl) {
+                productsEl.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+            style={{ 
+              display: "flex",
+              width: "100%",
+              background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)", 
+              border: "none",
+              borderRadius: 14,
+              padding: "16px 18px", 
+              alignItems: "center",
+              gap: 16,
+              textAlign: "left",
+              cursor: "pointer",
+              color: "#1e1b4b",
+              fontFamily: "inherit",
+              boxSizing: "border-box",
+              minHeight: 116,
+            }}
+          >
+            <ImageWithFallback 
+              src="images/summer_sale_banner.png" 
+              alt="Summer Sale" 
+              style={{ 
+                width: 84, 
+                height: 84, 
+                objectFit: "cover", 
+                borderRadius: 12, 
+                flexShrink: 0,
+                background: "var(--muted)" 
+              }} 
+            />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: "'Lobster', serif", color: "#1e1b4b", margin: "0 0 4px", fontSize: 18 }}>25% Off Summer Sale! ☀️</p>
+              <p style={{ color: "#312e81", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
+                Get 25% off your basket when you buy ONLY nail sets! Ends at the end of July. <br />
+                <span style={{ color: "#4338ca", fontWeight: 700 }}>Discount Applied Automatically 🌸</span>
+              </p>
+            </div>
+          </button>
+        )
+      });
+    }
+
+    list.push({
+      id: "size-guide",
+      content: (
+        <button 
+          type="button"
+          onClick={() => navigate("/product/JUICEGELS-0286")}
+          style={{ 
+            display: "flex",
+            width: "100%",
+            background: "var(--secondary)", 
+            border: "none",
+            borderRadius: 14,
+            padding: "16px 18px", 
+            alignItems: "center",
+            gap: 16,
+            textAlign: "left",
+            cursor: "pointer",
+            color: "inherit",
+            fontFamily: "inherit",
+            boxSizing: "border-box",
+            minHeight: 116,
+          }}
+        >
+          <ImageWithFallback 
+            src="images/JUICEGELS-0286.jpg" 
+            alt="Nail Sizing Guide" 
+            style={{ 
+              width: 84, 
+              height: 84, 
+              objectFit: "cover", 
+              borderRadius: 12, 
+              flexShrink: 0,
+              background: "var(--muted)" 
+              }} 
+            />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 4px", fontSize: 18 }}>Need your nail sizes?</p>
+              <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
+                Get our Nail Sizing Guide — £4.00 off when ordered with any nail set! <br />
+                <span style={{ color: "var(--primary)", fontWeight: 600 }}>Discount Applied at Stripe Checkout 🌸</span>
+              </p>
+            </div>
+          </button>
+        )
+      });
+
+    return list;
+  }, [navigate]);
+
+  const startTimer = () => {
+    stopTimer();
+    if (slides.length <= 1) return;
+    timerRef.current = window.setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % slides.length);
+    }, 4500);
+  };
+
+  const stopTimer = () => {
+    if (timerRef.current !== null) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    startTimer();
+    return () => stopTimer();
+  }, [slides.length]);
+
+  return (
+    <div 
+      onMouseEnter={stopTimer}
+      onMouseLeave={startTimer}
+      style={{
+        position: "relative",
+        margin: "12px 14px 4px",
+        overflow: "hidden",
+        borderRadius: 14,
+        border: "1px solid var(--border)",
+      }}
+    >
+      <div 
+        style={{
+          display: "flex",
+          transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          transform: `translateX(-${activeIndex * 100}%)`,
+          width: "100%",
+        }}
+      >
+        {slides.map((slide) => (
+          <div key={slide.id} style={{ width: "100%", flexShrink: 0 }}>
+            {slide.content}
+          </div>
+        ))}
+      </div>
+
+      {slides.length > 1 && (
+        <>
+          {/* Navigation Dots */}
+          <div style={{
+            position: "absolute",
+            bottom: 6,
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            gap: 6,
+            zIndex: 10,
+          }}>
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setActiveIndex(idx)}
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  border: "none",
+                  background: activeIndex === idx ? "var(--primary)" : "rgba(0,0,0,0.25)",
+                  padding: 0,
+                  cursor: "pointer",
+                  transition: "background 0.3s",
+                }}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Navigation Arrows */}
+          <button
+            type="button"
+            onClick={() => setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length)}
+            style={{
+              position: "absolute",
+              left: 6,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.78)",
+              border: "none",
+              borderRadius: "50%",
+              width: 20,
+              height: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              fontSize: 12,
+              fontWeight: "bold",
+              color: "var(--foreground)",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              zIndex: 10,
+              lineHeight: 1,
+              padding: 0,
+            }}
+            aria-label="Previous slide"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveIndex((prev) => (prev + 1) % slides.length)}
+            style={{
+              position: "absolute",
+              right: 6,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.78)",
+              border: "none",
+              borderRadius: "50%",
+              width: 20,
+              height: 20,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              fontSize: 12,
+              fontWeight: "bold",
+              color: "var(--foreground)",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              zIndex: 10,
+              lineHeight: 1,
+              padding: 0,
+            }}
+            aria-label="Next slide"
+          >
+            ›
+          </button>
+        </>
+      )}
+    </div>
+  );
 }
 
 function buildMetaBasketProductsParam(items: CartItem[]) {
@@ -411,10 +674,17 @@ useEffect(() => {
   const hasSizeGuide = cart.some(item => item.product.id === "JUICEGELS-0286");
   const hasNailSet = cart.some(item => item.product.id !== "JUICEGELS-0286");
   const sizeGuideItem = cart.find(item => item.product.id === "JUICEGELS-0286");
-  const sizeGuideDiscountAmount = isSizeGuideDiscountApplied && sizeGuideItem ? sizeGuideItem.product.price * sizeGuideItem.quantity : 0;
+
+  const isJuly2026SaleActive = () => {
+    const now = new Date();
+    const saleEnd = new Date("2026-08-01T00:00:00");
+    return now < saleEnd;
+  };
+  const isNailSetSaleApplied = !hasSizeGuide && hasNailSet && isJuly2026SaleActive();
+  const nailSetSaleDiscountAmount = isNailSetSaleApplied ? cartTotal * 0.25 : 0;
 
   const couponDiscount = couponSummary?.discountAmount ?? 0;
-  const discountTotal = couponDiscount + sizeGuideDiscountAmount;
+  const discountTotal = couponDiscount + nailSetSaleDiscountAmount;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
   const shippingOptions = useMemo(() => buildShippingOptions(orderTotal), [orderTotal]);
@@ -1133,41 +1403,9 @@ const updateQty = (idx: number, delta: number) => {
             </div>
           )}
 
-          <button 
-            onClick={() => navigate("/product/JUICEGELS-0286")}
-            style={{ 
-              display: "flex",
-              width: "calc(100% - 28px)",
-              margin: "12px 14px 4px", 
-              background: "var(--secondary)", 
-              border: "1px solid var(--border)",
-              borderRadius: 14, 
-              padding: "12px 14px", 
-              alignItems: "center",
-              gap: 14,
-              textAlign: "left",
-              cursor: "pointer"
-            }}
-          >
-            <ImageWithFallback 
-              src="images/JUICEGELS-0286.jpg" 
-              alt="Nail Sizing Guide" 
-              style={{ 
-                width: 72, 
-                height: 72, 
-                objectFit: "cover", 
-                borderRadius: 10, 
-                flexShrink: 0,
-                background: "var(--muted)" 
-              }} 
-            />
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 2px", fontSize: 16 }}>Need your nail sizes?</p>
-              <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12, lineHeight: 1.4 }}>Click here and pick up the Nail Sizing Guide — £4 deducted from your first set <br /> Discount Applied at Checkout 🌸</p>
-            </div>
-          </button>
+          <HomeCarousel navigate={navigate} />
 
-            <div style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div id="products-grid" style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {uniqueProducts.map((p) => (
               <button key={p.id} onClick={() => openProduct(p)} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
                 <button onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }} style={{ position: "absolute", top: 7, right: 7, background: "rgba(255,255,255,0.88)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }} aria-label="Wishlist">
@@ -1473,6 +1711,63 @@ const updateQty = (idx: number, delta: number) => {
                 ))}
               </div>
 
+              {/* Sizing Guide Discount Eligible */}
+              {hasSizeGuide && hasNailSet && (
+                <div style={{
+                  background: "#f0fdf4",
+                  border: "1px solid #bbf7d0",
+                  borderRadius: 14,
+                  padding: "12px 14px",
+                  marginBottom: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}>
+                  <span style={{ fontSize: 20 }}>🌸</span>
+                  <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.4 }}>
+                    <strong>Nail Size Guide Discount Eligible!</strong>
+                    <br />A £4.00 discount (cost of 1 Sizing Guide) will be automatically applied at checkout for first-time buyers!
+                  </div>
+                </div>
+              )}
+
+              {isNailSetSaleApplied && (
+                <div style={{
+                  background: "#f0fdf4",
+                  border: "1px solid #bbf7d0",
+                  borderRadius: 14,
+                  padding: "12px 14px",
+                  marginBottom: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}>
+                  <span style={{ fontSize: 20 }}>✨</span>
+                  <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.4 }}>
+                    <strong>25% Off Summer Sale Applied!</strong>
+                    <br />You've got 25% off your entire basket of nail sets!
+                  </div>
+                </div>
+              )}
+
+              {!hasNailSet && hasSizeGuide && (
+                <div style={{
+                  background: "#fffbeb",
+                  border: "1px solid #fde68a",
+                  borderRadius: 14,
+                  padding: "12px 14px",
+                  marginBottom: 14,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                }}>
+                  <span style={{ fontSize: 20 }}>💡</span>
+                  <div style={{ fontSize: 13, color: "#92400e", lineHeight: 1.4 }}>
+                    <strong>Tip:</strong> Add any nail set to your basket to get your Nail Sizing Guide for free (eligible first-time buyers)!
+                  </div>
+                </div>
+              )}
+
               <div style={{ background: "var(--secondary)", borderRadius: 14, padding: "14px 16px", marginBottom: 14 }}>
                 <div style={{ display: "flex", gap: 8, alignItems: "flex-end", marginBottom: 12 }}>
                   <div style={{ flex: 1 }}>
@@ -1555,7 +1850,7 @@ const updateQty = (idx: number, delta: number) => {
                   </div>
                 )}
 
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
+                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
                   <span style={{ color: "var(--muted-foreground)" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
                   <span>£{cartTotal.toFixed(2)}</span>
                 </div>
@@ -1565,10 +1860,10 @@ const updateQty = (idx: number, delta: number) => {
                     <span style={{ color: "var(--primary)" }}>-£{couponDiscount.toFixed(2)}</span>
                   </div>
                 )}
-                {isSizeGuideDiscountApplied && sizeGuideDiscountAmount > 0 && (
+                {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                    <span style={{ color: "#1f6f43", fontWeight: 500 }}>First-time Size Guide Discount</span>
-                    <span style={{ color: "#1f6f43", fontWeight: 700 }}>-£{sizeGuideDiscountAmount.toFixed(2)}</span>
+                    <span style={{ color: "#1f6f43", fontWeight: 500 }}>25% Off Summer Sale</span>
+                    <span style={{ color: "#1f6f43", fontWeight: 700 }}>-£{nailSetSaleDiscountAmount.toFixed(2)}</span>
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
@@ -1703,10 +1998,20 @@ const updateQty = (idx: number, delta: number) => {
                   <span>-{formatMoney(couponDiscount)}</span>
                 </div>
               )}
-              {isSizeGuideDiscountApplied && sizeGuideDiscountAmount > 0 && (
+              {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1f6f43", fontWeight: 500 }}>
-                  <span>First-time Size Guide Discount</span>
-                  <span>-{formatMoney(sizeGuideDiscountAmount)}</span>
+                  <span>25% Off Summer Sale</span>
+                  <span>-{formatMoney(nailSetSaleDiscountAmount)}</span>
+                </div>
+              )}
+              {hasSizeGuide && hasNailSet && (
+                <div style={{ display: "flex", flexDirection: "column", marginTop: 4, padding: "8px 10px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0", fontSize: 11, color: "#166534", lineHeight: 1.35 }}>
+                  <strong>🌸 Nail Size Guide Discount Eligible!</strong>
+                  <span>
+                    {isSizeGuideDiscountApplied 
+                      ? "Eligible first-time buyer verified! £4.00 will be automatically deducted at checkout." 
+                      : "If you are a first-time buyer, £4.00 will be automatically deducted at checkout."}
+                  </span>
                 </div>
               )}
               {selectedShippingOption && (

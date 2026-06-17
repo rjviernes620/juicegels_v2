@@ -58,12 +58,15 @@ def read_secret(secret_name, env_var_name=None):
   return ''
 
 
-stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
 if not stripe_api_key:
+
   raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
 
-client = stripe.StripeClient(stripe_api_key)
+# #Live Mode
+# stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
+# client = stripe.StripeClient(stripe_api_key)
 
+client = stripe.StripeClient("sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx")
 
 def build_checkout_items_param(items):
   encoded_items = []
@@ -673,8 +676,7 @@ def create_checkout_session():
     if is_nail_size_guide_product(product):
       has_size_guide = True
       price = float(product.get('price', 0))
-      quantity = int(item.get('quantity', 1))
-      size_guide_discount_pence = round(price * 100) * quantity
+      size_guide_discount_pence = round(price * 100)
     else:
       has_nail_set = True
 
@@ -683,11 +685,21 @@ def create_checkout_session():
     if is_first_time_buyer(customer_email):
       apply_size_guide_coupon = True
 
+  apply_25_percent_discount = False
+  if has_nail_set and not has_size_guide:
+    now = datetime.now(timezone.utc)
+    sale_end = datetime(2026, 8, 1, 0, 0, 0, tzinfo=timezone.utc)
+    if now < sale_end:
+      apply_25_percent_discount = True
+
   discounted_subtotal_pence = subtotal_pence
-  if coupon_summary:
-    discounted_subtotal_pence -= coupon_summary['discount_pence']
-  if apply_size_guide_coupon:
-    discounted_subtotal_pence -= size_guide_discount_pence
+  if apply_25_percent_discount:
+    discounted_subtotal_pence -= round(subtotal_pence * 0.25)
+  else:
+    if coupon_summary:
+      discounted_subtotal_pence -= coupon_summary['discount_pence']
+    if apply_size_guide_coupon:
+      discounted_subtotal_pence -= size_guide_discount_pence
   discounted_subtotal_pence = max(0, discounted_subtotal_pence)
 
   try:
@@ -711,17 +723,21 @@ def create_checkout_session():
         'phone': form.get('phone', ''),
         'instagram': form.get('instagram', ''),
         'notes': form.get('notes', ''),
-        'coupon_code': '60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else ''),
+        'coupon_code': 'lGKkukJL' if apply_25_percent_discount else ('60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else '')),
         'shipping_option_id': shipping_option['id'],
         'shipping_method': shipping_option['label'],
         'shipping_amount_pence': str(shipping_option['amount_pence']),
       },
       'mode': 'payment',
       'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
-      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary and not apply_size_guide_coupon else ''}",
+      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary and not (apply_size_guide_coupon or apply_25_percent_discount) else ''}",
     }
 
-    if apply_size_guide_coupon:
+    if apply_25_percent_discount:
+      session_params['discounts'] = [{
+        'coupon': 'lGKkukJL',
+      }]
+    elif apply_size_guide_coupon:
       session_params['discounts'] = [{
         'coupon': '60pCPsnH',
       }]
