@@ -11,7 +11,7 @@ import { Search } from "./components/Search";
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
 type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search";
-type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string;city: string; postcode: string; notes: string; };
+type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string; city: string; postcode: string; notes: string; contactMethod: "instagram" | "email"; };
 type ShippingOptionId = "tracked24" | "tracked48";
 
 type CouponSummary = {
@@ -31,7 +31,7 @@ type ShippingOption = {
   isFree: boolean;
 };
 
-const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", notes: "" };
+const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", notes: "", contactMethod: "instagram" };
 
 const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 const META_CART_ORIGIN = "meta_shops";
@@ -1054,7 +1054,7 @@ const updateQty = (idx: number, delta: number) => {
     if (!form.phone.trim()) e.phone = "Required";
     if (!form.address.trim()) e.address = "Required";
     if (!form.city.trim()) e.city = "Required";
-    if (!form.instagram.trim()) e.instagram = "Required";
+    if (form.contactMethod === "instagram" && !form.instagram.trim()) e.instagram = "Required";
     if (!form.postcode.trim()) e.postcode = "Required";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -1590,7 +1590,7 @@ const updateQty = (idx: number, delta: number) => {
                 lineHeight: 1.5
               }}
             >
-              You will be contacted via Instagram from <strong>@juicegels</strong> up to 24 hours after payment to confirm your nail sizes.
+              You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
             </div>
           ) : null}
         </div>
@@ -1877,7 +1877,7 @@ const updateQty = (idx: number, delta: number) => {
               </div>
 
               <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5, marginBottom: 4 }}>
-                You will be contacted via Instagram from <strong>@juicegels</strong> up to 24 hours after payment to confirm your nail sizes.
+                You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
               </div>
             </>
           )}
@@ -1921,9 +1921,68 @@ const updateQty = (idx: number, delta: number) => {
               <input type="text" placeholder="12 Petal Lane" value={form.address} onChange={(e) => handleFormChange("address", e.target.value)} style={mkInput(!!errors.address)} />
             </Field>
 
-            <Field label="Instagram username" error={errors.instagram}>
-              <input type="text" placeholder="@juicegels" value={form.instagram} onChange={(e) => handleFormChange("instagram", e.target.value)} style={mkInput(!!errors.instagram)} />
+            <Field label="Preferred Contact Method">
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => handleFormChange("contactMethod", "instagram")}
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    padding: "10px 12px",
+                    borderRadius: 12,
+                    border: `1.5px solid ${form.contactMethod === "instagram" ? "var(--primary)" : "var(--border)"}`,
+                    background: form.contactMethod === "instagram" ? "rgba(208, 111, 144, 0.08)" : "var(--card)",
+                    color: form.contactMethod === "instagram" ? "var(--primary)" : "var(--foreground)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>📸</span> Instagram
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleFormChange("contactMethod", "email")}
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    padding: "10px 12px",
+                    borderRadius: 12,
+                    border: `1.5px solid ${form.contactMethod === "email" ? "var(--primary)" : "var(--border)"}`,
+                    background: form.contactMethod === "email" ? "rgba(208, 111, 144, 0.08)" : "var(--card)",
+                    color: form.contactMethod === "email" ? "var(--primary)" : "var(--foreground)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                  }}
+                >
+                  <span style={{ fontSize: 16 }}>✉️</span> Email
+                </button>
+              </div>
             </Field>
+
+            {form.contactMethod === "instagram" && (
+              <>
+                <Field label="Instagram username" error={errors.instagram}>
+                  <input type="text" placeholder="@juicegels" value={form.instagram} onChange={(e) => handleFormChange("instagram", e.target.value)} style={mkInput(!!errors.instagram)} />
+                </Field>
+                <div style={{ display: "flex", gap: 10, padding: "10px 12px", background: "#fffbeb", borderRadius: 10, border: "1px solid #fef3c7", fontSize: 12, color: "#92400e", lineHeight: 1.45, marginTop: -4 }}>
+                  <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
+                  <div>
+                    <strong>Private Account notice:</strong> If you have a private Instagram Account and wish to have communications via Instagram, please message the <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> Instagram account first to make sure that communications can be made.
+                  </div>
+                </div>
+              </>
+            )}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <Field label="City" error={errors.city}>
                 <input type="text" placeholder="London" value={form.city} onChange={(e) => handleFormChange("city", e.target.value)} style={mkInput(!!errors.city)} />
@@ -1981,7 +2040,15 @@ const updateQty = (idx: number, delta: number) => {
             </Field>
 
             <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
-              You will be contacted via Instagram from <strong>@juicegels</strong> up to 24 hours after payment to confirm your nail sizes.
+              {form.contactMethod === "email" ? (
+                <>
+                  You will be contacted via Email at <strong>{form.email || "your email"}</strong> up to 24 hours after payment to confirm your nail sizes.
+                </>
+              ) : (
+                <>
+                  You will be contacted via Instagram from <strong>@juicegels</strong> up to 24 hours after payment to confirm your nail sizes.
+                </>
+              )}
             </div>
 
             <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "var(--foreground)" }}>
@@ -2045,7 +2112,17 @@ const updateQty = (idx: number, delta: number) => {
           </p>
           <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
             A confirmation will be sent to <strong>{form.email}</strong>.<br />
-            <span style={{ color: "var(--primary)" }}>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
+            {form.contactMethod === "email" ? (
+              <span style={{ color: "var(--primary)" }}>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
+            ) : (
+              <>
+                <span style={{ color: "var(--primary)" }}>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
+                <br />
+                <span style={{ color: "#92400e", fontSize: 11, display: "block", marginTop: 4 }}>
+                  ⚠️ If your Instagram account is private, please message <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> first to make sure that communications can be made.
+                </span>
+              </>
+            )}
           </p>
 
           <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>

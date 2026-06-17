@@ -387,6 +387,7 @@ def build_order_summary(checkout_session):
     'last_name': get_value(metadata, 'last_name', ''),
     'phone': get_value(metadata, 'phone', '') or get_value(customer_details, 'phone', ''),
     'instagram': get_value(metadata, 'instagram', ''),
+    'contact_preference': get_value(metadata, 'contact_preference', 'instagram'),
     'notes': get_value(metadata, 'notes', ''),
     'coupon_code': get_value(metadata, 'coupon_code', ''),
     'coupon_name': coupon_name,
@@ -424,6 +425,7 @@ def build_order_email_html(order_summary):
     ('Email', order_summary.get('customer_email', '')),
     ('Phone', order_summary.get('phone', '')),
     ('Instagram', order_summary.get('instagram', '')),
+    ('Contact preference', order_summary.get('contact_preference', 'instagram')),
     ('Billing address', order_summary.get('billing_address', '')),
     ('Notes', order_summary.get('notes', '')),
   ])
@@ -513,6 +515,8 @@ def build_customer_email_html(order_summary):
     part for part in [order_summary.get('first_name', ''), order_summary.get('last_name', '')] if part
   ).strip() or "there"
 
+  contact_pref = order_summary.get('contact_preference', 'instagram')
+  customer_email = order_summary.get('customer_email', '')
   instagram_handle = order_summary.get('instagram', '').strip()
   if instagram_handle:
     if not instagram_handle.startswith('@'):
@@ -520,10 +524,22 @@ def build_customer_email_html(order_summary):
   else:
     instagram_handle = 'Instagram'
 
+  if contact_pref == 'email':
+    contact_text = f"We will contact you via your email ({customer_email}) within 24 hours to confirm your nail sizes."
+  else:
+    contact_text = f"We will contact you via Instagram ({instagram_handle}) within 24 hours to confirm your nail sizes."
+    contact_text += " (Note: If your Instagram account is private, please message @juicegels first to make sure that communications can be made.)"
+
+  process_text = (
+    "Since our press-on nails are hand-crafted to fit you perfectly, the next step is confirming your sizes!\n\n"
+    f"{contact_text}\n\n"
+    "If you already ordered a Sizing Guide or know your sizes, we will double-check this with you. Once sizes are finalized, we will start hand-crafting your custom set!\n\n"
+    "Once your nails have been made, We will send you pictures of your order to confirm you're happy with how they turned out before they're dispatched."
+  )
+
   # Process paragraph styling
   paragraphs = []
-  raw_text = POST_PAYMENT_PROCESS_TEXT.replace("{instagram}", instagram_handle)
-  for para in raw_text.split('\n\n'):
+  for para in process_text.split('\n\n'):
     if para.strip():
       paragraphs.append(f'<p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
 
@@ -1024,6 +1040,7 @@ def create_checkout_session():
         'last_name': form.get('lastName', ''),
         'phone': form.get('phone', ''),
         'instagram': form.get('instagram', ''),
+        'contact_preference': form.get('contactMethod', 'instagram'),
         'notes': form.get('notes', ''),
         'shipping_address': form.get('address', ''),
         'shipping_city': form.get('city', ''),
