@@ -21,7 +21,7 @@ PINGRAM_API_KEY = "pingram_sk_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJrZ
 # Default configuration for sender/recipient
 DEFAULT_SENDER_NAME = "Juice Gels"
 DEFAULT_SENDER_EMAIL = "neworder@juicegels.com"
-DEFAULT_RECIPIENT_EMAIL = "rjviernes620@gmail.com"
+DEFAULT_RECIPIENT_EMAIL = "AViernes101@gmail.com"
 PINGRAM_BASE_URL = "https://api.eu.pingram.io"
 
 # ==========================================

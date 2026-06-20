@@ -198,8 +198,8 @@ def build_info_table(rows):
   for label, value in rows:
     table_rows.append(
       '<tr>'
-      f'<th style="text-align:left;padding:10px 12px;border:1px solid #d1d5db;background:#f8fafc;width:220px;">{escape_html(label)}</th>'
-      f'<td style="padding:10px 12px;border:1px solid #d1d5db;">{escape_html(value)}</td>'
+      f'<th style="text-align:left;padding:10px 12px;border:1px solid #d1d5db;background:#f8fafc;width:220px;font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">{escape_html(label)}</th>'
+      f'<td style="padding:10px 12px;border:1px solid #d1d5db;font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">{escape_html(value)}</td>'
       '</tr>'
     )
 
@@ -484,16 +484,16 @@ def send_pingram_order_email(order_summary):
 
 def build_customer_items_table(items):
   if not items:
-    return '<p style="margin:0 0 24px; color:#4f444a; font-style:italic;">No items found in this order.</p>'
+    return '<p style="margin:0 0 24px; color:#4f444a; font-style:italic; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">No items found in this order.</p>'
 
   rows = []
   for item in items:
     rows.append(
       '<tr>'
-      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); font-weight:500; font-size:15px; color:#3d1a24;">{escape_html(item.get("description", "Item"))}</td>'
-      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); text-align:center; font-size:15px; color:#4f444a;">{escape_html(item.get("quantity", 1))}</td>'
-      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); text-align:right; font-size:15px; color:#4f444a;">{escape_html(item.get("unit_price", ""))}</td>'
-      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); text-align:right; font-weight:500; font-size:15px; color:#3d1a24;">{escape_html(item.get("line_total", ""))}</td>'
+      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); font-weight:500; font-size:15px; color:#3d1a24; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">{escape_html(item.get("description", "Item"))}</td>'
+      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); text-align:center; font-size:15px; color:#4f444a; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">{escape_html(item.get("quantity", 1))}</td>'
+      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); text-align:right; font-size:15px; color:#4f444a; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">{escape_html(item.get("unit_price", ""))}</td>'
+      f'<td style="padding:12px 10px; border-bottom:1px solid rgba(212, 84, 122, 0.15); text-align:right; font-weight:500; font-size:15px; color:#3d1a24; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">{escape_html(item.get("line_total", ""))}</td>'
       '</tr>'
     )
 
@@ -501,10 +501,10 @@ def build_customer_items_table(items):
     '<table style="border-collapse:collapse; width:100%; margin:0 0 10px;">'
     '<thead>'
     '<tr>'
-    '<th style="text-align:left; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase;">Item</th>'
-    '<th style="text-align:center; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase; width:60px;">Qty</th>'
-    '<th style="text-align:right; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase; width:80px;">Unit</th>'
-    '<th style="text-align:right; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase; width:80px;">Total</th>'
+    '<th style="text-align:left; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">Item</th>'
+    '<th style="text-align:center; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase; width:60px; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">Qty</th>'
+    '<th style="text-align:right; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase; width:80px; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">Unit</th>'
+    '<th style="text-align:right; padding:12px 10px; border-bottom:2px solid #fc6587; color:#fc6587; font-weight:700; font-size:14px; text-transform:uppercase; width:80px; font-family:\'DM Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">Total</th>'
     '</tr>'
     '</thead>'
     '<tbody>'
@@ -545,10 +545,10 @@ def build_customer_email_html(order_summary):
   paragraphs = []
   for para in process_text.split('\n\n'):
     if para.strip():
-      paragraphs.append(f'<p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
+      paragraphs.append(f'<p style="margin: 0 0 12px 0; font-family: \'DM Sans\', -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
 
-  post_payment_html = f"""<div style="background-color: #fce4ea; border: 2px dashed #fc6587; border-radius: 12px; padding: 20px; margin: 24px 0; color: #3d1a24; font-family: 'DM Sans', Arial, sans-serif;">
-  <h3 style="margin: 0 0 12px 0; font-family: 'Lobster', Georgia, serif; font-size: 20px; color: #ae3c6f; font-weight: normal;">💖 What happens next?</h3>
+  post_payment_html = f"""<div style="background-color: #fce4ea; border: 2px dashed #fc6587; border-radius: 12px; padding: 20px; margin: 24px 0; color: #3d1a24; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <h3 style="margin: 0 0 12px 0; font-family: 'Lobster', 'Brush Script MT', 'Lucida Handwriting', Georgia, serif; font-size: 20px; color: #ae3c6f; font-weight: normal;">💖 What happens next?</h3>
   {"".join(paragraphs)}
 </div>"""
 
@@ -557,24 +557,24 @@ def build_customer_email_html(order_summary):
   if order_summary.get('discount') and order_summary.get('discount') != '£0.00' and order_summary.get('discount') != '$0.00':
     coupon_str = f" ({order_summary.get('coupon_name')})" if order_summary.get('coupon_name') else ""
     discount_row = f"""<tr>
-  <td style="padding: 6px 0; color: #4f444a;">Discount{escape_html(coupon_str)}</td>
-  <td align="right" style="padding: 6px 0; font-weight: 500; color: #c0392b;">-{escape_html(order_summary.get("discount", ""))}</td>
+  <td style="padding: 6px 0; color: #4f444a; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Discount{escape_html(coupon_str)}</td>
+  <td align="right" style="padding: 6px 0; font-weight: 500; color: #c0392b; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">-{escape_html(order_summary.get("discount", ""))}</td>
 </tr>"""
 
   # Check if shipping exists
   shipping_row = ''
   if order_summary.get('shipping'):
     shipping_row = f"""<tr>
-  <td style="padding: 6px 0; color: #4f444a;">Shipping ({escape_html(order_summary.get("shipping_method", ""))})</td>
-  <td align="right" style="padding: 6px 0; font-weight: 500;">{escape_html(order_summary.get("shipping", ""))}</td>
+  <td style="padding: 6px 0; color: #4f444a; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Shipping ({escape_html(order_summary.get("shipping_method", ""))})</td>
+  <td align="right" style="padding: 6px 0; font-weight: 500; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">{escape_html(order_summary.get("shipping", ""))}</td>
 </tr>"""
 
   # Billing/Shipping address
   address_html = ''
   if order_summary.get('billing_address'):
-    address_html = f"""<h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Delivery Details</h3>
-<p style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700;">Shipping Address:</p>
-<p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6; color: #4f444a; white-space: pre-wrap;">{escape_html(order_summary.get("billing_address", ""))}</p>"""
+    address_html = f"""<h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Delivery Details</h3>
+<p style="margin: 0 0 6px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700;">Shipping Address:</p>
+<p style="margin: 0 0 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #4f444a; white-space: pre-wrap;">{escape_html(order_summary.get("billing_address", ""))}</p>"""
 
   items_table = build_customer_items_table(order_summary.get("line_items", []))
 
@@ -584,54 +584,59 @@ def build_customer_email_html(order_summary):
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Your Juice Gels Order Confirmation</title>
+  <!-- Link tag for web font support in email clients (like iOS, Apple Mail, Gmail mobile app) -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Lobster&display=swap" rel="stylesheet" type="text/css">
+  
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:wght@400;500;700&display=swap');
+    /* fallback font stack */
+    body, table, td, p, a {{
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }}
     body {{
       margin: 0;
       padding: 0;
       background-color: #ffd2e6;
-      font-family: 'DM Sans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }}
   </style>
 </head>
-<body style="margin: 0; padding: 40px 20px; background-color: #ffd2e6;">
+<body style="margin: 0; padding: 40px 20px; background-color: #ffd2e6; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
     <tr>
-      <td align="center" style="padding: 0 0 40px 0;">
+      <td align="center" style="padding: 0 0 40px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
         <!-- Outer Container -->
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fff9fb; border: 1px solid rgba(212, 84, 122, 0.18); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(61, 26, 36, 0.08);">
           <!-- Header -->
           <tr>
-            <td align="center" style="padding: 40px 30px 20px 30px; background-color: #fff9fb; border-bottom: 1px solid rgba(212, 84, 122, 0.1);">
-              <h1 style="margin: 0; font-family: 'Lobster', Georgia, serif; font-size: 42px; color: #fc6587; font-weight: normal; letter-spacing: 0.5px; line-height: 1.1;">Juice Gels</h1>
-              <p style="margin: 8px 0 0 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 14px; color: #ae3c6f; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">Order Confirmation</p>
+            <td align="center" style="padding: 40px 30px 20px 30px; background-color: #fff9fb; border-bottom: 1px solid rgba(212, 84, 122, 0.1); font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+              <h1 style="margin: 0; font-family: 'Lobster', 'Brush Script MT', 'Lucida Handwriting', Georgia, serif; font-size: 42px; color: #fc6587; font-weight: normal; letter-spacing: 0.5px; line-height: 1.1;">Juice Gels</h1>
+              <p style="margin: 8px 0 0 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; color: #ae3c6f; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">Order Confirmation</p>
             </td>
           </tr>
           <!-- Body Content -->
           <tr>
-            <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', Arial, sans-serif; color: #3d1a24;">
-              <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #3d1a24;">
+            <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #3d1a24;">
+              <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
+              <p style="margin: 0 0 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #3d1a24;">
                 Thank you for your purchase! Your payment was successful, and we have received your order details below.
               </p>
               
               {post_payment_html}
               
-              <h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Order Summary</h3>
+              <h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Order Summary</h3>
               {items_table}
               
               <!-- Pricing Summary -->
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; color: #3d1a24;">
+              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; color: #3d1a24;">
                 <tr>
-                  <td style="padding: 6px 0; color: #4f444a;">Subtotal</td>
-                  <td align="right" style="padding: 6px 0; font-weight: 500;">{escape_html(order_summary.get("subtotal", ""))}</td>
+                  <td style="padding: 6px 0; color: #4f444a; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Subtotal</td>
+                  <td align="right" style="padding: 6px 0; font-weight: 500; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">{escape_html(order_summary.get("subtotal", ""))}</td>
                 </tr>
                 {discount_row}
                 {shipping_row}
                 <tr>
-                  <td style="padding: 12px 0 0 0; font-size: 18px; font-weight: 700; color: #3d1a24; border-top: 1px solid rgba(212, 84, 122, 0.15);">Total Paid</td>
-                  <td align="right" style="padding: 12px 0 0 0; font-size: 18px; font-weight: 700; color: #fc6587; border-top: 1px solid rgba(212, 84, 122, 0.15);">{escape_html(order_summary.get("total", ""))}</td>
+                  <td style="padding: 12px 0 0 0; font-size: 18px; font-weight: 700; color: #3d1a24; border-top: 1px solid rgba(212, 84, 122, 0.15); font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">Total Paid</td>
+                  <td align="right" style="padding: 12px 0 0 0; font-size: 18px; font-weight: 700; color: #fc6587; border-top: 1px solid rgba(212, 84, 122, 0.15); font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">{escape_html(order_summary.get("total", ""))}</td>
                 </tr>
               </table>
               
@@ -640,11 +645,11 @@ def build_customer_email_html(order_summary):
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="padding: 30px; background-color: #fff9fb; border-top: 1px solid rgba(212, 84, 122, 0.1); text-align: center; font-family: 'DM Sans', Arial, sans-serif;">
-              <p style="margin: 0 0 12px 0; font-size: 14px; color: #4f444a;">
-                Have a question? Contact us on Instagram <a href="https://instagram.com/juicegels" target="_blank" style="color: #fc6587; text-decoration: underline; font-weight: 500;">@juicegels</a> or reply directly to this email.
+            <td style="padding: 30px; background-color: #fff9fb; border-top: 1px solid rgba(212, 84, 122, 0.1); text-align: center; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+              <p style="margin: 0 0 12px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; color: #4f444a;">
+                Have a question? Contact us on Instagram <a href="https://instagram.com/juicegels" target="_blank" style="color: #fc6587; text-decoration: underline; font-weight: 500; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">@juicegels</a> or reply directly to this email.
               </p>
-              <p style="margin: 0; font-size: 13px; color: #ae3c6f; font-weight: 500;">
+              <p style="margin: 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; color: #ae3c6f; font-weight: 500;">
                 &copy; {datetime.now(timezone.utc).year} Juice Gels. All rights reserved.
               </p>
             </td>
@@ -883,10 +888,10 @@ def build_custom_order_customer_email_html(summary):
   paragraphs = []
   for para in process_text.split('\n\n'):
     if para.strip():
-      paragraphs.append(f'<p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
+      paragraphs.append(f'<p style="margin: 0 0 12px 0; font-family: \'DM Sans\', -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
 
-  post_payment_html = f"""<div style="background-color: #fce4ea; border: 2px dashed #fc6587; border-radius: 12px; padding: 20px; margin: 24px 0; color: #3d1a24; font-family: 'DM Sans', Arial, sans-serif;">
-  <h3 style="margin: 0 0 12px 0; font-family: 'Lobster', Georgia, serif; font-size: 20px; color: #ae3c6f; font-weight: normal;">💖 What happens next?</h3>
+  post_payment_html = f"""<div style="background-color: #fce4ea; border: 2px dashed #fc6587; border-radius: 12px; padding: 20px; margin: 24px 0; color: #3d1a24; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <h3 style="margin: 0 0 12px 0; font-family: 'Lobster', 'Brush Script MT', 'Lucida Handwriting', Georgia, serif; font-size: 20px; color: #ae3c6f; font-weight: normal;">💖 What happens next?</h3>
   {"".join(paragraphs)}
 </div>"""
 
@@ -898,55 +903,74 @@ def build_custom_order_customer_email_html(summary):
 
   return f"""<!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Custom Order Request - Juice Gels</title>
+  <!-- Link tag for web font support in email clients (like iOS, Apple Mail, Gmail mobile app) -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Lobster&display=swap" rel="stylesheet" type="text/css">
+  
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:wght@400;500;700&display=swap');
+    /* fallback font stack */
+    body, table, td, p, a {{
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }}
     body {{
       margin: 0;
       padding: 0;
       background-color: #ffd2e6;
-      font-family: 'DM Sans', Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }}
   </style>
 </head>
-<body style="margin: 0; padding: 40px 20px; background-color: #ffd2e6;">
+
+<body style="margin: 0; padding: 40px 20px; background-color: #ffd2e6; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
     <tr>
-      <td align="center" style="padding: 0 0 40px 0;">
+      <td align="center" style="padding: 0 0 40px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
         <!-- Outer Container -->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fff9fb; border: 1px solid rgba(212, 84, 122, 0.18); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(61, 26, 36, 0.08);">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+          style="max-width: 600px; background-color: #fff9fb; border: 1px solid rgba(212, 84, 122, 0.18); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(61, 26, 36, 0.08);">
           <!-- Header -->
           <tr>
-            <td align="center" style="padding: 40px 30px 20px 30px; background-color: #fff9fb; border-bottom: 1px solid rgba(212, 84, 122, 0.1);">
-              <h1 style="margin: 0; font-family: 'Lobster', Georgia, serif; font-size: 42px; color: #fc6587; font-weight: normal; letter-spacing: 0.5px; line-height: 1.1;">Juice Gels</h1>
-              <p style="margin: 8px 0 0 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 14px; color: #ae3c6f; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">Custom Order Request</p>
+            <td align="center"
+              style="padding: 40px 30px 20px 30px; background-color: #fff9fb; border-bottom: 1px solid rgba(212, 84, 122, 0.15); font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+              <h1
+                style="margin: 0; font-family: 'Lobster', 'Brush Script MT', 'Lucida Handwriting', Georgia, serif; font-size: 42px; color: #fc6587; font-weight: normal; letter-spacing: 0.5px; line-height: 1.1;">
+                Juice Gels</h1>
+              <p
+                style="margin: 8px 0 0 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; color: #ae3c6f; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">
+                Custom Order Request</p>
             </td>
           </tr>
           <!-- Body Content -->
           <tr>
-            <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', Arial, sans-serif; color: #3d1a24;">
-              <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #3d1a24;">
+            <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #3d1a24;">
+              <h2
+                style="margin: 0 0 16px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">
+                Hi {escape_html(customer_name)},</h2>
+              <p style="margin: 0 0 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #3d1a24;">
                 We have received your custom order inquiry! Please see details below.
               </p>
-              
+
               {post_payment_html}
-              
-              <h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Your Request Details</h3>
+
+              <h3
+                style="margin: 30px 0 12px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">
+                Your Request Details</h3>
               {details_table}
             </td>
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="padding: 30px; background-color: #fff9fb; border-top: 1px solid rgba(212, 84, 122, 0.1); text-align: center; font-family: 'DM Sans', Arial, sans-serif;">
-              <p style="margin: 0 0 12px 0; font-size: 14px; color: #4f444a;">
-                Have a question? Feel free to DM us on Instagram <a href="https://instagram.com/juicegels" target="_blank" style="color: #fc6587; text-decoration: underline; font-weight: 500;">@juicegels</a>.
+            <td
+              style="padding: 30px; background-color: #fff9fb; border-top: 1px solid rgba(212, 84, 122, 0.1); text-align: center; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+              <p style="margin: 0 0 12px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; color: #4f444a;">
+                Have a question? Feel free to DM us on Instagram <a href="https://instagram.com/juicegels"
+                  target="_blank" style="color: #fc6587; text-decoration: underline; font-weight: 500; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">@juicegels</a>.
               </p>
-              <p style="margin: 0; font-size: 13px; color: #ae3c6f; font-weight: 500;">
+              <p style="margin: 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; color: #ae3c6f; font-weight: 500;">
                 &copy; {datetime.now(timezone.utc).year} Juice Gels. All rights reserved.
               </p>
             </td>
@@ -957,6 +981,7 @@ def build_custom_order_customer_email_html(summary):
     </tr>
   </table>
 </body>
+
 </html>"""
 
 
