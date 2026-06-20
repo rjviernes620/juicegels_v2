@@ -70,20 +70,20 @@ export function Search({ products, onShopProduct }: SearchProps) {
   };
 
   return (
-    <div style={{ background: "var(--background)", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Title Header */}
       <div 
         style={{ 
           background: "linear-gradient(160deg, #83495b 0%, #fce4ea 60%, #fdf2f4 100%)", 
           padding: "24px 20px", 
           textAlign: "center",
-          borderBottom: "1px solid var(--border)"
+          borderBottom: "1px solid rgba(212, 84, 122, 0.18)"
         }}
       >
-        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "var(--foreground)", margin: "0 0 6px" }}>
+        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fff9fb", margin: "0 0 6px" }}>
           Search Studio 🔍
         </h2>
-        <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
+        <p style={{ color: "#4f444a", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
           Find your perfect press-on nail look by name, tags, description, or product ID.
         </p>
       </div>
@@ -93,7 +93,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
         
         {/* Search Bar Input */}
         <div style={{ position: "relative", width: "100%" }}>
-          <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--muted-foreground)", display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#4f444a", display: "flex", alignItems: "center" }}>
             <SearchIcon size={18} />
           </div>
           <input
@@ -106,7 +106,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
               boxSizing: "border-box",
               padding: "12px 40px 12px 40px",
               borderRadius: 24,
-              border: "1px solid var(--border)",
+              border: "1px solid rgba(212, 84, 122, 0.18)",
               background: "#fff",
               fontSize: 14,
               color: "#000000",
@@ -115,7 +115,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
               transition: "border-color 0.2s ease"
             }}
             onFocus={(e) => { e.currentTarget.style.borderColor = "#f24e77"; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(212, 84, 122, 0.18)"; }}
           />
           {query && (
             <button
@@ -128,7 +128,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                color: "var(--muted-foreground)",
+                color: "#4f444a",
                 display: "flex",
                 alignItems: "center",
                 padding: 0
@@ -141,7 +141,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
 
         {/* Suggestion Chips */}
         <div>
-          <p style={{ margin: "0 0 10px 4px", fontSize: 12, fontWeight: 600, color: "var(--muted-foreground)" }}>
+          <p style={{ margin: "0 0 10px 4px", fontSize: 12, fontWeight: 600, color: "#4f444a" }}>
             Popular Searches
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -151,8 +151,8 @@ export function Search({ products, onShopProduct }: SearchProps) {
                 onClick={() => handleSuggestionClick(suggestion)}
                 style={{
                   background: query === suggestion ? "#f24e77" : "#b65151",
-                  color: query === suggestion ? "#d57171" : "var(--foreground)",
-                  border: "1px solid var(--border)",
+                  color: query === suggestion ? "#d57171" : "#fff9fb",
+                  border: "1px solid rgba(212, 84, 122, 0.18)",
                   borderRadius: 20,
                   padding: "6px 14px",
                   fontSize: 12,
@@ -170,7 +170,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
                 onMouseLeave={(e) => {
                   if (query !== suggestion) {
                     e.currentTarget.style.background = "#e35959";
-                    e.currentTarget.style.borderColor = "var(--border)";
+                    e.currentTarget.style.borderColor = "rgba(212, 84, 122, 0.18)";
                   }
                 }}
               >
@@ -186,11 +186,11 @@ export function Search({ products, onShopProduct }: SearchProps) {
             <>
               {/* Query Results */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingLeft: 4 }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: "var(--foreground)" }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#fff9fb" }}>
                   {searchResults.length} {searchResults.length === 1 ? "set" : "sets"} found
                 </span>
                 {searchResults.length > 0 && (
-                  <span style={{ fontSize: 11, color: "var(--muted-foreground)" }}>
+                  <span style={{ fontSize: 11, color: "#4f444a" }}>
                     Tap a card to shop
                   </span>
                 )}
@@ -205,7 +205,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
                       style={{
                         background: "#834242",
                         borderRadius: 14,
-                        border: "1px solid var(--border)",
+                        border: "1px solid rgba(212, 84, 122, 0.18)",
                         padding: 12,
                         display: "flex",
                         alignItems: "center",
@@ -220,11 +220,11 @@ export function Search({ products, onShopProduct }: SearchProps) {
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.borderColor = "var(--border)";
+                        e.currentTarget.style.borderColor = "rgba(212, 84, 122, 0.18)";
                       }}
                     >
                       {/* Image */}
-                      <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "var(--secondary)", flexShrink: 0, border: "1px solid var(--border)" }}>
+                      <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "#e0a2b4", flexShrink: 0, border: "1px solid rgba(212, 84, 122, 0.18)" }}>
                         <ImageWithFallback
                           src={product.image}
                           alt={product.name}
@@ -233,15 +233,15 @@ export function Search({ products, onShopProduct }: SearchProps) {
                       </div>
                       {/* Text details */}
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "var(--foreground)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "#fff9fb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {product.name}
                         </p>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--primary)" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#ffd6e9" }}>
                           £{product.price.toFixed(2)}
                         </span>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
                           {product.tags.slice(0, 2).map((t) => (
-                            <span key={t} style={{ fontSize: 9, background: "var(--secondary)", color: "var(--muted-foreground)", padding: "2px 6px", borderRadius: 4 }}>
+                            <span key={t} style={{ fontSize: 9, background: "#e0a2b4", color: "#4f444a", padding: "2px 6px", borderRadius: 4 }}>
                               #{t}
                             </span>
                           ))}
@@ -260,17 +260,17 @@ export function Search({ products, onShopProduct }: SearchProps) {
                   style={{ 
                     textAlign: "center", 
                     padding: "40px 20px", 
-                    background: "var(--secondary)", 
+                    background: "#e0a2b4", 
                     borderRadius: 18, 
-                    border: "1px solid var(--border)",
+                    border: "1px solid rgba(212, 84, 122, 0.18)",
                     boxShadow: "0 4px 16px rgba(0,0,0,0.02)"
                   }}
                 >
                   <p style={{ fontSize: 32, margin: "0 0 10px" }}>🕵️‍♀️</p>
-                  <p style={{ margin: "0 0 6px", fontSize: 14, fontWeight: 700, color: "var(--foreground)" }}>
+                  <p style={{ margin: "0 0 6px", fontSize: 14, fontWeight: 700, color: "#fff9fb" }}>
                     No matching sets found
                   </p>
-                  <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
+                  <p style={{ margin: 0, fontSize: 12, color: "#4f444a", lineHeight: 1.5 }}>
                     Double-check spelling or try searching generic terms like "shine", "tips", or "bow".
                   </p>
                 </div>
@@ -279,7 +279,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
           ) : (
             <>
               {/* Popular / Recommended Sets */}
-              <p style={{ margin: "10px 0 10px 4px", fontSize: 12, fontWeight: 600, color: "var(--muted-foreground)" }}>
+              <p style={{ margin: "10px 0 10px 4px", fontSize: 12, fontWeight: 600, color: "#4f444a" }}>
                 🔥 Recommended Sets
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -290,7 +290,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
                     style={{
                       background: "#e77171",
                       borderRadius: 14,
-                      border: "1px solid var(--border)",
+                      border: "1px solid rgba(212, 84, 122, 0.18)",
                       padding: 12,
                       display: "flex",
                       alignItems: "center",
@@ -305,11 +305,11 @@ export function Search({ products, onShopProduct }: SearchProps) {
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "scale(1)";
-                      e.currentTarget.style.borderColor = "var(--border)";
+                      e.currentTarget.style.borderColor = "rgba(212, 84, 122, 0.18)";
                     }}
                   >
                     {/* Image */}
-                    <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "var(--secondary)", flexShrink: 0, border: "1px solid var(--border)" }}>
+                    <div style={{ width: 64, height: 64, borderRadius: 10, overflow: "hidden", background: "#e0a2b4", flexShrink: 0, border: "1px solid rgba(212, 84, 122, 0.18)" }}>
                       <ImageWithFallback
                         src={product.image}
                         alt={product.name}
@@ -323,10 +323,10 @@ export function Search({ products, onShopProduct }: SearchProps) {
                           <Sparkles size={8} /> Popular
                         </span>
                       </div>
-                      <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "var(--foreground)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "#fff9fb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {product.name}
                       </p>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "var(--primary)" }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#ffd6e9" }}>
                         £{product.price.toFixed(2)}
                       </span>
                     </div>

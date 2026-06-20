@@ -3,14 +3,14 @@ import { Instagram, Mail, MessageCircle, Clock, ExternalLink } from "lucide-reac
 
 export function Contact() {
   return (
-    <div style={{ background: "var(--background)", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
       <div 
         style={{ 
           background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
           padding: "36px 20px 28px", 
           textAlign: "center",
-          borderBottom: "1px solid var(--border)",
+          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -23,7 +23,7 @@ export function Contact() {
             style={{ 
               fontFamily: "'Lobster', serif", 
               fontSize: 32, 
-              color: "var(--nail-the-look-color)", 
+              color: "#fc6587", 
               margin: "0 0 6px",
               lineHeight: 1.2
             }}
@@ -32,7 +32,7 @@ export function Contact() {
           </h2>
           <p 
             style={{ 
-              color: "var(--muted-foreground)", 
+              color: "#4f444a", 
               margin: 0, 
               fontSize: 13, 
               fontWeight: 500,
@@ -48,17 +48,17 @@ export function Contact() {
       <div style={{ padding: "24px 20px", display: "flex", flexDirection: "column", gap: 24 }}>
         
         {/* Intro */}
-        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "var(--muted-foreground)", textAlign: "center" }}>
+        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a", textAlign: "center" }}>
           We are always happy to help! Reach out to us through Instagram or Email and we'll get back to you as soon as possible.
         </p>
 
         {/* Instagram DM Deep Link Card */}
         <div 
           style={{ 
-            background: "var(--secondary)", 
+            background: "#e0a2b4", 
             borderRadius: 16, 
             padding: "20px 18px", 
-            border: "1px solid var(--border)",
+            border: "1px solid rgba(212, 84, 122, 0.18)",
             display: "flex",
             flexDirection: "column",
             gap: 14,
@@ -75,7 +75,7 @@ export function Contact() {
                 display: "flex", 
                 alignItems: "center", 
                 justifyContent: "center",
-                color: "var(--primary)"
+                color: "#ffd6e9"
               }}
             >
               <Instagram size={20} />
@@ -84,7 +84,7 @@ export function Contact() {
               style={{ 
                 fontFamily: "'Lobster', serif", 
                 fontSize: 22, 
-                color: "var(--foreground)", 
+                color: "#fff9fb", 
                 margin: 0 
               }}
             >
@@ -92,7 +92,7 @@ export function Contact() {
             </h3>
           </div>
           
-          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "var(--muted-foreground)" }}>
+          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
             Send us a direct message for the fastest response. Perfect for sizing questions, custom design inquiries, or quick updates on your order.
           </p>
 
@@ -127,10 +127,10 @@ export function Contact() {
         {/* Email Card */}
         <div 
           style={{ 
-            background: "var(--secondary)", 
+            background: "#e0a2b4", 
             borderRadius: 16, 
             padding: "20px 18px", 
-            border: "1px solid var(--border)",
+            border: "1px solid rgba(212, 84, 122, 0.18)",
             display: "flex",
             flexDirection: "column",
             gap: 14,
@@ -147,7 +147,7 @@ export function Contact() {
                 display: "flex", 
                 alignItems: "center", 
                 justifyContent: "center",
-                color: "var(--primary)"
+                color: "#ffd6e9"
               }}
             >
               <Mail size={20} />
@@ -156,7 +156,7 @@ export function Contact() {
               style={{ 
                 fontFamily: "'Lobster', serif", 
                 fontSize: 22, 
-                color: "var(--foreground)", 
+                color: "#fff9fb", 
                 margin: 0 
               }}
             >
@@ -164,7 +164,7 @@ export function Contact() {
             </h3>
           </div>
           
-          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "var(--muted-foreground)" }}>
+          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
             Prefer email? Send us a message directly. We aim to reply to all emails within 24 hours.
           </p>
 
@@ -175,9 +175,9 @@ export function Contact() {
               alignItems: "center", 
               justifyContent: "center",
               gap: 8, 
-              background: "var(--card)", 
-              color: "var(--foreground)", 
-              border: "1.5px solid var(--border)",
+              background: "#fc6587", 
+              color: "#fff9fb", 
+              border: "1.5px solid rgba(212, 84, 122, 0.18)",
               padding: "12px 20px", 
               borderRadius: 12, 
               fontSize: 14, 
@@ -188,7 +188,7 @@ export function Contact() {
             onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
             onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
           >
-            <Mail size={16} style={{ color: "var(--primary)" }} />
+            <Mail size={16} style={{ color: "#ffd6e9" }} />
             juicegels@gmail.com
           </a>
         </div>
@@ -199,22 +199,22 @@ export function Contact() {
             background: "rgba(255, 255, 255, 0.03)", 
             borderRadius: 14, 
             padding: "16px", 
-            border: "1px dashed var(--border)",
+            border: "1px dashed rgba(212, 84, 122, 0.18)",
             display: "flex", 
             flexDirection: "column", 
             gap: 12
           }}
         >
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <Clock size={16} style={{ color: "var(--primary)", marginTop: 2, flexShrink: 0 }} />
-            <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--muted-foreground)" }}>
-              <strong style={{ color: "var(--foreground)" }}>Response Times:</strong> We typically respond to Instagram DMs and Emails within 24 hours.
+            <Clock size={16} style={{ color: "#ffd6e9", marginTop: 2, flexShrink: 0 }} />
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a" }}>
+              <strong style={{ color: "#fff9fb" }}>Response Times:</strong> We typically respond to Instagram DMs and Emails within 24 hours.
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <span style={{ fontSize: 16, flexShrink: 0, marginTop: -2 }}>📏</span>
-            <div style={{ fontSize: 13, lineHeight: 1.5, color: "var(--muted-foreground)" }}>
-              <strong style={{ color: "var(--foreground)" }}>Nail Sizing:</strong> You will be contacted up to 24 hours after checkout to confirm your sizing. If your Instagram is private, please message @juicegels first!
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a" }}>
+              <strong style={{ color: "#fff9fb" }}>Nail Sizing:</strong> You will be contacted up to 24 hours after checkout to confirm your sizing. If your Instagram is private, please message @juicegels first!
             </div>
           </div>
         </div>

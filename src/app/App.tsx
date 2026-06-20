@@ -142,7 +142,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
           style={{ 
             display: "flex",
             width: "100%",
-            background: "var(--secondary)", 
+            background: "#e0a2b4", 
             border: "none",
             borderRadius: 14,
             padding: "16px 18px", 
@@ -165,14 +165,14 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
               objectFit: "cover", 
               borderRadius: 12, 
               flexShrink: 0,
-              background: "var(--muted)" 
+              background: "#fce4ea" 
               }} 
             />
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'Lobster', serif", color: "var(--foreground)", margin: "0 0 4px", fontSize: 18 }}>Need your nail sizes?</p>
-              <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
+              <p style={{ fontFamily: "'Lobster', serif", color: "#fff9fb", margin: "0 0 4px", fontSize: 18 }}>Need your nail sizes?</p>
+              <p style={{ color: "#4f444a", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
                 Get our Nail Sizing Guide — £4.00 off when ordered with any nail set! <br />
-                <span style={{ color: "var(--primary)", fontWeight: 600 }}>Discount Applied at Stripe Checkout 🌸</span>
+                <span style={{ color: "#ffd6e9", fontWeight: 600 }}>Discount Applied at Stripe Checkout 🌸</span>
               </p>
             </div>
           </button>
@@ -211,7 +211,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
         margin: "12px 14px 4px",
         overflow: "hidden",
         borderRadius: 14,
-        border: "1px solid var(--border)",
+        border: "1px solid rgba(212, 84, 122, 0.18)",
       }}
     >
       <div 
@@ -251,7 +251,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
                   height: 6,
                   borderRadius: "50%",
                   border: "none",
-                  background: activeIndex === idx ? "var(--primary)" : "rgba(0,0,0,0.25)",
+                  background: activeIndex === idx ? "#ffd6e9" : "rgba(0,0,0,0.25)",
                   padding: 0,
                   cursor: "pointer",
                   transition: "background 0.3s",
@@ -281,7 +281,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
               cursor: "pointer",
               fontSize: 12,
               fontWeight: "bold",
-              color: "var(--foreground)",
+              color: "#fff9fb",
               boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
               zIndex: 10,
               lineHeight: 1,
@@ -310,7 +310,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
               cursor: "pointer",
               fontSize: 12,
               fontWeight: "bold",
-              color: "var(--foreground)",
+              color: "#fff9fb",
               boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
               zIndex: 10,
               lineHeight: 1,
@@ -1128,7 +1128,7 @@ const updateQty = (idx: number, delta: number) => {
   };
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: 430, margin: "0 auto", minHeight: "100vh", background: "var(--background)" }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: 430, margin: "0 auto", minHeight: "100vh", background: "#ffd2e6" }}>
       {showStripeRedirectModal && (
         <div
           style={{
@@ -1146,11 +1146,11 @@ const updateQty = (idx: number, delta: number) => {
             style={{
               width: "100%",
               maxWidth: 340,
-              background: "var(--card)",
+              background: "#fc6587",
               borderRadius: 18,
               padding: "22px 20px",
               boxShadow: "0 20px 60px rgba(0, 0, 0, 0.18)",
-              border: "1px solid var(--border)",
+              border: "1px solid rgba(212, 84, 122, 0.18)",
               textAlign: "center",
             }}
           >
@@ -1159,16 +1159,16 @@ const updateQty = (idx: number, delta: number) => {
                 width: 44,
                 height: 44,
                 borderRadius: "50%",
-                border: "3px solid var(--border)",
-                borderTopColor: "var(--primary)",
+                border: "3px solid rgba(212, 84, 122, 0.18)",
+                borderTopColor: "#ffd6e9",
                 margin: "0 auto 14px",
                 animation: "juicegels-spin 1s linear infinite",
               }}
             />
-            <h3 style={{ margin: "0 0 8px", fontFamily: "'Lobster', serif", fontSize: 22, color: "var(--foreground)" }}>
+            <h3 style={{ margin: "0 0 8px", fontFamily: "'Lobster', serif", fontSize: 22, color: "#fff9fb" }}>
               Redirecting to Stripe
             </h3>
-            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "var(--muted-foreground)" }}>
+            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "#4f444a" }}>
               You&apos;ll be redirected to Stripe to complete your order. Please wait a moment while we prepare your secure checkout.
             </p>
           </div>
@@ -1205,7 +1205,7 @@ const updateQty = (idx: number, delta: number) => {
           width: 280,
           maxWidth: "80%",
           height: "100vh",
-          background: "var(--background)",
+          background: "#ffd2e6",
           boxShadow: "10px 0 30px rgba(212, 16, 71, 0.1)",
           transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -1229,7 +1229,7 @@ const updateQty = (idx: number, delta: number) => {
           </span>
           <button
             onClick={() => setMenuOpen(false)}
-            style={{ background: "none", border: "none", color: "var(--muted-foreground)", cursor: "pointer", padding: 4 }}
+            style={{ background: "none", border: "none", color: "#4f444a", cursor: "pointer", padding: 4 }}
           >
             <X size={22} />
           </button>
@@ -1254,19 +1254,19 @@ const updateQty = (idx: number, delta: number) => {
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
-                background: "var(--secondary)",
-                border: "1px solid var(--border)",
+                background: "#e0a2b4",
+                border: "1px solid rgba(212, 84, 122, 0.18)",
                 borderRadius: 12,
                 padding: "12px 14px",
                 textAlign: "left",
-                color: "var(--foreground)",
+                color: "#fff9fb",
                 fontWeight: 600,
                 fontSize: 14,
                 cursor: "pointer",
                 transition: "background 0.2s ease",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--primary)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "var(--secondary)"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#ffd6e9"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#e0a2b4"; }}
             >
               <span style={{ fontSize: 16 }}>{item.icon}</span>
               {item.label}
@@ -1275,8 +1275,8 @@ const updateQty = (idx: number, delta: number) => {
         </nav>
 
         {/* Drawer Footer */}
-        <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 20, borderTop: "1px solid var(--border)" }}>
-          <p style={{ fontSize: 11, color: "var(--muted-foreground)", margin: "0 0 10px" }}>
+        <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 20, borderTop: "1px solid rgba(212, 84, 122, 0.18)" }}>
+          <p style={{ fontSize: 11, color: "#4f444a", margin: "0 0 10px" }}>
             Follow Alyssa&apos;s nail updates 🌸
           </p>
           <a
@@ -1287,7 +1287,7 @@ const updateQty = (idx: number, delta: number) => {
               display: "inline-flex",
               alignItems: "center",
               gap: 6,
-              color: "var(--foreground)",
+              color: "#fff9fb",
               fontWeight: 600,
               fontSize: 12,
               textDecoration: "underline",
@@ -1299,9 +1299,9 @@ const updateQty = (idx: number, delta: number) => {
       </div>
 
       {/* ── Header ── */}
-      <header style={{ background: "var(--card)", borderBottom: "1px solid var(--border)", position: "sticky", top: 0, zIndex: 50, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header style={{ background: "#fc6587", borderBottom: "1px solid rgba(212, 84, 122, 0.18)", position: "sticky", top: 0, zIndex: 50, padding: "12px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={() => setMenuOpen(true)} style={{ color: "var(--primary)", background: "none", border: "none", cursor: "pointer", padding: 4 }} aria-label="Menu">
+          <button onClick={() => setMenuOpen(true)} style={{ color: "#ffd6e9", background: "none", border: "none", cursor: "pointer", padding: 4 }} aria-label="Menu">
             <Menu size={22} />
           </button>
         </div>
@@ -1331,9 +1331,9 @@ const updateQty = (idx: number, delta: number) => {
           style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4 }} 
           aria-label="Basket"
         >
-          <ShoppingBag size={22} style={{ color: "var(--primary)" }} />
+          <ShoppingBag size={22} style={{ color: "#ffd6e9" }} />
           {cartCount > 0 && (
-            <span style={{ position: "absolute", top: -4, right: -4, background: "var(--primary)", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
+            <span style={{ position: "absolute", top: -4, right: -4, background: "#ffd6e9", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
               {cartCount}
             </span>
           )}
@@ -1342,7 +1342,7 @@ const updateQty = (idx: number, delta: number) => {
 
       {/* ── Progress bar (basket / preorder / confirmation) ── */}
       {(page === "basket" || page === "preorder" || page === "confirmation") && (
-        <div style={{ display: "flex", padding: "10px 20px", gap: 6, alignItems: "center", background: "var(--card)", borderBottom: "1px solid var(--border)" }}>
+        <div style={{ display: "flex", padding: "10px 20px", gap: 6, alignItems: "center", background: "#fc6587", borderBottom: "1px solid rgba(212, 84, 122, 0.18)" }}>
           {(["Basket", "Details", "Done"] as const).map((label, i) => {
             const active = (page === "basket" && i === 0) || (page === "preorder" && i === 1) || (page === "confirmation" && i === 2);
             const done = (page === "preorder" && i === 0) || (page === "confirmation" && i <= 1);
@@ -1363,13 +1363,13 @@ const updateQty = (idx: number, delta: number) => {
                   }}
                   title={isClickable ? "Go back to Basket" : undefined}
                 >
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: done ? "var(--primary)" : active ? "var(--accent)" : "var(--muted)", border: `2px solid ${active || done ? "var(--primary)" : "var(--border)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {done ? <Check size={11} color="#fff" /> : <span style={{ fontSize: 10, color: active ? "var(--foreground)" : "var(--muted-foreground)", fontWeight: 600 }}>{i + 1}</span>}
+                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: done ? "#ffd6e9" : active ? "#f7b8ca" : "#fce4ea", border: `2px solid ${active || done ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    {done ? <Check size={11} color="#fff" /> : <span style={{ fontSize: 10, color: active ? "#fff9fb" : "#4f444a", fontWeight: 600 }}>{i + 1}</span>}
                   </div>
                   <span 
                     style={{ 
                       fontSize: 11, 
-                      color: active ? "var(--foreground)" : "var(--muted-foreground)", 
+                      color: active ? "#fff9fb" : "#4f444a", 
                       fontWeight: active ? 600 : 400,
                       textDecoration: isClickable ? "underline" : "none"
                     }}
@@ -1377,7 +1377,7 @@ const updateQty = (idx: number, delta: number) => {
                     {label}
                   </span>
                 </div>
-                {i < 2 && <div style={{ flex: 1, height: 1.5, background: done ? "var(--primary)" : "var(--border)", borderRadius: 2 }} />}
+                {i < 2 && <div style={{ flex: 1, height: 1.5, background: done ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)", borderRadius: 2 }} />}
               </div>
             );
           })}
@@ -1387,20 +1387,20 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Home ── */}
       {isProductsLoading && (
         <main style={{ padding: "48px 20px", textAlign: "center" }}>
-          <p style={{ color: "var(--muted-foreground)", fontSize: 14 }}>Loading products...</p>
+          <p style={{ color: "#4f444a", fontSize: 14 }}>Loading products...</p>
         </main>
       )}
 
       {!isProductsLoading && page === "home" && (
         <main>
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
-            <p style={{ color: "var(--muted-foreground)", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
-            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "var(--nail-the-look-color)", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
-            <p style={{ color: "var(--muted-foreground)", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons <br /> We will confirm your sizing after checkout</p>
+            <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
+            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
+            <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons <br /> We will confirm your sizing after checkout</p>
           </div>
 
           {productsLoadError && (
-            <div style={{ margin: "12px 14px 0", background: "#fff1f2", border: "1px solid #f4c2cb", borderRadius: 14, padding: "14px 16px", color: "var(--destructive)", fontSize: 12 }}>
+            <div style={{ margin: "12px 14px 0", background: "#fff1f2", border: "1px solid #f4c2cb", borderRadius: 14, padding: "14px 16px", color: "#c0392b", fontSize: 12 }}>
               {productsLoadError}
             </div>
           )}
@@ -1409,44 +1409,44 @@ const updateQty = (idx: number, delta: number) => {
 
             <div id="products-grid" style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {uniqueProducts.map((p) => (
-              <button key={p.id} onClick={() => openProduct(p)} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
+              <button key={p.id} onClick={() => openProduct(p)} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
                 <button onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }} style={{ position: "absolute", top: 7, right: 7, background: "rgba(255,255,255,0.88)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }} aria-label="Wishlist">
-                  <Heart size={13} fill={wishlist.includes(p.id) ? "var(--primary)" : "none"} stroke={wishlist.includes(p.id) ? "var(--primary)" : "var(--muted-foreground)"} />
+                  <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#4f444a"} />
                 </button>
-                <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "var(--secondary)" }} />
+                <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "#b8395d" }} />
                 <div style={{ padding: "8px 10px 10px" }}>
-                  <p style={{ margin: "0 0 5px", fontSize: 12, color: "var(--foreground)", lineHeight: 1.3 }}>{p.name}</p>
-                  <span style={{ color: "var(--primary)", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
+                  <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3 }}>{p.name}</p>
+                  <span style={{ color: "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
                 </div>
               </button>
             ))}
           </div>
 
-          <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid var(--border)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
-            <p style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--foreground)", margin: "0 0 8px" }}>Juice Gels</p>
-            <p style={{ fontSize: 12, color: "var(--muted-foreground)", margin: "0 0 16px" }}>Handmade with love by Alyssa 🌸</p>
+          <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
+            <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#fff9fb", margin: "0 0 8px" }}>Juice Gels</p>
+            <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 16px" }}>Handmade with love by Alyssa 🌸</p>
             <div style={{ display: "flex", justifyContent: "center", gap: 12, fontSize: 13, alignItems: "center" }}>
-              <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+              <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
                 Our Story
               </button>
-              <span style={{ color: "var(--border)" }}>|</span>
-              <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
+              <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
                 Custom Orders
               </button>
-              <span style={{ color: "var(--border)" }}>|</span>
-              <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
+              <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
                 Contact Us
               </button>
-              <span style={{ color: "var(--border)" }}>|</span>
-              <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
+              <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
                 Videos
               </button>
-              <span style={{ color: "var(--border)" }}>|</span>
-              <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "var(--foreground)", textDecoration: "underline", fontWeight: 500 }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
+              <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline", fontWeight: 500 }}>
                 Instagram
               </a>
             </div>
-            <p style={{ fontSize: 11, color: "var(--muted-foreground)", marginTop: 24, opacity: 0.8 }}>
+            <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
               &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
             </p>
           </footer>
@@ -1484,7 +1484,7 @@ const updateQty = (idx: number, delta: number) => {
         <ImageWithFallback
           src={[selected.image, ...selected.extraImages][activeImg]}
           alt={selected.name}
-          style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "var(--secondary)" }}
+          style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "#e0a2b4" }}
         />
 
         {selected.extraImages.length > 0 && (
@@ -1495,7 +1495,7 @@ const updateQty = (idx: number, delta: number) => {
                 onClick={() => setActiveImg(i)}
                 style={{
                   flexShrink: 0,
-                  border: `2px solid ${activeImg === i ? "var(--primary)" : "var(--border)"}`,
+                  border: `2px solid ${activeImg === i ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
                   borderRadius: 8,
                   overflow: "hidden",
                   padding: 0,
@@ -1503,32 +1503,32 @@ const updateQty = (idx: number, delta: number) => {
                   background: "none"
                 }}
               >
-                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "var(--secondary)" }} />
+                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "#e0a2b4" }} />
               </button>
             ))}
           </div>
         )}
 
         <div style={{ padding: "16px 20px 130px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "var(--product-title)" }}>
+          <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "#ae3c6f" }}>
             {selected.name}
           </h2>
 
-          <p style={{ fontSize: 12, color: "var(--muted-foreground)", margin: "0 0 10px" }}>
+          <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 10px" }}>
             Handmade · In stock
           </p>
 
-          <span style={{ fontSize: 24, fontWeight: 700, color: "var(--primary)" }}>
+          <span style={{ fontSize: 24, fontWeight: 700, color: "#ffd6e9" }}>
             £{selected.price.toFixed(2)}
           </span>
 
-          <p style={{ color: "var(--muted-foreground)", fontSize: 13, lineHeight: 1.7, margin: "12px 0 18px" }}>
+          <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: "12px 0 18px" }}>
             {selected.description}
           </p>
 
           {!isVariationLocked(selected) ? (
             <>
-              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
+              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
                 Nail Shape
               </p>
 
@@ -1547,9 +1547,9 @@ const updateQty = (idx: number, delta: number) => {
                       }
                     }}
                     style={{
-                      border: `1.5px solid ${selectedShape === s ? "var(--primary)" : "var(--border)"}`,
-                      background: selectedShape === s ? "rgba(226, 121, 156, 0.64)" : "var(--card)",
-                      color: selectedShape === s ? "var(--variation-button-text-selected)" : "var(--variation-button-text-unselected)",
+                      border: `1.5px solid ${selectedShape === s ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                      background: selectedShape === s ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
+                      color: selectedShape === s ? "#ffffff" : "#fff9fb",
                       borderRadius: 8,
                       padding: "6px 14px",
                       fontSize: 12,
@@ -1562,7 +1562,7 @@ const updateQty = (idx: number, delta: number) => {
                 ))}
               </div>
 
-              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "var(--foreground)" }}>
+              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
                 Nail Length
               </p>
 
@@ -1581,9 +1581,9 @@ const updateQty = (idx: number, delta: number) => {
                       }
                     }}
                     style={{
-                      border: `1.5px solid ${selectedLength === length ? "var(--primary)" : "var(--border)"}`,
-                      background: selectedLength === length ? "rgba(226, 121, 156, 0.64)" : "var(--card)",
-                      color: selectedLength === length ? "var(--variation-button-text-selected)" : "var(--variation-button-text-unselected)",
+                      border: `1.5px solid ${selectedLength === length ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                      background: selectedLength === length ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
+                      color: selectedLength === length ? "#ffffff" : "#fff9fb",
                       borderRadius: 8,
                       padding: "6px 14px",
                       fontSize: 12,
@@ -1602,11 +1602,11 @@ const updateQty = (idx: number, delta: number) => {
           {!isVariationLocked(selected) ? (
             <div
               style={{
-                background: "var(--muted)",
+                background: "#fce4ea",
                 borderRadius: 10,
                 padding: "10px 14px",
                 fontSize: 12,
-                color: "var(--muted-foreground)",
+                color: "#4f444a",
                 lineHeight: 1.5
               }}
             >
@@ -1624,8 +1624,8 @@ const updateQty = (idx: number, delta: number) => {
             width: "100%",
             maxWidth: 430,
             padding: "14px 18px",
-            background: "var(--card)",
-            borderTop: "1px solid var(--border)",
+            background: "#fc6587",
+            borderTop: "1px solid rgba(212, 84, 122, 0.18)",
             display: "flex",
             gap: 10,
             boxSizing: "border-box"
@@ -1634,8 +1634,8 @@ const updateQty = (idx: number, delta: number) => {
           <button
             onClick={() => toggleWishlist(selected.id)}
             style={{
-              border: "1.5px solid var(--border)",
-              background: "var(--card)",
+              border: "1.5px solid rgba(212, 84, 122, 0.18)",
+              background: "#fc6587",
               borderRadius: 12,
               width: 46,
               height: 46,
@@ -1648,8 +1648,8 @@ const updateQty = (idx: number, delta: number) => {
           >
             <Heart
               size={17}
-              fill={wishlist.includes(selected.id) ? "var(--primary)" : "none"}
-              stroke={wishlist.includes(selected.id) ? "var(--primary)" : "var(--muted-foreground)"}
+              fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
+              stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#4f444a"}
             />
           </button>
 
@@ -1658,8 +1658,8 @@ const updateQty = (idx: number, delta: number) => {
             disabled={!selectedShape || !selectedLength}
             style={{
               flex: 1,
-              background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "var(--muted)",
-              color: selectedShape && selectedLength ? "#fff" : "var(--muted-foreground)",
+              background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "#fce4ea",
+              color: selectedShape && selectedLength ? "#fff" : "#4f444a",
               border: "none",
               borderRadius: 12,
               height: 46,
@@ -1678,19 +1678,19 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Basket ── */}
       {page === "basket" && (
         <main style={{ padding: "16px 16px 100px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "var(--basket-title-color)", margin: "0 0 14px" }}>Your Basket</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "#fff9fb", margin: "0 0 14px" }}>Your Basket</h2>
 
           {cart.length === 0 ? (
             <div style={{ textAlign: "center", padding: "48px 20px" }}>
-              <ShoppingBag size={40} style={{ color: "var(--muted-foreground)", marginBottom: 12 }} />
-              <p style={{ color: "var(--muted-foreground)", fontSize: 14 }}>Your basket is empty</p>
-              <button onClick={() => navigate("/")} style={{ marginTop: 16, background: "var(--primary)", color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Browse Sets</button>
+              <ShoppingBag size={40} style={{ color: "#4f444a", marginBottom: 12 }} />
+              <p style={{ color: "#4f444a", fontSize: 14 }}>Your basket is empty</p>
+              <button onClick={() => navigate("/")} style={{ marginTop: 16, background: "#ffd6e9", color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Browse Sets</button>
             </div>
           ) : (
             <>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
                 {cart.map((item, idx) => (
-                  <div key={`${item.product.id}-${item.shape}`} style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 14, padding: "12px", display: "flex", gap: 12, alignItems: "center" }}>
+                  <div key={`${item.product.id}-${item.shape}`} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, padding: "12px", display: "flex", gap: 12, alignItems: "center" }}>
                     <button
                       type="button"
                       onClick={() => openBasketItemProduct(item)}
@@ -1707,25 +1707,25 @@ const updateQty = (idx: number, delta: number) => {
                         cursor: "pointer",
                       }}
                     >
-                      <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--secondary)" }} />
+                      <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 64, height: 64, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "#e0a2b4" }} />
                       <div style={{ minWidth: 0 }}>
-                        <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 500, color: "var(--foreground)", lineHeight: 1.3 }}>{item.product.name}</p>
+                        <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 500, color: "#fff9fb", lineHeight: 1.3 }}>{item.product.name}</p>
                         {!isNailSizeGuideItem(item) && (
                           <>
-                            <p style={{ margin: "0 0 6px", fontSize: 11, color: "var(--muted-foreground)" }}>Shape: {item.shape}</p>
-                            <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>Length: {item.length}</p>
+                            <p style={{ margin: "0 0 6px", fontSize: 11, color: "#4f444a" }}>Shape: {item.shape}</p>
+                            <p style={{ margin: 0, fontSize: 11, color: "#4f444a" }}>Length: {item.length}</p>
                           </>
                         )}
                       </div>
                     </button>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
-                      <span style={{ color: "var(--primary)", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
+                      <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
+                        <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#fce4ea", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
                         <span style={{ minWidth: 28, textAlign: "center", fontSize: 13, fontWeight: 600 }}>{item.quantity}</span>
-                        <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid var(--border)", background: "var(--muted)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
+                        <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#fce4ea", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
                       </div>
-                      <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={15} style={{ color: "var(--muted-foreground)" }} /></button>
+                      <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={15} style={{ color: "#4f444a" }} /></button>
                     </div>
                   </div>
                 ))}
@@ -1788,7 +1788,7 @@ const updateQty = (idx: number, delta: number) => {
                 </div>
               )}
 
-              <div style={{ background: "var(--secondary)", borderRadius: 14, padding: "14px 16px", marginBottom: 14 }}>
+              <div style={{ background: "#e0a2b4", borderRadius: 14, padding: "14px 16px", marginBottom: 14 }}>
                 <div style={{ display: "flex", gap: 8, alignItems: "flex-end", marginBottom: 12 }}>
                   <div style={{ flex: 1 }}>
                     <Field label="Coupon code" error={couponError ?? undefined}>
@@ -1811,11 +1811,11 @@ const updateQty = (idx: number, delta: number) => {
                     style={{
                       height: 42,
                       borderRadius: 10,
-                      border: "1px solid var(--border)",
-                      background: "var(--card)",
+                      border: "1px solid rgba(212, 84, 122, 0.18)",
+                      background: "#fc6587",
                       padding: "0 14px",
                       cursor: isCouponLoading || !couponInput.trim() ? "not-allowed" : "pointer",
-                      color: "var(--foreground)",
+                      color: "#fff9fb",
                       fontWeight: 600,
                       opacity: isCouponLoading || !couponInput.trim() ? 0.6 : 1,
                     }}
@@ -1832,8 +1832,8 @@ const updateQty = (idx: number, delta: number) => {
                       alignItems: "flex-start",
                       gap: 12,
                       fontSize: 12,
-                      background: couponError ? "#fff1f2" : couponSummary ? "#f3fbf6" : "var(--card)",
-                      border: `1px solid ${couponError ? "#f4c2cb" : couponSummary ? "#b9e3c6" : "var(--border)"}`,
+                      background: couponError ? "#fff1f2" : couponSummary ? "#f3fbf6" : "#fc6587",
+                      border: `1px solid ${couponError ? "#f4c2cb" : couponSummary ? "#b9e3c6" : "rgba(212, 84, 122, 0.18)"}`,
                       borderRadius: 10,
                       padding: "11px 12px",
                       marginBottom: 10,
@@ -1842,15 +1842,15 @@ const updateQty = (idx: number, delta: number) => {
                     <div>
                       {isCouponLoading && (
                         <>
-                          <strong style={{ display: "block", color: "var(--foreground)", marginBottom: 2 }}>Checking coupon...</strong>
-                          <span style={{ color: "var(--muted-foreground)" }}>Validating your discount before checkout.</span>
+                          <strong style={{ display: "block", color: "#fff9fb", marginBottom: 2 }}>Checking coupon...</strong>
+                          <span style={{ color: "#4f444a" }}>Validating your discount before checkout.</span>
                         </>
                       )}
 
                       {!isCouponLoading && couponError && (
                         <>
-                          <strong style={{ display: "block", color: "var(--destructive)", marginBottom: 2 }}>Coupon not applied</strong>
-                          <span style={{ color: "var(--destructive)" }}>{couponError}</span>
+                          <strong style={{ display: "block", color: "#c0392b", marginBottom: 2 }}>Coupon not applied</strong>
+                          <span style={{ color: "#c0392b" }}>{couponError}</span>
                         </>
                       )}
 
@@ -1865,19 +1865,19 @@ const updateQty = (idx: number, delta: number) => {
                     </div>
 
                     {couponSummary && !couponError && !isCouponLoading && (
-                      <button type="button" onClick={removeCoupon} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontWeight: 600, padding: 0, flexShrink: 0 }}>Remove</button>
+                      <button type="button" onClick={removeCoupon} style={{ background: "none", border: "none", color: "#ffd6e9", cursor: "pointer", fontWeight: 600, padding: 0, flexShrink: 0 }}>Remove</button>
                     )}
                   </div>
                 )}
 
                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                  <span style={{ color: "var(--muted-foreground)" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
+                  <span style={{ color: "#4f444a" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
                   <span>£{cartTotal.toFixed(2)}</span>
                 </div>
                 {couponSummary && couponDiscount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                    <span style={{ color: "var(--muted-foreground)" }}>Discount ({couponSummary.code})</span>
-                    <span style={{ color: "var(--primary)" }}>-£{couponDiscount.toFixed(2)}</span>
+                    <span style={{ color: "#4f444a" }}>Discount ({couponSummary.code})</span>
+                    <span style={{ color: "#ffd6e9" }}>-£{couponDiscount.toFixed(2)}</span>
                   </div>
                 )}
                 {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
@@ -1887,16 +1887,16 @@ const updateQty = (idx: number, delta: number) => {
                   </div>
                 )}
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
-                  <span style={{ color: "var(--muted-foreground)" }}>Delivery</span>
-                  <span style={{ color: "var(--muted-foreground)" }}>Choose on next step</span>
+                  <span style={{ color: "#4f444a" }}>Delivery</span>
+                  <span style={{ color: "#4f444a" }}>Choose on next step</span>
                 </div>
-                <div style={{ borderTop: "1px solid var(--border)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 15 }}>
+                <div style={{ borderTop: "1px solid rgba(212, 84, 122, 0.18)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 15 }}>
                   <span>Items total</span>
                   <span>£{orderTotal.toFixed(2)}</span>
                 </div>
               </div>
 
-              <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5, marginBottom: 4 }}>
+              <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#4f444a", lineHeight: 1.5, marginBottom: 4 }}>
                 You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
               </div>
             </>
@@ -1905,8 +1905,8 @@ const updateQty = (idx: number, delta: number) => {
       )}
 
       {cart.length > 0 && page === "basket" && (
-        <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, padding: "14px 18px", background: "var(--card)", borderTop: "1px solid var(--border)", display: "flex", gap: 10, boxSizing: "border-box" }}>
-          <button onClick={() => navigate("/")} style={{ border: "1.5px solid var(--border)", background: "rgba(128, 33, 65, 0.44)", borderRadius: 12, height: 46, padding: "0 16px", fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0 }}>+ Add more</button>
+        <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 430, padding: "14px 18px", background: "#fc6587", borderTop: "1px solid rgba(212, 84, 122, 0.18)", display: "flex", gap: 10, boxSizing: "border-box" }}>
+          <button onClick={() => navigate("/")} style={{ border: "1.5px solid rgba(212, 84, 122, 0.18)", background: "rgba(128, 33, 65, 0.44)", borderRadius: 12, height: 46, padding: "0 16px", fontSize: 13, fontWeight: 500, cursor: "pointer", flexShrink: 0 }}>+ Add more</button>
           <button onClick={() => { setForm(initialForm); setErrors({}); setPage("preorder"); }} style={{ flex: 1, background: "rgba(195, 18, 77, 0.64)", color: "#fff", border: "none", borderRadius: 12, height: 46, fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
             Pre-order · £{orderTotal.toFixed(2)}
           </button>
@@ -1954,9 +1954,9 @@ const updateQty = (idx: number, delta: number) => {
                     gap: 8,
                     padding: "10px 12px",
                     borderRadius: 12,
-                    border: `1.5px solid ${form.contactMethod === "instagram" ? "var(--primary)" : "var(--border)"}`,
-                    background: form.contactMethod === "instagram" ? "rgba(128, 33, 65, 0.44)" : "var(--card)",
-                    color: form.contactMethod === "instagram" ? "var(--primary)" : "var(--foreground)",
+                    border: `1.5px solid ${form.contactMethod === "instagram" ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                    background: form.contactMethod === "instagram" ? "rgba(128, 33, 65, 0.44)" : "#fc6587",
+                    color: form.contactMethod === "instagram" ? "#ffd6e9" : "#fff9fb",
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
@@ -1976,9 +1976,9 @@ const updateQty = (idx: number, delta: number) => {
                     gap: 8,
                     padding: "10px 12px",
                     borderRadius: 12,
-                    border: `1.5px solid ${form.contactMethod === "email" ? "var(--primary)" : "var(--border)"}`,
-                    background: form.contactMethod === "email" ? "rgba(128, 33, 65, 0.44)" : "var(--card)",
-                    color: form.contactMethod === "email" ? "var(--primary)" : "var(--foreground)",
+                    border: `1.5px solid ${form.contactMethod === "email" ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                    background: form.contactMethod === "email" ? "rgba(128, 33, 65, 0.44)" : "#fc6587",
+                    color: form.contactMethod === "email" ? "#ffd6e9" : "#fff9fb",
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
@@ -2030,8 +2030,8 @@ const updateQty = (idx: number, delta: number) => {
                         alignItems: "flex-start",
                         padding: "12px 13px",
                         borderRadius: 12,
-                        border: `1.5px solid ${isSelected ? "var(--primary)" : "var(--border)"}`,
-                        background: isSelected ? "rgba(128, 33, 65, 0.44)" : "var(--card)",
+                        border: `1.5px solid ${isSelected ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                        background: isSelected ? "rgba(128, 33, 65, 0.44)" : "#fc6587",
                         cursor: "pointer",
                       }}
                     >
@@ -2045,13 +2045,13 @@ const updateQty = (idx: number, delta: number) => {
                       />
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "baseline", marginBottom: 4 }}>
-                          <strong style={{ color: "var(--foreground)", fontSize: 13 }}>{option.label}</strong>
-                          <span style={{ color: "var(--primary)", fontWeight: 700, fontSize: 13 }}>
+                          <strong style={{ color: "#fff9fb", fontSize: 13 }}>{option.label}</strong>
+                          <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 13 }}>
                             {option.isFree ? "Free" : formatMoney(option.amount)}
                           </span>
                         </div>
-                        <p style={{ margin: "0 0 3px", fontSize: 12, lineHeight: 1.5, color: "var(--muted-foreground)" }}>{option.description}</p>
-                        <p style={{ margin: 0, fontSize: 11, lineHeight: 1.5, color: "var(--muted-foreground)" }}>{option.estimate}</p>
+                        <p style={{ margin: "0 0 3px", fontSize: 12, lineHeight: 1.5, color: "#4f444a" }}>{option.description}</p>
+                        <p style={{ margin: 0, fontSize: 11, lineHeight: 1.5, color: "#4f444a" }}>{option.estimate}</p>
                       </div>
                     </label>
                   );
@@ -2059,7 +2059,7 @@ const updateQty = (idx: number, delta: number) => {
               </div>
             </Field>
 
-            <div style={{ background: "var(--muted)", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.5 }}>
+            <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#4f444a", lineHeight: 1.5 }}>
               {form.contactMethod === "email" ? (
                 <>
                   You will be contacted via Email at <strong>{form.email || "your email"}</strong> up to 24 hours after payment to confirm your nail sizes.
@@ -2071,16 +2071,16 @@ const updateQty = (idx: number, delta: number) => {
               )}
             </div>
 
-            <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "var(--foreground)" }}>
+            <div style={{ background: "#e0a2b4", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "#fff9fb" }}>
               <strong style={{ display: "block", marginBottom: 6 }}>Order Summary</strong>
               {cart.map((item, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--muted-foreground)" }}>
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#4f444a" }}>
                   <span>{getOrderSummaryLabel(item)}</span>
                   <span>£{(item.product.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
               {couponSummary && couponDiscount > 0 && (
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--muted-foreground)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#4f444a" }}>
                   <span>Discount ({couponSummary.code})</span>
                   <span>-{formatMoney(couponDiscount)}</span>
                 </div>
@@ -2102,20 +2102,20 @@ const updateQty = (idx: number, delta: number) => {
                 </div>
               )}
               {selectedShippingOption && (
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--muted-foreground)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#4f444a" }}>
                   <span>{selectedShippingOption.label}</span>
                   <span>{selectedShippingOption.isFree ? "Free" : formatMoney(selectedShippingOption.amount)}</span>
                 </div>
               )}
-              <div style={{ borderTop: "1px solid var(--border)", marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
+              <div style={{ borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 8, paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700 }}>
                 <span>Total</span><span>{formatMoney(checkoutTotal)}</span>
               </div>
             </div>
 
-            <button type="submit" disabled={isSubmitting} style={{ background: isSubmitting ? "var(--border)" : "#c281a9", color: "#ffffff", border: "none", borderRadius: 12, height: 48, fontWeight: 600, fontSize: 14, cursor: isSubmitting ? "not-allowed" : "pointer", letterSpacing: "0.02em" }}>
+            <button type="submit" disabled={isSubmitting} style={{ background: isSubmitting ? "rgba(212, 84, 122, 0.18)" : "#c281a9", color: "#ffffff", border: "none", borderRadius: 12, height: 48, fontWeight: 600, fontSize: 14, cursor: isSubmitting ? "not-allowed" : "pointer", letterSpacing: "0.02em" }}>
               {isSubmitting ? "Redirecting to Stripe..." : "Confirm Pre-order 🌸"}
             </button>
-            {checkoutError && <p style={{ color: "var(--destructive)", fontSize: 12, marginTop: 10 }}>{checkoutError}</p>}
+            {checkoutError && <p style={{ color: "#c0392b", fontSize: 12, marginTop: 10 }}>{checkoutError}</p>}
           </form>
         </main>
       )}
@@ -2123,20 +2123,20 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Confirmation ── */}
       {page === "confirmation" && (
         <main style={{ padding: "44px 22px", textAlign: "center" }}>
-          <div style={{ width: 68, height: 68, borderRadius: "50%", background: "var(--secondary)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
-            <Check size={30} style={{ color: "var(--primary)" }} />
+          <div style={{ width: 68, height: 68, borderRadius: "50%", background: "#e0a2b4", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
+            <Check size={30} style={{ color: "#ffd6e9" }} />
           </div>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 24, color: "var(--foreground)", margin: "0 0 8px" }}>Order Placed!</h2>
-          <p style={{ color: "var(--muted-foreground)", fontSize: 13, lineHeight: 1.7, margin: "0 0 6px" }}>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 24, color: "#fff9fb", margin: "0 0 8px" }}>Order Placed!</h2>
+          <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: "0 0 6px" }}>
             Thank you, <strong>{form.firstName}</strong>! Your pre-order of {confirmationCount} item{confirmationCount !== 1 ? "s" : ""} is confirmed.
           </p>
-          <p style={{ color: "var(--muted-foreground)", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
+          <p style={{ color: "#4f444a", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
             A confirmation will be sent to <strong>{form.email}</strong>.<br />
             {form.contactMethod === "email" ? (
-              <span style={{ color: "var(--primary)" }}>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
+              <span style={{ color: "#ffd6e9" }}>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
             ) : (
               <>
-                <span style={{ color: "var(--primary)" }}>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
+                <span style={{ color: "#ffd6e9" }}>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
                 <br />
                 <span style={{ color: "#92400e", fontSize: 11, display: "block", marginTop: 4 }}>
                   ⚠️ If your Instagram account is private, please message <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> first to make sure that communications can be made.
@@ -2145,22 +2145,22 @@ const updateQty = (idx: number, delta: number) => {
             )}
           </p>
 
-          <div style={{ background: "var(--secondary)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>
+          <div style={{ background: "#e0a2b4", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>
             <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 13 }}>Items ordered</p>
             {confirmationItems.map((item, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 40, height: 40, borderRadius: 7, objectFit: "cover", background: "var(--muted)" }} />
+                <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 40, height: 40, borderRadius: 7, objectFit: "cover", background: "#fce4ea" }} />
                 <div>
-                  <p style={{ margin: 0, fontSize: 12, fontWeight: 500, color: "var(--foreground)" }}>{item.product.name}</p>
-                  <p style={{ margin: 0, fontSize: 11, color: "var(--muted-foreground)" }}>{getCartItemDetailText(item)}</p>
+                  <p style={{ margin: 0, fontSize: 12, fontWeight: 500, color: "#fff9fb" }}>{item.product.name}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "#4f444a" }}>{getCartItemDetailText(item)}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 24 }}>
+          <div style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 24 }}>
             <p style={{ margin: "0 0 5px", fontWeight: 600, fontSize: 13 }}>Delivering to</p>
-            <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", lineHeight: 1.6 }}>{form.firstName} {form.lastName}<br />{form.address}<br />{form.city}, {form.postcode}</p>
+            <p style={{ margin: 0, fontSize: 12, color: "#4f444a", lineHeight: 1.6 }}>{form.firstName} {form.lastName}<br />{form.address}<br />{form.city}, {form.postcode}</p>
           </div>
 
           <button onClick={() => { navigate("/"); setCart([]); setForm(initialForm); }} style={{ background: "#c281a9", color: "#fff", border: "none", borderRadius: 12, height: 46, width: "100%", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
@@ -2175,13 +2175,13 @@ const updateQty = (idx: number, delta: number) => {
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <label style={{ fontSize: 11, fontWeight: 600, color: "var(--foreground)", letterSpacing: "0.03em", textTransform: "uppercase" }}>{label}</label>
+      <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", letterSpacing: "0.03em", textTransform: "uppercase" }}>{label}</label>
       {children}
-      {error && <span style={{ fontSize: 11, color: "var(--destructive)" }}>{error}</span>}
+      {error && <span style={{ fontSize: 11, color: "#c0392b" }}>{error}</span>}
     </div>
   );
 }
 
 function mkInput(hasError: boolean): React.CSSProperties {
-  return { background: "var(--input-background)", border: `1.5px solid ${hasError ? "var(--destructive)" : "var(--border)"}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, color: "#000000", outline: "none", width: "100%", boxSizing: "border-box" };
+  return { background: "#fff0f4", border: `1.5px solid ${hasError ? "#c0392b" : "rgba(212, 84, 122, 0.18)"}`, borderRadius: 9, padding: "10px 13px", fontSize: 14, color: "#000000", outline: "none", width: "100%", boxSizing: "border-box" };
 }

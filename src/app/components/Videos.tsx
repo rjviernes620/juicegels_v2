@@ -91,20 +91,20 @@ export function Videos({ products, onShopProduct }: VideosProps) {
   };
 
   return (
-    <div style={{ background: "var(--background)", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Title Section */}
       <div 
         style={{ 
           background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
           padding: "24px 20px", 
           textAlign: "center",
-          borderBottom: "1px solid var(--border)"
+          borderBottom: "1px solid rgba(212, 84, 122, 0.18)"
         }}
       >
-        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "var(--foreground)", margin: "0 0 6px" }}>
+        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fff9fb", margin: "0 0 6px" }}>
           Juice Gels Studio 🎬
         </h2>
-        <p style={{ color: "var(--muted-foreground)", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
+        <p style={{ color: "#4f444a", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
           See how our sets are handcrafted with love. Swipe to see more sets and tap to shop instantly!
         </p>
       </div>
@@ -115,10 +115,10 @@ export function Videos({ products, onShopProduct }: VideosProps) {
         {/* Carousel Container */}
         <div 
           style={{ 
-            background: "var(--secondary)", 
+            background: "#e0a2b4", 
             borderRadius: 18, 
             overflow: "hidden", 
-            border: "1px solid var(--border)",
+            border: "1px solid rgba(212, 84, 122, 0.18)",
             boxShadow: "0 8px 24px rgba(212, 16, 71, 0.08)",
             position: "relative",
             display: "flex",
@@ -163,7 +163,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                       borderRadius: 20, 
                       fontSize: 11, 
                       fontWeight: 700, 
-                      color: "var(--foreground)",
+                      color: "#fff9fb",
                       zIndex: 10,
                       display: "flex",
                       alignItems: "center",
@@ -199,8 +199,8 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                       }}
                     > 
                       <section style={{ padding: "60px 20px", textAlign: "center", color: "#fff" }}> 
-                        <a target="_blank" title="@juice.gels" href="https://www.tiktok.com/@juice.gels?refer=embed" style={{ color: "var(--primary)", fontWeight: 600, textDecoration: "underline" }}>@juice.gels</a> 
-                        <p style={{ margin: "12px 0 0", fontSize: 13, color: "var(--muted-foreground)" }}>Loading process video...</p>
+                        <a target="_blank" title="@juice.gels" href="https://www.tiktok.com/@juice.gels?refer=embed" style={{ color: "#ffd6e9", fontWeight: 600, textDecoration: "underline" }}>@juice.gels</a> 
+                        <p style={{ margin: "12px 0 0", fontSize: 13, color: "#4f444a" }}>Loading process video...</p>
                       </section> 
                     </blockquote>
                   </div>
@@ -209,7 +209,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                   <div 
                     style={{ 
                       background: "rgba(86, 30, 36)",
-                      borderTop: "1px solid var(--border)",
+                      borderTop: "1px solid rgba(212, 84, 122, 0.18)",
                       padding: "14px 16px",
                       display: "flex",
                       alignItems: "center",
@@ -224,9 +224,9 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                           height: 52, 
                           borderRadius: 10, 
                           overflow: "hidden", 
-                          background: "var(--secondary)", 
+                          background: "#e0a2b4", 
                           flexShrink: 0,
-                          border: "1px solid var(--border)"
+                          border: "1px solid rgba(212, 84, 122, 0.18)"
                         }}
                       >
                         <ImageWithFallback 
@@ -242,7 +242,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                             margin: "0 0 2px", 
                             fontSize: 13, 
                             fontWeight: 700, 
-                            color: "var(--foreground)", 
+                            color: "#fff9fb", 
                             whiteSpace: "nowrap", 
                             overflow: "hidden", 
                             textOverflow: "ellipsis" 
@@ -250,7 +250,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                         >
                           {product.name}
                         </p>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--primary)" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#ffd6e9" }}>
                           £{product.price.toFixed(2)}
                         </span>
                       </div>
@@ -299,14 +299,14 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                 borderRadius: "50%",
                 background: "rgba(170, 95, 95, 0.85)",
                 backdropFilter: "blur(4px)",
-                border: "1px solid var(--border)",
+                border: "1px solid rgba(212, 84, 122, 0.18)",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 cursor: "pointer",
                 zIndex: 20,
                 boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                color: "var(--foreground)",
+                color: "#fff9fb",
                 transition: "all 0.15s ease"
               }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-50%) scale(1.08)"; }}
@@ -330,14 +330,14 @@ export function Videos({ products, onShopProduct }: VideosProps) {
                 borderRadius: "50%",
                 background: "rgba(170, 95, 95, 0.85)",
                 backdropFilter: "blur(4px)",
-                border: "1px solid var(--border)",
+                border: "1px solid rgba(212, 84, 122, 0.18)",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 cursor: "pointer",
                 zIndex: 20,
                 boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                color: "var(--foreground)",
+                color: "#fff9fb",
                 transition: "all 0.15s ease"
               }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-50%) scale(1.08)"; }}
@@ -388,10 +388,10 @@ export function Videos({ products, onShopProduct }: VideosProps) {
             borderRadius: 14, 
             padding: "14px 16px", 
             textAlign: "center",
-            border: "1px solid var(--border)"
+            border: "1px solid rgba(212, 84, 122, 0.18)"
           }}
         >
-          <p style={{ margin: 0, fontSize: 12, color: "var(--muted-foreground)", fontWeight: 500, lineHeight: 1.6 }}>
+          <p style={{ margin: 0, fontSize: 12, color: "#4f444a", fontWeight: 500, lineHeight: 1.6 }}>
             💡 Tap <b>Shop Set</b> to select sizes, shapes, lengths and add it straight to your basket!
           </p>
         </div>
