@@ -172,7 +172,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
           <div style={{ flex: 1 }}>
             <p style={{ fontFamily: "'Lobster', serif", color: "#fff9fb", margin: "0 0 4px", fontSize: 32 }}>Need your nail sizes?</p>
             <p style={{ color: "rgb(181, 88, 140)", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
-              Get our Nail Sizing Guide — £4.00 off when ordered with any nail set! <br />
+              Get our Nail Sizing Guide - £4.00 off when ordered with any nail set! <br />
               <span style={{ color: "#ffd6e9", fontWeight: 600 }}>Discount Applied at Checkout 🌸</span>
             </p>
           </div>
@@ -515,7 +515,10 @@ export default function App() {
 
 
   const uniqueProducts = useMemo(
-    () => products.filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId))),
+    () =>
+      products
+        .filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId)))
+        .reverse(),
     [products]
   );
 
