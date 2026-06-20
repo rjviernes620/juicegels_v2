@@ -7,6 +7,7 @@ import os
 from datetime import datetime, timezone
 from pingram import Pingram
 import stripe
+import jinja2
 from urllib.parse import quote
 
 from flask import Flask, request, jsonify
@@ -148,6 +149,17 @@ def get_value(source, key, default=None):
 def get_data_list(response):
   data = get_value(response, 'data', [])
   return data if isinstance(data, list) else []
+
+
+def render_email_template(template_name, **kwargs):
+  backend_dir = os.path.dirname(os.path.abspath(__file__))
+  templates_dir = os.path.join(backend_dir, 'templates')
+  env = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(templates_dir),
+    autoescape=True
+  )
+  template = env.get_template(template_name)
+  return template.render(**kwargs)
 
 
 def normalize_coupon_code(raw_code):
@@ -541,121 +553,28 @@ def build_customer_email_html(order_summary):
     "Once your nails have been made, We will send you pictures of your order to confirm you're happy with how they turned out before they're dispatched."
   )
 
-  # Process paragraph styling
-  paragraphs = []
-  for para in process_text.split('\n\n'):
-    if para.strip():
-      paragraphs.append(f'<p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
-
-  post_payment_html = f"""<div style="background-color: #fce4ea; border: 2px dashed #fc6587; border-radius: 12px; padding: 20px; margin: 24px 0; color: #3d1a24; font-family: 'DM Sans', Arial, sans-serif;">
-  <h3 style="margin: 0 0 12px 0; font-family: 'Lobster', Georgia, serif; font-size: 20px; color: #ae3c6f; font-weight: normal;">💖 What happens next?</h3>
-  {"".join(paragraphs)}
-</div>"""
+  paragraphs = [p.strip() for p in process_text.split('\n\n') if p.strip()]
 
   # Check if discount exists
-  discount_row = ''
-  if order_summary.get('discount') and order_summary.get('discount') != '£0.00' and order_summary.get('discount') != '$0.00':
-    coupon_str = f" ({order_summary.get('coupon_name')})" if order_summary.get('coupon_name') else ""
-    discount_row = f"""<tr>
-  <td style="padding: 6px 0; color: #4f444a;">Discount{escape_html(coupon_str)}</td>
-  <td align="right" style="padding: 6px 0; font-weight: 500; color: #c0392b;">-{escape_html(order_summary.get("discount", ""))}</td>
-</tr>"""
+  discount = order_summary.get('discount')
+  coupon_name = order_summary.get('coupon_name')
+  has_discount = bool(discount and discount not in ('£0.00', '$0.00', '£0', '$0'))
 
-  # Check if shipping exists
-  shipping_row = ''
-  if order_summary.get('shipping'):
-    shipping_row = f"""<tr>
-  <td style="padding: 6px 0; color: #4f444a;">Shipping ({escape_html(order_summary.get("shipping_method", ""))})</td>
-  <td align="right" style="padding: 6px 0; font-weight: 500;">{escape_html(order_summary.get("shipping", ""))}</td>
-</tr>"""
-
-  # Billing/Shipping address
-  address_html = ''
-  if order_summary.get('billing_address'):
-    address_html = f"""<h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Delivery Details</h3>
-<p style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700;">Shipping Address:</p>
-<p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.6; color: #4f444a; white-space: pre-wrap;">{escape_html(order_summary.get("billing_address", ""))}</p>"""
-
-  items_table = build_customer_items_table(order_summary.get("line_items", []))
-
-  return f"""<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Juice Gels Order Confirmation</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:wght@400;500;700&display=swap');
-    body {{
-      margin: 0;
-      padding: 0;
-      background-color: #ffd2e6;
-      font-family: 'DM Sans', Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }}
-  </style>
-</head>
-<body style="margin: 0; padding: 40px 20px; background-color: #ffd2e6;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
-    <tr>
-      <td align="center" style="padding: 0 0 40px 0;">
-        <!-- Outer Container -->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fff9fb; border: 1px solid rgba(212, 84, 122, 0.18); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(61, 26, 36, 0.08);">
-          <!-- Header -->
-          <tr>
-            <td align="center" style="padding: 40px 30px 20px 30px; background-color: #fff9fb; border-bottom: 1px solid rgba(212, 84, 122, 0.1);">
-              <h1 style="margin: 0; font-family: 'Lobster', Georgia, serif; font-size: 42px; color: #fc6587; font-weight: normal; letter-spacing: 0.5px; line-height: 1.1;">Juice Gels</h1>
-              <p style="margin: 8px 0 0 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 14px; color: #ae3c6f; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">Order Confirmation</p>
-            </td>
-          </tr>
-          <!-- Body Content -->
-          <tr>
-            <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', Arial, sans-serif; color: #3d1a24;">
-              <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #3d1a24;">
-                Thank you so much for your purchase! We are super excited to hand-craft your set. Your payment was successful, and we have received your order details below.
-              </p>
-              
-              {post_payment_html}
-              
-              <h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Order Summary</h3>
-              {items_table}
-              
-              <!-- Pricing Summary -->
-              <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 15px; color: #3d1a24;">
-                <tr>
-                  <td style="padding: 6px 0; color: #4f444a;">Subtotal</td>
-                  <td align="right" style="padding: 6px 0; font-weight: 500;">{escape_html(order_summary.get("subtotal", ""))}</td>
-                </tr>
-                {discount_row}
-                {shipping_row}
-                <tr>
-                  <td style="padding: 12px 0 0 0; font-size: 18px; font-weight: 700; color: #3d1a24; border-top: 1px solid rgba(212, 84, 122, 0.15);">Total Paid</td>
-                  <td align="right" style="padding: 12px 0 0 0; font-size: 18px; font-weight: 700; color: #fc6587; border-top: 1px solid rgba(212, 84, 122, 0.15);">{escape_html(order_summary.get("total", ""))}</td>
-                </tr>
-              </table>
-              
-              {address_html}
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 30px; background-color: #fff9fb; border-top: 1px solid rgba(212, 84, 122, 0.1); text-align: center; font-family: 'DM Sans', Arial, sans-serif;">
-              <p style="margin: 0 0 12px 0; font-size: 14px; color: #4f444a;">
-                Have a question? Contact us on Instagram <a href="https://instagram.com/juicegels" target="_blank" style="color: #fc6587; text-decoration: underline; font-weight: 500;">@juicegels</a> or reply directly to this email.
-              </p>
-              <p style="margin: 0; font-size: 13px; color: #ae3c6f; font-weight: 500;">
-                &copy; {datetime.now(timezone.utc).year} Juice Gels. All rights reserved.
-              </p>
-            </td>
-          </tr>
-        </table>
-        <!-- End Outer Container -->
-      </td>
-    </tr>
-  </table>
-</body>
-</html>"""
+  return render_email_template(
+    'customer_order_confirmation.html',
+    customer_name=customer_name,
+    paragraphs=paragraphs,
+    line_items=order_summary.get('line_items', []),
+    subtotal=order_summary.get('subtotal', ''),
+    has_discount=has_discount,
+    discount=discount,
+    coupon_name=coupon_name,
+    shipping=order_summary.get('shipping', ''),
+    shipping_method=order_summary.get('shipping_method', ''),
+    total=order_summary.get('total', ''),
+    billing_address=order_summary.get('billing_address', ''),
+    current_year=datetime.now(timezone.utc).year
+  )
 
 
 def send_customer_order_email(order_summary):
@@ -880,84 +799,17 @@ def build_custom_order_customer_email_html(summary):
     "We typically reach out within 24 hours. Keep an eye on your Instagram DMs! (If your account is private, please message @juicegels first so we can chat.)"
   )
 
-  paragraphs = []
-  for para in process_text.split('\n\n'):
-    if para.strip():
-      paragraphs.append(f'<p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
+  paragraphs = [p.strip() for p in process_text.split('\n\n') if p.strip()]
 
-  post_payment_html = f"""<div style="background-color: #fce4ea; border: 2px dashed #fc6587; border-radius: 12px; padding: 20px; margin: 24px 0; color: #3d1a24; font-family: 'DM Sans', Arial, sans-serif;">
-  <h3 style="margin: 0 0 12px 0; font-family: 'Lobster', Georgia, serif; font-size: 20px; color: #ae3c6f; font-weight: normal;">💖 What happens next?</h3>
-  {"".join(paragraphs)}
-</div>"""
-
-  details_table = build_info_table([
-    ('Preferred Shape', summary.get('shape', '')),
-    ('Preferred Length', summary.get('length', '')),
-    ('Design Details', summary.get('details', '')),
-  ])
-
-  return f"""<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Custom Order Request - Juice Gels</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:wght@400;500;700&display=swap');
-    body {{
-      margin: 0;
-      padding: 0;
-      background-color: #ffd2e6;
-      font-family: 'DM Sans', Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }}
-  </style>
-</head>
-<body style="margin: 0; padding: 40px 20px; background-color: #ffd2e6;">
-  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
-    <tr>
-      <td align="center" style="padding: 0 0 40px 0;">
-        <!-- Outer Container -->
-        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fff9fb; border: 1px solid rgba(212, 84, 122, 0.18); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(61, 26, 36, 0.08);">
-          <!-- Header -->
-          <tr>
-            <td align="center" style="padding: 40px 30px 20px 30px; background-color: #fff9fb; border-bottom: 1px solid rgba(212, 84, 122, 0.1);">
-              <h1 style="margin: 0; font-family: 'Lobster', Georgia, serif; font-size: 42px; color: #fc6587; font-weight: normal; letter-spacing: 0.5px; line-height: 1.1;">Juice Gels</h1>
-              <p style="margin: 8px 0 0 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 14px; color: #ae3c6f; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">Custom Order Request</p>
-            </td>
-          </tr>
-          <!-- Body Content -->
-          <tr>
-            <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', Arial, sans-serif; color: #3d1a24;">
-              <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
-              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #3d1a24;">
-                We have received your custom order inquiry! Alyssa is excited to create a custom-fit set just for you.
-              </p>
-              
-              {post_payment_html}
-              
-              <h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Your Request Details</h3>
-              {details_table}
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding: 30px; background-color: #fff9fb; border-top: 1px solid rgba(212, 84, 122, 0.1); text-align: center; font-family: 'DM Sans', Arial, sans-serif;">
-              <p style="margin: 0 0 12px 0; font-size: 14px; color: #4f444a;">
-                Have a question? Feel free to DM us on Instagram <a href="https://instagram.com/juicegels" target="_blank" style="color: #fc6587; text-decoration: underline; font-weight: 500;">@juicegels</a>.
-              </p>
-              <p style="margin: 0; font-size: 13px; color: #ae3c6f; font-weight: 500;">
-                &copy; {datetime.now(timezone.utc).year} Juice Gels. All rights reserved.
-              </p>
-            </td>
-          </tr>
-        </table>
-        <!-- End Outer Container -->
-      </td>
-    </tr>
-  </table>
-</body>
-</html>"""
+  return render_email_template(
+    'custom_order_customer_confirmation.html',
+    customer_name=customer_name,
+    paragraphs=paragraphs,
+    shape=summary.get('shape', ''),
+    length=summary.get('length', ''),
+    details=summary.get('details', ''),
+    current_year=datetime.now(timezone.utc).year
+  )
 
 
 def send_custom_order_emails(summary):
