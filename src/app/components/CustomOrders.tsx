@@ -138,28 +138,28 @@ export function CustomOrders() {
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--primary)", color: "#fff", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>1</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "var(--muted-foreground)" }}>
-                <strong style={{ color: "var(--foreground)" }}>Submit Your Design:</strong> Fill out the simple request form below describing your vision. Feel free to list specific colors, charms, or styles you love.
+                <strong style={{ color: "#d14d4d" }}>Submit Your Design:</strong> Fill out the simple request form below describing your vision. Feel free to list specific colors, charms, or styles you love.
               </div>
             </div>
             
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--primary)", color: "#fff", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>2</div>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--primary)", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>2</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "var(--muted-foreground)" }}>
-                <strong style={{ color: "var(--foreground)" }}>Check Your Inbox:</strong> You and Alyssa will receive an automated email confirmation summarizing your custom request details immediately.
+                <strong style={{ color: "#d14d4d" }}>Check Your Inbox:</strong> You will receive an automated email confirmation summarizing your custom request details immediately. If you want to change anything. Just let me know
               </div>
             </div>
 
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--primary)", color: "#fff", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>3</div>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--primary)", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>3</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "var(--muted-foreground)" }}>
-                <strong style={{ color: "var(--foreground)" }}>Instagram Consultation:</strong> Alyssa will reach out to you <strong style={{ color: "var(--primary)" }}>on Instagram only</strong> to discuss reference imagery, nail sizing, set pricing, and finalize design details.
+                <strong style={{ color: "#d14d4d" }}>Instagram Consultation:</strong> I will reach out to you via Instagram to discuss reference imagery, nail sizing, set pricing, and finalize design details.
               </div>
             </div>
 
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--primary)", color: "#fff", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>4</div>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--primary)", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>4</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "var(--muted-foreground)" }}>
-                <strong style={{ color: "var(--foreground)" }}>Creation & Dispatch:</strong> Once details are finalized and payment is made, we hand-craft your custom press-on nails and ship them to you!
+                <strong style={{ color: "#d14d4d" }}>Creation & Dispatch:</strong> Once details are finalized and payment is made, I hand-craft your custom press-on nails and ship them to you!
               </div>
             </div>
           </div>
@@ -258,7 +258,7 @@ export function CustomOrders() {
                     borderRadius: 9,
                     padding: "10px 13px",
                     fontSize: 14,
-                    color: "var(--foreground)",
+                    color: "#8c8691",
                     outline: "none",
                     width: "100%",
                     boxSizing: "border-box"
@@ -282,7 +282,7 @@ export function CustomOrders() {
                     borderRadius: 9,
                     padding: "10px 13px",
                     fontSize: 14,
-                    color: "var(--foreground)",
+                    color: "#8c8691",
                     outline: "none",
                     width: "100%",
                     boxSizing: "border-box"
