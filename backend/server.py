@@ -613,7 +613,7 @@ def build_customer_email_html(order_summary):
             <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', Arial, sans-serif; color: #3d1a24;">
               <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
               <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #3d1a24;">
-                Thank you so much for your purchase! We are super excited to hand-craft your set. Your payment was successful, and we have received your order details below.
+                Thank you for your purchase! Your payment was successful, and we have received your order details below.
               </p>
               
               {post_payment_html}
@@ -931,7 +931,7 @@ def build_custom_order_customer_email_html(summary):
             <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', Arial, sans-serif; color: #3d1a24;">
               <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
               <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #3d1a24;">
-                We have received your custom order inquiry! Alyssa is excited to create a custom-fit set just for you.
+                We have received your custom order inquiry! Please see details below.
               </p>
               
               {post_payment_html}
