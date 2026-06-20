@@ -8,6 +8,7 @@ import { Videos } from "./components/Videos";
 import { Search } from "./components/Search";
 import { Contact } from "./components/Contact";
 import { CustomOrders } from "./components/CustomOrders";
+import { CookieNotice } from "./components/CookieNotice";
 
 
 type NailLength = "Short" | "Medium" | "Long";
@@ -440,9 +441,15 @@ export default function App() {
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [productsLoadError, setProductsLoadError] = useState<string | null>(null);
   const [wishlist, setWishlist] = useState<string[]>([]);
+  const [cookieConsent, setCookieConsent] = useState<"accepted" | "declined" | null>(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem("juicegels_cookie_consent") as "accepted" | "declined" | null;
+  });
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window === "undefined") return [];
     try {
+      const consent = localStorage.getItem("juicegels_cookie_consent");
+      if (consent === "declined") return [];
       return JSON.parse(localStorage.getItem("juicegels_cart") ?? "[]") as CartItem[];
     } catch {
       return [];
@@ -451,6 +458,8 @@ export default function App() {
   const [form, setForm] = useState<FormData>(() => {
     if (typeof window === "undefined") return initialForm;
     try {
+      const consent = localStorage.getItem("juicegels_cookie_consent");
+      if (consent === "declined") return initialForm;
       return JSON.parse(localStorage.getItem("juicegels_form") ?? "null") ?? initialForm;
     } catch {
       return initialForm;
@@ -694,15 +703,35 @@ useEffect(() => {
 
   
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem("juicegels_cart", JSON.stringify(cart));
-  }, [cart]);
+  const handleConsentChange = (choice: "accepted" | "declined") => {
+    localStorage.setItem("juicegels_cookie_consent", choice);
+    setCookieConsent(choice);
+    if (choice === "declined") {
+      localStorage.removeItem("juicegels_cart");
+      localStorage.removeItem("juicegels_form");
+    } else {
+      localStorage.setItem("juicegels_cart", JSON.stringify(cart));
+      localStorage.setItem("juicegels_form", JSON.stringify(form));
+    }
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (cookieConsent === "declined") {
+      localStorage.removeItem("juicegels_cart");
+      return;
+    }
+    localStorage.setItem("juicegels_cart", JSON.stringify(cart));
+  }, [cart, cookieConsent]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (cookieConsent === "declined") {
+      localStorage.removeItem("juicegels_form");
+      return;
+    }
     localStorage.setItem("juicegels_form", JSON.stringify(form));
-  }, [form]);
+  }, [form, cookieConsent]);
 
   useEffect(() => {
     const email = form.email.trim();
@@ -1129,6 +1158,11 @@ const updateQty = (idx: number, delta: number) => {
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: 430, margin: "0 auto", minHeight: "100vh", background: "#ffd2e6" }}>
+      <CookieNotice
+        consent={cookieConsent}
+        onAccept={() => handleConsentChange("accepted")}
+        onDecline={() => handleConsentChange("declined")}
+      />
       {showStripeRedirectModal && (
         <div
           style={{
@@ -1246,6 +1280,14 @@ const updateQty = (idx: number, delta: number) => {
             { label: "Contact Us", icon: "✉️", onClick: () => { navigate("/contact"); setMenuOpen(false); } },
             { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
             { label: "Shopping Basket", icon: "🛒", onClick: () => { if (page === "preorder") { setPage("basket"); } else { navigate(currentBasketUrl(cart)); } setMenuOpen(false); } },
+            { 
+              label: cookieConsent === "accepted" ? "Disable Storage 🍪" : "Enable Storage 🍪", 
+              icon: "⚙️", 
+              onClick: () => { 
+                handleConsentChange(cookieConsent === "accepted" ? "declined" : "accepted"); 
+                setMenuOpen(false); 
+              } 
+            },
           ].map((item, idx) => (
             <button
               key={idx}
