@@ -1560,7 +1560,7 @@ const updateQty = (idx: number, delta: number) => {
             Handmade · In stock
           </p>
 
-          <span style={{ fontSize: 24, fontWeight: 700, color: "#ffd6e9" }}>
+          <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
             £{selected.price.toFixed(2)}
           </span>
 
