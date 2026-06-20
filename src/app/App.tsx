@@ -1280,14 +1280,6 @@ const updateQty = (idx: number, delta: number) => {
             { label: "Contact Us", icon: "✉️", onClick: () => { navigate("/contact"); setMenuOpen(false); } },
             { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
             { label: "Shopping Basket", icon: "🛒", onClick: () => { if (page === "preorder") { setPage("basket"); } else { navigate(currentBasketUrl(cart)); } setMenuOpen(false); } },
-            { 
-              label: cookieConsent === "accepted" ? "Disable Storage 🍪" : "Enable Storage 🍪", 
-              icon: "⚙️", 
-              onClick: () => { 
-                handleConsentChange(cookieConsent === "accepted" ? "declined" : "accepted"); 
-                setMenuOpen(false); 
-              } 
-            },
           ].map((item, idx) => (
             <button
               key={idx}
