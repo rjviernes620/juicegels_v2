@@ -977,7 +977,7 @@ def send_custom_order_emails(summary):
       'subject': f"New Custom Order Request - {summary.get('name')}",
       'html': build_custom_order_owner_email_html(summary),
       'senderName': from_name or 'OnlineOrder',
-      'senderEmail': from_address or 'neworder@juicegels.com',
+      'senderEmail': from_address or 'CustomOrder@juicegels.com',
     },
     'options': {
       'email': {
@@ -996,7 +996,7 @@ def send_custom_order_emails(summary):
       'subject': "Custom Order Request Received - Juice Gels",
       'html': build_custom_order_customer_email_html(summary),
       'senderName': from_name or 'Juice Gels',
-      'senderEmail': from_address or 'neworder@juicegels.com',
+      'senderEmail': from_address or 'CustomOrder@juicegels.com',
     },
     'options': {
       'email': {
