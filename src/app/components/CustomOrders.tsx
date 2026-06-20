@@ -2,6 +2,12 @@ import React, { useState } from "react";
 
 const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
 
+type Attachment = {
+  filename: string;
+  content: string;
+  contentType: string;
+};
+
 type FormData = {
   name: string;
   email: string;
@@ -9,6 +15,7 @@ type FormData = {
   shape: string;
   length: string;
   details: string;
+  attachments: Attachment[];
 };
 
 const initialForm: FormData = {
@@ -18,20 +25,77 @@ const initialForm: FormData = {
   shape: "Almond",
   length: "Medium",
   details: "",
+  attachments: [],
 };
 
 export function CustomOrders() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [fileError, setFileError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
+  const handleInputChange = (field: keyof FormData, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFileError(null);
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      const currentAttachments = form.attachments || [];
+
+      if (currentAttachments.length + filesArray.length > 5) {
+        setFileError("You can only upload a maximum of 5 images.");
+        return;
+      }
+
+      const maxSizeBytes = 4 * 1024 * 1024; // 4MB
+      const tooLarge = filesArray.some((file) => file.size > maxSizeBytes);
+      if (tooLarge) {
+        setFileError("One or more files exceed the 4MB size limit.");
+        return;
+      }
+
+      const promises = filesArray.map((file) => {
+        return new Promise<Attachment>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+            const dataUrl = reader.result as string;
+            const base64Str = dataUrl.split(",")[1];
+            resolve({
+              filename: file.name,
+              content: base64Str,
+              contentType: file.type,
+            });
+          };
+          reader.onerror = (err) => reject(err);
+        });
+      });
+
+      Promise.all(promises).then((newAttachments) => {
+        setForm((prev) => ({
+          ...prev,
+          attachments: [...(prev.attachments || []), ...newAttachments]
+        }));
+      }).catch(err => {
+        console.error("Error reading files:", err);
+        setFileError("Failed to process one or more images.");
+      });
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setFileError(null);
+    setForm((prev) => ({
+      ...prev,
+      attachments: (prev.attachments || []).filter((_, idx) => idx !== index)
+    }));
   };
 
   const validate = (): boolean => {
@@ -59,6 +123,7 @@ export function CustomOrders() {
 
     setIsSubmitting(true);
     setSubmitError(null);
+    setFileError(null);
 
     try {
       const response = await fetch(`${CHECKOUT_API_BASE}/create-custom-order`, {
@@ -316,6 +381,81 @@ export function CustomOrders() {
                   }}
                 />
                 {errors.details && <span style={{ fontSize: 11, color: "#c0392b" }}>{errors.details}</span>}
+              </div>
+
+              {/* Attachments */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                  Images / Reference Designs (Optional)
+                </label>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  multiple 
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                  id="custom-file-upload"
+                />
+                <label 
+                  htmlFor="custom-file-upload"
+                  style={{
+                    background: "#fff0f4",
+                    border: "1.5px dashed rgba(212, 84, 122, 0.4)",
+                    borderRadius: 9,
+                    padding: "12px 14px",
+                    fontSize: 13,
+                    color: "#c4597d",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    fontWeight: 500,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 6
+                  }}
+                >
+                  <span>📸 Click to upload reference images (max 5)</span>
+                  <span style={{ fontSize: 11, color: "#8c8691" }}>JPEG, PNG formats accepted (max 4MB each)</span>
+                </label>
+                {fileError && <span style={{ fontSize: 11, color: "#c0392b" }}>{fileError}</span>}
+                {form.attachments && form.attachments.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                    {form.attachments.map((file, idx) => (
+                      <div 
+                        key={idx} 
+                        style={{ 
+                          background: "#fff0f4", 
+                          border: "1px solid rgba(212, 84, 122, 0.15)",
+                          padding: "4px 8px", 
+                          borderRadius: 6, 
+                          fontSize: 12, 
+                          color: "#4f444a", 
+                          display: "flex", 
+                          alignItems: "center", 
+                          gap: 6 
+                        }}
+                      >
+                        <span style={{ maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                          {file.filename}
+                        </span>
+                        <button 
+                          type="button" 
+                          onClick={() => handleRemoveFile(idx)}
+                          style={{ 
+                            background: "none", 
+                            border: "none", 
+                            color: "#c0392b", 
+                            cursor: "pointer", 
+                            fontWeight: "bold",
+                            padding: 0
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {submitError && <p style={{ color: "#c0392b", fontSize: 12, margin: 0 }}>{submitError}</p>}

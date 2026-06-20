@@ -12,7 +12,7 @@ import { CookieNotice } from "./components/CookieNotice";
 
 
 type NailLength = "Short" | "Medium" | "Long";
-type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
+type CartItem = { product: Product; shape: string; quantity: number; length: NailLength };
 type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search" | "contact" | "custom-orders";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string; city: string; postcode: string; notes: string; contactMethod: "instagram" | "email"; };
 type ShippingOptionId = "tracked24" | "tracked48";
@@ -34,7 +34,7 @@ type ShippingOption = {
   isFree: boolean;
 };
 
-const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "",  postcode: "", notes: "", contactMethod: "instagram" };
+const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "", postcode: "", notes: "", contactMethod: "instagram" };
 
 const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 const META_CART_ORIGIN = "meta_shops";
@@ -97,7 +97,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
       list.push({
         id: "summer-sale",
         content: (
-          <button 
+          <button
             type="button"
             onClick={() => {
               const productsEl = document.getElementById("products-grid");
@@ -105,13 +105,13 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
                 productsEl.scrollIntoView({ behavior: "smooth" });
               }
             }}
-            style={{ 
+            style={{
               display: "flex",
               width: "100%",
-              background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)", 
+              background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
               border: "none",
               borderRadius: 14,
-              padding: "16px 18px", 
+              padding: "16px 18px",
               alignItems: "center",
               gap: 16,
               textAlign: "left",
@@ -123,7 +123,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
             }}
           >
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'Lobster', serif", color: "#1e1b4b", margin: "0 0 4px", fontSize: 18 }}>20% Off Summer Sale! ☀️</p>
+              <p style={{ fontFamily: "'Lobster', serif", color: "#fce6ef", margin: "0 0 4px", fontSize: 33 }}>Its Juicy July! ☀️</p>
               <p style={{ color: "#312e81", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
                 Get 20% off your basket when you buy ONLY nail sets! Ends at the end of July. <br />
                 <span style={{ color: "#4338ca", fontWeight: 700 }}>Discount Applied Automatically 🌸</span>
@@ -137,16 +137,16 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
     list.push({
       id: "size-guide",
       content: (
-        <button 
+        <button
           type="button"
           onClick={() => navigate("/product/JUICEGELS-0286")}
-          style={{ 
+          style={{
             display: "flex",
             width: "100%",
-            background: "#e0a2b4", 
+            background: "#ff8fc7",
             border: "none",
             borderRadius: 14,
-            padding: "16px 18px", 
+            padding: "16px 18px",
             alignItems: "center",
             gap: 16,
             textAlign: "left",
@@ -157,28 +157,62 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
             minHeight: 116,
           }}
         >
-          <ImageWithFallback 
-            src="images/JUICEGELS-0286.jpg" 
-            alt="Nail Sizing Guide" 
-            style={{ 
-              width: 84, 
-              height: 84, 
-              objectFit: "cover", 
-              borderRadius: 12, 
+          <ImageWithFallback
+            src="images/JUICEGELS-0286.jpg"
+            alt="Nail Sizing Guide"
+            style={{
+              width: 84,
+              height: 84,
+              objectFit: "cover",
+              borderRadius: 12,
               flexShrink: 0,
-              background: "#fce4ea" 
-              }} 
-            />
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'Lobster', serif", color: "#fff9fb", margin: "0 0 4px", fontSize: 18 }}>Need your nail sizes?</p>
-              <p style={{ color: "#4f444a", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
-                Get our Nail Sizing Guide — £4.00 off when ordered with any nail set! <br />
-                <span style={{ color: "#ffd6e9", fontWeight: 600 }}>Discount Applied at Stripe Checkout 🌸</span>
-              </p>
-            </div>
-          </button>
-        )
-      });
+              background: "#ff8fc7"
+            }}
+          />
+          <div style={{ flex: 1 }}>
+            <p style={{ fontFamily: "'Lobster', serif", color: "#fff9fb", margin: "0 0 4px", fontSize: 32 }}>Need your nail sizes?</p>
+            <p style={{ color: "rgb(181, 88, 140)", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
+              Get our Nail Sizing Guide — £4.00 off when ordered with any nail set! <br />
+              <span style={{ color: "#ffd6e9", fontWeight: 600 }}>Discount Applied at Checkout 🌸</span>
+            </p>
+          </div>
+        </button>
+      )
+    });
+
+    list.push({
+      id: "custom-orders",
+      content: (
+        <button
+          type="button"
+          onClick={() => navigate("/custom-orders")}
+          style={{
+            display: "flex",
+            width: "100%",
+            background: "linear-gradient(135deg, #f9d5e0 0%, #fbc2eb 100%)",
+            border: "none",
+            borderRadius: 14,
+            padding: "16px 18px",
+            alignItems: "center",
+            gap: 16,
+            textAlign: "left",
+            cursor: "pointer",
+            color: "#5c4c54",
+            fontFamily: "inherit",
+            boxSizing: "border-box",
+            minHeight: 116,
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <p style={{ fontFamily: "'Lobster', serif", color: "#c4597d", margin: "0 0 4px", fontSize: 32 }}>Want custom nails? 💅</p>
+            <p style={{ color: "#5c4c54", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
+              Bring your dream nail concept to life! Tell us your design ideas, shape, and length. <br />
+              <span style={{ color: "#ab3a60", fontWeight: 700 }}>Request Your Custom Set Here 🌸</span>
+            </p>
+          </div>
+        </button>
+      )
+    });
 
     return list;
   }, [navigate]);
@@ -204,7 +238,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
   }, [slides.length]);
 
   return (
-    <div 
+    <div
       onMouseEnter={stopTimer}
       onMouseLeave={startTimer}
       style={{
@@ -215,7 +249,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
         border: "1px solid rgba(212, 84, 122, 0.18)",
       }}
     >
-      <div 
+      <div
         style={{
           display: "flex",
           transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -493,177 +527,177 @@ export default function App() {
     });
 
 
-useEffect(() => {
-  let isCancelled = false;
+  useEffect(() => {
+    let isCancelled = false;
 
-  const fetchProducts = async () => {
-    setIsProductsLoading(true);
-    setProductsLoadError(null);
+    const fetchProducts = async () => {
+      setIsProductsLoading(true);
+      setProductsLoadError(null);
 
-    try {
-      const loadedProducts = await loadProducts();
-      if (!isCancelled) {
-        setProducts(loadedProducts);
-      }
-    } catch (error) {
-      if (!isCancelled) {
-        setProducts([]);
-        setProductsLoadError(error instanceof Error ? error.message : "Failed to load products.");
-      }
-    } finally {
-      if (!isCancelled) {
-        setIsProductsLoading(false);
-      }
-    }
-  };
-
-  fetchProducts();
-
-  return () => {
-    isCancelled = true;
-  };
-}, []);
-
-
-useEffect(() => {
-  if (isProductsLoading) return;
-
-  const redirectedPathFromSearch = (() => {
-    if (!location.search.startsWith("?/")) return "";
-
-    const [pathPart] = location.search.slice(1).split("&");
-    return pathPart.startsWith("/") ? pathPart : `/${pathPart}`;
-  })();
-  const effectivePath = redirectedPathFromSearch || normalizedPath;
-  const routeProductId = (() => {
-    if (params.id) return params.id;
-
-    const productMatch = effectivePath.match(/^\/product\/([^/?#]+)/);
-    return productMatch?.[1] ? decodeURIComponent(productMatch[1]) : "";
-  })();
-
-  const hasCheckoutSuccessFlag =
-    searchParams.get("checkout") === "success" ||
-    searchParams.has("session_id");
-
-  const itemsParam = searchParams.get("items");
-  const productsParam = searchParams.get("products");
-
-  if (
-    effectivePath === "/confirmation" ||
-    effectivePath === "/checkout-success" ||
-    (effectivePath === "/" && hasCheckoutSuccessFlag)
-  ) {
-    let purchasedItems: CartItem[] = [];
-
-    if (itemsParam) {
-      purchasedItems = parseBasketItemsParam(itemsParam, products);
-    } else if (productsParam) {
-      purchasedItems = parseMetaBasketProductsParam(productsParam, products);
-    } else if (typeof window !== "undefined") {
       try {
-        purchasedItems = JSON.parse(localStorage.getItem("juicegels_cart") ?? "[]") as CartItem[];
-      } catch {
-        purchasedItems = [];
+        const loadedProducts = await loadProducts();
+        if (!isCancelled) {
+          setProducts(loadedProducts);
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          setProducts([]);
+          setProductsLoadError(error instanceof Error ? error.message : "Failed to load products.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsProductsLoading(false);
+        }
       }
-    }
+    };
 
-    setConfirmationItems(purchasedItems);
-    setCart([]);
-    setPage("confirmation");
-    return;
-  }
+    fetchProducts();
 
-  if (effectivePath === "/basket") {
-    const searchParams = new URLSearchParams(location.search);
-    const productsParam = searchParams.get("products");
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+
+  useEffect(() => {
+    if (isProductsLoading) return;
+
+    const redirectedPathFromSearch = (() => {
+      if (!location.search.startsWith("?/")) return "";
+
+      const [pathPart] = location.search.slice(1).split("&");
+      return pathPart.startsWith("/") ? pathPart : `/${pathPart}`;
+    })();
+    const effectivePath = redirectedPathFromSearch || normalizedPath;
+    const routeProductId = (() => {
+      if (params.id) return params.id;
+
+      const productMatch = effectivePath.match(/^\/product\/([^/?#]+)/);
+      return productMatch?.[1] ? decodeURIComponent(productMatch[1]) : "";
+    })();
+
+    const hasCheckoutSuccessFlag =
+      searchParams.get("checkout") === "success" ||
+      searchParams.has("session_id");
+
     const itemsParam = searchParams.get("items");
+    const productsParam = searchParams.get("products");
 
-    if (productsParam !== null) {
-      setCart(parseMetaBasketProductsParam(productsParam, products));
-    } else if (itemsParam) {
-      const parsedItems = parseBasketItemsParam(itemsParam, products);
-      if (parsedItems.length > 0) setCart(parsedItems);
+    if (
+      effectivePath === "/confirmation" ||
+      effectivePath === "/checkout-success" ||
+      (effectivePath === "/" && hasCheckoutSuccessFlag)
+    ) {
+      let purchasedItems: CartItem[] = [];
+
+      if (itemsParam) {
+        purchasedItems = parseBasketItemsParam(itemsParam, products);
+      } else if (productsParam) {
+        purchasedItems = parseMetaBasketProductsParam(productsParam, products);
+      } else if (typeof window !== "undefined") {
+        try {
+          purchasedItems = JSON.parse(localStorage.getItem("juicegels_cart") ?? "[]") as CartItem[];
+        } catch {
+          purchasedItems = [];
+        }
+      }
+
+      setConfirmationItems(purchasedItems);
+      setCart([]);
+      setPage("confirmation");
+      return;
     }
 
-    setPage("basket");
-    return;
-  }
+    if (effectivePath === "/basket") {
+      const searchParams = new URLSearchParams(location.search);
+      const productsParam = searchParams.get("products");
+      const itemsParam = searchParams.get("items");
 
-  if (effectivePath === "/about") {
-    setPage("about");
-    return;
-  }
+      if (productsParam !== null) {
+        setCart(parseMetaBasketProductsParam(productsParam, products));
+      } else if (itemsParam) {
+        const parsedItems = parseBasketItemsParam(itemsParam, products);
+        if (parsedItems.length > 0) setCart(parsedItems);
+      }
 
-  if (effectivePath === "/videos") {
-    setPage("videos");
-    return;
-  }
+      setPage("basket");
+      return;
+    }
 
-  if (effectivePath === "/search") {
-    setPage("search");
-    return;
-  }
+    if (effectivePath === "/about") {
+      setPage("about");
+      return;
+    }
 
-  if (effectivePath === "/contact") {
-    setPage("contact");
-    return;
-  }
+    if (effectivePath === "/videos") {
+      setPage("videos");
+      return;
+    }
 
-  if (effectivePath === "/custom-orders") {
-    setPage("custom-orders");
-    return;
-  }
+    if (effectivePath === "/search") {
+      setPage("search");
+      return;
+    }
 
-  if (effectivePath === "/") {
-    setPage("home");
-    return;
-  }
+    if (effectivePath === "/contact") {
+      setPage("contact");
+      return;
+    }
 
-  if (effectivePath.startsWith("/product/") && routeProductId) {
-    const normalizedRouteProductId = normalizeGroupKey(routeProductId);
-    const product =
-      products.find((p) => normalizeGroupKey(p.id) === normalizedRouteProductId) ??
-      products.find((p) => normalizeGroupKey(p.groupId) === normalizedRouteProductId);
+    if (effectivePath === "/custom-orders") {
+      setPage("custom-orders");
+      return;
+    }
 
-    if (product) {
-      if (isVariationLocked(product)) {
-        setSelected(product);
-        setSelectedShape(product.shape);
-        setSelectedLength(product.length);
+    if (effectivePath === "/") {
+      setPage("home");
+      return;
+    }
+
+    if (effectivePath.startsWith("/product/") && routeProductId) {
+      const normalizedRouteProductId = normalizeGroupKey(routeProductId);
+      const product =
+        products.find((p) => normalizeGroupKey(p.id) === normalizedRouteProductId) ??
+        products.find((p) => normalizeGroupKey(p.groupId) === normalizedRouteProductId);
+
+      if (product) {
+        if (isVariationLocked(product)) {
+          setSelected(product);
+          setSelectedShape(product.shape);
+          setSelectedLength(product.length);
+          setActiveImg(0);
+          setPage("product");
+          return;
+        }
+
+        const searchParams = new URLSearchParams(location.search);
+        const requestedShape = searchParams.get("shape") ?? "";
+        const requestedLength = (searchParams.get("length") ?? "") as NailLength;
+        const shapes = getProductShapes(product);
+        const lengths = getProductLengths(product);
+        const nextShape = shapes.includes(requestedShape) ? requestedShape : shapes[0] ?? "";
+        const nextLength = lengths.includes(requestedLength) ? requestedLength : lengths[0] ?? "Medium";
+        const nextVariant =
+          products.find(
+            (p) =>
+              normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId) &&
+              p.shape === nextShape &&
+              p.length === nextLength
+          ) ?? product;
+
+        setSelected(nextVariant);
+        setSelectedShape(nextShape);
+        setSelectedLength(nextLength);
         setActiveImg(0);
         setPage("product");
         return;
       }
-
-      const searchParams = new URLSearchParams(location.search);
-      const requestedShape = searchParams.get("shape") ?? "";
-      const requestedLength = (searchParams.get("length") ?? "") as NailLength;
-      const shapes = getProductShapes(product);
-      const lengths = getProductLengths(product);
-      const nextShape = shapes.includes(requestedShape) ? requestedShape : shapes[0] ?? "";
-      const nextLength = lengths.includes(requestedLength) ? requestedLength : lengths[0] ?? "Medium";
-      const nextVariant =
-        products.find(
-          (p) =>
-            normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId) &&
-            p.shape === nextShape &&
-            p.length === nextLength
-        ) ?? product;
-
-      setSelected(nextVariant);
-      setSelectedShape(nextShape);
-      setSelectedLength(nextLength);
-      setActiveImg(0);
-      setPage("product");
-      return;
     }
-  }
 
-  setPage("home");
-}, [isProductsLoading, location.search, normalizedPath, params.id, products, searchParams]);
+    setPage("home");
+  }, [isProductsLoading, location.search, normalizedPath, params.id, products, searchParams]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (page !== "product" || !selected || !selectedShape || !selectedLength) return;
 
     const search = new URLSearchParams(location.search);
@@ -701,7 +735,7 @@ useEffect(() => {
   const shippingTotal = selectedShippingOption?.amount ?? 0;
   const checkoutTotal = orderTotal + shippingTotal;
 
-  
+
 
   const handleConsentChange = (choice: "accepted" | "declined") => {
     localStorage.setItem("juicegels_cookie_consent", choice);
@@ -965,7 +999,7 @@ useEffect(() => {
 
     navigateToProduct(variant, item.shape, item.length);
   };
-  
+
   const addToBasket = () => {
     if (!selected || !selectedShape || !selectedLength) return;
 
@@ -1004,35 +1038,35 @@ useEffect(() => {
   };
 
   const findVariant = (groupId: string, shape: string, length: NailLength) => {
-  return products.find(
-    (p) =>
-      p.groupId === groupId &&
-      p.shape === shape &&
-      p.length === length
-  );
-};
-const updateQty = (idx: number, delta: number) => {
-  setCart((prev) => {
-    const next = [...prev];
-    const newQty = next[idx].quantity + delta;
+    return products.find(
+      (p) =>
+        p.groupId === groupId &&
+        p.shape === shape &&
+        p.length === length
+    );
+  };
+  const updateQty = (idx: number, delta: number) => {
+    setCart((prev) => {
+      const next = [...prev];
+      const newQty = next[idx].quantity + delta;
 
-    let updated: CartItem[];
+      let updated: CartItem[];
 
-    if (newQty <= 0) {
-      updated = next.filter((_, i) => i !== idx);
-    } else {
-      next[idx] = {
-        ...next[idx],
-        quantity: newQty,
-      };
-      updated = next;
-    }
+      if (newQty <= 0) {
+        updated = next.filter((_, i) => i !== idx);
+      } else {
+        next[idx] = {
+          ...next[idx],
+          quantity: newQty,
+        };
+        updated = next;
+      }
 
-    navigate(currentBasketUrl(updated));
+      navigate(currentBasketUrl(updated));
 
-    return updated;
-  });
-};
+      return updated;
+    });
+  };
 
   const removeItem = (idx: number) => {
     setCart((prev) => {
@@ -1044,8 +1078,8 @@ const updateQty = (idx: number, delta: number) => {
     });
   };
   const handleFormChange = (field: keyof FormData, value: string) => {
-  setForm((p) => ({ ...p, [field]: value }));
-  if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
+    setForm((p) => ({ ...p, [field]: value }));
+    if (errors[field]) setErrors((p) => ({ ...p, [field]: "" }));
   };
 
   const applyCoupon = () => {
@@ -1252,10 +1286,10 @@ const updateQty = (idx: number, delta: number) => {
       >
         {/* Drawer Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-          <span 
-            style={{ 
-              fontFamily: "'Lobster', serif", 
-              fontSize: 24, 
+          <span
+            style={{
+              fontFamily: "'Lobster', serif",
+              fontSize: 24,
               color: "#ffffff"
             }}
           >
@@ -1276,7 +1310,7 @@ const updateQty = (idx: number, delta: number) => {
             { label: "Search Sets", icon: "🔍", onClick: () => { navigate("/search"); setMenuOpen(false); } },
             { label: "Custom Orders", icon: "💅", onClick: () => { navigate("/custom-orders"); setMenuOpen(false); } },
             { label: "Nail Videos", icon: "🎬", onClick: () => { navigate("/videos"); setMenuOpen(false); } },
-            { label: "Our Story", icon: "📖", onClick: () => { navigate("/about"); setMenuOpen(false); } },
+            { label: "About JuiceGels", icon: "📖", onClick: () => { navigate("/about"); setMenuOpen(false); } },
             { label: "Contact Us", icon: "✉️", onClick: () => { navigate("/contact"); setMenuOpen(false); } },
             { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
             { label: "Shopping Basket", icon: "🛒", onClick: () => { if (page === "preorder") { setPage("basket"); } else { navigate(currentBasketUrl(cart)); } setMenuOpen(false); } },
@@ -1340,21 +1374,21 @@ const updateQty = (idx: number, delta: number) => {
           </button>
         </div>
 
-        <h1 
+        <h1
           onClick={() => navigate("/")}
-          style={{ 
-            fontFamily: "'Lobster', serif", 
-            color: "#ffffff", 
-            margin: 0, 
-            letterSpacing: "0.04em", 
-            fontSize: 26, 
+          style={{
+            fontFamily: "'Lobster', serif",
+            color: "#ffffff",
+            margin: 0,
+            letterSpacing: "0.04em",
+            fontSize: 26,
             cursor: "pointer"
           }}
         >
           Juice Gels
         </h1>
 
-        <button 
+        <button
           onClick={() => {
             if (page === "preorder") {
               setPage("basket");
@@ -1362,7 +1396,7 @@ const updateQty = (idx: number, delta: number) => {
               navigate(currentBasketUrl(cart));
             }
           }}
-          style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4 }} 
+          style={{ position: "relative", background: "none", border: "none", cursor: "pointer", padding: 4 }}
           aria-label="Basket"
         >
           <ShoppingBag size={22} style={{ color: "#ffd6e9" }} />
@@ -1383,15 +1417,15 @@ const updateQty = (idx: number, delta: number) => {
             const isClickable = page === "preorder" && i === 0;
             return (
               <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, flex: i < 2 ? 1 : undefined }}>
-                <div 
+                <div
                   onClick={() => {
                     if (isClickable) {
                       setPage("basket");
                     }
                   }}
-                  style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
                     gap: 5,
                     cursor: isClickable ? "pointer" : "default"
                   }}
@@ -1400,10 +1434,10 @@ const updateQty = (idx: number, delta: number) => {
                   <div style={{ width: 22, height: 22, borderRadius: "50%", background: done ? "#ffd6e9" : active ? "#f7b8ca" : "#fce4ea", border: `2px solid ${active || done ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {done ? <Check size={11} color="#fff" /> : <span style={{ fontSize: 10, color: active ? "#fff9fb" : "#4f444a", fontWeight: 600 }}>{i + 1}</span>}
                   </div>
-                  <span 
-                    style={{ 
-                      fontSize: 11, 
-                      color: active ? "#fff9fb" : "#4f444a", 
+                  <span
+                    style={{
+                      fontSize: 11,
+                      color: active ? "#fff9fb" : "#4f444a",
                       fontWeight: active ? 600 : 400,
                       textDecoration: isClickable ? "underline" : "none"
                     }}
@@ -1441,8 +1475,8 @@ const updateQty = (idx: number, delta: number) => {
 
           <HomeCarousel navigate={navigate} />
 
-            <div id="products-grid" style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {uniqueProducts.map((p) => (
+          <div id="products-grid" style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {uniqueProducts.map((p) => (
               <button key={p.id} onClick={() => openProduct(p)} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
                 <button onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }} style={{ position: "absolute", top: 7, right: 7, background: "rgba(255,255,255,0.88)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }} aria-label="Wishlist">
                   <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#4f444a"} />
@@ -1455,35 +1489,6 @@ const updateQty = (idx: number, delta: number) => {
               </button>
             ))}
           </div>
-
-          <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
-            <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#fff9fb", margin: "0 0 8px" }}>Juice Gels</p>
-            <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 16px" }}>Handmade with love by Alyssa 🌸</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 12, fontSize: 13, alignItems: "center" }}>
-              <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
-                Our Story
-              </button>
-              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
-              <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
-                Custom Orders
-              </button>
-              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
-              <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
-                Contact Us
-              </button>
-              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
-              <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
-                Videos
-              </button>
-              <span style={{ color: "rgba(212, 84, 122, 0.18)" }}>|</span>
-              <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline", fontWeight: 500 }}>
-                Instagram
-              </a>
-            </div>
-            <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
-              &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
-            </p>
-          </footer>
         </main>
       )}
 
@@ -1512,202 +1517,202 @@ const updateQty = (idx: number, delta: number) => {
         <CustomOrders />
       )}
 
-    {/* ── Product Detail ── */}
-    {page === "product" && selected && (
-      <main>
-        <ImageWithFallback
-          src={[selected.image, ...selected.extraImages][activeImg]}
-          alt={selected.name}
-          style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "#e0a2b4" }}
-        />
+      {/* ── Product Detail ── */}
+      {page === "product" && selected && (
+        <main>
+          <ImageWithFallback
+            src={[selected.image, ...selected.extraImages][activeImg]}
+            alt={selected.name}
+            style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "#e0a2b4" }}
+          />
 
-        {selected.extraImages.length > 0 && (
-          <div style={{ display: "flex", gap: 8, padding: "10px 16px 0", overflowX: "auto" }}>
-            {[selected.image, ...selected.extraImages].map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveImg(i)}
+          {selected.extraImages.length > 0 && (
+            <div style={{ display: "flex", gap: 8, padding: "10px 16px 0", overflowX: "auto" }}>
+              {[selected.image, ...selected.extraImages].map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  style={{
+                    flexShrink: 0,
+                    border: `2px solid ${activeImg === i ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    padding: 0,
+                    cursor: "pointer",
+                    background: "none"
+                  }}
+                >
+                  <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "#e0a2b4" }} />
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div style={{ padding: "16px 20px 130px" }}>
+            <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "#ae3c6f" }}>
+              {selected.name}
+            </h2>
+
+            <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 10px" }}>
+              Handmade · In stock
+            </p>
+
+            <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
+              £{selected.price.toFixed(2)}
+            </span>
+
+            <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: "12px 0 18px" }}>
+              {selected.description}
+            </p>
+
+            {!isVariationLocked(selected) ? (
+              <>
+                <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
+                  Nail Shape
+                </p>
+
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
+                  {selected.shapes.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        if (!selected) return;
+
+                        const next = findVariant(selected.groupId, s, selectedLength);
+                        if (next) {
+                          setSelected(next);
+                          setSelectedShape(s);
+                          setSelectedLength(next.length);
+                        }
+                      }}
+                      style={{
+                        border: `1.5px solid ${selectedShape === s ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                        background: selectedShape === s ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
+                        color: selectedShape === s ? "#ffffff" : "#fff9fb",
+                        borderRadius: 8,
+                        padding: "6px 14px",
+                        fontSize: 12,
+                        cursor: "pointer",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+
+                <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
+                  Nail Length
+                </p>
+
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
+                  {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
+                    <button
+                      key={length}
+                      onClick={() => {
+                        if (!selected) return;
+
+                        const next = findVariant(selected.groupId, selectedShape, length);
+                        if (next) {
+                          setSelected(next);
+                          setSelectedLength(length);
+                          setSelectedShape(next.shape);
+                        }
+                      }}
+                      style={{
+                        border: `1.5px solid ${selectedLength === length ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                        background: selectedLength === length ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
+                        color: selectedLength === length ? "#ffffff" : "#fff9fb",
+                        borderRadius: 8,
+                        padding: "6px 14px",
+                        fontSize: 12,
+                        cursor: "pointer",
+                        transition: "all 0.15s",
+                        textTransform: "capitalize"
+                      }}
+                    >
+                      {length}
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : null}
+
+            {!isVariationLocked(selected) ? (
+              <div
                 style={{
-                  flexShrink: 0,
-                  border: `2px solid ${activeImg === i ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                  borderRadius: 8,
-                  overflow: "hidden",
-                  padding: 0,
-                  cursor: "pointer",
-                  background: "none"
+                  background: "#fce4ea",
+                  borderRadius: 10,
+                  padding: "10px 14px",
+                  fontSize: 12,
+                  color: "#4f444a",
+                  lineHeight: 1.5
                 }}
               >
-                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "#e0a2b4" }} />
-              </button>
-            ))}
+                You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
+              </div>
+            ) : null}
           </div>
-        )}
 
-        <div style={{ padding: "16px 20px 130px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "#ae3c6f" }}>
-            {selected.name}
-          </h2>
-
-          <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 10px" }}>
-            Handmade · In stock
-          </p>
-
-          <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
-            £{selected.price.toFixed(2)}
-          </span>
-
-          <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: "12px 0 18px" }}>
-            {selected.description}
-          </p>
-
-          {!isVariationLocked(selected) ? (
-            <>
-              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
-                Nail Shape
-              </p>
-
-              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
-                {selected.shapes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => {
-                      if (!selected) return;
-
-                      const next = findVariant(selected.groupId, s, selectedLength);
-                      if (next) {
-                        setSelected(next);
-                        setSelectedShape(s);
-                        setSelectedLength(next.length);
-                      }
-                    }}
-                    style={{
-                      border: `1.5px solid ${selectedShape === s ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                      background: selectedShape === s ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
-                      color: selectedShape === s ? "#ffffff" : "#fff9fb",
-                      borderRadius: 8,
-                      padding: "6px 14px",
-                      fontSize: 12,
-                      cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-
-              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
-                Nail Length
-              </p>
-
-              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
-                {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
-                  <button
-                    key={length}
-                    onClick={() => {
-                      if (!selected) return;
-
-                      const next = findVariant(selected.groupId, selectedShape, length);
-                      if (next) {
-                        setSelected(next);
-                        setSelectedLength(length);
-                        setSelectedShape(next.shape);
-                      }
-                    }}
-                    style={{
-                      border: `1.5px solid ${selectedLength === length ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                      background: selectedLength === length ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
-                      color: selectedLength === length ? "#ffffff" : "#fff9fb",
-                      borderRadius: 8,
-                      padding: "6px 14px",
-                      fontSize: 12,
-                      cursor: "pointer",
-                      transition: "all 0.15s",
-                      textTransform: "capitalize"
-                    }}
-                  >
-                    {length}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : null}
-
-          {!isVariationLocked(selected) ? (
-            <div
+          <div
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "100%",
+              maxWidth: 430,
+              padding: "14px 18px",
+              background: "#fc6587",
+              borderTop: "1px solid rgba(212, 84, 122, 0.18)",
+              display: "flex",
+              gap: 10,
+              boxSizing: "border-box"
+            }}
+          >
+            <button
+              onClick={() => toggleWishlist(selected.id)}
               style={{
-                background: "#fce4ea",
-                borderRadius: 10,
-                padding: "10px 14px",
-                fontSize: 12,
-                color: "#4f444a",
-                lineHeight: 1.5
+                border: "1.5px solid rgba(212, 84, 122, 0.18)",
+                background: "#fc6587",
+                borderRadius: 12,
+                width: 46,
+                height: 46,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                flexShrink: 0
               }}
             >
-              You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
-            </div>
-          ) : null}
-        </div>
+              <Heart
+                size={17}
+                fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
+                stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#4f444a"}
+              />
+            </button>
 
-        <div
-          style={{
-            position: "fixed",
-            bottom: 0,
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100%",
-            maxWidth: 430,
-            padding: "14px 18px",
-            background: "#fc6587",
-            borderTop: "1px solid rgba(212, 84, 122, 0.18)",
-            display: "flex",
-            gap: 10,
-            boxSizing: "border-box"
-          }}
-        >
-          <button
-            onClick={() => toggleWishlist(selected.id)}
-            style={{
-              border: "1.5px solid rgba(212, 84, 122, 0.18)",
-              background: "#fc6587",
-              borderRadius: 12,
-              width: 46,
-              height: 46,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              flexShrink: 0
-            }}
-          >
-            <Heart
-              size={17}
-              fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
-              stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#4f444a"}
-            />
-          </button>
-
-          <button
-            onClick={addToBasket}
-            disabled={!selectedShape || !selectedLength}
-            style={{
-              flex: 1,
-              background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "#fce4ea",
-              color: selectedShape && selectedLength ? "#fff" : "#4f444a",
-              border: "none",
-              borderRadius: 12,
-              height: 46,
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: selectedShape && selectedLength ? "pointer" : "not-allowed",
-              transition: "all 0.15s"
-            }}
-          >
-            {selectedShape && selectedLength ? "Add to Basket" : "Select shape and length"}
-          </button>
-        </div>
-      </main>
-    )}
+            <button
+              onClick={addToBasket}
+              disabled={!selectedShape || !selectedLength}
+              style={{
+                flex: 1,
+                background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "#fce4ea",
+                color: selectedShape && selectedLength ? "#fff" : "#4f444a",
+                border: "none",
+                borderRadius: 12,
+                height: 46,
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: selectedShape && selectedLength ? "pointer" : "not-allowed",
+                transition: "all 0.15s"
+              }}
+            >
+              {selectedShape && selectedLength ? "Add to Basket" : "Select shape and length"}
+            </button>
+          </div>
+        </main>
+      )}
 
       {/* ── Basket ── */}
       {page === "basket" && (
@@ -1904,7 +1909,7 @@ const updateQty = (idx: number, delta: number) => {
                   </div>
                 )}
 
-                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
                   <span style={{ color: "#4f444a" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
                   <span>£{cartTotal.toFixed(2)}</span>
                 </div>
@@ -2129,8 +2134,8 @@ const updateQty = (idx: number, delta: number) => {
                 <div style={{ display: "flex", flexDirection: "column", marginTop: 4, padding: "8px 10px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0", fontSize: 11, color: "#166534", lineHeight: 1.35 }}>
                   <strong>🌸 Nail Size Guide Discount Eligible!</strong>
                   <span>
-                    {isSizeGuideDiscountApplied 
-                      ? "Eligible first-time buyer verified! £4.00 will be automatically deducted at checkout." 
+                    {isSizeGuideDiscountApplied
+                      ? "Eligible first-time buyer verified! £4.00 will be automatically deducted at checkout."
                       : "If you are a first-time buyer, £4.00 will be automatically deducted at checkout."}
                   </span>
                 </div>
@@ -2202,6 +2207,35 @@ const updateQty = (idx: number, delta: number) => {
           </button>
         </main>
       )}
+
+      <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
+        <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#f86ca5", margin: "0 0 8px" }}>Juice Gels</p>
+        <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 16px" }}>Handmade with love🌸</p>
+        <div style={{ display: "flex", justifyContent: "center", gap: 10, rowGap: 8, fontSize: 13, alignItems: "center", flexWrap: "wrap", maxWidth: 320, margin: "0 auto" }}>
+          <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+            About Her
+          </button>
+          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+          <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+            Custom Orders
+          </button>
+          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+          <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+            Contact Us
+          </button>
+          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+          <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+            Videos
+          </button>
+          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+          <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline", fontWeight: 500, whiteSpace: "nowrap" }}>
+            Instagram
+          </a>
+        </div>
+        <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
+          &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }

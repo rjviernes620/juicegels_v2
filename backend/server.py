@@ -861,6 +861,9 @@ def check_eligibility():
 
 
 def build_custom_order_owner_email_html(summary):
+  attachments = summary.get("attachments", [])
+  attachment_names = ", ".join(att["filename"] for att in attachments) if attachments else "None"
+
   return (
     '<div style="font-family:Arial,sans-serif;color:#111827;line-height:1.5;max-width:900px;margin:0 auto;">'
     '<h1 style="margin:0 0 16px;">New Custom Order Request</h1>'
@@ -868,7 +871,7 @@ def build_custom_order_owner_email_html(summary):
     '<h2 style="margin:0 0 12px;font-size:20px;">Customer Details</h2>'
     f'{build_info_table([("Name", summary.get("name")), ("Email", summary.get("email")), ("Instagram", summary.get("instagram"))])}'
     '<h2 style="margin:0 0 12px;font-size:20px;">Request Details</h2>'
-    f'{build_info_table([("Nail Shape", summary.get("shape")), ("Nail Length", summary.get("length")), ("Design Details", summary.get("details"))])}'
+    f'{build_info_table([("Nail Shape", summary.get("shape")), ("Nail Length", summary.get("length")), ("Design Details", summary.get("details")), ("Attachments", attachment_names)])}'
     '</div>'
   )
 
@@ -895,10 +898,14 @@ def build_custom_order_customer_email_html(summary):
   {"".join(paragraphs)}
 </div>"""
 
+  attachments = summary.get("attachments", [])
+  attachment_names = ", ".join(att["filename"] for att in attachments) if attachments else "None"
+
   details_table = build_info_table([
     ('Preferred Shape', summary.get('shape', '')),
     ('Preferred Length', summary.get('length', '')),
     ('Design Details', summary.get('details', '')),
+    ('Attachments', attachment_names),
   ])
 
   return f"""<!DOCTYPE html>
@@ -993,6 +1000,18 @@ def send_custom_order_emails(summary):
   from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or '').strip()
   from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or '').strip()
 
+  owner_email_options = {
+    'replyToAddresses': ['juicegels@gmail.com'],
+  }
+  customer_email_options = {
+    'replyToAddresses': ['juicegels@gmail.com'],
+  }
+
+  attachments = summary.get('attachments', [])
+  if attachments:
+    owner_email_options['attachments'] = attachments
+    customer_email_options['attachments'] = attachments
+
   owner_payload = {
     'type': 'email_compose_preview',
     'to': {
@@ -1005,9 +1024,7 @@ def send_custom_order_emails(summary):
       'senderEmail': from_address or 'CustomOrder@juicegels.com',
     },
     'options': {
-      'email': {
-        'replyToAddresses': ['juicegels@gmail.com'],
-      }
+      'email': owner_email_options
     }
   }
 
@@ -1024,9 +1041,7 @@ def send_custom_order_emails(summary):
       'senderEmail': from_address or 'CustomOrder@juicegels.com',
     },
     'options': {
-      'email': {
-        'replyToAddresses': ['juicegels@gmail.com'],
-      }
+      'email': customer_email_options
     }
   }
 
@@ -1057,9 +1072,20 @@ def create_custom_order():
   shape = str(payload.get('shape', '')).strip()
   length = str(payload.get('length', '')).strip()
   details = str(payload.get('details', '')).strip()
+  attachments = payload.get('attachments', [])
 
   if not name or not email or not instagram or not details:
     return jsonify({ 'error': 'Missing required fields: name, email, instagram, and details are required.' }), 400
+
+  formatted_attachments = []
+  if isinstance(attachments, list):
+    for att in attachments:
+      if isinstance(att, dict) and 'filename' in att and 'content' in att:
+        formatted_attachments.append({
+          'filename': str(att['filename']),
+          'content': str(att['content']),
+          'contentType': str(att.get('contentType') or att.get('content_type') or 'application/octet-stream')
+        })
 
   try:
     send_custom_order_emails({
@@ -1068,7 +1094,8 @@ def create_custom_order():
       'instagram': instagram,
       'shape': shape,
       'length': length,
-      'details': details
+      'details': details,
+      'attachments': formatted_attachments
     })
     return jsonify({ 'success': True })
   except Exception as e:

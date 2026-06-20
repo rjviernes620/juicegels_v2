@@ -55,7 +55,7 @@ export function Contact() {
         {/* Instagram DM Deep Link Card */}
         <div 
           style={{ 
-            background: "#e0a2b4", 
+            background: "#ff8fc7", 
             borderRadius: 16, 
             padding: "20px 18px", 
             border: "1px solid rgba(212, 84, 122, 0.18)",
@@ -127,7 +127,7 @@ export function Contact() {
         {/* Email Card */}
         <div 
           style={{ 
-            background: "#e0a2b4", 
+            background: "#ff8fc7", 
             borderRadius: 16, 
             padding: "20px 18px", 
             border: "1px solid rgba(212, 84, 122, 0.18)",
