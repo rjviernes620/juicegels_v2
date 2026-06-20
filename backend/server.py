@@ -855,6 +855,203 @@ def check_eligibility():
   return jsonify({ 'eligible': eligible })
 
 
+def build_custom_order_owner_email_html(summary):
+  return (
+    '<div style="font-family:Arial,sans-serif;color:#111827;line-height:1.5;max-width:900px;margin:0 auto;">'
+    '<h1 style="margin:0 0 16px;">New Custom Order Request</h1>'
+    '<p style="margin:0 0 24px;">A new custom order request has been submitted on the website.</p>'
+    '<h2 style="margin:0 0 12px;font-size:20px;">Customer Details</h2>'
+    f'{build_info_table([("Name", summary.get("name")), ("Email", summary.get("email")), ("Instagram", summary.get("instagram"))])}'
+    '<h2 style="margin:0 0 12px;font-size:20px;">Request Details</h2>'
+    f'{build_info_table([("Nail Shape", summary.get("shape")), ("Nail Length", summary.get("length")), ("Design Details", summary.get("details"))])}'
+    '</div>'
+  )
+
+
+def build_custom_order_customer_email_html(summary):
+  customer_name = summary.get('name', 'there')
+  instagram_handle = summary.get('instagram', '').strip()
+  if instagram_handle and not instagram_handle.startswith('@'):
+    instagram_handle = '@' + instagram_handle
+
+  process_text = (
+    "Thank you for submitting your custom order request! Alyssa is super excited to bring your concept to life.\n\n"
+    f"Please note: **Alyssa will contact you over Instagram ({instagram_handle}) only** to finalize your custom order design, verify your sizing, and provide a price quote.\n\n"
+    "We typically reach out within 24 hours. Keep an eye on your Instagram DMs! (If your account is private, please message @juicegels first so we can chat.)"
+  )
+
+  paragraphs = []
+  for para in process_text.split('\n\n'):
+    if para.strip():
+      paragraphs.append(f'<p style="margin: 0 0 12px 0; font-size: 15px; line-height: 1.6;">{escape_html(para.strip())}</p>')
+
+  post_payment_html = f"""<div style="background-color: #fce4ea; border: 2px dashed #fc6587; border-radius: 12px; padding: 20px; margin: 24px 0; color: #3d1a24; font-family: 'DM Sans', Arial, sans-serif;">
+  <h3 style="margin: 0 0 12px 0; font-family: 'Lobster', Georgia, serif; font-size: 20px; color: #ae3c6f; font-weight: normal;">💖 What happens next?</h3>
+  {"".join(paragraphs)}
+</div>"""
+
+  details_table = build_info_table([
+    ('Preferred Shape', summary.get('shape', '')),
+    ('Preferred Length', summary.get('length', '')),
+    ('Design Details', summary.get('details', '')),
+  ])
+
+  return f"""<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Order Request - Juice Gels</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Lobster&family=DM+Sans:wght@400;500;700&display=swap');
+    body {{
+      margin: 0;
+      padding: 0;
+      background-color: #ffd2e6;
+      font-family: 'DM Sans', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }}
+  </style>
+</head>
+<body style="margin: 0; padding: 40px 20px; background-color: #ffd2e6;">
+  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
+    <tr>
+      <td align="center" style="padding: 0 0 40px 0;">
+        <!-- Outer Container -->
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #fff9fb; border: 1px solid rgba(212, 84, 122, 0.18); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(61, 26, 36, 0.08);">
+          <!-- Header -->
+          <tr>
+            <td align="center" style="padding: 40px 30px 20px 30px; background-color: #fff9fb; border-bottom: 1px solid rgba(212, 84, 122, 0.1);">
+              <h1 style="margin: 0; font-family: 'Lobster', Georgia, serif; font-size: 42px; color: #fc6587; font-weight: normal; letter-spacing: 0.5px; line-height: 1.1;">Juice Gels</h1>
+              <p style="margin: 8px 0 0 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 14px; color: #ae3c6f; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;">Custom Order Request</p>
+            </td>
+          </tr>
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 30px 30px 20px 30px; font-family: 'DM Sans', Arial, sans-serif; color: #3d1a24;">
+              <h2 style="margin: 0 0 16px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 20px; font-weight: 700; color: #3d1a24;">Hi {escape_html(customer_name)},</h2>
+              <p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #3d1a24;">
+                We have received your custom order inquiry! Alyssa is excited to create a custom-fit set just for you.
+              </p>
+              
+              {post_payment_html}
+              
+              <h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Your Request Details</h3>
+              {details_table}
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px; background-color: #fff9fb; border-top: 1px solid rgba(212, 84, 122, 0.1); text-align: center; font-family: 'DM Sans', Arial, sans-serif;">
+              <p style="margin: 0 0 12px 0; font-size: 14px; color: #4f444a;">
+                Have a question? Feel free to DM us on Instagram <a href="https://instagram.com/juicegels" target="_blank" style="color: #fc6587; text-decoration: underline; font-weight: 500;">@juicegels</a>.
+              </p>
+              <p style="margin: 0; font-size: 13px; color: #ae3c6f; font-weight: 500;">
+                &copy; {datetime.now(timezone.utc).year} Juice Gels. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+        <!-- End Outer Container -->
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
+
+
+def send_custom_order_emails(summary):
+  pingram_api_key = read_secret('pingram_v1', 'PINGRAM_API_KEY')
+  if not pingram_api_key:
+    raise RuntimeError('Missing Pingram secret file pingram_v1.')
+
+  from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or '').strip()
+  from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or '').strip()
+
+  owner_payload = {
+    'type': 'email_compose_preview',
+    'to': {
+      'email': PINGRAM_ORDER_RECIPIENT,
+    },
+    'email': {
+      'subject': f"New Custom Order Request - {summary.get('name')}",
+      'html': build_custom_order_owner_email_html(summary),
+      'senderName': from_name or 'OnlineOrder',
+      'senderEmail': from_address or 'neworder@juicegels.com',
+    },
+    'options': {
+      'email': {
+        'replyToAddresses': ['juicegels@gmail.com'],
+      }
+    }
+  }
+
+  customer_email = summary.get('email', '').strip()
+  customer_payload = {
+    'type': 'email_compose_preview',
+    'to': {
+      'email': customer_email,
+    },
+    'email': {
+      'subject': "Custom Order Request Received - Juice Gels",
+      'html': build_custom_order_customer_email_html(summary),
+      'senderName': from_name or 'Juice Gels',
+      'senderEmail': from_address or 'neworder@juicegels.com',
+    },
+    'options': {
+      'email': {
+        'replyToAddresses': ['juicegels@gmail.com'],
+      }
+    }
+  }
+
+  async def _send():
+    async with Pingram(
+      api_key=pingram_api_key,
+      base_url='https://api.eu.pingram.io',
+    ) as client:
+      owner_res = await client.send(owner_payload)
+      customer_res = await client.send(customer_payload)
+      return owner_res, customer_res
+
+  try:
+    return asyncio.run(_send())
+  except Exception as error:
+    raise RuntimeError(f'Pingram custom order emails failed: {error}') from error
+
+
+@app.route('/create-custom-order', methods=['POST', 'OPTIONS'])
+def create_custom_order():
+  if request.method == 'OPTIONS':
+    return jsonify({}), 204
+
+  payload = request.get_json(force=True)
+  name = str(payload.get('name', '')).strip()
+  email = str(payload.get('email', '')).strip()
+  instagram = str(payload.get('instagram', '')).strip()
+  shape = str(payload.get('shape', '')).strip()
+  length = str(payload.get('length', '')).strip()
+  details = str(payload.get('details', '')).strip()
+
+  if not name or not email or not instagram or not details:
+    return jsonify({ 'error': 'Missing required fields: name, email, instagram, and details are required.' }), 400
+
+  try:
+    send_custom_order_emails({
+      'name': name,
+      'email': email,
+      'instagram': instagram,
+      'shape': shape,
+      'length': length,
+      'details': details
+    })
+    return jsonify({ 'success': True })
+  except Exception as e:
+    import traceback
+    traceback.print_exc()
+    return jsonify({ 'error': 'internal server error' }), 500
+
+
 @app.route('/stripe-webhook', methods=['POST'])
 def stripe_webhook():
   print("Stripe webhook endpoint called!")

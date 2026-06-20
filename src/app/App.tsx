@@ -6,11 +6,13 @@ import { loadProducts, type Product } from "./utils/parseProducts";
 import { About } from "./components/About";
 import { Videos } from "./components/Videos";
 import { Search } from "./components/Search";
+import { Contact } from "./components/Contact";
+import { CustomOrders } from "./components/CustomOrders";
 
 
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number ; length: NailLength};
-type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search";
+type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search" | "contact" | "custom-orders";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string; city: string; postcode: string; notes: string; contactMethod: "instagram" | "email"; };
 type ShippingOptionId = "tracked24" | "tracked48";
 
@@ -591,6 +593,16 @@ useEffect(() => {
 
   if (effectivePath === "/search") {
     setPage("search");
+    return;
+  }
+
+  if (effectivePath === "/contact") {
+    setPage("contact");
+    return;
+  }
+
+  if (effectivePath === "/custom-orders") {
+    setPage("custom-orders");
     return;
   }
 
@@ -1228,8 +1240,10 @@ const updateQty = (idx: number, delta: number) => {
           {[
             { label: "Home", icon: "🌸", onClick: () => { navigate("/"); setMenuOpen(false); } },
             { label: "Search Sets", icon: "🔍", onClick: () => { navigate("/search"); setMenuOpen(false); } },
+            { label: "Custom Orders", icon: "💅", onClick: () => { navigate("/custom-orders"); setMenuOpen(false); } },
             { label: "Nail Videos", icon: "🎬", onClick: () => { navigate("/videos"); setMenuOpen(false); } },
             { label: "Our Story", icon: "📖", onClick: () => { navigate("/about"); setMenuOpen(false); } },
+            { label: "Contact Us", icon: "✉️", onClick: () => { navigate("/contact"); setMenuOpen(false); } },
             { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
             { label: "Shopping Basket", icon: "🛒", onClick: () => { if (page === "preorder") { setPage("basket"); } else { navigate(currentBasketUrl(cart)); } setMenuOpen(false); } },
           ].map((item, idx) => (
@@ -1416,6 +1430,14 @@ const updateQty = (idx: number, delta: number) => {
                 Our Story
               </button>
               <span style={{ color: "var(--border)" }}>|</span>
+              <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+                Custom Orders
+              </button>
+              <span style={{ color: "var(--border)" }}>|</span>
+              <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
+                Contact Us
+              </button>
+              <span style={{ color: "var(--border)" }}>|</span>
               <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "var(--foreground)", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0 }}>
                 Videos
               </button>
@@ -1444,6 +1466,16 @@ const updateQty = (idx: number, delta: number) => {
       {/* ── Search ── */}
       {page === "search" && (
         <Search products={products} onShopProduct={handleShopProduct} />
+      )}
+
+      {/* ── Contact ── */}
+      {page === "contact" && (
+        <Contact />
+      )}
+
+      {/* ── Custom Orders ── */}
+      {page === "custom-orders" && (
+        <CustomOrders />
       )}
 
     {/* ── Product Detail ── */}
