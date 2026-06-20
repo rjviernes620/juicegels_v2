@@ -119,22 +119,10 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
               minHeight: 116,
             }}
           >
-            <ImageWithFallback 
-              src="images/summer_sale_banner.png" 
-              alt="Summer Sale" 
-              style={{ 
-                width: 84, 
-                height: 84, 
-                objectFit: "cover", 
-                borderRadius: 12, 
-                flexShrink: 0,
-                background: "var(--muted)" 
-              }} 
-            />
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'Lobster', serif", color: "#1e1b4b", margin: "0 0 4px", fontSize: 18 }}>25% Off Summer Sale! ☀️</p>
+              <p style={{ fontFamily: "'Lobster', serif", color: "#1e1b4b", margin: "0 0 4px", fontSize: 18 }}>20% Off Summer Sale! ☀️</p>
               <p style={{ color: "#312e81", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
-                Get 25% off your basket when you buy ONLY nail sets! Ends at the end of July. <br />
+                Get 20% off your basket when you buy ONLY nail sets! Ends at the end of July. <br />
                 <span style={{ color: "#4338ca", fontWeight: 700 }}>Discount Applied Automatically 🌸</span>
               </p>
             </div>
@@ -681,7 +669,7 @@ useEffect(() => {
     return now < saleEnd;
   };
   const isNailSetSaleApplied = !hasSizeGuide && hasNailSet && isJuly2026SaleActive();
-  const nailSetSaleDiscountAmount = isNailSetSaleApplied ? cartTotal * 0.25 : 0;
+  const nailSetSaleDiscountAmount = isNailSetSaleApplied ? cartTotal * 0.20 : 0;
 
   const couponDiscount = couponSummary?.discountAmount ?? 0;
   const discountTotal = couponDiscount + nailSetSaleDiscountAmount;
@@ -1744,8 +1732,8 @@ const updateQty = (idx: number, delta: number) => {
                 }}>
                   <span style={{ fontSize: 20 }}>✨</span>
                   <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.4 }}>
-                    <strong>25% Off Summer Sale Applied!</strong>
-                    <br />You've got 25% off your entire basket of nail sets!
+                    <strong>20% Off Summer Sale Applied!</strong>
+                    <br />You've got 20% off your entire basket of nail sets!
                   </div>
                 </div>
               )}
@@ -1862,7 +1850,7 @@ const updateQty = (idx: number, delta: number) => {
                 )}
                 {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                    <span style={{ color: "#1f6f43", fontWeight: 500 }}>25% Off Summer Sale</span>
+                    <span style={{ color: "#1f6f43", fontWeight: 500 }}>20% Off</span>
                     <span style={{ color: "#1f6f43", fontWeight: 700 }}>-£{nailSetSaleDiscountAmount.toFixed(2)}</span>
                   </div>
                 )}
@@ -2067,7 +2055,7 @@ const updateQty = (idx: number, delta: number) => {
               )}
               {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1f6f43", fontWeight: 500 }}>
-                  <span>25% Off Summer Sale</span>
+                  <span>20% Off</span>
                   <span>-{formatMoney(nailSetSaleDiscountAmount)}</span>
                 </div>
               )}

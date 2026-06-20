@@ -1002,16 +1002,16 @@ def create_checkout_session():
     if is_first_time_buyer(customer_email):
       apply_size_guide_coupon = True
 
-  apply_25_percent_discount = False
+  apply_20_percent_discount = False
   if has_nail_set and not has_size_guide:
     now = datetime.now(timezone.utc)
     sale_end = datetime(2026, 8, 1, 0, 0, 0, tzinfo=timezone.utc)
     if now < sale_end:
-      apply_25_percent_discount = True
+      apply_20_percent_discount = True
 
   discounted_subtotal_pence = subtotal_pence
-  if apply_25_percent_discount:
-    discounted_subtotal_pence -= round(subtotal_pence * 0.25)
+  if apply_20_percent_discount:
+    discounted_subtotal_pence -= round(subtotal_pence * 0.20)
   else:
     if coupon_summary:
       discounted_subtotal_pence -= coupon_summary['discount_pence']
@@ -1053,17 +1053,17 @@ def create_checkout_session():
         'shipping_address': form.get('address', ''),
         'shipping_city': form.get('city', ''),
         'shipping_postcode': form.get('postcode', ''),
-        'coupon_code': 'lGKkukJL' if apply_25_percent_discount else ('60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else '')),
+        'coupon_code': 'lGKkukJL' if apply_20_percent_discount else ('60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else '')),
         'shipping_option_id': shipping_option['id'],
         'shipping_method': shipping_option['label'],
         'shipping_amount_pence': str(shipping_option['amount_pence']),
       },
       'mode': 'payment',
       'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
-      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary and not (apply_size_guide_coupon or apply_25_percent_discount) else ''}",
+      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary and not (apply_size_guide_coupon or apply_20_percent_discount) else ''}",
     }
 
-    if apply_25_percent_discount:
+    if apply_20_percent_discount:
       session_params['discounts'] = [{
         'coupon': 'lGKkukJL',
       }]
