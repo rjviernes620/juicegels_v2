@@ -2226,34 +2226,36 @@ export default function App() {
         </main>
       )}
 
-      <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
-        <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#f86ca5", margin: "0 0 8px" }}>Juice Gels</p>
-        <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 16px" }}>Handmade with love🌸</p>
-        <div style={{ display: "flex", justifyContent: "center", gap: 10, rowGap: 8, fontSize: 13, alignItems: "center", flexWrap: "wrap", maxWidth: 320, margin: "0 auto" }}>
-          <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
-            About Her
-          </button>
-          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
-          <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
-            Custom Orders
-          </button>
-          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
-          <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
-            Contact Us
-          </button>
-          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
-          <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
-            Videos
-          </button>
-          <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
-          <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline", fontWeight: 500, whiteSpace: "nowrap" }}>
-            Instagram
-          </a>
-        </div>
-        <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
-          &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
-        </p>
-      </footer>
+      {page !== "product" && page !== "basket" && (
+        <footer style={{ padding: "28px 16px 40px", textAlign: "center", borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
+          <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#f86ca5", margin: "0 0 8px" }}>Juice Gels</p>
+          <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 16px" }}>Handmade with love🌸</p>
+          <div style={{ display: "flex", justifyContent: "center", gap: 10, rowGap: 8, fontSize: 13, alignItems: "center", flexWrap: "wrap", maxWidth: 320, margin: "0 auto" }}>
+            <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              About Her
+            </button>
+            <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+            <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              Custom Orders
+            </button>
+            <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+            <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              Contact Us
+            </button>
+            <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+            <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              Videos
+            </button>
+            <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+            <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline", fontWeight: 500, whiteSpace: "nowrap" }}>
+              Instagram
+            </a>
+          </div>
+          <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
+            &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
+          </p>
+        </footer>
+      )}
     </div>
   );
 }

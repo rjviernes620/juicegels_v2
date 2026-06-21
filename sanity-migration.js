@@ -90,6 +90,19 @@ async function migrate() {
 
   console.log(`Found ${Object.keys(groups).length} unique product sets to import.`);
 
+  // Fetch all existing products to map baseId to existing _id to prevent duplicates
+  const existingMap = new Map();
+  try {
+    console.log("Fetching existing products from database to prevent duplicate creation...");
+    const existing = await client.fetch('*[_type == "product" && defined(baseId)]{_id, baseId}');
+    for (const p of existing) {
+      existingMap.set(p.baseId, p._id);
+    }
+    console.log(`Mapped ${existingMap.size} existing products.`);
+  } catch (fetchErr) {
+    console.warn("Failed to fetch existing products, fallback to default ID format:", fetchErr.message);
+  }
+
   for (const [title, groupRows] of Object.entries(groups)) {
     // Sort rows by ID numerical value to find the base ID
     const sorted = groupRows.sort((a, b) => {
@@ -106,8 +119,11 @@ async function migrate() {
 
     console.log(`Processing: "${title}" (Base ID: ${baseId})`);
 
+    const existingId = existingMap.get(baseId);
+    const docId = existingId || `product-${baseId}`;
+
     const doc = {
-      _id: `product-${baseId}`,
+      _id: docId,
       _type: 'product',
       title: title,
       baseId: baseId,

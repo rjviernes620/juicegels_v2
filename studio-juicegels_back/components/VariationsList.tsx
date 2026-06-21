@@ -100,6 +100,7 @@ export function VariationsList() {
               <th style={{ padding: '8px 16px', fontWeight: 500 }}>Shape</th>
               <th style={{ padding: '8px 16px', fontWeight: 500 }}>Length</th>
               <th style={{ padding: '8px 16px', fontWeight: 500, textAlign: 'right' }}>Price</th>
+              <th style={{ padding: '8px 16px', fontWeight: 500 }}>Link</th>
             </tr>
           </thead>
           <tbody>
@@ -114,6 +115,22 @@ export function VariationsList() {
                 <td style={{ padding: '8px 16px' }}>{v.length}</td>
                 <td style={{ padding: '8px 16px', textAlign: 'right', fontWeight: 500 }}>
                   {typeof price === 'number' ? `£${price.toFixed(2)}` : '—'}
+                </td>
+                <td style={{ padding: '8px 16px' }}>
+                  <a
+                    href={`https://juicegels.com/product/${v.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: '#ae3c6f',
+                      textDecoration: 'none',
+                      fontWeight: 600,
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}
+                  >
+                    View Set ↗
+                  </a>
                 </td>
               </tr>
             ))}
