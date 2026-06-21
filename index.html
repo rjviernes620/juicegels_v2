@@ -1,43 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>JuiceGels.com</title>
-      <link rel="preconnect" href="https://www.tiktok.com">
-      <script async src="https://www.tiktok.com/embed.js"></script>
-      <meta name="description" content="A mobile-optimized pink-themed online store featuring an interactive pre-order form for seamless customer engagement and easy product reservations." />
-      <meta name="robots" content="noindex, nofollow" />
-      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
-      <script>
-        (function(l) {
-          if (l.search[1] === '/') {
-            var decodedSearch = l.search
-              .slice(1)
-              .replace(/~and~/g, '&');
+<head>
 
-            var routeAndQuery = decodedSearch.split('&');
-            var route = routeAndQuery.shift() || '';
-            var decoded = route + (routeAndQuery.length ? '?' + routeAndQuery.join('&') : '');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JuiceGels.com</title>
+  <link rel="preconnect" href="https://www.tiktok.com">
+  <script async src="https://www.tiktok.com/embed.js"></script>
+  <meta name="description"
+    content="A mobile-optimized pink-themed online store featuring an interactive pre-order form for seamless customer engagement and easy product reservations." />
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
 
-            window.history.replaceState(
-              null,
-              null,
-              l.pathname.slice(0, -1) + decoded + l.hash
-            );
-          }
-        })(window.location);
-      </script>
-      
-    </head>
+    #root {
+      height: 100%;
+    }
+  </style>
+  <script>
+    (function (l) {
+      if (l.search[1] === '/') {
+        var decodedSearch = l.search
+          .slice(1)
+          .replace(/~and~/g, '&');
 
-    <body>
-      
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-      
-    </body>
-  </html>
-  
+        var routeAndQuery = decodedSearch.split('&');
+        var route = routeAndQuery.shift() || '';
+        var decoded = route + (routeAndQuery.length ? '?' + routeAndQuery.join('&') : '');
+
+        window.history.replaceState(
+          null,
+          null,
+          l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    })(window.location);
+  </script>
+  <!-- Meta Pixel Code -->
+  <script>
+    !function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () {
+        n.callMethod ?
+        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+      };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+      n.queue = []; t = b.createElement(e); t.async = !0;
+      t.src = v; s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s)
+    }(window, document, 'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1726618305139605');
+    fbq('track', 'PageView');
+  </script>
+  <!-- End Meta Pixel Code -->
+</head>
+
+<body>
+  <!-- Meta Pixel Code (noscript fallback) -->
+  <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1726618305139605&ev=PageView&noscript=1" /></noscript>
+
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+
+</body>
+
+</html>
