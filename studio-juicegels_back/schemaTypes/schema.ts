@@ -26,6 +26,7 @@ export default {
       name: 'description',
       type: 'text',
       title: 'Description',
+      initialValue: 'All Nail Sets Include: 1x mini nail file, 1x cuticle pusher, 1x mini buffer block, 1x Nail Glue',
     },
     {
       name: 'image',
