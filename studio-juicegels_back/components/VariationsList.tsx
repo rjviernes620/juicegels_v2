@@ -5,11 +5,11 @@ const DEFAULT_SHAPES = ['Square', 'Oval', 'Stiletto', 'Coffin', 'Almond']
 const DEFAULT_LENGTHS = ['Short', 'Medium', 'Long']
 
 export function VariationsList() {
-  const baseId = useFormValue(['baseId']) as number | undefined
+  const productId = useFormValue(['productId']) as number | undefined
   const title = useFormValue(['title']) as string | undefined
   const price = useFormValue(['price']) as number | undefined
 
-  if (!baseId || typeof baseId !== 'number') {
+  if (!productId || typeof productId !== 'number') {
     return (
       <div style={{
         padding: '16px',
@@ -20,17 +20,17 @@ export function VariationsList() {
         fontSize: '14px',
         textAlign: 'center'
       }}>
-        Please enter a valid <strong>Base ID Number</strong> above to view the generated variations.
+        Please enter a valid <strong>Product ID</strong> above to view the generated variations.
       </div>
     )
   }
 
-  const isSingle = title?.toLowerCase() === "nail sizing guide" || baseId === 286
+  const isSingle = title?.toLowerCase() === "nail sizing guide" || productId === 286
 
   const variations: Array<{ id: string; shape: string; length: string }> = []
   if (isSingle) {
     variations.push({
-      id: `JUICEGELS-${baseId.toString().padStart(4, '0')}`,
+      id: `JUICEGELS-${productId.toString().padStart(4, '0')}`,
       shape: 'Square',
       length: 'Short',
     })
@@ -38,7 +38,7 @@ export function VariationsList() {
     DEFAULT_SHAPES.forEach((shape, sIdx) => {
       DEFAULT_LENGTHS.forEach((length, lIdx) => {
         const offset = sIdx * 3 + lIdx
-        const idNum = baseId + offset
+        const idNum = productId + offset
         variations.push({
           id: `JUICEGELS-${idNum.toString().padStart(4, '0')}`,
           shape,

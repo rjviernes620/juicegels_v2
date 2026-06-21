@@ -48,7 +48,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
 
   for (const sp of sanityProducts) {
     const title = sp.title || "Product";
-    const baseId = intValue(sp.baseId) || 1;
+    const productId = intValue(sp.productId) || 1;
     const price = floatValue(sp.price) || 0;
     const defaultDescription = "All Nail Sets Include: 1x mini nail file, 1x cuticle pusher, 1x mini buffer block, 1x Nail Glue";
     const description = (sp.description || defaultDescription).replace(/\n/g, " ").replace(/\s+/g, " ").trim();
@@ -66,7 +66,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
 
     const tags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
 
-    const isSingle = title.toLowerCase() === "nail sizing guide" || baseId === 286;
+    const isSingle = title.toLowerCase() === "nail sizing guide" || productId === 286;
 
     if (isSingle) {
       const extraImages: string[] = [];
@@ -75,7 +75,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
       if (image4Url) extraImages.push(image4Url);
 
       products.push({
-        id: `JUICEGELS-${baseId.toString().padStart(4, '0')}`,
+        id: `JUICEGELS-${productId.toString().padStart(4, '0')}`,
         groupId: "juicegels_nailsizingguide",
         name: title,
         price: price,
@@ -99,7 +99,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
       DEFAULT_SHAPES.forEach((shape, sIdx) => {
         DEFAULT_LENGTHS.forEach((length, lIdx) => {
           const offset = sIdx * 3 + lIdx;
-          const idNum = baseId + offset;
+          const idNum = productId + offset;
           const variantId = `JUICEGELS-${idNum.toString().padStart(4, '0')}`;
           
           products.push({

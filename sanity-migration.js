@@ -90,13 +90,13 @@ async function migrate() {
 
   console.log(`Found ${Object.keys(groups).length} unique product sets to import.`);
 
-  // Fetch all existing products to map baseId to existing _id to prevent duplicates
+  // Fetch all existing products to map productId to existing _id to prevent duplicates
   const existingMap = new Map();
   try {
     console.log("Fetching existing products from database to prevent duplicate creation...");
-    const existing = await client.fetch('*[_type == "product" && defined(baseId)]{_id, baseId}');
+    const existing = await client.fetch('*[_type == "product" && defined(productId)]{_id, productId}');
     for (const p of existing) {
-      existingMap.set(p.baseId, p._id);
+      existingMap.set(p.productId, p._id);
     }
     console.log(`Mapped ${existingMap.size} existing products.`);
   } catch (fetchErr) {
@@ -104,7 +104,7 @@ async function migrate() {
   }
 
   for (const [title, groupRows] of Object.entries(groups)) {
-    // Sort rows by ID numerical value to find the base ID
+    // Sort rows by ID numerical value to find the product ID
     const sorted = groupRows.sort((a, b) => {
       const aNum = parseInt(a.id.replace("JUICEGELS-", ""), 10);
       const bNum = parseInt(b.id.replace("JUICEGELS-", ""), 10);
@@ -112,28 +112,28 @@ async function migrate() {
     });
 
     const firstRow = sorted[0];
-    const baseId = parseInt(firstRow.id.replace("JUICEGELS-", ""), 10);
+    const productId = parseInt(firstRow.id.replace("JUICEGELS-", ""), 10);
     const price = parseFloat(firstRow.PRICE) || 0;
     const description = firstRow.DESCRIPTION.replace(/\s+/g, ' ').trim();
     const tags = firstRow.TAGS ? firstRow.TAGS.split(',').map(t => t.trim()).filter(Boolean) : [];
 
-    console.log(`Processing: "${title}" (Base ID: ${baseId})`);
+    console.log(`Processing: "${title}" (Product ID: ${productId})`);
 
-    const existingId = existingMap.get(baseId);
-    const docId = existingId || `product-${baseId}`;
+    const existingId = existingMap.get(productId);
+    const docId = existingId || `product-${productId}`;
 
     const doc = {
       _id: docId,
       _type: 'product',
       title: title,
-      baseId: baseId,
+      productId: productId,
       price: price,
       description: description,
       tags: tags,
     };
 
     // Upload the local image to Sanity's CDN if it exists
-    const imageFilename = `JUICEGELS-${baseId.toString().padStart(4, '0')}.jpg`;
+    const imageFilename = `JUICEGELS-${productId.toString().padStart(4, '0')}.jpg`;
     const imagePath = path.join(imagesDir, imageFilename);
 
     if (fs.existsSync(imagePath)) {

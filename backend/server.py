@@ -829,7 +829,7 @@ def get_meta_catalog():
 
   project_id = "5co5ooqr"
   dataset = "production"
-  query = '*[_type == "product"]{title, baseId, price, description, image, image2, image3, image4, tags}'
+  query = '*[_type == "product"]{title, productId, price, description, image, image2, image3, image4, tags}'
   encoded_query = quote(query)
   url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
   
@@ -882,10 +882,10 @@ def get_meta_catalog():
   
   for p in sanity_products:
     title = p.get('title', '')
-    base_id = p.get('baseId')
-    if base_id is None:
+    product_id = p.get('productId')
+    if product_id is None:
       continue
-    base_id = int(base_id)
+    product_id = int(product_id)
     price = format_price(p.get('price', 0))
     desc = p.get('description', '').replace('\n', ' ').strip()
     tags_list = p.get('tags', [])
@@ -897,10 +897,10 @@ def get_meta_catalog():
     img3_ref = p.get('image3', {}).get('asset', {}).get('_ref', '')
     img4_ref = p.get('image4', {}).get('asset', {}).get('_ref', '')
     
-    is_single = title.lower() == 'nail sizing guide' or base_id == 286
+    is_single = title.lower() == 'nail sizing guide' or product_id == 286
     
     if is_single:
-      variant_id = f"JUICEGELS-{str(base_id).zfill(4)}"
+      variant_id = f"JUICEGELS-{str(product_id).zfill(4)}"
       
       img1 = build_sanity_image_url(img_ref) or f"{frontend_base_url}/images/{variant_id}.jpg"
       img2 = build_sanity_image_url(img2_ref) or f"{frontend_base_url}/images/coin.jpeg"
@@ -937,7 +937,7 @@ def get_meta_catalog():
       for s_idx, shape in enumerate(DEFAULT_SHAPES):
         for l_idx, length in enumerate(DEFAULT_LENGTHS):
           offset = s_idx * 3 + l_idx
-          id_num = base_id + offset
+          id_num = product_id + offset
           variant_id = f"JUICEGELS-{str(id_num).zfill(4)}"
           
           img1 = build_sanity_image_url(img_ref) or f"{frontend_base_url}/images/{variant_id}.jpg"

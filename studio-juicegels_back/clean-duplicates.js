@@ -15,10 +15,10 @@ async function clean() {
   const products = await client.fetch('*[_type == "product"]');
   console.log(`Found ${products.length} products total.`);
 
-  // Group by baseId
+  // Group by productId
   const groups = {};
   for (const prod of products) {
-    const bid = prod.baseId;
+    const bid = prod.productId;
     if (bid === undefined || bid === null) continue;
     if (!groups[bid]) {
       groups[bid] = [];
@@ -29,7 +29,7 @@ async function clean() {
   const toDelete = [];
   for (const [bid, list] of Object.entries(groups)) {
     if (list.length > 1) {
-      console.log(`Duplicate found for baseId ${bid}:`);
+      console.log(`Duplicate found for productId ${bid}:`);
       // Find the structured ID one (starts with 'product-')
       const structured = list.find(p => p._id.startsWith('product-'));
       if (structured) {

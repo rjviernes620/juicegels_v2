@@ -12,26 +12,26 @@ export default {
       validation: (Rule: any) => Rule.required(),
     },
     {
-      name: 'baseId',
+      name: 'productId',
       type: 'number',
-      title: 'Base ID Number',
-      description: 'The starting number for the product ID (e.g. 1742). The system will automatically generate 15 variations (5 shapes x 3 lengths) using IDs from Base ID up to Base ID + 14.',
+      title: 'Product ID',
+      description: 'The starting number for the product ID (e.g. 1742). The system will automatically generate 15 variations (5 shapes x 3 lengths) using IDs from Product ID up to Product ID + 14.',
       validation: (Rule: any) => Rule.required().integer().min(1),
       initialValue: async (props: any, context: any) => {
         const { getClient } = context
         const client = getClient({ apiVersion: '2021-10-21' })
-        const query = '*[_type == "product" && defined(baseId)] | order(baseId desc)[0]{baseId, title}'
+        const query = '*[_type == "product" && defined(productId)] | order(productId desc)[0]{productId, title}'
         try {
           const lastProduct = await client.fetch(query)
-          if (!lastProduct || !lastProduct.baseId) {
+          if (!lastProduct || !lastProduct.productId) {
             return 1
           }
-          const { baseId, title } = lastProduct
-          const isSingle = title?.toLowerCase() === 'nail sizing guide' || baseId === 286
-          const highestIdOfLast = isSingle ? baseId : (baseId + 14)
+          const { productId, title } = lastProduct
+          const isSingle = title?.toLowerCase() === 'nail sizing guide' || productId === 286
+          const highestIdOfLast = isSingle ? productId : (productId + 14)
           return highestIdOfLast + 1
         } catch (err) {
-          console.error('Failed to calculate initial base ID:', err)
+          console.error('Failed to calculate initial product ID:', err)
           return undefined
         }
       },
@@ -103,18 +103,18 @@ export default {
       title: 'title',
       price: 'price',
       media: 'image',
-      baseId: 'baseId',
+      productId: 'productId',
     },
     prepare(selection: any) {
-      const {title, price, media, baseId} = selection
+      const {title, price, media, productId} = selection
       let idRange = ''
-      if (typeof baseId === 'number') {
-        const isSingle = title?.toLowerCase() === 'nail sizing guide' || baseId === 286
-        const startId = `JUICEGELS-${baseId.toString().padStart(4, '0')}`
+      if (typeof productId === 'number') {
+        const isSingle = title?.toLowerCase() === 'nail sizing guide' || productId === 286
+        const startId = `JUICEGELS-${productId.toString().padStart(4, '0')}`
         if (isSingle) {
           idRange = startId
         } else {
-          const endId = `JUICEGELS-${(baseId + 14).toString().padStart(4, '0')}`
+          const endId = `JUICEGELS-${(productId + 14).toString().padStart(4, '0')}`
           idRange = `${startId} – ${endId}`
         }
       }
