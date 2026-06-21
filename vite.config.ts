@@ -24,6 +24,12 @@ export default defineConfig({
     __PRODUCTS_SHEET_SHARE_URL__: JSON.stringify(
       process.env.VITE_PRODUCTS_SHEET_SHARE_URL || process.env.PRODUCTS_SHEET_SHARE_URL || ''
     ),
+    __SANITY_PROJECT_ID__: JSON.stringify(
+      process.env.VITE_SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID || ''
+    ),
+    __SANITY_DATASET__: JSON.stringify(
+      process.env.VITE_SANITY_DATASET || process.env.SANITY_DATASET || ''
+    ),
   },
   build: {
     outDir: 'prod',
