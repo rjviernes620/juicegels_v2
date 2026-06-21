@@ -54,11 +54,26 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
     const description = (sp.description || defaultDescription).replace(/\n/g, " ").replace(/\s+/g, " ").trim();
     const imageRef = sp.image?.asset?._ref || "";
     const imageUrl = buildSanityImageUrl(imageRef);
+    
+    const image2Ref = sp.image2?.asset?._ref || "";
+    const image2Url = image2Ref ? buildSanityImageUrl(image2Ref) : "";
+
+    const image3Ref = sp.image3?.asset?._ref || "";
+    const image3Url = image3Ref ? buildSanityImageUrl(image3Ref) : "";
+
+    const image4Ref = sp.image4?.asset?._ref || "";
+    const image4Url = image4Ref ? buildSanityImageUrl(image4Ref) : "";
+
     const tags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
 
     const isSingle = title.toLowerCase() === "nail sizing guide" || baseId === 286;
 
     if (isSingle) {
+      const extraImages: string[] = [];
+      if (image2Url) extraImages.push(image2Url);
+      if (image3Url) extraImages.push(image3Url);
+      if (image4Url) extraImages.push(image4Url);
+
       products.push({
         id: `JUICEGELS-${baseId.toString().padStart(4, '0')}`,
         groupId: "juicegels_nailsizingguide",
@@ -66,7 +81,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
         price: price,
         description: description,
         image: imageUrl,
-        extraImages: [],
+        extraImages: extraImages,
         shapes: ["Square"],
         tags: tags,
         shape: "Square",
@@ -74,6 +89,12 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
       });
     } else {
       const groupId = `juicegels_${title.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}set`;
+      
+      const extraImages = [
+        image2Url || "images/coin.jpeg",
+        image3Url || "images/nailsize.jpg",
+        image4Url || "images/tape.jpg"
+      ];
       
       DEFAULT_SHAPES.forEach((shape, sIdx) => {
         DEFAULT_LENGTHS.forEach((length, lIdx) => {
@@ -88,7 +109,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
             price: price,
             description: description,
             image: imageUrl,
-            extraImages: ["images/coin.jpeg", "images/nailsize.jpg", "images/tape.jpg"],
+            extraImages: extraImages,
             shapes: DEFAULT_SHAPES,
             tags: tags,
             shape: shape,

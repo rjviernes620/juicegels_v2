@@ -57,6 +57,30 @@ export default {
       },
     },
     {
+      name: 'image2',
+      type: 'image',
+      title: 'Image 2',
+      options: {
+        hotspot: true,
+      },
+    },
+    {
+      name: 'image3',
+      type: 'image',
+      title: 'Image 3',
+      options: {
+        hotspot: true,
+      },
+    },
+    {
+      name: 'image4',
+      type: 'image',
+      title: 'Image 4',
+      options: {
+        hotspot: true,
+      },
+    },
+    {
       name: 'tags',
       type: 'array',
       title: 'Tags',
