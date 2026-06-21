@@ -819,6 +819,164 @@ def add_cors_headers(response):
   return response
 
 
+@app.route('/api/meta-catalog', methods=['GET'])
+def get_meta_catalog():
+  import urllib.request
+  import json
+  import csv
+  from io import StringIO
+  from flask import make_response
+
+  project_id = "5co5ooqr"
+  dataset = "production"
+  query = '*[_type == "product"]{title, baseId, price, description, image, image2, image3, image4, tags}'
+  encoded_query = quote(query)
+  url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
+  
+  try:
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      sanity_products = res.get('result', [])
+  except Exception as e:
+    import traceback
+    print("Error querying Sanity for Meta Catalog:", str(e))
+    traceback.print_exc()
+    return jsonify({"error": f"Failed to fetch data from Sanity: {str(e)}"}), 500
+
+  def build_sanity_image_url(ref):
+    if not ref:
+      return ""
+    parts = ref.split("-")
+    if len(parts) < 4:
+      return ""
+    asset_id = parts[1]
+    dims = parts[2]
+    ext = parts[3]
+    return f"https://cdn.sanity.io/images/{project_id}/{dataset}/{asset_id}-{dims}.{ext}"
+
+  def format_price(p):
+    try:
+      val = float(p)
+      if val.is_integer():
+        return str(int(val))
+      return f"{val:.1f}"
+    except:
+      return str(p)
+
+  si = StringIO()
+  cw = csv.writer(si)
+  
+  headers = [
+    'id', 'TITLE', 'DESCRIPTION', 'PRICE', 'CURRENCY_CODE', 'QUANTITY', 'TAGS', 'MATERIALS',
+    'IMAGE1', 'IMAGE2', 'IMAGE3', 'IMAGE4', 'condition', 'availability', 'root links',
+    'item_group_id', 'shape', 'length', 'additional_variant_attribute', 'additional_image_link',
+    'fb_product_category'
+  ]
+  cw.writerow(headers)
+  
+  DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"]
+  DEFAULT_LENGTHS = ["Short", "Medium", "Long"]
+  
+  frontend_base_url = "https://juicegels.com"
+  
+  for p in sanity_products:
+    title = p.get('title', '')
+    base_id = p.get('baseId')
+    if base_id is None:
+      continue
+    base_id = int(base_id)
+    price = format_price(p.get('price', 0))
+    desc = p.get('description', '').replace('\n', ' ').strip()
+    tags_list = p.get('tags', [])
+    formatted_tags = ",".join([t.strip().replace(' ', '_').lower() for t in tags_list if t])
+    
+    # Images
+    img_ref = p.get('image', {}).get('asset', {}).get('_ref', '')
+    img2_ref = p.get('image2', {}).get('asset', {}).get('_ref', '')
+    img3_ref = p.get('image3', {}).get('asset', {}).get('_ref', '')
+    img4_ref = p.get('image4', {}).get('asset', {}).get('_ref', '')
+    
+    is_single = title.lower() == 'nail sizing guide' or base_id == 286
+    
+    if is_single:
+      variant_id = f"JUICEGELS-{str(base_id).zfill(4)}"
+      
+      img1 = build_sanity_image_url(img_ref) or f"{frontend_base_url}/images/{variant_id}.jpg"
+      img2 = build_sanity_image_url(img2_ref) or f"{frontend_base_url}/images/coin.jpeg"
+      img3 = build_sanity_image_url(img3_ref) or f"{frontend_base_url}/images/nailsize.jpg"
+      img4 = build_sanity_image_url(img4_ref) or f"{frontend_base_url}/images/tape.jpg"
+      additional_images = ",".join(filter(None, [img2, img3, img4]))
+      
+      cw.writerow([
+        variant_id,
+        title,
+        desc,
+        price,
+        'GBP',
+        '20',
+        formatted_tags,
+        '',
+        img1,
+        img2,
+        img3,
+        img4,
+        'new',
+        'in stock',
+        f"{frontend_base_url}/product/{variant_id}?shape=Square&length=Short",
+        'juicegels_nailsizingguide',
+        'Square',
+        'Short',
+        'Shape:Square',
+        additional_images,
+        '799'
+      ])
+    else:
+      group_id = f"Juicegels_{''.join(word.capitalize() for word in title.split())}Set"
+      
+      for s_idx, shape in enumerate(DEFAULT_SHAPES):
+        for l_idx, length in enumerate(DEFAULT_LENGTHS):
+          offset = s_idx * 3 + l_idx
+          id_num = base_id + offset
+          variant_id = f"JUICEGELS-{str(id_num).zfill(4)}"
+          
+          img1 = build_sanity_image_url(img_ref) or f"{frontend_base_url}/images/{variant_id}.jpg"
+          img2 = build_sanity_image_url(img2_ref) or f"{frontend_base_url}/images/coin.jpeg"
+          img3 = build_sanity_image_url(img3_ref) or f"{frontend_base_url}/images/nailsize.jpg"
+          img4 = build_sanity_image_url(img4_ref) or f"{frontend_base_url}/images/tape.jpg"
+          additional_images = ",".join(filter(None, [img2, img3, img4]))
+          
+          cw.writerow([
+            variant_id,
+            title,
+            desc,
+            price,
+            'GBP',
+            '20',
+            formatted_tags,
+            '',
+            img1,
+            img2,
+            img3,
+            img4,
+            'new',
+            'in stock',
+            f"{frontend_base_url}/product/{variant_id}?shape={shape}&length={length}",
+            group_id,
+            shape,
+            length,
+            f"Shape:{shape}",
+            additional_images,
+            '799'
+          ])
+          
+  output = make_response(si.getvalue())
+  output.headers["Content-Disposition"] = "attachment; filename=meta_catalog.csv"
+  output.headers["Content-type"] = "text/csv"
+  return output
+
+
+
 @app.route('/validate-coupon', methods=['POST', 'OPTIONS'])
 def validate_coupon():
   if request.method == 'OPTIONS':
