@@ -661,7 +661,12 @@ export default function App() {
       const normalizedRouteProductId = normalizeGroupKey(routeProductId);
       const product =
         products.find((p) => normalizeGroupKey(p.id) === normalizedRouteProductId) ??
-        products.find((p) => normalizeGroupKey(p.groupId) === normalizedRouteProductId);
+        products.find((p) => normalizeGroupKey(p.groupId) === normalizedRouteProductId) ??
+        products.find((p) => {
+          if (!/^\d+$/.test(normalizedRouteProductId)) return false;
+          const paddedId = `juicegels-${normalizedRouteProductId.padStart(4, '0')}`;
+          return normalizeGroupKey(p.id) === paddedId;
+        });
 
       if (product) {
         if (isVariationLocked(product)) {
@@ -678,8 +683,8 @@ export default function App() {
         const requestedLength = (searchParams.get("length") ?? "") as NailLength;
         const shapes = getProductShapes(product);
         const lengths = getProductLengths(product);
-        const nextShape = shapes.includes(requestedShape) ? requestedShape : shapes[0] ?? "";
-        const nextLength = lengths.includes(requestedLength) ? requestedLength : lengths[0] ?? "Medium";
+        const nextShape = shapes.includes(requestedShape) ? requestedShape : product.shape;
+        const nextLength = lengths.includes(requestedLength) ? requestedLength : product.length;
         const nextVariant =
           products.find(
             (p) =>

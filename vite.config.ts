@@ -19,7 +19,7 @@ function figmaAssetResolver() {
 
 
 export default defineConfig({
-  base: './',
+  base: '/',
   define: {
     __SANITY_PROJECT_ID__: JSON.stringify(
       process.env.VITE_SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID || ''
