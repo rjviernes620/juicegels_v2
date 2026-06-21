@@ -24,7 +24,7 @@ const PRODUCTS_SHEET_SHARE_URL = __PRODUCTS_SHEET_SHARE_URL__ || DEFAULT_PRODUCT
 declare const __SANITY_PROJECT_ID__: string;
 declare const __SANITY_DATASET__: string;
 
-const SANITY_PROJECT_ID = (typeof __SANITY_PROJECT_ID__ !== 'undefined' && __SANITY_PROJECT_ID__) || "PLACEHOLDER";
+const SANITY_PROJECT_ID = (typeof __SANITY_PROJECT_ID__ !== 'undefined' && __SANITY_PROJECT_ID__) || "5co5ooqr";
 const SANITY_DATASET = (typeof __SANITY_DATASET__ !== 'undefined' && __SANITY_DATASET__) || "production";
 
 function buildSanityImageUrl(ref: string): string {
@@ -236,33 +236,7 @@ function parseProductsCsv(csvRaw: string): Product[] {
   return products;
 }
 
-export async function loadProducts(): Promise<Product[]> {
-  if (!SANITY_PROJECT_ID || SANITY_PROJECT_ID === "PLACEHOLDER") {
-    const response = await fetch(PRODUCTS_SHEET_CSV_URL, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to load products: ${response.status}`);
-    }
-
-    return parseProductsCsv(await response.text());
-  }
-
-  const query = encodeURIComponent(`*[_type == "product" && !(_id in path("drafts.**"))]`);
-  const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
-
-  const response = await fetch(url, {
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to load products from Sanity: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const sanityProducts = data.result || [];
-  
+function parseSanityProducts(sanityProducts: any[]): Product[] {
   const products: Product[] = [];
 
   for (const sp of sanityProducts) {
@@ -318,4 +292,39 @@ export async function loadProducts(): Promise<Product[]> {
   }
 
   return products;
-}
+}
+
+export async function loadProducts(): Promise<Product[]> {
+  if (SANITY_PROJECT_ID && SANITY_PROJECT_ID !== "PLACEHOLDER") {
+    try {
+      const query = encodeURIComponent(`*[_type == "product" && !(_id in path("drafts.**"))]`);
+      const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
+
+      const response = await fetch(url, {
+        cache: "no-store",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const sanityProducts = data.result || [];
+        if (sanityProducts.length > 0) {
+          return parseSanityProducts(sanityProducts);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to load products from Sanity, falling back to Google Sheets:", e);
+    }
+  }
+
+  // Fallback to Google Sheets
+  const response = await fetch(PRODUCTS_SHEET_CSV_URL, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to load products: ${response.status}`);
+  }
+
+  return parseProductsCsv(await response.text());
+}
+
