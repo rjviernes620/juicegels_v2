@@ -518,7 +518,7 @@ export default function App() {
     () =>
       products
         .filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId)))
-        .reverse(),
+        .sort((a, b) => b.id.localeCompare(a.id)),
     [products]
   );
 
@@ -1470,28 +1470,43 @@ export default function App() {
             <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons <br /> We will confirm your sizing after checkout</p>
           </div>
 
-          {productsLoadError && (
-            <div style={{ margin: "12px 14px 0", background: "#fff1f2", border: "1px solid #f4c2cb", borderRadius: 14, padding: "14px 16px", color: "#c0392b", fontSize: 12 }}>
-              {productsLoadError}
+          {productsLoadError ? (
+            <div style={{
+              margin: "32px 14px",
+              background: "#fff5f7",
+              border: "1px solid #fecdd3",
+              borderRadius: 16,
+              padding: "24px 20px",
+              color: "#be123c",
+              fontSize: 14,
+              lineHeight: 1.6,
+              textAlign: "center",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)"
+            }}>
+              <div style={{ fontSize: 32, marginBottom: 12 }}>⚠️</div>
+              <p style={{ fontWeight: 700, fontSize: 16, margin: "0 0 8px", color: "#9f1239" }}>Store Offline</p>
+              <p style={{ margin: 0 }}>{productsLoadError}</p>
             </div>
+          ) : (
+            <>
+              <HomeCarousel navigate={navigate} />
+
+              <div id="products-grid" style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                {uniqueProducts.map((p) => (
+                  <button key={p.id} onClick={() => openProduct(p)} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
+                    <button onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }} style={{ position: "absolute", top: 7, right: 7, background: "rgba(255,255,255,0.88)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }} aria-label="Wishlist">
+                      <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#4f444a"} />
+                    </button>
+                    <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "#b8395d" }} />
+                    <div style={{ padding: "8px 10px 10px" }}>
+                      <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3 }}>{p.name}</p>
+                      <span style={{ color: "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
           )}
-
-          <HomeCarousel navigate={navigate} />
-
-          <div id="products-grid" style={{ padding: "16px 14px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            {uniqueProducts.map((p) => (
-              <button key={p.id} onClick={() => openProduct(p)} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
-                <button onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }} style={{ position: "absolute", top: 7, right: 7, background: "rgba(255,255,255,0.88)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }} aria-label="Wishlist">
-                  <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#4f444a"} />
-                </button>
-                <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "#b8395d" }} />
-                <div style={{ padding: "8px 10px 10px" }}>
-                  <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3 }}>{p.name}</p>
-                  <span style={{ color: "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
-                </div>
-              </button>
-            ))}
-          </div>
         </main>
       )}
 

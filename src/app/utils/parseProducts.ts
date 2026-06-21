@@ -103,18 +103,28 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
 }
 
 export async function loadProducts(): Promise<Product[]> {
-  const query = encodeURIComponent(`*[_type == "product" && !(_id in path("drafts.**"))]`);
-  const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
+  try {
+    const query = encodeURIComponent(`*[_type == "product" && !(_id in path("drafts.**"))]`);
+    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
 
-  const response = await fetch(url, {
-    cache: "no-store",
-  });
+    const response = await fetch(url, {
+      cache: "no-store",
+    });
 
-  if (!response.ok) {
-    throw new Error(`Failed to load products from Sanity: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Sanity API returned status ${response.status}`);
+    }
+
+    const data = await response.json();
+    const sanityProducts = data.result || [];
+    if (sanityProducts.length === 0) {
+      throw new Error("No products found in Sanity database.");
+    }
+    return parseSanityProducts(sanityProducts);
+  } catch (error) {
+    console.error("Sanity load failed:", error);
+    throw new Error(
+      "The website is currently down. Please contact juicegels on Instagram if you have a pre-existing order or for further information."
+    );
   }
-
-  const data = await response.json();
-  const sanityProducts = data.result || [];
-  return parseSanityProducts(sanityProducts);
 }
