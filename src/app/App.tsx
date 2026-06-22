@@ -494,6 +494,56 @@ function getCollectionDetails(product: Product, allProducts: Product[]): Collect
   };
 }
 
+function getCollectionStyle(collectionName: string) {
+  switch (collectionName) {
+    case "Kamado Collection":
+      return {
+        cardGradient: "linear-gradient(135deg, #065f46 0%, #991b1b 100%)", // Emerald to Crimson
+        bannerBg: "linear-gradient(135deg, rgba(6, 95, 70, 0.12) 0%, rgba(153, 27, 27, 0.12) 100%)",
+        border: "rgba(6, 95, 70, 0.28)",
+        textColor: "#065f46",
+        badgeBg: "rgba(255, 255, 255, 0.18)",
+        emoji: "🌿"
+      };
+    case "Stargirl Collection":
+      return {
+        cardGradient: "linear-gradient(135deg, #312e81 0%, #4c1d95 100%)", // Indigo to Purple
+        bannerBg: "linear-gradient(135deg, rgba(49, 46, 129, 0.12) 0%, rgba(76, 29, 149, 0.12) 100%)",
+        border: "rgba(76, 29, 149, 0.28)",
+        textColor: "#4c1d95",
+        badgeBg: "rgba(255, 255, 255, 0.18)",
+        emoji: "✨"
+      };
+    case "Bloom Collection":
+      return {
+        cardGradient: "linear-gradient(135deg, #db2777 0%, #f59e0b 100%)", // Pink to Orange-Yellow
+        bannerBg: "linear-gradient(135deg, rgba(219, 39, 119, 0.12) 0%, rgba(245, 158, 11, 0.12) 100%)",
+        border: "rgba(219, 39, 119, 0.28)",
+        textColor: "#db2777",
+        badgeBg: "rgba(255, 255, 255, 0.22)",
+        emoji: "🌸"
+      };
+    case "Stardust Collection":
+      return {
+        cardGradient: "linear-gradient(135deg, #111827 0%, #ec4899 100%)", // Black to Pink
+        bannerBg: "linear-gradient(135deg, rgba(17, 24, 39, 0.12) 0%, rgba(236, 72, 153, 0.12) 100%)",
+        border: "rgba(236, 72, 153, 0.28)",
+        textColor: "#be185d",
+        badgeBg: "rgba(255, 255, 255, 0.18)",
+        emoji: "🎀"
+      };
+    default:
+      return {
+        cardGradient: "linear-gradient(135deg, #a855f7 0%, #db2777 100%)", // Default
+        bannerBg: "linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(219, 39, 119, 0.12) 100%)",
+        border: "rgba(168, 85, 247, 0.28)",
+        textColor: "#a855f7",
+        badgeBg: "rgba(255, 255, 255, 0.25)",
+        emoji: "✨"
+      };
+  }
+}
+
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -555,7 +605,14 @@ export default function App() {
     () =>
       products
         .filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId)))
-        .sort((a, b) => b.id.localeCompare(a.id)),
+        .sort((a, b) => {
+          if (a.orderRank && b.orderRank) {
+            return a.orderRank.localeCompare(b.orderRank);
+          }
+          if (a.orderRank) return -1;
+          if (b.orderRank) return 1;
+          return b.id.localeCompare(a.id);
+        }),
     [products]
   );
 
@@ -1551,29 +1608,34 @@ export default function App() {
                       <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#4f444a"} />
                     </button>
                     <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "#b8395d" }} />
-                    <div style={{
-                      padding: "8px 10px 10px",
-                      background: p.collection ? "linear-gradient(135deg, #a855f7 0%, #db2777 100%)" : "transparent"
-                    }}>
-                      {p.collection && (
-                        <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
-                          <span style={{
-                            fontSize: 9,
-                            background: "rgba(255, 255, 255, 0.25)",
-                            color: "#ffffff",
-                            padding: "1.5px 5px",
-                            borderRadius: 4,
-                            fontWeight: 700,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.03em"
-                          }}>
-                            Collection
-                          </span>
+                    {(() => {
+                      const style = p.collection ? getCollectionStyle(p.collection) : null;
+                      return (
+                        <div style={{
+                          padding: "8px 10px 10px",
+                          background: style ? style.cardGradient : "transparent"
+                        }}>
+                          {p.collection && style && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
+                              <span style={{
+                                fontSize: 9,
+                                background: style.badgeBg,
+                                color: "#ffffff",
+                                padding: "1.5px 5px",
+                                borderRadius: 4,
+                                fontWeight: 700,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.03em"
+                              }}>
+                                {style.emoji} {p.collection.replace(" Collection", "")}
+                              </span>
+                            </div>
+                          )}
+                          <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3 }}>{p.name}</p>
+                          <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
                         </div>
-                      )}
-                      <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3 }}>{p.name}</p>
-                      <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
-                    </div>
+                      );
+                    })()}
                   </button>
                 ))}
               </div>
@@ -1649,7 +1711,7 @@ export default function App() {
             </h2>
 
             <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 10px" }}>
-              Handmade · In stock
+              Handmade · Made to order
             </p>
 
             <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
@@ -1666,64 +1728,67 @@ export default function App() {
               )}
             </div>
 
-            {collectionDetails && (
-              <div style={{
-                background: "linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(219, 39, 119, 0.12) 100%)",
-                border: "1px solid rgba(168, 85, 247, 0.28)",
-                borderRadius: 14,
-                padding: "14px 16px",
-                margin: "18px 0",
-                color: "#3d1a24",
-                boxShadow: "0 2px 8px rgba(168, 85, 247, 0.04)"
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: "#a855f7", marginBottom: 3 }}>
-                  <span style={{ fontSize: 14 }}>✨</span> {collectionDetails.name} Set
-                </div>
-                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#4f444a", fontStyle: "italic", lineHeight: 1.4 }}>
-                  {collectionDetails.tagline}
-                </p>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#4f444a", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
-                  Complete the Collection:
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {collectionDetails.otherProducts.map(otherProd => (
-                    <button
-                      key={otherProd.id}
-                      onClick={() => openProduct(otherProd)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        background: "#ffffff",
-                        border: "1px solid rgba(168, 85, 247, 0.15)",
-                        borderRadius: 10,
-                        padding: "6px 8px",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        width: "100%",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                        transition: "all 0.15s"
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#a855f7"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(168, 85, 247, 0.15)"; }}
-                    >
-                      <img src={otherProd.image} alt={otherProd.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#3d1a24", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {otherProd.name}
+            {collectionDetails && (() => {
+              const style = getCollectionStyle(collectionDetails.name);
+              return (
+                <div style={{
+                  background: style.bannerBg,
+                  border: `1px solid ${style.border}`,
+                  borderRadius: 14,
+                  padding: "14px 16px",
+                  margin: "18px 0",
+                  color: "#3d1a24",
+                  boxShadow: `0 2px 8px rgba(0, 0, 0, 0.02)`
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: style.textColor, marginBottom: 3 }}>
+                    <span style={{ fontSize: 14 }}>{style.emoji}</span> {collectionDetails.name} Set
+                  </div>
+                  <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#4f444a", fontStyle: "italic", lineHeight: 1.4 }}>
+                    {collectionDetails.tagline}
+                  </p>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#4f444a", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
+                    Complete the Collection:
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {collectionDetails.otherProducts.map(otherProd => (
+                      <button
+                        key={otherProd.id}
+                        onClick={() => openProduct(otherProd)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          background: "#ffffff",
+                          border: `1px solid ${style.border}`,
+                          borderRadius: 10,
+                          padding: "6px 8px",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          width: "100%",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                          transition: "all 0.15s"
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = style.textColor; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = style.border; }}
+                      >
+                        <img src={otherProd.image} alt={otherProd.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#3d1a24", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {otherProd.name}
+                          </div>
+                          <div style={{ fontSize: 11, color: "#e988b5", fontWeight: 700 }}>
+                            £{otherProd.price.toFixed(2)}
+                          </div>
                         </div>
-                        <div style={{ fontSize: 11, color: "#e988b5", fontWeight: 700 }}>
-                          £{otherProd.price.toFixed(2)}
-                        </div>
-                      </div>
-                      <span style={{ fontSize: 11, color: "#a855f7", fontWeight: 700, paddingRight: 4, display: "flex", alignItems: "center", gap: 2 }}>
-                        Shop Set ➔
-                      </span>
-                    </button>
-                  ))}
+                        <span style={{ fontSize: 11, color: style.textColor, fontWeight: 700, paddingRight: 4, display: "flex", alignItems: "center", gap: 2 }}>
+                          Shop Set ➔
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {!isVariationLocked(selected) ? (
               <>

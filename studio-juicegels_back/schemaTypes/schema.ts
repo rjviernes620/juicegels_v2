@@ -1,10 +1,16 @@
 import { VariationsList } from '../components/VariationsList'
+import {
+  orderRankField,
+  orderRankOrdering,
+} from '@sanity/orderable-document-list'
 
 export default {
   name: 'product',
   type: 'document',
   title: 'Nail Set',
+  orderings: [orderRankOrdering],
   fields: [
+    orderRankField({ type: 'product' }),
     {
       name: 'title',
       type: 'string',

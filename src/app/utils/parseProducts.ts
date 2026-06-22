@@ -14,6 +14,7 @@ export type Product = {
   shape: string;
   length: NailLength;
   collection?: string;
+  orderRank?: string;
 };
 
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
@@ -96,6 +97,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
     const image4Url = image4Ref ? buildSanityImageUrl(image4Ref) : "";
 
     const tags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
+    const orderRank = sp.orderRank || "";
 
     const isSingle = title.toLowerCase() === "nail sizing guide" || productId === 286;
 
@@ -118,7 +120,8 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
         tags: tags,
         shape: "Square",
         length: "Short",
-        collection: sp.collection || undefined
+        collection: sp.collection || undefined,
+        orderRank: orderRank
       });
     } else {
       const groupId = `juicegels_${title.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}set`;
@@ -148,7 +151,8 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
             tags: tags,
             shape: shape,
             length: length,
-            collection: sp.collection || undefined
+            collection: sp.collection || undefined,
+            orderRank: orderRank
           });
         });
       });
