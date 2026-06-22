@@ -9,6 +9,7 @@ import { Search } from "./components/Search";
 import { Contact } from "./components/Contact";
 import { CustomOrders } from "./components/CustomOrders";
 import { CookieNotice } from "./components/CookieNotice";
+import { PortableText } from "./components/PortableText";
 
 
 type NailLength = "Short" | "Medium" | "Long";
@@ -1584,9 +1585,15 @@ export default function App() {
               £{selected.price.toFixed(2)}
             </span>
 
-            <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: "12px 0 18px" }}>
-              {selected.description}
-            </p>
+            <div style={{ margin: "12px 0 18px" }}>
+              {selected.descriptionBlocks ? (
+                <PortableText value={selected.descriptionBlocks} />
+              ) : (
+                <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+                  {selected.description}
+                </p>
+              )}
+            </div>
 
             {!isVariationLocked(selected) ? (
               <>

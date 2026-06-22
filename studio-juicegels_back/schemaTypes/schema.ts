@@ -44,9 +44,66 @@ export default {
     },
     {
       name: 'description',
-      type: 'text',
+      type: 'array',
       title: 'Description',
-      initialValue: 'All Nail Sets Include: 1x mini nail file, 1x cuticle pusher, 1x mini buffer block, 1x Nail Glue',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            {title: 'Normal', value: 'normal'},
+            {title: 'Heading 1', value: 'h1'},
+            {title: 'Heading 2', value: 'h2'},
+            {title: 'Heading 3', value: 'h3'},
+            {title: 'Quote', value: 'blockquote'},
+          ],
+          lists: [
+            {title: 'Bullet', value: 'bullet'},
+            {title: 'Numbered', value: 'number'},
+          ],
+          marks: {
+            decorators: [
+              {title: 'Strong', value: 'strong'},
+              {title: 'Emphasis', value: 'em'},
+              {title: 'Underline', value: 'underline'},
+              {title: 'Strike', value: 'strike-through'},
+              {title: 'Small Font', value: 'small'},
+              {title: 'Large Font', value: 'large'},
+              {title: 'Extra Large', value: 'xlarge'},
+            ],
+            annotations: [
+              {
+                name: 'link',
+                type: 'object',
+                title: 'External Link',
+                fields: [
+                  {
+                    name: 'href',
+                    type: 'url',
+                    title: 'URL',
+                    validation: (Rule: any) => Rule.uri({
+                      scheme: ['http', 'https', 'mailto', 'tel']
+                    })
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+      initialValue: [
+        {
+          _key: 'initial-block-1',
+          _type: 'block',
+          style: 'normal',
+          children: [
+            {
+              _key: 'initial-span-1',
+              _type: 'span',
+              text: 'All Nail Sets Include: 1x mini nail file, 1x cuticle pusher, 1x mini buffer block, 1x Nail Glue',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'image',

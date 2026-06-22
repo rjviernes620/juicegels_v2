@@ -6,6 +6,7 @@ export type Product = {
   name: string;
   price: number;
   description: string;
+  descriptionBlocks?: any[];
   image: string;
   extraImages: string[];
   shapes: string[];
@@ -38,9 +39,18 @@ function intValue(val: any): number {
   return isNaN(parsed) ? 0 : parsed;
 }
 
-function floatValue(val: any): number {
-  const parsed = parseFloat(val);
-  return isNaN(parsed) ? 0 : parsed;
+function blocksToPlainText(blocks: any[]): string {
+  if (!Array.isArray(blocks)) {
+    return typeof blocks === 'string' ? blocks : '';
+  }
+  return blocks
+    .map(block => {
+      if (block._type !== 'block' || !block.children) {
+        return '';
+      }
+      return block.children.map((child: any) => child.text).join('');
+    })
+    .join('\n');
 }
 
 function parseSanityProducts(sanityProducts: any[]): Product[] {
@@ -51,7 +61,22 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
     const productId = intValue(sp.productId) || 1;
     const price = floatValue(sp.price) || 0;
     const defaultDescription = "All Nail Sets Include: 1x mini nail file, 1x cuticle pusher, 1x mini buffer block, 1x Nail Glue";
-    const description = (sp.description || defaultDescription).replace(/\n/g, " ").replace(/\s+/g, " ").trim();
+    
+    let plainDescription = "";
+    let descriptionBlocks: any[] | undefined = undefined;
+
+    if (Array.isArray(sp.description)) {
+      descriptionBlocks = sp.description;
+      plainDescription = blocksToPlainText(sp.description);
+    } else if (typeof sp.description === 'string') {
+      plainDescription = sp.description;
+    }
+
+    if (!plainDescription) {
+      plainDescription = defaultDescription;
+    }
+
+    const description = plainDescription.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
     const imageRef = sp.image?.asset?._ref || "";
     const imageUrl = buildSanityImageUrl(imageRef);
     
@@ -80,6 +105,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
         name: title,
         price: price,
         description: description,
+        descriptionBlocks: descriptionBlocks,
         image: imageUrl,
         extraImages: extraImages,
         shapes: ["Square"],
@@ -108,6 +134,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
             name: title,
             price: price,
             description: description,
+            descriptionBlocks: descriptionBlocks,
             image: imageUrl,
             extraImages: extraImages,
             shapes: DEFAULT_SHAPES,
