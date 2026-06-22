@@ -607,7 +607,7 @@ export default function App() {
         .filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId)))
         .sort((a, b) => {
           if (a.orderRank && b.orderRank) {
-            return a.orderRank.localeCompare(b.orderRank);
+            return b.orderRank.localeCompare(a.orderRank);
           }
           if (a.orderRank) return -1;
           if (b.orderRank) return 1;
