@@ -610,7 +610,7 @@ export function FAQ() {
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               <Mail size={15} style={{ color: "#ffd6e9" }} />
-              Email Aly
+              Email
             </a>
           </div>
         </div>
