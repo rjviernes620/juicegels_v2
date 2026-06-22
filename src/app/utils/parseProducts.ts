@@ -39,6 +39,11 @@ function intValue(val: any): number {
   return isNaN(parsed) ? 0 : parsed;
 }
 
+function floatValue(val: any): number {
+  const parsed = parseFloat(val);
+  return isNaN(parsed) ? 0 : parsed;
+}
+
 function blocksToPlainText(blocks: any[]): string {
   if (!Array.isArray(blocks)) {
     return typeof blocks === 'string' ? blocks : '';
