@@ -125,7 +125,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
             }}
           >
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'Lobster', serif", color: "#fce6ef", margin: "0 0 4px", fontSize: 33 }}>Its Juicy July! ☀️</p>
+              <p style={{ fontFamily: "'Lobster', serif", color: "#ffbb80", margin: "0 0 4px", fontSize: 33 }}>Its Juicy July! ☀️</p>
               <p style={{ color: "#312e81", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
                 Get 20% off your basket when you buy ONLY nail sets! Ends at the end of July. <br />
                 <span style={{ color: "#4338ca", fontWeight: 700 }}>Discount Applied Automatically 🌸</span>
