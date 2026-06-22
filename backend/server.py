@@ -829,8 +829,8 @@ def get_meta_catalog():
 
   project_id = "5co5ooqr"
   dataset = "production"
-  # Query both baseId and productId to be completely robust
-  query = '*[_type == "product"]{title, baseId, productId, price, description, image, image2, image3, image4, tags}'
+  # Query both baseId and productId, and filter out draft documents correctly in GROQ
+  query = '*[_type == "product" && !(_id in path("drafts.**"))]{title, baseId, productId, price, description, image, image2, image3, image4, tags}'
   encoded_query = quote(query)
   url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
   
@@ -865,6 +865,35 @@ def get_meta_catalog():
     except:
       return str(p)
 
+  def parse_description(desc_val):
+    if not desc_val:
+      return ""
+    if isinstance(desc_val, str):
+      return desc_val.replace('\n', ' ').strip()
+    if isinstance(desc_val, list):
+      text_parts = []
+      for block in desc_val:
+        if isinstance(block, dict) and block.get('_type') == 'block':
+          children = block.get('children', [])
+          block_text = ""
+          for child in children:
+            if isinstance(child, dict) and 'text' in child:
+              block_text += child.get('text', '')
+          if block_text:
+            if block.get('listItem') == 'bullet':
+              block_text = f"- {block_text}"
+            text_parts.append(block_text)
+      return " ".join(text_parts).replace('\n', ' ').strip()
+    return str(desc_val).replace('\n', ' ').strip()
+
+  def get_image_ref(img_field):
+    if not img_field or not isinstance(img_field, dict):
+      return ""
+    asset = img_field.get('asset')
+    if not asset or not isinstance(asset, dict):
+      return ""
+    return asset.get('_ref', '')
+
   si = StringIO()
   cw = csv.writer(si)
   
@@ -890,15 +919,18 @@ def get_meta_catalog():
       continue
     product_id = int(product_id)
     price = format_price(p.get('price', 0))
-    desc = p.get('description', '').replace('\n', ' ').strip()
-    tags_list = p.get('tags', [])
-    formatted_tags = ",".join([t.strip().replace(' ', '_').lower() for t in tags_list if t])
+    desc = parse_description(p.get('description'))
+    
+    tags_list = p.get('tags')
+    if not isinstance(tags_list, list):
+      tags_list = []
+    formatted_tags = ",".join([t.strip().replace(' ', '_').lower() for t in tags_list if isinstance(t, str) and t])
     
     # Images
-    img_ref = p.get('image', {}).get('asset', {}).get('_ref', '')
-    img2_ref = p.get('image2', {}).get('asset', {}).get('_ref', '')
-    img3_ref = p.get('image3', {}).get('asset', {}).get('_ref', '')
-    img4_ref = p.get('image4', {}).get('asset', {}).get('_ref', '')
+    img_ref = get_image_ref(p.get('image'))
+    img2_ref = get_image_ref(p.get('image2'))
+    img3_ref = get_image_ref(p.get('image3'))
+    img4_ref = get_image_ref(p.get('image4'))
     
     is_single = title.lower() == 'nail sizing guide' or product_id == 286
     

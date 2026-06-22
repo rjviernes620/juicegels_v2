@@ -1942,7 +1942,7 @@ export default function App() {
       {/* ── Basket ── */}
       {page === "basket" && (
         <main style={{ padding: "16px 16px 100px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 20, color: "#fff9fb", margin: "0 0 14px" }}>Your Basket</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fff9fb", margin: "0 0 14px" }}>Your Basket</h2>
 
           {cart.length === 0 ? (
             <div style={{ textAlign: "center", padding: "48px 20px" }}>
