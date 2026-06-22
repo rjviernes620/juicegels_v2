@@ -829,7 +829,8 @@ def get_meta_catalog():
 
   project_id = "5co5ooqr"
   dataset = "production"
-  query = '*[_type == "product"]{title, productId, price, description, image, image2, image3, image4, tags}'
+  # Query both baseId and productId to be completely robust
+  query = '*[_type == "product"]{title, baseId, productId, price, description, image, image2, image3, image4, tags}'
   encoded_query = quote(query)
   url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
   
@@ -867,9 +868,10 @@ def get_meta_catalog():
   si = StringIO()
   cw = csv.writer(si)
   
+  # Standard Meta required headers. We include both 'link' (standard) and 'root links' (legacy) for full compatibility.
   headers = [
     'id', 'TITLE', 'DESCRIPTION', 'PRICE', 'CURRENCY_CODE', 'QUANTITY', 'TAGS', 'MATERIALS',
-    'IMAGE1', 'IMAGE2', 'IMAGE3', 'IMAGE4', 'condition', 'availability', 'root links',
+    'IMAGE1', 'IMAGE2', 'IMAGE3', 'IMAGE4', 'condition', 'availability', 'link', 'root links',
     'item_group_id', 'shape', 'length', 'additional_variant_attribute', 'additional_image_link',
     'fb_product_category'
   ]
@@ -882,7 +884,8 @@ def get_meta_catalog():
   
   for p in sanity_products:
     title = p.get('title', '')
-    product_id = p.get('productId')
+    # Fallback from productId to baseId in case the schema field varies
+    product_id = p.get('productId') or p.get('baseId')
     if product_id is None:
       continue
     product_id = int(product_id)
@@ -908,6 +911,8 @@ def get_meta_catalog():
       img4 = build_sanity_image_url(img4_ref) or f"{frontend_base_url}/images/tape.jpg"
       additional_images = ",".join(filter(None, [img2, img3, img4]))
       
+      product_link = f"{frontend_base_url}/product/{variant_id}?shape=Square&length=Short"
+      
       cw.writerow([
         variant_id,
         title,
@@ -923,7 +928,8 @@ def get_meta_catalog():
         img4,
         'new',
         'in stock',
-        f"{frontend_base_url}/product/{variant_id}?shape=Square&length=Short",
+        product_link,  # link (standard)
+        product_link,  # root links (legacy)
         'juicegels_nailsizingguide',
         'Square',
         'Short',
@@ -946,6 +952,8 @@ def get_meta_catalog():
           img4 = build_sanity_image_url(img4_ref) or f"{frontend_base_url}/images/tape.jpg"
           additional_images = ",".join(filter(None, [img2, img3, img4]))
           
+          product_link = f"{frontend_base_url}/product/{variant_id}?shape={shape}&length={length}"
+          
           cw.writerow([
             variant_id,
             title,
@@ -961,7 +969,8 @@ def get_meta_catalog():
             img4,
             'new',
             'in stock',
-            f"{frontend_base_url}/product/{variant_id}?shape={shape}&length={length}",
+            product_link,  # link (standard)
+            product_link,  # root links (legacy)
             group_id,
             shape,
             length,
