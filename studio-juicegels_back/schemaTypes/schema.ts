@@ -43,6 +43,12 @@ export default {
       validation: (Rule: any) => Rule.required().min(0),
     },
     {
+      name: 'collection',
+      type: 'string',
+      title: 'Collection',
+      description: 'The name of the collection this set belongs to (leave blank if none)',
+    },
+    {
       name: 'description',
       type: 'array',
       title: 'Description',

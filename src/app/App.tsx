@@ -10,11 +10,12 @@ import { Contact } from "./components/Contact";
 import { CustomOrders } from "./components/CustomOrders";
 import { CookieNotice } from "./components/CookieNotice";
 import { PortableText } from "./components/PortableText";
+import { FAQ } from "./components/FAQ";
 
 
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number; length: NailLength };
-type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search" | "contact" | "custom-orders";
+type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search" | "contact" | "custom-orders" | "faq";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string; city: string; postcode: string; notes: string; contactMethod: "instagram" | "email"; };
 type ShippingOptionId = "tracked24" | "tracked48";
 
@@ -174,7 +175,7 @@ function HomeCarousel({ navigate }: HomeCarouselProps) {
             <p style={{ fontFamily: "'Lobster', serif", color: "#fff9fb", margin: "0 0 4px", fontSize: 32 }}>Need your nail sizes?</p>
             <p style={{ color: "rgb(181, 88, 140)", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
               Get our Nail Sizing Guide - £4.00 off when ordered with any nail set! <br />
-              <span style={{ color: "#ffd6e9", fontWeight: 600 }}>Discount Applied at Checkout 🌸</span>
+              <span style={{ color: "#ffd6e9", fontWeight: 600 }}>Applied at Checkout 🌸</span>
             </p>
           </div>
         </button>
@@ -458,6 +459,41 @@ function normalizeGroupKey(value: string) {
   return value.trim().toLowerCase();
 }
 
+interface CollectionDetails {
+  name: string;
+  tagline: string;
+  otherProducts: Product[];
+}
+
+function getCollectionDetails(product: Product, allProducts: Product[]): CollectionDetails | null {
+  if (!product.collection) return null;
+
+  const taglines: Record<string, string> = {
+    "Kamado Collection": "inspired by the iconic Demon Slayer siblings 🌿🌸",
+    "Stargirl Collection": "inspired by celestial beauty ✨🌌",
+    "Bloom Collection": "bringing the freshness of spring flowers 🌸🌼",
+    "Stardust Collection": "star-studded Sanrio inspired designs 🎀✨"
+  };
+
+  // Find all unique products in the same collection
+  const seen = new Set<string>();
+  const otherProducts = allProducts.filter(p => {
+    if (!p.collection || p.collection !== product.collection) return false;
+    if (p.groupId === product.groupId) return false;
+    
+    const key = p.groupId.trim().toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  return {
+    name: product.collection,
+    tagline: taglines[product.collection] || "exclusive themed nail set collection ✨",
+    otherProducts
+  };
+}
+
 export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -650,6 +686,11 @@ export default function App() {
 
     if (effectivePath === "/custom-orders") {
       setPage("custom-orders");
+      return;
+    }
+
+    if (effectivePath === "/faq") {
+      setPage("faq");
       return;
     }
 
@@ -1199,6 +1240,11 @@ export default function App() {
     else navigate("/home");
   };
 
+  const collectionDetails = useMemo(() => {
+    if (!selected) return null;
+    return getCollectionDetails(selected, products);
+  }, [selected, products]);
+
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: 430, margin: "0 auto", minHeight: "100vh", background: "#ffd2e6" }}>
       <CookieNotice
@@ -1320,6 +1366,7 @@ export default function App() {
             { label: "Custom Orders", icon: "💅", onClick: () => { navigate("/custom-orders"); setMenuOpen(false); } },
             { label: "Nail Videos", icon: "🎬", onClick: () => { navigate("/videos"); setMenuOpen(false); } },
             { label: "About JuiceGels", icon: "📖", onClick: () => { navigate("/about"); setMenuOpen(false); } },
+            { label: "FAQ", icon: "❓", onClick: () => { navigate("/faq"); setMenuOpen(false); } },
             { label: "Contact Us", icon: "✉️", onClick: () => { navigate("/contact"); setMenuOpen(false); } },
             { label: "Nail Sizing Guide", icon: "📏", onClick: () => { navigate("/product/JUICEGELS-0286"); setMenuOpen(false); } },
             { label: "Shopping Basket", icon: "🛒", onClick: () => { if (page === "preorder") { setPage("basket"); } else { navigate(currentBasketUrl(cart)); } setMenuOpen(false); } },
@@ -1504,9 +1551,28 @@ export default function App() {
                       <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#4f444a"} />
                     </button>
                     <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "#b8395d" }} />
-                    <div style={{ padding: "8px 10px 10px" }}>
+                    <div style={{
+                      padding: "8px 10px 10px",
+                      background: p.collection ? "linear-gradient(135deg, #a855f7 0%, #db2777 100%)" : "transparent"
+                    }}>
+                      {p.collection && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
+                          <span style={{
+                            fontSize: 9,
+                            background: "rgba(255, 255, 255, 0.25)",
+                            color: "#ffffff",
+                            padding: "1.5px 5px",
+                            borderRadius: 4,
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.03em"
+                          }}>
+                            Collection
+                          </span>
+                        </div>
+                      )}
                       <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3 }}>{p.name}</p>
-                      <span style={{ color: "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
+                      <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
                     </div>
                   </button>
                 ))}
@@ -1539,6 +1605,11 @@ export default function App() {
       {/* ── Custom Orders ── */}
       {page === "custom-orders" && (
         <CustomOrders />
+      )}
+
+      {/* ── FAQ ── */}
+      {page === "faq" && (
+        <FAQ />
       )}
 
       {/* ── Product Detail ── */}
@@ -1594,6 +1665,65 @@ export default function App() {
                 </p>
               )}
             </div>
+
+            {collectionDetails && (
+              <div style={{
+                background: "linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(219, 39, 119, 0.12) 100%)",
+                border: "1px solid rgba(168, 85, 247, 0.28)",
+                borderRadius: 14,
+                padding: "14px 16px",
+                margin: "18px 0",
+                color: "#3d1a24",
+                boxShadow: "0 2px 8px rgba(168, 85, 247, 0.04)"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: "#a855f7", marginBottom: 3 }}>
+                  <span style={{ fontSize: 14 }}>✨</span> {collectionDetails.name} Set
+                </div>
+                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#4f444a", fontStyle: "italic", lineHeight: 1.4 }}>
+                  {collectionDetails.tagline}
+                </p>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#4f444a", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
+                  Complete the Collection:
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {collectionDetails.otherProducts.map(otherProd => (
+                    <button
+                      key={otherProd.id}
+                      onClick={() => openProduct(otherProd)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        background: "#ffffff",
+                        border: "1px solid rgba(168, 85, 247, 0.15)",
+                        borderRadius: 10,
+                        padding: "6px 8px",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        width: "100%",
+                        boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                        transition: "all 0.15s"
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#a855f7"; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(168, 85, 247, 0.15)"; }}
+                    >
+                      <img src={otherProd.image} alt={otherProd.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#3d1a24", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {otherProd.name}
+                        </div>
+                        <div style={{ fontSize: 11, color: "#e988b5", fontWeight: 700 }}>
+                          £{otherProd.price.toFixed(2)}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: 11, color: "#a855f7", fontWeight: 700, paddingRight: 4, display: "flex", alignItems: "center", gap: 2 }}>
+                        Shop Set ➔
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {!isVariationLocked(selected) ? (
               <>
@@ -2245,6 +2375,10 @@ export default function App() {
           <div style={{ display: "flex", justifyContent: "center", gap: 10, rowGap: 8, fontSize: 13, alignItems: "center", flexWrap: "wrap", maxWidth: 320, margin: "0 auto" }}>
             <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
               About Her
+            </button>
+            <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+            <button onClick={() => navigate("/faq")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              FAQ
             </button>
             <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
             <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>

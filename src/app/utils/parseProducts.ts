@@ -13,6 +13,7 @@ export type Product = {
   tags: string[];
   shape: string;
   length: NailLength;
+  collection?: string;
 };
 
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
@@ -116,7 +117,8 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
         shapes: ["Square"],
         tags: tags,
         shape: "Square",
-        length: "Short"
+        length: "Short",
+        collection: sp.collection || undefined
       });
     } else {
       const groupId = `juicegels_${title.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}set`;
@@ -145,7 +147,8 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
             shapes: DEFAULT_SHAPES,
             tags: tags,
             shape: shape,
-            length: length
+            length: length,
+            collection: sp.collection || undefined
           });
         });
       });
