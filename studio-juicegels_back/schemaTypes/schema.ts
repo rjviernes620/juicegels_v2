@@ -8,7 +8,22 @@ export default {
   name: 'product',
   type: 'document',
   title: 'Nail Set',
-  orderings: [orderRankOrdering],
+  orderings: [
+    {
+      title: 'Order Rank (Website Order)',
+      name: 'orderRankDesc',
+      by: [
+        { field: 'orderRank', direction: 'desc' }
+      ]
+    },
+    {
+      title: 'Order Rank (Drag & Drop Order)',
+      name: 'orderRankAsc',
+      by: [
+        { field: 'orderRank', direction: 'asc' }
+      ]
+    }
+  ],
   fields: [
     orderRankField({ type: 'product' }),
     {
