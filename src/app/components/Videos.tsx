@@ -110,7 +110,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
       </div>
 
       {/* Videos List Container */}
-      <div style={{ padding: "20px 14px", display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ maxWidth: 480, margin: "0 auto", padding: "20px 14px", display: "flex", flexDirection: "column", gap: 20, width: "100%", boxSizing: "border-box" }}>
         
         {/* Carousel Container */}
         <div 

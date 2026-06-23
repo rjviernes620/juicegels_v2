@@ -89,7 +89,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
       </div>
 
       {/* Main Search Viewport Container */}
-      <div style={{ padding: "20px 14px", display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 14px", display: "flex", flexDirection: "column", gap: 24, width: "100%", boxSizing: "border-box" }}>
         
         {/* Search Bar Input */}
         <div style={{ position: "relative", width: "100%" }}>

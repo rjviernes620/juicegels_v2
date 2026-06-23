@@ -340,7 +340,7 @@ export function FAQ() {
       </div>
 
       {/* Main Content Area */}
-      <div style={{ padding: "20px 16px", display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 16px", display: "flex", flexDirection: "column", gap: 20, width: "100%", boxSizing: "border-box" }}>
         {/* Search Bar */}
         <div
           style={{

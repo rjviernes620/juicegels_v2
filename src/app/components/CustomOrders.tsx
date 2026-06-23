@@ -191,7 +191,7 @@ export function CustomOrders() {
       </div>
 
       {/* Main Content & Form */}
-      <div style={{ padding: "24px 20px", display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", gap: 24, width: "100%", boxSizing: "border-box" }}>
         
         {/* Process Explanation */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
