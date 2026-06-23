@@ -2765,9 +2765,9 @@ export default function App() {
                       </button>
                       <div style={{ display: "flex", gap: 16, alignItems: "center", flexShrink: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#fce4ea", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
+                          <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#9b3e54", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
                           <span style={{ minWidth: 32, textAlign: "center", fontSize: 14, fontWeight: 600 }}>{item.quantity}</span>
-                          <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#fce4ea", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
+                          <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#9b3e54", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
                         </div>
                         <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16, minWidth: 60, textAlign: "right" }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
                         <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={16} style={{ color: "#4f444a" }} /></button>
@@ -2929,7 +2929,7 @@ export default function App() {
       {/* ── Pre-order Form ── */}
       {page === "preorder" && (
         <main style={{ maxWidth: isMobile ? undefined : 1200, margin: "0 auto", padding: isMobile ? "18px 18px 48px" : "32px 32px 64px", width: "100%", boxSizing: "border-box" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 20 : 28, color: "#000000", margin: "0 0 4px" }}>Your Details</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 20 : 28, color: "#fc6587", margin: "0 0 4px" }}>Your Details</h2>
           <p style={{ color: "#000000", fontSize: isMobile ? 12 : 14, margin: isMobile ? "0 0 18px" : "0 0 28px" }}>{cartCount} item{cartCount !== 1 ? "s" : ""} · {formatMoney(checkoutTotal)} total including shipping</p>
 
           <form onSubmit={handleSubmit} noValidate style={
@@ -3266,7 +3266,7 @@ export default function App() {
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", letterSpacing: "0.03em", textTransform: "uppercase" }}>{label}</label>
+      <label style={{ fontSize: 11, fontWeight: 600, color: "#fc6587", letterSpacing: "0.03em", textTransform: "uppercase" }}>{label}</label>
       {children}
       {error && <span style={{ fontSize: 11, color: "#c0392b" }}>{error}</span>}
     </div>
