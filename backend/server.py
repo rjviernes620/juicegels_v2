@@ -406,6 +406,14 @@ def build_order_summary(checkout_session):
   if not coupon_name:
     coupon_name = get_value(metadata, 'coupon_code', '')
 
+  preorder_shipping_address = format_address({
+    'line1': get_value(metadata, 'shipping_address', ''),
+    'city': get_value(metadata, 'shipping_city', ''),
+    'postal_code': get_value(metadata, 'shipping_postcode', ''),
+    'country': get_value(metadata, 'shipping_country', ''),
+  })
+  shipping_address = preorder_shipping_address or format_address(get_value(customer_details, 'address', {}) or {})
+
   return {
     'session_id': session_id,
     'created_at': format_unix_timestamp(get_value(expanded_session, 'created')),
@@ -420,6 +428,7 @@ def build_order_summary(checkout_session):
     'coupon_code': get_value(metadata, 'coupon_code', ''),
     'coupon_name': coupon_name,
     'billing_address': format_address(get_value(customer_details, 'address', {}) or {}),
+    'shipping_address': shipping_address,
     'shipping_method': shipping_method,
     'shipping': format_money_from_pence(shipping_amount_pence),
     'subtotal': format_money_from_pence(get_value(expanded_session, 'amount_subtotal', 0)),
@@ -455,6 +464,7 @@ def build_order_email_html(order_summary):
     ('Instagram', order_summary.get('instagram', '')),
     ('Contact preference', order_summary.get('contact_preference', 'instagram')),
     ('Billing address', order_summary.get('billing_address', '')),
+    ('Shipping address', order_summary.get('shipping_address', '')),
     ('Notes', order_summary.get('notes', '')),
   ])
 
@@ -599,10 +609,10 @@ def build_customer_email_html(order_summary):
 
   # Billing/Shipping address
   address_html = ''
-  if order_summary.get('billing_address'):
+  if order_summary.get('shipping_address'):
     address_html = f"""<h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Delivery Details</h3>
 <p style="margin: 0 0 6px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700;">Shipping Address:</p>
-<p style="margin: 0 0 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #4f444a; white-space: pre-wrap;">{escape_html(order_summary.get("billing_address", ""))}</p>"""
+<p style="margin: 0 0 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #4f444a; white-space: pre-wrap;">{escape_html(order_summary.get("shipping_address", ""))}</p>"""
 
   items_table = build_customer_items_table(order_summary.get("line_items", []))
 
