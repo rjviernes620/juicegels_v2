@@ -85,7 +85,7 @@ export function About() {
               lineHeight: 1.2
             }}
           >
-            Hey, I'm AlyJuice
+            Hi, I'm AlyJuice
           </h2>
           <p 
             style={{ 
@@ -96,7 +96,7 @@ export function About() {
               letterSpacing: "0.02em" 
             }}
           >
-            Founder of Juice Gels 🌸
+            🌸 Founder of Juice Gels 🌸
           </p>
         </div>
       </div>
@@ -114,13 +114,10 @@ export function About() {
               margin: 0
             }}
           >
-            More Than Just Nails ✨
+            Nails are art in motion 💃
           </h3>
-          <p style={{ margin: "4px 0 0", fontSize: 16, lineHeight: 1.7, color: "#fc6587", fontWeight: "bold" }}>
-            Nails are art in motion.
-          </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            Our hands are some of the hardest-working parts of our bodies, carrying us through everyday tasks, work, hobbies and the moments that make up our lives. They're also one of the parts of ourselves we see most often.
+            These hands are some of the hardest-working parts of our bodies, carrying us through everyday tasks, work, hobbies and the moments that make up our lives. They're also one of the parts of ourselves we see most often.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             There's something special about looking down and being greeted by something beautiful, creative and expressive. Nail art has the power to reflect a mood, complete an outfit, celebrate a moment or simply make an ordinary day feel a little more exciting.
@@ -133,7 +130,7 @@ export function About() {
         {/* Highlighted box on freedom */}
         <div 
           style={{ 
-            background: "#e0a2b4", 
+            background: "#ffb8d8", 
             borderRadius: 16, 
             padding: "20px 18px", 
             border: "1px solid rgba(212, 84, 122, 0.18)",
@@ -146,7 +143,7 @@ export function About() {
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#4f444a" }}>
             Not everyone can wear long-term salon nails. Whether it's work, studies, lifestyle or personal preference, many people don't have the freedom to commit to a manicure for weeks at a time. People working in regulated industries deserve the opportunity to enjoy nail art too.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#fc6587", fontWeight: 700 }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#e34c88", fontWeight: 700 }}>
             Press-on nails offer that freedom.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#4f444a", fontWeight: 500 }}>
@@ -175,7 +172,7 @@ export function About() {
           
           <div 
             style={{ 
-              background: "#e0a2b4", 
+              background: "#ffb8d8", 
               borderRadius: 14, 
               padding: "16px", 
               display: "flex", 
@@ -213,16 +210,7 @@ export function About() {
 
         {/* From AlyJuice */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: "1px solid rgba(212, 84, 122, 0.18)", paddingTop: 20 }}>
-          <h3 
-            style={{ 
-              fontFamily: "'Lobster', serif", 
-              fontSize: 22, 
-              color: "#fc6587", 
-              margin: 0
-            }}
-          >
-            From AlyJuice 💖
-          </h3>
+
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             Every order, message, tag and recommendation means the world.
           </p>
@@ -310,7 +298,7 @@ export function About() {
               }}
             >
               <TiktokIcon size={16} />
-              Follow me on TikTok
+              Follow @juice.gels
             </a>
           </div>
         </div>
