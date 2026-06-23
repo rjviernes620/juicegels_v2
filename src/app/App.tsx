@@ -41,7 +41,11 @@ const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "
 
 const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 const META_CART_ORIGIN = "meta_shops";
-const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
+const CHECKOUT_API_BASE =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:4000"
+    : "https://juicegels-v2.onrender.com";
 const SHIPPING_FREE_THRESHOLD = 30;
 const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {
   tracked24: "shr_1Ti0hyK4CROOpWXUhiIhLqWy",
@@ -782,6 +786,35 @@ export default function App() {
       setConfirmationItems(purchasedItems);
       setCart([]);
       setPage("confirmation");
+
+      const sessionId = searchParams.get("session_id");
+      if (sessionId) {
+        fetch(`${CHECKOUT_API_BASE}/api/checkout-session/${sessionId}`)
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch session details");
+            return res.json();
+          })
+          .then((data) => {
+            setForm((prev) => ({
+              ...prev,
+              firstName: data.firstName || prev.firstName,
+              lastName: data.lastName || prev.lastName,
+              email: data.email || prev.email,
+              phone: data.phone || prev.phone,
+              address: data.address || prev.address,
+              instagram: data.instagram || prev.instagram,
+              city: data.city || prev.city,
+              postcode: data.postcode || prev.postcode,
+              notes: data.notes || prev.notes,
+              contactMethod: data.contactMethod || prev.contactMethod,
+              country: data.country || prev.country,
+            }));
+          })
+          .catch((err) => {
+            console.error("Error fetching checkout session:", err);
+          });
+      }
+
       return;
     }
 
@@ -3177,10 +3210,10 @@ export default function App() {
           <p style={{ color: "#4f444a", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
             A confirmation will be sent to <strong>{form.email}</strong>.<br />
             {form.contactMethod === "email" ? (
-              <span style={{ color: "#ffd6e9" }}>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
+              <span>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
             ) : (
               <>
-                <span style={{ color: "#ffd6e9" }}>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
+                <span>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
                 <br />
                 <span style={{ color: "#92400e", fontSize: 11, display: "block", marginTop: 4 }}>
                   ⚠️ If your Instagram account is private, please message <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> first to make sure that communications can be made.
@@ -3190,21 +3223,21 @@ export default function App() {
           </p>
 
           <div style={{ background: "#e0a2b4", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>
-            <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 13 }}>Items ordered</p>
+            <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 13, color: "#fff9fb" }}>Items ordered</p>
             {confirmationItems.map((item, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                 <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 40, height: 40, borderRadius: 7, objectFit: "cover", background: "#fce4ea" }} />
                 <div>
                   <p style={{ margin: 0, fontSize: 12, fontWeight: 500, color: "#fff9fb" }}>{item.product.name}</p>
-                  <p style={{ margin: 0, fontSize: 11, color: "#4f444a" }}>{getCartItemDetailText(item)}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "rgba(255, 249, 251, 0.85)" }}>{getCartItemDetailText(item)}</p>
                 </div>
               </div>
             ))}
           </div>
 
           <div style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 24 }}>
-            <p style={{ margin: "0 0 5px", fontWeight: 600, fontSize: 13 }}>Delivering to</p>
-            <p style={{ margin: 0, fontSize: 12, color: "#4f444a", lineHeight: 1.6 }}>
+            <p style={{ margin: "0 0 5px", fontWeight: 600, fontSize: 13, color: "#fff9fb" }}>Delivering to</p>
+            <p style={{ margin: 0, fontSize: 12, color: "#ffffff", lineHeight: 1.6 }}>
               {form.firstName} {form.lastName}<br />
               {form.address}<br />
               {form.city}, {form.postcode}

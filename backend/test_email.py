@@ -133,14 +133,56 @@ def main():
     try:
       if choice == '1':
         subject = "Order Confirmed - Juice Gels"
-        html_content = load_template('order_confirmation.html')
-        email_desc = "Order Confirmation (order_confirmation.html)"
+        try:
+          import sys
+          sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+          import server
+          
+          mock_summary = {
+            'first_name': 'Jane',
+            'last_name': 'Doe',
+            'customer_email': recipient,
+            'phone': '+44 7700 900000',
+            'instagram': '@jane_nails',
+            'contact_preference': 'instagram',
+            'notes': 'Please pack carefully!',
+            'subtotal': '£45.00',
+            'discount': '£9.00',
+            'coupon_code': 'SUMMER20',
+            'coupon_name': 'Summer Sale',
+            'shipping_method': 'Royal Mail Tracked 24',
+            'shipping': '£4.00',
+            'total': '£40.00',
+            'currency': 'GBP',
+            'billing_address': '123 Stripe Billing Lane, London, EC1A 1BB, United Kingdom',
+            'shipping_address': '123 Pre-order Shipping Street, London, SW1A 1AA, United Kingdom',
+            'line_items': [
+              {
+                'description': 'Strawberry Shortcake Press-On Nails - Almond - Medium',
+                'quantity': 1,
+                'unit_price': '£35.00',
+                'line_total': '£35.00'
+              },
+              {
+                'description': 'Nail Sizing Guide',
+                'quantity': 2,
+                'unit_price': '£5.00',
+                'line_total': '£10.00'
+              }
+            ]
+          }
+          html_content = server.build_customer_email_html(mock_summary)
+          email_desc = "Order Confirmation (generated dynamically from server.py)"
+        except Exception as err:
+          print(f"Warning: Failed to build dynamic email template: {err}. Falling back to static template file.")
+          html_content = load_template('order_confirmation.html')
+          email_desc = "Order Confirmation (order_confirmation.html)"
       else:
         subject = "Custom Order Request Received - Juice Gels"
         html_content = load_template('custom_order_confirmation.html')
         email_desc = "Custom Order Request Confirmation (custom_order_confirmation.html)"
     except Exception as e:
-      print(f"\n[ERROR] Failed to load template file: {e}")
+      print(f"\n[ERROR] Failed to load template: {e}")
       continue
 
     print(f"\nSending {email_desc} directly as-is to {recipient}...")

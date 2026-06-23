@@ -1377,7 +1377,51 @@ def stripe_webhook():
 
   return jsonify({ 'received': True })
 
+@app.route('/api/checkout-session/<session_id>', methods=['GET', 'OPTIONS'])
+def get_checkout_session(session_id):
+  if request.method == 'OPTIONS':
+    return jsonify({}), 204
+
+  try:
+    session = client.v1.checkout.sessions.retrieve(
+      session_id,
+      params={
+        'expand': ['customer_details'],
+      }
+    )
+    metadata = session.metadata or {}
+    
+    first_name = metadata.get('first_name', '')
+    last_name = metadata.get('last_name', '')
+    address = metadata.get('shipping_address', '')
+    city = metadata.get('shipping_city', '')
+    postcode = metadata.get('shipping_postcode', '')
+    country = metadata.get('shipping_country', '')
+    email = (session.customer_details.email if session.customer_details else None) or session.customer_email or ''
+    contact_method = metadata.get('contact_preference', 'instagram')
+    instagram = metadata.get('instagram', '')
+    phone = metadata.get('phone', '')
+    notes = metadata.get('notes', '')
+    
+    return jsonify({
+      'firstName': first_name,
+      'lastName': last_name,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'city': city,
+      'postcode': postcode,
+      'country': country,
+      'contactMethod': contact_method,
+      'instagram': instagram,
+      'notes': notes
+    })
+  except Exception as e:
+    print(f"Error retrieving checkout session: {e}")
+    return jsonify({'error': 'Failed to retrieve checkout session'}), 500
+
 @app.route('/create-checkout-session', methods=['POST', 'OPTIONS'])
+
 def create_checkout_session():
   if request.method == 'OPTIONS':
     return jsonify({}), 204
