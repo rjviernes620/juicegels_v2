@@ -11,13 +11,14 @@ import { CustomOrders } from "./components/CustomOrders";
 import { CookieNotice } from "./components/CookieNotice";
 import { PortableText } from "./components/PortableText";
 import { FAQ } from "./components/FAQ";
+import { COUNTRIES, EUROPEAN_COUNTRIES } from "./utils/countries";
 
 
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number; length: NailLength };
 type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search" | "contact" | "custom-orders" | "faq";
-type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string; city: string; postcode: string; notes: string; contactMethod: "instagram" | "email"; };
-type ShippingOptionId = "tracked24" | "tracked48";
+type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string; city: string; postcode: string; notes: string; contactMethod: "instagram" | "email"; country: string; };
+type ShippingOptionId = "tracked24" | "tracked48" | "international";
 
 type CouponSummary = {
   code: string;
@@ -36,7 +37,7 @@ type ShippingOption = {
   isFree: boolean;
 };
 
-const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "", postcode: "", notes: "", contactMethod: "instagram" };
+const initialForm: FormData = { firstName: "", lastName: "", email: "", phone: "", address: "", instagram: "", city: "", postcode: "", notes: "", contactMethod: "instagram", country: "GB" };
 
 const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 const META_CART_ORIGIN = "meta_shops";
@@ -45,38 +46,57 @@ const SHIPPING_FREE_THRESHOLD = 30;
 const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {
   tracked24: "shr_1Ti0hyK4CROOpWXUhiIhLqWy",
   tracked48: "shr_1Ti0ieK4CROOpWXU5Cbop3Ii",
+  international: "shr_1TlIyvK9S4gHGvxwwsl3tfgS",
 };
 
 function formatMoney(amount: number) {
   return `£${amount.toFixed(2)}`;
 }
 
-function buildShippingOptions(itemsTotal: number): ShippingOption[] {
-  const tracked48IsFree = itemsTotal >= SHIPPING_FREE_THRESHOLD;
+function buildShippingOptions(itemsTotal: number, country: string): ShippingOption[] {
+  if (country === "GB" || !country) {
+    const tracked48IsFree = itemsTotal >= SHIPPING_FREE_THRESHOLD;
 
-  return [
-    {
-      id: "tracked48",
-      stripeRateId: SHIPPING_RATE_IDS.tracked48,
-      label: "Royal Mail Tracked 48",
-      description: tracked48IsFree
-        ? `Free on orders of ${formatMoney(SHIPPING_FREE_THRESHOLD)} or more.`
-        : "Standard tracked delivery. (Free on Orders over £30)",
-      estimate: "Estimated delivery within 2 days after your order is finished.",
-      amount: tracked48IsFree ? 0 : 1.99,
-      isFree: tracked48IsFree,
-    },
-    {
-      id: "tracked24",
-      stripeRateId: SHIPPING_RATE_IDS.tracked24,
-      label: "Royal Mail Tracked 24",
-      description: "Priority tracked delivery.",
-      estimate: "Estimated delivery within 1 business day after your order is finished.",
-      amount: 4,
-      isFree: false,
-    },
-  ];
+    return [
+      {
+        id: "tracked48",
+        stripeRateId: SHIPPING_RATE_IDS.tracked48,
+        label: "Royal Mail Tracked 48",
+        description: tracked48IsFree
+          ? `Free on orders of ${formatMoney(SHIPPING_FREE_THRESHOLD)} or more.`
+          : "Standard tracked delivery. (Free on Orders over £30)",
+        estimate: "Estimated delivery within 2 days after your order is finished.",
+        amount: tracked48IsFree ? 0 : 1.99,
+        isFree: tracked48IsFree,
+      },
+      {
+        id: "tracked24",
+        stripeRateId: SHIPPING_RATE_IDS.tracked24,
+        label: "Royal Mail Tracked 24",
+        description: "Priority tracked delivery.",
+        estimate: "Estimated delivery within 1 business day after your order is finished.",
+        amount: 4,
+        isFree: false,
+      },
+    ];
+  } else {
+    const isEurope = EUROPEAN_COUNTRIES.has(country.toUpperCase());
+    return [
+      {
+        id: "international",
+        stripeRateId: SHIPPING_RATE_IDS.international,
+        label: "Royal Mail International Tracked",
+        description: "International tracked delivery.",
+        estimate: isEurope
+          ? "Estimated delivery within 3-5 business days after your order is finished."
+          : "Estimated delivery within 6-7 business days after your order is finished.",
+        amount: 9.50,
+        isFree: false,
+      },
+    ];
+  }
 }
+
 
 interface HomeCarouselProps {
   navigate: (path: string) => void;
@@ -837,7 +857,14 @@ export default function App() {
   const discountTotal = couponDiscount + nailSetSaleDiscountAmount;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
-  const shippingOptions = useMemo(() => buildShippingOptions(orderTotal), [orderTotal]);
+  const shippingOptions = useMemo(() => buildShippingOptions(orderTotal, form.country), [orderTotal, form.country]);
+
+  useEffect(() => {
+    if (shippingOptions.length > 0 && !shippingOptions.some((o) => o.id === shippingOptionId)) {
+      setShippingOptionId(shippingOptions[0].id);
+    }
+  }, [shippingOptions, shippingOptionId]);
+
   const selectedShippingOption = shippingOptions.find((option) => option.id === shippingOptionId) ?? shippingOptions[0];
   const shippingTotal = selectedShippingOption?.amount ?? 0;
   const checkoutTotal = orderTotal + shippingTotal;
@@ -1226,6 +1253,7 @@ export default function App() {
     if (!form.city.trim()) e.city = "Required";
     if (form.contactMethod === "instagram" && !form.instagram.trim()) e.instagram = "Required";
     if (!form.postcode.trim()) e.postcode = "Required";
+    if (!form.country.trim()) e.country = "Required";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -1445,12 +1473,14 @@ export default function App() {
                 fontSize: 14,
                 cursor: "pointer",
                 transition: "background 0.2s ease",
+                overflow: "hidden",
+                width: "100%",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "#ffd6e9"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "#e0a2b4"; }}
             >
-              <span style={{ fontSize: 16 }}>{item.icon}</span>
-              {item.label}
+              <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{item.label}</span>
             </button>
           ))}
         </nav>
@@ -2205,6 +2235,20 @@ export default function App() {
               <input type="text" placeholder="12 Petal Lane" value={form.address} onChange={(e) => handleFormChange("address", e.target.value)} style={mkInput(!!errors.address)} />
             </Field>
 
+            <Field label="Country" error={errors.country}>
+              <select
+                value={form.country}
+                onChange={(e) => handleFormChange("country", e.target.value)}
+                style={{ ...mkInput(!!errors.country), height: 43 }}
+              >
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code} style={{ color: "#000000" }}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
             <Field label="Preferred Contact Method">
               <div style={{ display: "flex", gap: 10 }}>
                 <button
@@ -2424,7 +2468,17 @@ export default function App() {
 
           <div style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 24 }}>
             <p style={{ margin: "0 0 5px", fontWeight: 600, fontSize: 13 }}>Delivering to</p>
-            <p style={{ margin: 0, fontSize: 12, color: "#4f444a", lineHeight: 1.6 }}>{form.firstName} {form.lastName}<br />{form.address}<br />{form.city}, {form.postcode}</p>
+            <p style={{ margin: 0, fontSize: 12, color: "#4f444a", lineHeight: 1.6 }}>
+              {form.firstName} {form.lastName}<br />
+              {form.address}<br />
+              {form.city}, {form.postcode}
+              {form.country && form.country !== "GB" && (
+                <>
+                  <br />
+                  {COUNTRIES.find((c) => c.code === form.country)?.name || form.country}
+                </>
+              )}
+            </p>
           </div>
 
           <button onClick={() => { navigate("/"); setCart([]); setForm(initialForm); }} style={{ background: "#c281a9", color: "#fff", border: "none", borderRadius: 12, height: 46, width: "100%", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>

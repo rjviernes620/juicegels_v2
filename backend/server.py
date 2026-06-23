@@ -74,6 +74,12 @@ def read_secret(secret_name, env_var_name=None):
 #     'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
 #     'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
 #   },
+#   'international': {
+#     'stripe_rate_id': 'shr_1TlIyvK9S4gHGvxwwsl3tfgS',
+#     'label': 'Royal Mail International Tracked',
+#     'amount_pence': 950,
+#     'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
+#   },
 # }
 
 ##TEST Mode
@@ -92,6 +98,12 @@ SHIPPING_OPTIONS = {
     'amount_pence': 199,
     'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
     'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
+  },
+  'international': {
+    'stripe_rate_id': 'shr_1TlIyvK9S4gHGvxwwsl3tfgS',
+    'label': 'Royal Mail International Tracked',
+    'amount_pence': 950,
+    'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
   },
 }
 
@@ -248,7 +260,15 @@ def get_pingram_base_url():
   return (os.environ.get('PINGRAM_BASE_URL') or PINGRAM_DEFAULT_BASE_URL).rstrip('/')
 
 
-def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence):
+EUROPEAN_COUNTRIES = {
+  'AL', 'AD', 'AM', 'AT', 'AZ', 'BY', 'BE', 'BA', 'BG', 'HR', 'CY', 'CZ', 'DK', 
+  'EE', 'FI', 'FR', 'GE', 'DE', 'GR', 'HU', 'IS', 'IE', 'IT', 'KZ', 'LV', 'LI', 
+  'LT', 'LU', 'MT', 'MD', 'MC', 'ME', 'NL', 'MK', 'NO', 'PL', 'PT', 'RO', 'RU', 
+  'SM', 'RS', 'SK', 'SI', 'ES', 'SE', 'CH', 'TR', 'UA', 'VA'
+}
+
+
+def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence, country='GB'):
   shipping_option_id = str(raw_shipping_option_id or '').strip()
   option = SHIPPING_OPTIONS.get(shipping_option_id)
 
@@ -289,11 +309,19 @@ def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence):
     }
   )
 
+  estimate_text = option['estimate_text']
+  if shipping_option_id == 'international':
+    is_europe = str(country or '').strip().upper() in EUROPEAN_COUNTRIES
+    if is_europe:
+      estimate_text = 'Estimated delivery within 3-5 business days after the order is finished.'
+    else:
+      estimate_text = 'Estimated delivery within 6-7 business days after the order is finished.'
+
   return {
     'id': shipping_option_id,
     'label': option['label'],
     'amount_pence': amount_pence,
-    'estimate_text': option['estimate_text'],
+    'estimate_text': estimate_text,
     'stripe_shipping_option': stripe_shipping_option,
   }
 
@@ -1467,8 +1495,9 @@ def create_checkout_session():
       discounted_subtotal_pence -= size_guide_discount_pence
   discounted_subtotal_pence = max(0, discounted_subtotal_pence)
 
+  country = str(form.get('country') or 'GB').strip()
   try:
-    shipping_option = resolve_shipping_option(shipping_option_id, discounted_subtotal_pence)
+    shipping_option = resolve_shipping_option(shipping_option_id, discounted_subtotal_pence, country)
   except ValueError as error:
     return jsonify({ 'error': str(error) }), 400
 
@@ -1485,7 +1514,7 @@ def create_checkout_session():
             'line1': form.get('address', ''),
             'city': form.get('city', ''),
             'postal_code': form.get('postcode', ''),
-            'country': 'GB',
+            'country': country,
           }
         }
       },
@@ -1501,6 +1530,7 @@ def create_checkout_session():
         'shipping_address': form.get('address', ''),
         'shipping_city': form.get('city', ''),
         'shipping_postcode': form.get('postcode', ''),
+        'shipping_country': country,
         'coupon_code': 'lGKkukJL' if apply_20_percent_discount else ('60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else '')),
         'shipping_option_id': shipping_option['id'],
         'shipping_method': shipping_option['label'],
