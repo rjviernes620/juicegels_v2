@@ -101,7 +101,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
           borderBottom: "1px solid rgba(212, 84, 122, 0.18)"
         }}
       >
-        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fff9fb", margin: "0 0 6px" }}>
+        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#a24e6a", margin: "0 0 6px" }}>
           Juice Gels Studio 🎬
         </h2>
         <p style={{ color: "#4f444a", margin: 0, fontSize: 12, lineHeight: 1.5 }}>

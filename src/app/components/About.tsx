@@ -2,7 +2,7 @@ import React from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Instagram } from "lucide-react";
 
-function TiktokIcon({ size = 16, ...props }: React.SVGProps<SVGSVGElement> & { size?: number }) {
+export function TiktokIcon({ size = 16, ...props }: React.SVGProps<SVGSVGElement> & { size?: number }) {
   return (
     <svg
       width={size}
@@ -50,7 +50,7 @@ export function About() {
           >
             <ImageWithFallback 
               src="images/about_alyssa.png" 
-              alt="Alyssa - Founder of Juice Gels" 
+              alt="AlyJuice - Founder of Juice Gels" 
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           </div>
@@ -85,7 +85,7 @@ export function About() {
               lineHeight: 1.2
             }}
           >
-            Hey, I'm Alyssa
+            Hey, I'm AlyJuice
           </h2>
           <p 
             style={{ 
@@ -104,29 +104,33 @@ export function About() {
       {/* Main Content Area */}
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", gap: 24, width: "100%", boxSizing: "border-box" }}>
         
-        {/* Intro */}
+        {/* More Than Just Nails Section */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            I'm the founder of Juice Gels, a small business built from my love of beauty, creativity, and all things nails.
+          <h3 
+            style={{ 
+              fontFamily: "'Lobster', serif", 
+              fontSize: 22, 
+              color: "#fc6587", 
+              margin: 0
+            }}
+          >
+            More Than Just Nails ✨
+          </h3>
+          <p style={{ margin: "4px 0 0", fontSize: 16, lineHeight: 1.7, color: "#fc6587", fontWeight: "bold" }}>
+            Nails are art in motion.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            But the truth is, my journey with nails didn't start with confidence.
+            Our hands are some of the hardest-working parts of our bodies, carrying us through everyday tasks, work, hobbies and the moments that make up our lives. They're also one of the parts of ourselves we see most often.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            I've been a nail biter for as long as I can remember. Growing up, I often felt insecure about my hands and avoided showing them whenever I could. I loved nail art and beautiful manicures, but salon nails weren't always accessible to me, and that feeling of being left out stuck with me.
+            There's something special about looking down and being greeted by something beautiful, creative and expressive. Nail art has the power to reflect a mood, complete an outfit, celebrate a moment or simply make an ordinary day feel a little more exciting.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            When I started university, I realised there had to be another option.
-          </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            I wanted nails that were affordable, easy to wear, and didn't require a salon appointment every few weeks. More importantly, I wanted something for people who love expressing themselves through nails but also want the freedom to switch up their look whenever they want.
-          </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a", fontWeight: 500 }}>
-            That's how Juice Gels was born.
+            Juice Gels was created with a simple goal: to make beautiful nails more accessible, flexible and fun.
           </p>
         </div>
 
-        {/* More than just nails */}
+        {/* Highlighted box on freedom */}
         <div 
           style={{ 
             background: "#e0a2b4", 
@@ -139,27 +143,14 @@ export function About() {
             boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
           }}
         >
-          <h3 
-            style={{ 
-              fontFamily: "'Lobster', serif", 
-              fontSize: 22, 
-              color: "#fff9fb", 
-              margin: 0,
-              display: "flex",
-              alignItems: "center",
-              gap: 8
-            }}
-          >
-            More than just nails ✨
-          </h3>
-          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
-            I've always seen nails as tiny pieces of art.
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#4f444a" }}>
+            Not everyone can wear long-term salon nails. Whether it's work, studies, lifestyle or personal preference, many people don't have the freedom to commit to a manicure for weeks at a time. People working in regulated industries deserve the opportunity to enjoy nail art too.
           </p>
-          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
-            They're a way to show off your personality, match your mood, celebrate a special occasion, or simply make an ordinary day feel a little more exciting.
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#fc6587", fontWeight: 700 }}>
+            Press-on nails offer that freedom.
           </p>
-          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
-            Our hands are some of the hardest-working parts of our bodies. We see them every single day. I love the idea that every time you look down at your hands, you're greeted by something beautiful, creative, and uniquely you.
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#4f444a", fontWeight: 500 }}>
+            That's how Juice Gels was born.
           </p>
         </div>
 
@@ -169,17 +160,17 @@ export function About() {
             style={{ 
               fontFamily: "'Lobster', serif", 
               fontSize: 22, 
-              color: "#fff9fb", 
+              color: "#fc6587", 
               margin: "0 0 4px"
             }}
           >
-            Why Juice Gels?
+            Why Juice Gels? 💌
           </h3>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            Because beauty should be fun, flexible, and accessible.
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a", fontWeight: 500 }}>
+            Because beauty should be fun, flexible and accessible.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            Whether you're looking for a confidence boost, getting ready for a night out, planning a holiday, or just want a new set because you're obsessed with a trend you've seen on TikTok, Juice Gels gives you the freedom to wear the nails you want, when you want.
+            Whether you're looking for a confidence boost, getting ready for a night out, planning a holiday, dressing for a special occasion or simply obsessed with a new trend you've seen online, Juice Gels gives you the freedom to wear the nails you want, when you want.
           </p>
           
           <div 
@@ -194,43 +185,49 @@ export function About() {
             }}
           >
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 14, color: "#fff9fb" }}>🌸</span>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
               <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
-                No expensive salon appointments.
+                No expensive salon appointments
               </span>
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 14, color: "#fff9fb" }}>🌸</span>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
               <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
-                No long-term commitment.
+                No long-term commitment
               </span>
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 14, color: "#fff9fb" }}>🌸</span>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
               <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
-                Just beautiful nails designed to help you feel like your best self.
+                Reusable designs to wear, re-wear and collect
+              </span>
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
+              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
+                Beautiful nails designed to fit around your life
               </span>
             </div>
           </div>
         </div>
 
-        {/* From me to you */}
+        {/* From AlyJuice */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: "1px solid rgba(212, 84, 122, 0.18)", paddingTop: 20 }}>
           <h3 
             style={{ 
               fontFamily: "'Lobster', serif", 
               fontSize: 22, 
-              color: "#fff9fb", 
+              color: "#fc6587", 
               margin: 0
             }}
           >
-            From me to you 💌
+            From AlyJuice 💖
           </h3>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            Every order, message, tag, and recommendation means the world to me. As a small business owner, I'm incredibly grateful for every person who chooses to support Juice Gels.
+            Every order, message, tag and recommendation means the world.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            Thank you for being here and for helping me turn a personal insecurity into something creative, empowering, and beautiful.
+            Thank you for supporting a small business built around creativity, self-expression and the belief that beautiful nails should be accessible to everyone.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             I can't wait to see how you wear your Juice Gels.
@@ -242,12 +239,12 @@ export function About() {
               style={{ 
                 fontFamily: "'Lobster', serif", 
                 fontSize: 26, 
-                color: "#fff9fb", 
+                color: "#fc6587", 
                 margin: "4px 0 0",
                 letterSpacing: "0.05em"
               }}
             >
-              Alyssa x
+              AlyJuice x
             </p>
           </div>
         </div>

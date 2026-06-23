@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X } from "lucide-react";
+import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X, Instagram } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { loadProducts, type Product } from "./utils/parseProducts";
-import { About } from "./components/About";
+import { About, TiktokIcon } from "./components/About";
 import { Videos } from "./components/Videos";
 import { Search } from "./components/Search";
 import { Contact } from "./components/Contact";
@@ -197,7 +197,7 @@ function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
             }}
           />
           <div style={{ flex: 1 }}>
-            <p style={{ fontFamily: "'Lobster', serif", color: "#fff9fb", margin: "0 0 4px", fontSize: 32 }}>Need your nail sizes?</p>
+            <p style={{ fontFamily: "'Lobster', serif", color: "#fddaf6", margin: "0 0 4px", fontSize: 28 }}>Need your nail sizes?</p>
             <p style={{ color: "rgb(181, 88, 140)", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
               Get our Nail Sizing Guide - £4.00 off when ordered with any nail set! <br />
               <span style={{ color: "#ffd6e9", fontWeight: 600 }}>Applied at Checkout 🌸</span>
@@ -1523,7 +1523,7 @@ export default function App() {
             style={{
               fontFamily: "'Lobster', serif",
               fontSize: 24,
-              color: "#ffffff"
+              color: "#fc6587"
             }}
           >
             Juice Gels
@@ -1580,25 +1580,57 @@ export default function App() {
 
         {/* Drawer Footer */}
         <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 20, borderTop: "1px solid rgba(212, 84, 122, 0.18)" }}>
-          <p style={{ fontSize: 11, color: "#4f444a", margin: "0 0 10px" }}>
-            Follow Alyssa&apos;s nail updates 🌸
-          </p>
-          <a
-            href="https://instagram.com/juicegels"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              color: "#fff9fb",
-              fontWeight: 600,
-              fontSize: 12,
-              textDecoration: "underline",
-            }}
-          >
-            Instagram @juicegels
-          </a>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
+            <a
+              href="https://instagram.com/juicegels"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                background: "#f24e77",
+                color: "#fff",
+                padding: "10px 20px",
+                borderRadius: 24,
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: "none",
+                boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)",
+                boxSizing: "border-box",
+                width: "100%",
+              }}
+            >
+              <Instagram size={16} />
+              Follow @juicegels
+            </a>
+            <a
+              href="https://tiktok.com/@juice.gels"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                background: "#f24e77",
+                color: "#fff",
+                padding: "10px 20px",
+                borderRadius: 24,
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: "none",
+                boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)",
+                boxSizing: "border-box",
+                width: "100%",
+              }}
+            >
+              <TiktokIcon size={16} />
+              Follow @juice.gels
+            </a>
+          </div>
         </div>
       </div>
 
@@ -1795,9 +1827,9 @@ export default function App() {
       {!isProductsLoading && page === "home" && (
         <main>
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
-            <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>Handmade Press-On Nails</p>
-            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>Nail the Look ✨</h2>
-            <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Custom-fit gel press-ons <br /> We will confirm your sizing after checkout</p>
+            <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>🌟Press-on Nail studio 🌟</p>
+            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>💅 Welcome to Juice Gels 💅</h2>
+            <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Handmade press-on nails <br /> designed for every version of you</p>
           </div>
 
           {productsLoadError ? (

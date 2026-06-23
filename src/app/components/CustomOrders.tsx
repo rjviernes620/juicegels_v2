@@ -195,13 +195,13 @@ export function CustomOrders() {
         
         {/* Process Explanation */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 22, color: "#fff9fb", margin: "0 0 4px" }}>
+          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 22, color: "#f86c85", margin: "0 0 4px" }}>
             How the Process Works
           </h3>
           
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#fff", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>1</div>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#db3636", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>1</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
                 <strong style={{ color: "#d14d4d" }}>Submit Your Design:</strong> Fill out the simple request form below describing your vision. Feel free to list specific colors, charms, or styles you love.
               </div>

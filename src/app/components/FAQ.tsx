@@ -312,7 +312,7 @@ export function FAQ() {
           gap: 12,
         }}
       >
-        <span style={{ fontSize: 32 }}>❓</span>
+        <span style={{ fontSize: 32 }}></span>
         <div>
           <h2
             style={{
