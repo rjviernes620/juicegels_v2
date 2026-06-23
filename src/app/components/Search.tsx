@@ -80,7 +80,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
           borderBottom: "1px solid rgba(212, 84, 122, 0.18)"
         }}
       >
-        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fff9fb", margin: "0 0 6px" }}>
+        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#9e4056", margin: "0 0 6px" }}>
           Search Studio 🔍
         </h2>
         <p style={{ color: "#4f444a", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
