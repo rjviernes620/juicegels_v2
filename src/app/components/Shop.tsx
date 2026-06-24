@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, X, Instagram } from "lucide-react";
+import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
+
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { PortableText } from "./PortableText";
 import { TiktokIcon } from "./About";
@@ -364,10 +366,80 @@ export function ShopPage({
 }: ShopPageProps) {
   return (
     <main>
-      <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
-        <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>🌟 Press-on Nail Shop 🌟</p>
-        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>💅 Browse Our Sets 💅</h2>
-        <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Find your perfect design, custom-made for you</p>
+      <div 
+        style={{ 
+          position: "relative",
+          overflow: "hidden",
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
+          padding: "28px 20px 22px", 
+          textAlign: "center" 
+        }}
+      >
+        {/* ShaderGradient Background */}
+        <ShaderGradientCanvas
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 0,
+            pointerEvents: "none"
+          }}
+          pixelDensity={1}
+          fov={45}
+        >
+          <ShaderGradient
+            animate="on"
+            axesHelper="off"
+            bgColor1="#000000"
+            bgColor2="#000000"
+            brightness={1.2}
+            cAzimuthAngle={180}
+            cDistance={2.91}
+            cPolarAngle={120}
+            cameraZoom={1}
+            color1="#ebedff"
+            color2="#f3f2f8"
+            color3="#dbf8ff"
+            destination="onCanvas"
+            embedMode="off"
+            envPreset="city"
+            format="gif"
+            fov={45}
+            frameRate={10}
+            gizmoHelper="hide"
+            grain="off"
+            lightType="3d"
+            pixelDensity={1}
+            positionX={0}
+            positionY={1.8}
+            positionZ={0}
+            range="disabled"
+            rangeEnd={40}
+            rangeStart={0}
+            reflection={0.1}
+            rotationX={0}
+            rotationY={0}
+            rotationZ={-90}
+            shader="defaults"
+            type="waterPlane"
+            uAmplitude={0}
+            uDensity={1}
+            uFrequency={5.5}
+            uSpeed={0.3}
+            uStrength={3}
+            uTime={0.2}
+            wireframe={false}
+          />
+        </ShaderGradientCanvas>
+
+        {/* Content Wrapper */}
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>🌟 Press-on Nail Shop 🌟</p>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>💅 Browse Our Sets 💅</h2>
+          <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Find your perfect design, custom-made for you</p>
+        </div>
       </div>
 
       {productsLoadError ? (

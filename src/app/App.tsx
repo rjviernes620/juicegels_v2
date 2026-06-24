@@ -52,6 +52,8 @@ import {
   PreorderPage,
   ConfirmationPage
 } from "./components/Shop";
+import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
+
 
 const initialForm: FormData = {
   firstName: "",
@@ -1338,288 +1340,208 @@ export default function App() {
             position: "relative",
             overflow: "hidden"
           }}>
-            {/* Subtle background bubble accents */}
-            <div style={{
-              position: "absolute",
-              width: "300px",
-              height: "300px",
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(252,101,135,0.06) 0%, rgba(252,101,135,0) 70%)",
-              top: "-50px",
-              right: "-100px",
-              pointerEvents: "none"
-            }} />
-            <div style={{
-              position: "absolute",
-              width: "400px",
-              height: "400px",
-              borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(212,84,122,0.05) 0%, rgba(212,84,122,0) 70%)",
-              bottom: "-150px",
-              left: "-150px",
-              pointerEvents: "none"
-            }} />
-
-            {/* Surrounding Sets Interactive Hero Area */}
-            <div style={{
-              position: "relative",
-              width: "100%",
-              maxWidth: "800px",
-              height: isMobile ? "380px" : "480px",
-              margin: "0 auto 20px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}>
-              {/* Logo - Full size in the center */}
-              <motion.div
-                initial={{ scale: 0.3, rotate: -20, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
-                transition={{ duration: 1.4, type: "spring", stiffness: 55, damping: 12 }}
-                whileHover={{ scale: 1.03, rotate: 1, transition: { duration: 0.3 } }}
-                onClick={() => navigate("/shop")}
-                style={{
-                  width: isMobile ? 220 : 300,
-                  height: isMobile ? 220 : 300,
-                  zIndex: 10,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  position: "relative",
-                }}
-              >
-                <img
-                  src="images/jg circle 2.png"
-                  alt="Juice Gels Logo"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                    display: "block",
-                    filter: "drop-shadow(0 15px 35px rgba(252, 101, 135, 0.3))"
-                  }}
-                />
-              </motion.div>
-
-              {/* 8 Surrounding Floating Sets */}
-              {[
-                { 
-                  // Set 1: Top-Left
-                  top: isMobile ? "2%" : "5%", 
-                  left: isMobile ? "2%" : "5%", 
-                  initial: { x: -80, y: -80, opacity: 0, scale: 0.5 },
-                  yFloat: [0, -10, 0],
-                  duration: 5.0,
-                  delay: 0.1
-                },
-                { 
-                  // Set 2: Top-Center
-                  top: isMobile ? "-3%" : "0%", 
-                  left: "50%", 
-                  marginLeft: isMobile ? -35 : -60,
-                  initial: { x: 0, y: -80, opacity: 0, scale: 0.5 },
-                  yFloat: [0, 8, 0],
-                  duration: 4.5,
-                  delay: 0.3
-                },
-                { 
-                  // Set 3: Top-Right
-                  top: isMobile ? "2%" : "5%", 
-                  right: isMobile ? "2%" : "5%", 
-                  initial: { x: 80, y: -80, opacity: 0, scale: 0.5 },
-                  yFloat: [0, -8, 0],
-                  duration: 5.2,
-                  delay: 0.5
-                },
-                { 
-                  // Set 4: Middle-Right
-                  top: "50%", 
-                  right: isMobile ? "-2%" : "1%", 
-                  marginTop: isMobile ? -35 : -60,
-                  initial: { x: 80, y: 0, opacity: 0, scale: 0.5 },
-                  yFloat: [0, 10, 0],
-                  duration: 4.8,
-                  delay: 0.2
-                },
-                { 
-                  // Set 5: Bottom-Right
-                  bottom: isMobile ? "2%" : "5%", 
-                  right: isMobile ? "2%" : "5%", 
-                  initial: { x: 80, y: 80, opacity: 0, scale: 0.5 },
-                  yFloat: [0, -10, 0],
-                  duration: 5.5,
-                  delay: 0.4
-                },
-                { 
-                  // Set 6: Bottom-Center
-                  bottom: isMobile ? "-3%" : "0%", 
-                  left: "50%", 
-                  marginLeft: isMobile ? -35 : -60,
-                  initial: { x: 0, y: 80, opacity: 0, scale: 0.5 },
-                  yFloat: [0, 7, 0],
-                  duration: 4.2,
-                  delay: 0.6
-                },
-                { 
-                  // Set 7: Bottom-Left
-                  bottom: isMobile ? "2%" : "5%", 
-                  left: isMobile ? "2%" : "5%", 
-                  initial: { x: -80, y: 80, opacity: 0, scale: 0.5 },
-                  yFloat: [0, -7, 0],
-                  duration: 4.6,
-                  delay: 0.7
-                },
-                { 
-                  // Set 8: Middle-Left
-                  top: "50%", 
-                  left: isMobile ? "-2%" : "1%", 
-                  marginTop: isMobile ? -35 : -60,
-                  initial: { x: -80, y: 0, opacity: 0, scale: 0.5 },
-                  yFloat: [0, -9, 0],
-                  duration: 5.3,
-                  delay: 0.8
-                }
-              ].map((config, index) => {
-                const list = uniqueProducts.filter(x => x.id !== "JUICEGELS-0286");
-                const p = list.length > 0 ? list[index % list.length] : null;
-                const img = p?.image || [
-                  "images/JUICEGELS-0286.jpg",
-                  "images/about_alyssa.png",
-                  "images/coin.jpeg",
-                  "images/nailsize.jpg",
-                  "images/summer_sale_banner.png",
-                  "images/tape.jpg",
-                  "images/JUICEGELS-0286.jpg",
-                  "images/about_alyssa.png"
-                ][index];
-                
-                const cardSize = isMobile ? 70 : 120;
-                
-                return (
-                  <motion.div
-                    key={index}
-                    initial={config.initial}
-                    animate={{ 
-                      x: 0, 
-                      y: config.yFloat,
-                      opacity: 1, 
-                      scale: 1
-                    }}
-                    transition={{
-                      x: { duration: 1, delay: config.delay, type: "spring" },
-                      opacity: { duration: 0.8, delay: config.delay },
-                      scale: { duration: 1, delay: config.delay },
-                      y: {
-                        duration: config.duration,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: config.delay
-                      }
-                    }}
-                    whileHover={{ scale: 1.1, zIndex: 12, transition: { duration: 0.2 } }}
-                    onClick={() => p && openProduct(p)}
-                    style={{
-                      position: "absolute",
-                      top: config.top,
-                      bottom: config.bottom,
-                      left: config.left,
-                      right: config.right,
-                      marginLeft: config.marginLeft,
-                      marginTop: config.marginTop,
-                      width: cardSize,
-                      height: cardSize,
-                      borderRadius: "20px",
-                      overflow: "hidden",
-                      boxShadow: "0 10px 25px rgba(212, 84, 122, 0.15)",
-                      border: "3px solid #ffffff",
-                      cursor: "pointer",
-                      zIndex: 5,
-                    }}
-                  >
-                    <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {/* Brand Introduction Text */}
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
+            {/* ShaderGradient Background */}
+            <ShaderGradientCanvas
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 0,
+                pointerEvents: "none"
+              }}
+              pixelDensity={0.5}
+              fov={45}
             >
-              <p style={{ color: "#fc6587", margin: "0 0 8px", letterSpacing: "0.15em", fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>🌟 Handcrafted Press-on Nail Studio 🌟</p>
-              <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 40 : 56, color: "#fc6587", margin: "0 0 16px", lineHeight: 1.15 }}>Juice Gels</h2>
-              <p style={{
-                maxWidth: "600px",
-                margin: "0 auto 24px",
-                fontSize: isMobile ? 15 : 18,
-                color: "#4f444a",
-                lineHeight: 1.6,
-                fontWeight: 400
-               }}>
-                Salon-quality, reusable manicures in minutes. 
-                Every set is lovingly handcrafted with professional-grade gel polish, 
-                specifically designed to fit your unique style.
-              </p>
+              <ShaderGradient
+                animate="on"
+                axesHelper="off"
+                brightness={1}
+                cAzimuthAngle={180}
+                cDistance={2.9}
+                cPolarAngle={120}
+                cameraZoom={1}
+                color1="#e5a8e5"
+                color2="#fff9fc"
+                color3="#ffb8d8"
+                destination="onCanvas"
+                embedMode="off"
+                envPreset="city"
+                format="gif"
+                fov={45}
+                frameRate={10}
+                gizmoHelper="hide"
+                grain="off"
+                lightType="3d"
+                pixelDensity={0.5}
+                positionX={0}
+                positionY={1.8}
+                positionZ={0}
+                range="disabled"
+                rangeEnd={40}
+                rangeStart={0}
+                reflection={0.1}
+                rotationX={0}
+                rotationY={0}
+                rotationZ={-90}
+                shader="defaults"
+                type="plane"
+                uAmplitude={0}
+                uDensity={0.7}
+                uFrequency={5.5}
+                uSpeed={0.3}
+                uStrength={4.2}
+                uTime={0.2}
+                wireframe={false}
+              />
+            </ShaderGradientCanvas>
 
-              {/* Call to Actions */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 28 }}>
-                <button
+            {/* Hero Content Wrapper */}
+            <div style={{ position: "relative", zIndex: 1 }}>
+              {/* Subtle background bubble accents */}
+              <div style={{
+                position: "absolute",
+                width: "300px",
+                height: "300px",
+                borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(252,101,135,0.06) 0%, rgba(252,101,135,0) 70%)",
+                top: "-50px",
+                right: "-100px",
+                pointerEvents: "none"
+              }} />
+              <div style={{
+                position: "absolute",
+                width: "400px",
+                height: "400px",
+                borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(212,84,122,0.05) 0%, rgba(212,84,122,0) 70%)",
+                bottom: "-150px",
+                left: "-150px",
+                pointerEvents: "none"
+              }} />
+
+              {/* Logo Area */}
+              <div style={{
+                position: "relative",
+                width: "100%",
+                maxWidth: "800px",
+                height: isMobile ? "240px" : "320px",
+                margin: "0 auto 20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                {/* Logo - Full size in the center */}
+                <motion.div
+                  initial={{ scale: 0.3, rotate: -20, opacity: 0 }}
+                  animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                  transition={{ duration: 1.4, type: "spring", stiffness: 55, damping: 12 }}
+                  whileHover={{ scale: 1.03, rotate: 1, transition: { duration: 0.3 } }}
                   onClick={() => navigate("/shop")}
                   style={{
-                    background: "linear-gradient(135deg, #fc6587 0%, #db2777 100%)",
-                    color: "#ffffff",
-                    border: "none",
-                    borderRadius: "30px",
-                    padding: "14px 32px",
-                    fontSize: "14px",
-                    fontWeight: "700",
+                    width: isMobile ? 220 : 300,
+                    height: isMobile ? 220 : 300,
+                    zIndex: 10,
                     cursor: "pointer",
-                    boxShadow: "0 6px 20px rgba(219, 39, 119, 0.3)",
-                    transition: "all 0.3s ease",
                     display: "flex",
                     alignItems: "center",
-                    gap: 8
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 8px 24px rgba(219, 39, 119, 0.4)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(219, 39, 119, 0.3)";
+                    justifyContent: "center",
+                    position: "relative",
                   }}
                 >
-                  Shop Nail Sets 💅
-                </button>
-                <button
-                  onClick={() => navigate("/custom-orders")}
-                  style={{
-                    background: "#fff9fb",
-                    color: "#fc6587",
-                    border: "2px solid #fc6587",
-                    borderRadius: "30px",
-                    padding: "12px 30px",
-                    fontSize: "14px",
-                    fontWeight: "700",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#fff0f4";
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "#fff9fb";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  Custom Request ✨
-                </button>
+                  <img
+                    src="images/jg circle 2.png"
+                    alt="Juice Gels Logo"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      display: "block",
+                      filter: "drop-shadow(0 15px 35px rgba(252, 101, 135, 0.3))"
+                    }}
+                  />
+                </motion.div>
               </div>
-            </motion.div>
+
+              {/* Brand Introduction Text */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.8 }}
+              >
+                <p style={{ color: "#fc6587", margin: "0 0 8px", letterSpacing: "0.15em", fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>🌟 Handcrafted Press-on Nail Studio 🌟</p>
+                <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 40 : 56, color: "#fc6587", margin: "0 0 16px", lineHeight: 1.15 }}>Juice Gels</h2>
+                <p style={{
+                  maxWidth: "600px",
+                  margin: "0 auto 24px",
+                  fontSize: isMobile ? 15 : 18,
+                  color: "#4f444a",
+                  lineHeight: 1.6,
+                  fontWeight: 400
+                }}>
+                  Salon-quality, reusable manicures in minutes. 
+                  Every set is lovingly handcrafted with professional-grade gel polish, 
+                  specifically designed to fit your unique style.
+                </p>
+
+                {/* Call to Actions */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 28 }}>
+                  <button
+                    onClick={() => navigate("/shop")}
+                    style={{
+                      background: "linear-gradient(135deg, #fc6587 0%, #db2777 100%)",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: "30px",
+                      padding: "14px 32px",
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      boxShadow: "0 6px 20px rgba(219, 39, 119, 0.3)",
+                      transition: "all 0.3s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 8px 24px rgba(219, 39, 119, 0.4)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 6px 20px rgba(219, 39, 119, 0.3)";
+                    }}
+                  >
+                    Shop Nail Sets 💅
+                  </button>
+                  <button
+                    onClick={() => navigate("/custom-orders")}
+                    style={{
+                      background: "#fff9fb",
+                      color: "#fc6587",
+                      border: "2px solid #fc6587",
+                      borderRadius: "30px",
+                      padding: "12px 30px",
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#fff0f4";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#fff9fb";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    Custom Request ✨
+                  </button>
+                </div>
+              </motion.div>
+            </div>
           </div>
 
           {/* How It Works Guide Section */}
