@@ -13,6 +13,7 @@ import { CookieNotice } from "./components/CookieNotice";
 import { PortableText } from "./components/PortableText";
 import { FAQ } from "./components/FAQ";
 import { COUNTRIES } from "./utils/countries";
+import { useSEO } from "./utils/useSEO";
 import {
   type NailLength,
   type CartItem,
@@ -432,6 +433,25 @@ export default function App() {
 
     syncProductUrl(selected, selectedShape, selectedLength);
   }, [page, selected, selectedShape, selectedLength]);
+
+
+  // Dynamic SEO: update title, meta tags, OG, canonical, and structured data per page
+  useSEO({
+    page,
+    productName: page === "product" && selected ? selected.name : undefined,
+    productDescription:
+      page === "product" && selected
+        ? `Shop ${selected.name} handmade press-on gel nails from JuiceGels. Available in ${selected.shape} shape, ${selected.length} length.`
+        : undefined,
+    productImage:
+      page === "product" && selected ? selected.image : undefined,
+    productPrice:
+      page === "product" && selected ? selected.price : undefined,
+    productPath:
+      page === "product" && selected
+        ? `/product/${getProductRouteId(selected)}`
+        : undefined,
+  });
 
 
   const cartTotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);

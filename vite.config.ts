@@ -44,7 +44,9 @@ export default defineConfig(({ mode }) => {
         targets: [
           { src: 'CNAME', dest: './' },
           { src: '404.html', dest: './' },
-          { src: 'images', dest: './' }
+          { src: 'images', dest: './' },
+          { src: 'robots.txt', dest: './' },
+          { src: 'sitemap.xml', dest: './' }
         ]
       })
     ],

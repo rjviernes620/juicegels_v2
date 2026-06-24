@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://juicegels.com/sitemap.xml
+
+# Allow all search engine crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Disallow internal/utility paths
+Disallow: /checkout-success
+Disallow: /confirmation
