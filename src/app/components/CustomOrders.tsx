@@ -30,7 +30,7 @@ const initialForm: FormData = {
   attachments: [],
 };
 
-export function CustomOrders() {
+export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boolean }) {
   const [form, setForm] = useState<FormData>(initialForm);
   const [errors, setErrors] = useState<Partial<FormData>>({});
   const [fileError, setFileError] = useState<string | null>(null);
@@ -182,7 +182,7 @@ export function CustomOrders() {
           fov={45}
         >
           <ShaderGradient
-            animate="on"
+            animate="off"
             axesHelper="off"
             bgColor1="#000000"
             bgColor2="#000000"
@@ -190,7 +190,7 @@ export function CustomOrders() {
             cAzimuthAngle={180}
             cDistance={2.91}
             cPolarAngle={120}
-            cameraZoom={1}
+            cameraZoom={isMobile ? 1 : 1.5}
             color1="#ebedff"
             color2="#f3f2f8"
             color3="#dbf8ff"
@@ -204,7 +204,7 @@ export function CustomOrders() {
             grain="off"
             lightType="3d"
             pixelDensity={1}
-            positionX={0}
+            positionX={isMobile ? 0 : 0.8}
             positionY={1.8}
             positionZ={0}
             range="disabled"
@@ -269,21 +269,21 @@ export function CustomOrders() {
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#db3636", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>1</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Submit Your Design:</strong> Fill out the simple request form below describing your vision. Feel free to list specific colors, charms, or styles you love.
+                <strong style={{ color: "#d14d4d" }}>Submit Your Design:</strong> Fill out the request form below describing your vision. Feel free to list specific colors, charms, or styles you love. Use as much detail as possible.
               </div>
             </div>
             
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>2</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Check Your Inbox:</strong> You will receive an automated email confirmation summarizing your custom request details immediately. If you want to change anything. Just let me know
+                <strong style={{ color: "#d14d4d" }}>Check Your Inbox:</strong>  You will receive an automated email confirmation summarizing your custom request details immediately. If you want to change anything. contact @juicegels on IG or juicegels@gmail.com
               </div>
             </div>
 
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>3</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Instagram Consultation:</strong> I will reach out to you via Instagram to discuss reference imagery, nail sizing, set pricing, and finalize design details.
+                <strong style={{ color: "#d14d4d" }}>Instagram Consultation:</strong> Once details are finalized and payment is made, your custom press-on nails will be handcrafted with care and shipped to you!
               </div>
             </div>
 

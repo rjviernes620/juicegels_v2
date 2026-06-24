@@ -1544,6 +1544,226 @@ export default function App() {
             </div>
           </div>
 
+          {/* ── Promotional Split Banner ── */}
+          <div style={{
+            background: "#fff0f4",
+            padding: isMobile ? "28px 16px 20px" : "36px 28px 24px",
+            borderTop: "1px solid rgba(212,84,122,0.08)",
+            borderBottom: "1px solid rgba(212,84,122,0.08)",
+          }}>
+            <div style={{
+              maxWidth: 900,
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              gap: isMobile ? 14 : 18,
+            }}>
+              {/* Juicy July Sale Card */}
+              <button
+                type="button"
+                onClick={() => navigate("/shop")}
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+                  border: "none",
+                  borderRadius: 16,
+                  padding: isMobile ? "22px 20px" : "28px 26px",
+                  cursor: "pointer",
+                  color: "#1e1b4b",
+                  fontFamily: "inherit",
+                  textAlign: "left",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 20px rgba(167, 139, 250, 0.18)",
+                  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                  minHeight: isMobile ? 130 : 150,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                  e.currentTarget.style.boxShadow = "0 8px 30px rgba(167, 139, 250, 0.28)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 20px rgba(167, 139, 250, 0.18)";
+                }}
+              >
+                {/* Decorative circle */}
+                <div style={{
+                  position: "absolute",
+                  top: -30,
+                  right: -30,
+                  width: 100,
+                  height: 100,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.15)",
+                  pointerEvents: "none",
+                }} />
+                <div style={{
+                  position: "absolute",
+                  bottom: -20,
+                  left: -20,
+                  width: 70,
+                  height: 70,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.10)",
+                  pointerEvents: "none",
+                }} />
+                <p style={{
+                  fontFamily: "'Lobster', serif",
+                  fontSize: isMobile ? 28 : 33,
+                  color: "#fff9bd",
+                  margin: "0 0 6px",
+                  lineHeight: 1.15,
+                  textShadow: "0 1px 6px rgba(0,0,0,0.08)",
+                  position: "relative",
+                  zIndex: 1,
+                }}>Its Juicy July! ☀️</p>
+                <p style={{
+                  color: "#312e81",
+                  margin: "0 0 10px",
+                  fontSize: isMobile ? 12 : 13,
+                  lineHeight: 1.5,
+                  position: "relative",
+                  zIndex: 1,
+                }}>
+                  Get <strong>20% off</strong> your basket when you buy ONLY nail sets! Ends July 31.
+                </p>
+                <span style={{
+                  display: "inline-block",
+                  background: "rgba(255,255,255,0.35)",
+                  backdropFilter: "blur(6px)",
+                  borderRadius: 20,
+                  padding: "5px 14px",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: "#4338ca",
+                  position: "relative",
+                  zIndex: 1,
+                }}>
+                  Discount Applied Automatically 🌸
+                </span>
+              </button>
+
+              {/* Size Guide Discount Card */}
+              <button
+                type="button"
+                onClick={() => navigate("/product/JUICEGELS-0286")}
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  background: "#ff8fc7",
+                  border: "none",
+                  borderRadius: 16,
+                  padding: isMobile ? "22px 20px" : "28px 26px",
+                  cursor: "pointer",
+                  color: "inherit",
+                  fontFamily: "inherit",
+                  textAlign: "left",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 20px rgba(252, 101, 135, 0.18)",
+                  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                  minHeight: isMobile ? 130 : 150,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                  e.currentTarget.style.boxShadow = "0 8px 30px rgba(252, 101, 135, 0.28)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 20px rgba(252, 101, 135, 0.18)";
+                }}
+              >
+                {/* Decorative circle */}
+                <div style={{
+                  position: "absolute",
+                  top: -25,
+                  right: -25,
+                  width: 90,
+                  height: 90,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.12)",
+                  pointerEvents: "none",
+                }} />
+                <div style={{
+                  position: "absolute",
+                  bottom: -15,
+                  left: -15,
+                  width: 60,
+                  height: 60,
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.08)",
+                  pointerEvents: "none",
+                }} />
+                <p style={{
+                  fontFamily: "'Lobster', serif",
+                  fontSize: isMobile ? 26 : 30,
+                  color: "#fddaf6",
+                  margin: "0 0 6px",
+                  lineHeight: 1.15,
+                  textShadow: "0 1px 6px rgba(0,0,0,0.06)",
+                  position: "relative",
+                  zIndex: 1,
+                }}>Need your nail sizes? 📏</p>
+                <p style={{
+                  color: "rgb(181, 88, 140)",
+                  margin: "0 0 10px",
+                  fontSize: isMobile ? 12 : 13,
+                  lineHeight: 1.5,
+                  position: "relative",
+                  zIndex: 1,
+                }}>
+                  Get our Nail Sizing Guide — <strong>£4.00 off</strong> when ordered with any nail set!
+                </p>
+                <span style={{
+                  display: "inline-block",
+                  background: "rgba(255,255,255,0.30)",
+                  backdropFilter: "blur(6px)",
+                  borderRadius: 20,
+                  padding: "5px 14px",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: "#c4597d",
+                  position: "relative",
+                  zIndex: 1,
+                }}>
+                  Applied at Checkout 🌸
+                </span>
+              </button>
+            </div>
+
+            {/* Disclaimer: Only one discount can be applied */}
+            <div style={{
+              maxWidth: 900,
+              margin: "14px auto 0",
+              background: "linear-gradient(135deg, rgba(252,101,135,0.08) 0%, rgba(167,139,250,0.08) 100%)",
+              border: "1px solid rgba(212,84,122,0.12)",
+              borderRadius: 10,
+              padding: "10px 18px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}>
+              <span style={{ fontSize: 16 }}>⚠️</span>
+              <p style={{
+                margin: 0,
+                fontSize: 11,
+                fontWeight: 600,
+                color: "#ae3c6f",
+                textAlign: "center",
+                lineHeight: 1.45,
+              }}>
+                Please note: Only one discount can be applied per order.
+              </p>
+            </div>
+          </div>
+
           {/* How It Works Guide Section */}
           <div style={{ background: "#fff0f4", padding: "54px 20px 48px", borderTop: "1px solid rgba(212,84,122,0.08)", borderBottom: "1px solid rgba(212,84,122,0.08)" }}>
             <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
@@ -1800,32 +2020,32 @@ export default function App() {
 
       {/* ── About ── */}
       {page === "about" && (
-        <About />
+        <About isMobile={isMobile} isTablet={isTablet} />
       )}
 
       {/* ── Videos (persistently mounted for pre-caching/instant load) ── */}
       <div style={{ display: page === "videos" ? "block" : "none" }}>
-        <Videos products={products} onShopProduct={handleShopProduct} />
+        <Videos products={products} onShopProduct={handleShopProduct} isMobile={isMobile} isTablet={isTablet} />
       </div>
 
       {/* ── Search ── */}
       {page === "search" && (
-        <Search products={products} onShopProduct={handleShopProduct} />
+        <Search products={products} onShopProduct={handleShopProduct} isMobile={isMobile} isTablet={isTablet} />
       )}
 
       {/* ── Contact ── */}
       {page === "contact" && (
-        <Contact />
+        <Contact isMobile={isMobile} isTablet={isTablet} />
       )}
 
       {/* ── Custom Orders ── */}
       {page === "custom-orders" && (
-        <CustomOrders />
+        <CustomOrders isMobile={isMobile} isTablet={isTablet} />
       )}
 
       {/* ── FAQ ── */}
       {page === "faq" && (
-        <FAQ />
+        <FAQ isMobile={isMobile} isTablet={isTablet} />
       )}
 
       {/* ── Product Detail ── */}

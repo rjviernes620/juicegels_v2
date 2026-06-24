@@ -121,7 +121,8 @@ export function getCollectionDetails(product: Product, allProducts: Product[]): 
     "Kamado Collection": "inspired by the iconic Demon Slayer siblings 🌿🌸",
     "Stargirl Collection": "inspired by celestial beauty ✨🌌",
     "Bloom Collection": "bringing the freshness of spring flowers 🌸🌼",
-    "Stardust Collection": "star-studded Sanrio inspired designs 🎀✨"
+    "Stardust Collection": "star-studded Sanrio inspired designs 🎀✨",
+    "Sweet Mystery Collection": "surprise nail sets full of sweet picks 🍬🎲"
   };
 
   // Find all unique products in the same collection
@@ -138,7 +139,7 @@ export function getCollectionDetails(product: Product, allProducts: Product[]): 
 
   return {
     name: product.collection,
-    tagline: taglines[product.collection] || "exclusive themed nail set collection ✨",
+    tagline: taglines[product.collection] || "Take a look at the other nails in this collection ✨",
     otherProducts
   };
 }
@@ -180,6 +181,15 @@ export function getCollectionStyle(collectionName: string) {
         textColor: "#be185d",
         badgeBg: "rgba(255, 255, 255, 0.18)",
         emoji: "🎀"
+      };
+    case "Sweet Mystery Collection":
+      return {
+        cardGradient: "linear-gradient(135deg, #0d9488 0%, #c026d3 100%)",
+        bannerBg: "linear-gradient(135deg, rgba(13, 148, 136, 0.12) 0%, rgba(192, 38, 211, 0.12) 100%)",
+        border: "rgba(13, 148, 136, 0.28)",
+        textColor: "#0d9488",
+        badgeBg: "rgba(255, 255, 255, 0.20)",
+        emoji: "🍬"
       };
     default:
       return {

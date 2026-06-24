@@ -3,7 +3,7 @@ import { Instagram, Mail, MessageCircle, Clock, ExternalLink } from "lucide-reac
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 
 
-export function Contact() {
+export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boolean }) {
   return (
     <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
@@ -44,7 +44,7 @@ export function Contact() {
             cAzimuthAngle={180}
             cDistance={2.91}
             cPolarAngle={120}
-            cameraZoom={1}
+            cameraZoom={isMobile ? 1 : 1.5}
             color1="#ebedff"
             color2="#f3f2f8"
             color3="#dbf8ff"
@@ -58,7 +58,7 @@ export function Contact() {
             grain="off"
             lightType="3d"
             pixelDensity={1}
-            positionX={0}
+            positionX={isMobile ? 0 : 0.8}
             positionY={1.8}
             positionZ={0}
             range="disabled"
@@ -115,7 +115,7 @@ export function Contact() {
         
         {/* Intro */}
         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a", textAlign: "center" }}>
-          We are always happy to help! Reach out to us through Instagram or Email and we'll get back to you as soon as possible.
+           Always happy to help! Reach out via Instagram or Email and we'll get back to you as soon as possible
         </p>
 
         {/* Instagram DM Deep Link Card */}
@@ -159,7 +159,7 @@ export function Contact() {
           </div>
           
           <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
-            Send us a direct message for the fastest response. Perfect for sizing questions, custom design inquiries, or quick updates on your order.
+            Send a direct message for the fastest response. Perfect for sizing questions, custom design inquiries, or quick updates on your order.
           </p>
 
           <a 
@@ -231,7 +231,7 @@ export function Contact() {
           </div>
           
           <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
-            Prefer email? Send us a message directly. We aim to reply to all emails within 24 hours.
+            Prefer email? Send a message directly. We aim to reply within 24 hours.
           </p>
 
           <a 

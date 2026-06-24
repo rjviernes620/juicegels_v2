@@ -16,12 +16,14 @@ type Product = {
 type SearchProps = {
   products: Product[];
   onShopProduct: (id: string) => void;
+  isMobile?: boolean;
+  isTablet?: boolean;
 };
 
 const SUGGESTIONS = ["tips", "pink", "shine", "bow", "stardust"];
 const POPULAR_IDS = ["JUICEGELS-1202", "JUICEGELS-1127", "JUICEGELS-0031", "JUICEGELS-0016"];
 
-export function Search({ products, onShopProduct }: SearchProps) {
+export function Search({ products, onShopProduct, isMobile, isTablet }: SearchProps) {
   const [query, setQuery] = useState("");
 
   // Filter products by unique groupId to ensure each set is shown only once
@@ -78,10 +80,10 @@ export function Search({ products, onShopProduct }: SearchProps) {
         style={{ 
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #83495b 0%, #fce4ea 60%, #fdf2f4 100%)", 
+          background: "linear-gradient(160deg, #eab2c4 0%, #fce4ea 60%, #fdf2f4 100%)", 
           padding: "24px 20px", 
           textAlign: "center",
-          borderBottom: "1px solid rgba(212, 84, 122, 0.18)"
+          borderBottom: "1px solid rgba(236, 179, 196, 0.18)"
         }}
       >
         {/* ShaderGradient Background */}
@@ -91,7 +93,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
             top: 0,
             left: 0,
             width: "100%",
-            height: "100%",
+            height: "200%",
             zIndex: 0,
             pointerEvents: "none"
           }}
@@ -107,7 +109,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
             cAzimuthAngle={180}
             cDistance={2.91}
             cPolarAngle={120}
-            cameraZoom={3}
+            cameraZoom={isMobile ? 1 : 1.5}
             color1="#ebedff"
             color2="#f3f2f8"
             color3="#dbf8ff"
@@ -121,7 +123,7 @@ export function Search({ products, onShopProduct }: SearchProps) {
             grain="off"
             lightType="3d"
             pixelDensity={1}
-            positionX={0}
+            positionX={isMobile ? 0 : 0.8}
             positionY={1.8}
             positionZ={0}
             range="disabled"

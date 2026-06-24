@@ -14,6 +14,8 @@ type Product = {
 type VideosProps = {
   products: Product[];
   onShopProduct: (id: string) => void;
+  isMobile?: boolean;
+  isTablet?: boolean;
 };
 
 const VIDEO_SETS = [
@@ -26,8 +28,8 @@ const VIDEO_SETS = [
     defaultProduct: {
       id: "JUICEGELS-1202",
       name: "Starlit Tips Set",
-      price: 17.50,
-      image: "images/JUICEGELS-1202.jpg"
+      price: 12.00,
+      image: "images/nailsize.jpg"
     }
   },
   {
@@ -39,13 +41,312 @@ const VIDEO_SETS = [
     defaultProduct: {
       id: "JUICEGELS-1127",
       name: "Bow Crush Set",
+      price: 18.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "popstartips",
+    title: "Handcrafting Pop Star Tips",
+    productId: "JUICEGELS-0872",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7630491166462561558",
+    videoId: "7630491166462561558",
+    defaultProduct: {
+      id: "JUICEGELS-0872",
+      name: "Pop Tips Set",
+      price: 17.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "mochabluemuse",
+    title: "Handcrafting Mocha Blue Muse",
+    productId: "JUICEGELS-1142",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7603120562440785174",
+    videoId: "7603120562440785174",
+    defaultProduct: {
+      id: "JUICEGELS-1142",
+      name: "Mocha Blue Muse Set",
+      price: 15.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "evergreensparkles",
+    title: "Handcrafting Evergreen Sparkles",
+    productId: "JUICEGELS-1187",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7575994342922292502",
+    videoId: "7575994342922292502",
+    defaultProduct: {
+      id: "JUICEGELS-1187",
+      name: "Evergreen Spark Set",
+      price: 18.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "ghoulglam",
+    title: "Handcrafting Ghoul Glam",
+    productId: "JUICEGELS-9999",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7565493075104091414",
+    videoId: "7565493075104091414",
+    defaultProduct: {
+      id: "JUICEGELS-9999",
+      name: "Ghoul Glam Set",
+      price: 15.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "sparklescream",
+    title: "Handcrafting Sparkle Scream",
+    productId: "JUICEGELS-1247",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7562995151417691414",
+    videoId: "7562995151417691414",
+    defaultProduct: {
+      id: "JUICEGELS-1247",
+      name: "Sparkle Scream Set",
+      price: 15.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "pinkoween",
+    title: "Handcrafting Pink-o-ween",
+    productId: "JUICEGELS-1277",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7559654195863751958",
+    videoId: "7559654195863751958",
+    defaultProduct: {
+      id: "JUICEGELS-1277",
+      name: "Pink-o-ween Set",
+      price: 15.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "cocoaquilt",
+    title: "Handcrafting Cocoa Quilt",
+    productId: "JUICEGELS-1292",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7557040622951992598",
+    videoId: "7557040622951992598",
+    defaultProduct: {
+      id: "JUICEGELS-1292",
+      name: "Cocoa Quilt Set",
+      price: 18.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "burgundybling",
+    title: "Handcrafting Burgundy Bling",
+    productId: "JUICEGELS-1352",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7554021380258319638",
+    videoId: "7554021380258319638",
+    defaultProduct: {
+      id: "JUICEGELS-1352",
+      name: "Burgundy Bling Set",
+      price: 16.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "dolcedot",
+    title: "Handcrafting Dolce Dot",
+    productId: "JUICEGELS-1367",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7552227357973581078",
+    videoId: "7552227357973581078",
+    defaultProduct: {
+      id: "JUICEGELS-1367",
+      name: "Dolce Dot Set",
       price: 17.50,
-      image: "images/JUICEGELS-1127.jpg"
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "velourembre",
+    title: "Handcrafting Velour Embrè",
+    productId: "JUICEGELS-1382",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7549300417667108118",
+    videoId: "7549300417667108118",
+    defaultProduct: {
+      id: "JUICEGELS-1382",
+      name: "Velour Embrè Set",
+      price: 19.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "terraflora",
+    title: "Handcrafting Terra Flora",
+    productId: "JUICEGELS-0287",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7545456016683453718",
+    videoId: "7545456016683453718",
+    defaultProduct: {
+      id: "JUICEGELS-0287",
+      name: "Terra Flora Set",
+      price: 17.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "pinkeclipse",
+    title: "Handcrafting Pink Eclipse",
+    productId: "JUICEGELS-1427",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7542877318243421463",
+    videoId: "7542877318243421463",
+    defaultProduct: {
+      id: "JUICEGELS-1427",
+      name: "Pink Eclipse Set",
+      price: 18.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "petalpearl",
+    title: "Handcrafting Petal Pearl",
+    productId: "JUICEGELS-0302",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7528096243143249174",
+    videoId: "7528096243143249174",
+    defaultProduct: {
+      id: "JUICEGELS-0302",
+      name: "Petal Pearl Set",
+      price: 14.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "sunsethaze",
+    title: "Handcrafting Sunset Haze",
+    productId: "JUICEGELS-0422",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7513300972421106966",
+    videoId: "7513300972421106966",
+    defaultProduct: {
+      id: "JUICEGELS-0422",
+      name: "Sunset Haze Set",
+      price: 14.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "sundownshine",
+    title: "Handcrafting Sundown Shine",
+    productId: "JUICEGELS-0407",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7512531788359650582",
+    videoId: "7512531788359650582",
+    defaultProduct: {
+      id: "JUICEGELS-0407",
+      name: "Sundown Shine Set",
+      price: 15.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "petalflora",
+    title: "Handcrafting Petal Flora",
+    productId: "JUICEGELS-0211",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7506225963399679254",
+    videoId: "7506225963399679254",
+    defaultProduct: {
+      id: "JUICEGELS-0211",
+      name: "Petal Flora Set",
+      price: 17.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "pinkopulence",
+    title: "Handcrafting Pink Opulence",
+    productId: "JUICEGELS-0241",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7502077568544214274",
+    videoId: "7502077568544214274",
+    defaultProduct: {
+      id: "JUICEGELS-0241",
+      name: "Pink Opulence Set",
+      price: 20.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "chromamuse",
+    title: "Handcrafting Chroma Muse",
+    productId: "JUICEGELS-0256",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7502077568544214274",
+    videoId: "7502077568544214274",
+    defaultProduct: {
+      id: "JUICEGELS-0256",
+      name: "Chroma Muse Set",
+      price: 16.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "kittyconstellation",
+    title: "Handcrafting Kitty Constellation",
+    productId: "JUICEGELS-1502",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7493865208012786966",
+    videoId: "7493865208012786966",
+    defaultProduct: {
+      id: "JUICEGELS-1502",
+      name: "Kitty Constellation Set",
+      price: 17.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "kanrojikisses",
+    title: "Handcrafting Kanroji Kisses",
+    productId: "JUICEGELS-9998",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7489878567422070038",
+    videoId: "7489878567422070038",
+    defaultProduct: {
+      id: "JUICEGELS-9998",
+      name: "Kanroji Kisses Set",
+      price: 17.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "tropicalblush",
+    title: "Handcrafting Tropical Blush",
+    productId: "JUICEGELS-0662",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7487260231391628566",
+    videoId: "7487260231391628566",
+    defaultProduct: {
+      id: "JUICEGELS-0662",
+      name: "Tropical Blush Set",
+      price: 13.00,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "rubybling",
+    title: "Handcrafting Ruby Bling",
+    productId: "JUICEGELS-1532",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7481641416083524886",
+    videoId: "7481641416083524886",
+    defaultProduct: {
+      id: "JUICEGELS-1532",
+      name: "Ruby Bling Set",
+      price: 17.50,
+      image: "images/nailsize.jpg"
+    }
+  },
+  {
+    id: "gildedgeode",
+    title: "Handcrafting Gilded Geode",
+    productId: "JUICEGELS-0542",
+    videoUrl: "https://www.tiktok.com/@juice.gels/video/7479159660667358486",
+    videoId: "7479159660667358486",
+    defaultProduct: {
+      id: "JUICEGELS-0542",
+      name: "Gilded Geode Set",
+      price: 19.00,
+      image: "images/nailsize.jpg"
     }
   }
 ];
 
-export function Videos({ products, onShopProduct }: VideosProps) {
+export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -120,7 +421,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
           fov={45}
         >
           <ShaderGradient
-            animate="on"
+            animate="off"
             axesHelper="off"
             bgColor1="#000000"
             bgColor2="#000000"
@@ -128,7 +429,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
             cAzimuthAngle={180}
             cDistance={2.91}
             cPolarAngle={120}
-            cameraZoom={1}
+            cameraZoom={isMobile ? 1 : 1.5}
             color1="#ebedff"
             color2="#f3f2f8"
             color3="#dbf8ff"
@@ -142,7 +443,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
             grain="off"
             lightType="3d"
             pixelDensity={1}
-            positionX={0}
+            positionX={isMobile ? 0 : 0.8}
             positionY={1.8}
             positionZ={0}
             range="disabled"
@@ -170,7 +471,7 @@ export function Videos({ products, onShopProduct }: VideosProps) {
             Juice Gels Studio 🎬
           </h2>
           <p style={{ color: "#4f444a", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
-            See how our sets are handcrafted with love. Swipe to see more sets and tap to shop instantly!
+            Each set is handcrafted with love and care. Swipe to see how some popular sets were made and tap to shop instantly!
           </p>
         </div>
       </div>

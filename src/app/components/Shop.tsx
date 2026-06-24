@@ -96,7 +96,7 @@ export function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
             <div style={{ flex: 1 }}>
               <p style={{ fontFamily: "'Lobster', serif", color: "#fff9bd", margin: "0 0 4px", fontSize: 33 }}>Its Juicy July! ☀️</p>
               <p style={{ color: "#312e81", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
-                Get 20% off your basket when you buy ONLY nail sets! Ends at the end of July. <br />
+                Get 20% off your basket when you buy ONLY nail sets! Ends July 31. <br />
                 <span style={{ color: "#4338ca", fontWeight: 700 }}>Discount Applied Automatically 🌸</span>
               </p>
             </div>
@@ -398,7 +398,7 @@ export function ShopPage({
             cAzimuthAngle={180}
             cDistance={2.91}
             cPolarAngle={120}
-            cameraZoom={1}
+            cameraZoom={isMobile ? 1 : 1.5}
             color1="#ebedff"
             color2="#f3f2f8"
             color3="#dbf8ff"
@@ -412,7 +412,7 @@ export function ShopPage({
             grain="off"
             lightType="3d"
             pixelDensity={1}
-            positionX={0}
+            positionX={isMobile ? 0 : 0.8}
             positionY={1.8}
             positionZ={0}
             range="disabled"
@@ -1979,8 +1979,8 @@ export function PreorderPage({
                 <strong>🌸 Nail Size Guide Discount Eligible!</strong>
                 <span>
                   {isSizeGuideDiscountApplied
-                    ? "Eligible first-time buyer verified! £4.00 will be automatically deducted at checkout."
-                    : "If you are a first-time buyer, £4.00 will be automatically deducted at checkout."}
+                    ? "Eligible first-time buyer verified! £4.00 will be automatically deducted the payment stage."
+                    : "If you are a first-time buyer, £4.00 will be automatically deducted at the next step."}
                 </span>
               </div>
             )}

@@ -22,7 +22,7 @@ export function TiktokIcon({ size = 16, ...props }: React.SVGProps<SVGSVGElement
   );
 }
 
-export function About() {
+export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boolean }) {
   return (
     <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
@@ -63,7 +63,7 @@ export function About() {
             cAzimuthAngle={180}
             cDistance={2.91}
             cPolarAngle={120}
-            cameraZoom={1}
+            cameraZoom={isMobile ? 1 : 1.5}
             color1="#ebedff"
             color2="#f3f2f8"
             color3="#dbf8ff"
@@ -77,7 +77,7 @@ export function About() {
             grain="off"
             lightType="3d"
             pixelDensity={1}
-            positionX={0}
+            positionX={isMobile ? 0 : 0.8}
             positionY={1.8}
             positionZ={0}
             range="disabled"
