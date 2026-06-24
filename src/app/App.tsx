@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, useRef } from "react";
+import { motion } from "motion/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X, Instagram } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
@@ -16,7 +17,7 @@ import { COUNTRIES, EUROPEAN_COUNTRIES } from "./utils/countries";
 
 type NailLength = "Short" | "Medium" | "Long";
 type CartItem = { product: Product; shape: string; quantity: number; length: NailLength };
-type Page = "home" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search" | "contact" | "custom-orders" | "faq";
+type Page = "home" | "shop" | "product" | "basket" | "preorder" | "confirmation" | "about" | "videos" | "search" | "contact" | "custom-orders" | "faq";
 type FormData = { firstName: string; lastName: string; email: string; phone: string; address: string; instagram: string; city: string; postcode: string; notes: string; contactMethod: "instagram" | "email"; country: string; };
 type ShippingOptionId = "tracked24" | "tracked48" | "international";
 
@@ -864,6 +865,11 @@ export default function App() {
       return;
     }
 
+    if (effectivePath === "/shop") {
+      setPage("shop");
+      return;
+    }
+
     if (effectivePath === "/") {
       setPage("home");
       return;
@@ -1540,6 +1546,7 @@ export default function App() {
         <nav style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {[
             { label: "Home", icon: "🌸", onClick: () => { navigate("/"); setMenuOpen(false); } },
+            { label: "Shop Sets", icon: "✨", onClick: () => { navigate("/shop"); setMenuOpen(false); } },
             { label: "Search Sets", icon: "🔍", onClick: () => { navigate("/search"); setMenuOpen(false); } },
             { label: "Custom Orders", icon: "💅", onClick: () => { navigate("/custom-orders"); setMenuOpen(false); } },
             { label: "Nail Videos", icon: "🎬", onClick: () => { navigate("/videos"); setMenuOpen(false); } },
@@ -1703,6 +1710,7 @@ export default function App() {
                 <nav style={{ display: "flex", gap: 18, alignItems: "center" }}>
                   {[
                     { label: "Home", pageKey: "home", onClick: () => navigate("/") },
+                    { label: "Shop", pageKey: "shop", onClick: () => navigate("/shop") },
                     { label: "Search Sets", pageKey: "search", onClick: () => navigate("/search") },
                     { label: "Custom Orders", pageKey: "custom-orders", onClick: () => navigate("/custom-orders") },
                     { label: "Nail Videos", pageKey: "videos", onClick: () => navigate("/videos") },
@@ -1710,7 +1718,7 @@ export default function App() {
                     { label: "FAQ", pageKey: "faq", onClick: () => navigate("/faq") },
                     { label: "Contact", pageKey: "contact", onClick: () => navigate("/contact") },
                   ].map((link) => {
-                    const isActive = page === link.pageKey || (link.pageKey === "home" && page === "product");
+                    const isActive = page === link.pageKey || (link.pageKey === "shop" && page === "product");
                     return (
                       <button
                         key={link.label}
@@ -1826,10 +1834,538 @@ export default function App() {
 
       {!isProductsLoading && page === "home" && (
         <main>
+          {/* Hero Section */}
+          <div style={{
+            background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 50%, #fdf2f4 100%)",
+            padding: isMobile ? "40px 10px 48px" : "60px 20px 64px",
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden"
+          }}>
+            {/* Subtle background bubble accents */}
+            <div style={{
+              position: "absolute",
+              width: "300px",
+              height: "300px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(252,101,135,0.06) 0%, rgba(252,101,135,0) 70%)",
+              top: "-50px",
+              right: "-100px",
+              pointerEvents: "none"
+            }} />
+            <div style={{
+              position: "absolute",
+              width: "400px",
+              height: "400px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(212,84,122,0.05) 0%, rgba(212,84,122,0) 70%)",
+              bottom: "-150px",
+              left: "-150px",
+              pointerEvents: "none"
+            }} />
+
+            {/* Surrounding Sets Interactive Hero Area */}
+            <div style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: "800px",
+              height: isMobile ? "380px" : "480px",
+              margin: "0 auto 20px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              {/* Logo - Full size in the center */}
+              <motion.div
+                initial={{ scale: 0.3, rotate: -20, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                transition={{ duration: 1.4, type: "spring", stiffness: 55, damping: 12 }}
+                whileHover={{ scale: 1.03, rotate: 1, transition: { duration: 0.3 } }}
+                onClick={() => navigate("/shop")}
+                style={{
+                  width: isMobile ? 220 : 300,
+                  height: isMobile ? 220 : 300,
+                  zIndex: 10,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  position: "relative",
+                }}
+              >
+                <img
+                  src="images/jg circle 2.png"
+                  alt="Juice Gels Logo"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    display: "block",
+                    filter: "drop-shadow(0 15px 35px rgba(252, 101, 135, 0.3))"
+                  }}
+                />
+              </motion.div>
+
+              {/* 8 Surrounding Floating Sets */}
+              {[
+                { 
+                  // Set 1: Top-Left
+                  top: isMobile ? "2%" : "5%", 
+                  left: isMobile ? "2%" : "5%", 
+                  initial: { x: -80, y: -80, opacity: 0, scale: 0.5 },
+                  yFloat: [0, -10, 0],
+                  duration: 5.0,
+                  delay: 0.1
+                },
+                { 
+                  // Set 2: Top-Center
+                  top: isMobile ? "-3%" : "0%", 
+                  left: "50%", 
+                  marginLeft: isMobile ? -35 : -60,
+                  initial: { x: 0, y: -80, opacity: 0, scale: 0.5 },
+                  yFloat: [0, 8, 0],
+                  duration: 4.5,
+                  delay: 0.3
+                },
+                { 
+                  // Set 3: Top-Right
+                  top: isMobile ? "2%" : "5%", 
+                  right: isMobile ? "2%" : "5%", 
+                  initial: { x: 80, y: -80, opacity: 0, scale: 0.5 },
+                  yFloat: [0, -8, 0],
+                  duration: 5.2,
+                  delay: 0.5
+                },
+                { 
+                  // Set 4: Middle-Right
+                  top: "50%", 
+                  right: isMobile ? "-2%" : "1%", 
+                  marginTop: isMobile ? -35 : -60,
+                  initial: { x: 80, y: 0, opacity: 0, scale: 0.5 },
+                  yFloat: [0, 10, 0],
+                  duration: 4.8,
+                  delay: 0.2
+                },
+                { 
+                  // Set 5: Bottom-Right
+                  bottom: isMobile ? "2%" : "5%", 
+                  right: isMobile ? "2%" : "5%", 
+                  initial: { x: 80, y: 80, opacity: 0, scale: 0.5 },
+                  yFloat: [0, -10, 0],
+                  duration: 5.5,
+                  delay: 0.4
+                },
+                { 
+                  // Set 6: Bottom-Center
+                  bottom: isMobile ? "-3%" : "0%", 
+                  left: "50%", 
+                  marginLeft: isMobile ? -35 : -60,
+                  initial: { x: 0, y: 80, opacity: 0, scale: 0.5 },
+                  yFloat: [0, 7, 0],
+                  duration: 4.2,
+                  delay: 0.6
+                },
+                { 
+                  // Set 7: Bottom-Left
+                  bottom: isMobile ? "2%" : "5%", 
+                  left: isMobile ? "2%" : "5%", 
+                  initial: { x: -80, y: 80, opacity: 0, scale: 0.5 },
+                  yFloat: [0, -7, 0],
+                  duration: 4.6,
+                  delay: 0.7
+                },
+                { 
+                  // Set 8: Middle-Left
+                  top: "50%", 
+                  left: isMobile ? "-2%" : "1%", 
+                  marginTop: isMobile ? -35 : -60,
+                  initial: { x: -80, y: 0, opacity: 0, scale: 0.5 },
+                  yFloat: [0, -9, 0],
+                  duration: 5.3,
+                  delay: 0.8
+                }
+              ].map((config, index) => {
+                const list = uniqueProducts.filter(x => x.id !== "JUICEGELS-0286");
+                const p = list.length > 0 ? list[index % list.length] : null;
+                const img = p?.image || [
+                  "images/JUICEGELS-0286.jpg",
+                  "images/about_alyssa.png",
+                  "images/coin.jpeg",
+                  "images/nailsize.jpg",
+                  "images/summer_sale_banner.png",
+                  "images/tape.jpg",
+                  "images/JUICEGELS-0286.jpg",
+                  "images/about_alyssa.png"
+                ][index];
+                
+                const cardSize = isMobile ? 70 : 120;
+                
+                return (
+                  <motion.div
+                    key={index}
+                    initial={config.initial}
+                    animate={{ 
+                      x: 0, 
+                      y: config.yFloat,
+                      opacity: 1, 
+                      scale: 1
+                    }}
+                    transition={{
+                      x: { duration: 1, delay: config.delay, type: "spring" },
+                      opacity: { duration: 0.8, delay: config.delay },
+                      scale: { duration: 1, delay: config.delay },
+                      y: {
+                        duration: config.duration,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: config.delay
+                      }
+                    }}
+                    whileHover={{ scale: 1.1, zIndex: 12, transition: { duration: 0.2 } }}
+                    onClick={() => p && openProduct(p)}
+                    style={{
+                      position: "absolute",
+                      top: config.top,
+                      bottom: config.bottom,
+                      left: config.left,
+                      right: config.right,
+                      marginLeft: config.marginLeft,
+                      marginTop: config.marginTop,
+                      width: cardSize,
+                      height: cardSize,
+                      borderRadius: "20px",
+                      overflow: "hidden",
+                      boxShadow: "0 10px 25px rgba(212, 84, 122, 0.15)",
+                      border: "3px solid #ffffff",
+                      cursor: "pointer",
+                      zIndex: 5,
+                    }}
+                  >
+                    <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Brand Introduction Text */}
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            >
+              <p style={{ color: "#fc6587", margin: "0 0 8px", letterSpacing: "0.15em", fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>🌟 Handcrafted Press-on Nail Studio 🌟</p>
+              <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 40 : 56, color: "#fc6587", margin: "0 0 16px", lineHeight: 1.15 }}>Juice Gels</h2>
+              <p style={{
+                maxWidth: "600px",
+                margin: "0 auto 24px",
+                fontSize: isMobile ? 15 : 18,
+                color: "#4f444a",
+                lineHeight: 1.6,
+                fontWeight: 400
+               }}>
+                Salon-quality, reusable manicures in minutes. 
+                Every set is lovingly handcrafted with professional-grade gel polish, 
+                specifically designed to fit your unique style.
+              </p>
+
+              {/* Call to Actions */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 28 }}>
+                <button
+                  onClick={() => navigate("/shop")}
+                  style={{
+                    background: "linear-gradient(135deg, #fc6587 0%, #db2777 100%)",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "30px",
+                    padding: "14px 32px",
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    boxShadow: "0 6px 20px rgba(219, 39, 119, 0.3)",
+                    transition: "all 0.3s ease",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 8px 24px rgba(219, 39, 119, 0.4)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(219, 39, 119, 0.3)";
+                  }}
+                >
+                  Shop Nail Sets 💅
+                </button>
+                <button
+                  onClick={() => navigate("/custom-orders")}
+                  style={{
+                    background: "#fff9fb",
+                    color: "#fc6587",
+                    border: "2px solid #fc6587",
+                    borderRadius: "30px",
+                    padding: "12px 30px",
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#fff0f4";
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "#fff9fb";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  Custom Request ✨
+                </button>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Value Propositions / Why Juice Gels */}
+          <div style={{ background: "#fff5f8", padding: "54px 20px 48px", borderTop: "1px solid rgba(212,84,122,0.08)", borderBottom: "1px solid rgba(212,84,122,0.08)" }}>
+            <div style={{ maxWidth: 1000, margin: "0 auto", textAlign: "center" }}>
+              <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fc6587", marginBottom: 12 }}>Why Press-Ons?</h3>
+              <p style={{ color: "#4f444a", fontSize: 13, maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.5 }}>
+                The luxury of salon manicures without the time, expense, or damage.
+              </p>
+
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr 1fr",
+                gap: 20
+              }}>
+                {[
+                  {
+                    title: "Reusable",
+                    desc: "Handcrafted using strong builder gel. Apply with nail tabs or glue to wear them again and again.",
+                    icon: "♻️"
+                  },
+                  {
+                    title: "Perfect Fit",
+                    desc: "Available in standard sizes or custom measurements. Check our sizing guide to find your perfect fit.",
+                    icon: "📏"
+                  },
+                  {
+                    title: "Salon Grade",
+                    desc: "We use only premium, professional gel polish products. No cheap plastic or machine printing.",
+                    icon: "💅"
+                  },
+                  {
+                    title: "Damage Free",
+                    desc: "Quick and easy application and removal processes that keep your natural nails healthy.",
+                    icon: "⏱️"
+                  }
+                ].map((feat, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      background: "#ffffff",
+                      borderRadius: 16,
+                      padding: 24,
+                      border: "1px solid rgba(212, 84, 122, 0.1)",
+                      boxShadow: "0 4px 12px rgba(212, 16, 71, 0.02)",
+                      transition: "transform 0.3s ease",
+                      cursor: "default"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    <div style={{ fontSize: 32, marginBottom: 12 }}>{feat.icon}</div>
+                    <h4 style={{ color: "#ae3c6f", fontWeight: 700, fontSize: 15, margin: "0 0 8px" }}>{feat.title}</h4>
+                    <p style={{ color: "#4f444a", fontSize: 12, lineHeight: 1.5, margin: 0 }}>{feat.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Curated Products Showcase Section */}
+          <div style={{ padding: "54px 20px 48px", background: "#fff9fb" }}>
+            <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 30, flexWrap: "wrap", gap: 12 }}>
+                <div>
+                  <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: 0 }}>Trending Designs</h3>
+                  <p style={{ color: "#4f444a", fontSize: 13, margin: "4px 0 0" }}>Check out some of our most popular handmade sets.</p>
+                </div>
+                <button
+                  onClick={() => navigate("/shop")}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#fc6587",
+                    fontWeight: 700,
+                    fontSize: 13,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    padding: "4px 8px",
+                    borderRadius: 8,
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "#fff0f4"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "none"}
+                >
+                  View All Sets 💅
+                </button>
+              </div>
+
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr",
+                gap: isMobile ? 12 : 16
+              }}>
+                {uniqueProducts
+                  .filter((p) => p.id !== "JUICEGELS-0286") // Exclude Sizing Guide
+                  .slice(0, 4)
+                  .map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => openProduct(p)}
+                      style={{
+                        background: "#fc6587",
+                        border: "1px solid rgba(212, 84, 122, 0.18)",
+                        borderRadius: 14,
+                        overflow: "hidden",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        padding: 0,
+                        position: "relative",
+                        display: "block",
+                        width: "100%",
+                        transition: "transform 0.3s ease, box-shadow 0.3s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-4px)";
+                        e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 101, 135, 0.15)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    >
+                      <ImageWithFallback
+                        src={p.image}
+                        alt={p.name}
+                        style={{ width: "100%", height: 180, objectFit: "cover", display: "block", background: "#b8395d" }}
+                      />
+                      <div style={{
+                        padding: "10px 12px 12px",
+                        background: "linear-gradient(to bottom, rgba(252, 101, 135, 0.95), rgba(219, 39, 119, 1))"
+                      }}>
+                        <p style={{ margin: "0 0 4px", fontSize: 13, color: "#fff9fb", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</p>
+                        <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
+                      </div>
+                    </button>
+                  ))}
+              </div>
+            </div>
+          </div>
+
+          {/* How It Works Guide Section */}
+          <div style={{ background: "#fff0f4", padding: "54px 20px 48px", borderTop: "1px solid rgba(212,84,122,0.08)" }}>
+            <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
+              <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fc6587", marginBottom: 28 }}>How It Works</h3>
+              
+              <div style={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                gap: 28,
+                justifyContent: "space-between"
+              }}>
+                {[
+                  {
+                    step: "1",
+                    title: "Find Your Sizes",
+                    desc: "Order our sizing kit for perfect accuracy, or measure your nails at home following our sizing guidelines."
+                  },
+                  {
+                    step: "2",
+                    title: "Select Shape & Design",
+                    desc: "Choose from our beautiful collections of custom shapes (Square, Almond, Coffin, etc.) and lengths."
+                  },
+                  {
+                    step: "3",
+                    title: "Apply in Minutes",
+                    desc: "Follow the application kit steps included free with every set. Enjoy gorgeous nails instantly!"
+                  }
+                ].map((item, i) => (
+                  <div key={i} style={{ flex: 1, position: "relative" }}>
+                    <div style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #fc6587 0%, #db2777 100%)",
+                      color: "#ffffff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 18,
+                      fontWeight: 700,
+                      margin: "0 auto 14px",
+                      boxShadow: "0 4px 10px rgba(252, 101, 135, 0.25)"
+                    }}>
+                      {item.step}
+                    </div>
+                    <h4 style={{ color: "#ae3c6f", fontWeight: 700, fontSize: 15, margin: "0 0 8px" }}>{item.title}</h4>
+                    <p style={{ color: "#4f444a", fontSize: 12, lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Custom Orders Banner */}
+          <div style={{
+            background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+            padding: "48px 20px",
+            textAlign: "center",
+            color: "#1e1b4b"
+          }}>
+            <div style={{ maxWidth: 600, margin: "0 auto" }}>
+              <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#ffffff", margin: "0 0 10px", textShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>Dreaming of a Unique Design? 💭</h3>
+              <p style={{ color: "#312e81", fontSize: 14, lineHeight: 1.6, margin: "0 0 24px" }}>
+                Let's bring your nail art dreams to life! Request a completely custom set. Send us your inspo pics and details, and we'll quote and craft it for you.
+              </p>
+              <button
+                onClick={() => navigate("/custom-orders")}
+                style={{
+                  background: "#ffffff",
+                  color: "#4338ca",
+                  border: "none",
+                  borderRadius: "30px",
+                  padding: "12px 28px",
+                  fontSize: "13px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  boxShadow: "0 4px 15px rgba(0, 0, 0, 0.05)",
+                  transition: "transform 0.2s ease"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.03)"}
+                onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+              >
+                Start Custom Order 💅
+              </button>
+            </div>
+          </div>
+        </main>
+      )}
+
+      {!isProductsLoading && page === "shop" && (
+        <main>
           <div style={{ background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", padding: "28px 20px 22px", textAlign: "center" }}>
-            <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>🌟Press-on Nail studio 🌟</p>
-            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>💅 Welcome to Juice Gels 💅</h2>
-            <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Handmade press-on nails <br /> designed for every version of you</p>
+            <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>🌟 Press-on Nail Shop 🌟</p>
+            <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>💅 Browse Our Sets 💅</h2>
+            <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Find your perfect design, custom-made for you</p>
           </div>
 
           {productsLoadError ? (
