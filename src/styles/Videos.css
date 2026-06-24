@@ -1,0 +1,500 @@
+/* Videos Page Stylesheet */
+
+.videos-page-container {
+  min-height: calc(100vh - 50px);
+  background-color: var(--background); /* #ffd2e6 */
+  padding-bottom: 60px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--card-foreground);
+  transition: background-color 0.3s ease;
+}
+
+/* Header styling */
+.videos-header {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(165deg, #fce4ea 0%, #f7b8ca 100%);
+  padding: 32px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(212, 84, 122, 0.05);
+}
+
+.videos-header-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.videos-title {
+  font-family: 'Lobster', serif;
+  font-size: 32px;
+  color: #a24e6a;
+  margin: 0 0 8px;
+  text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.6);
+}
+
+.videos-subtitle {
+  color: #4f444a;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Main Layout Grid */
+.videos-main-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Dual Pane Layout (Desktop) */
+@media (min-width: 1024px) {
+  .videos-workspace {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 28px;
+    padding: 30px;
+    box-shadow: 0 12px 40px rgba(212, 16, 71, 0.05);
+  }
+}
+
+/* Video Frame Wrapper (Smartphone style) */
+.video-pane {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.video-frame-container {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 9 / 16;
+  background: #111;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18), 
+              0 0 0 4px rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.video-frame-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24), 
+              0 0 0 4px rgba(255, 255, 255, 0.6);
+}
+
+.native-video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+  display: block;
+}
+
+/* Video Interactive Controls Overlay */
+.video-controls-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  z-index: 10;
+  pointer-events: none; /* Let clicks pass through to video */
+}
+
+/* Enable pointer events on individual buttons */
+.video-controls-overlay button, 
+.video-controls-overlay .video-progress-container {
+  pointer-events: auto;
+}
+
+/* Badges */
+.video-title-badge {
+  align-self: flex-start;
+  background: rgba(162, 78, 106, 0.88);
+  backdrop-filter: blur(8px);
+  color: #fff9fb;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Center Play Icon Overlay */
+.video-center-play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease, scale 0.25s ease;
+  scale: 0.8;
+  pointer-events: none;
+  z-index: 5;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.video-frame-container.paused .video-center-play-overlay {
+  opacity: 1;
+  scale: 1;
+}
+
+/* Bottom Controls Row */
+.video-bottom-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.video-action-btn {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.video-action-btn:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Progress bar */
+.video-progress-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  z-index: 12;
+}
+
+.video-progress-bar {
+  height: 100%;
+  background: var(--card); /* #fc6587 */
+  width: 0%;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px var(--card);
+}
+
+/* Side Info Pane (Desktop Right Column) */
+.info-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.glass-product-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(212, 84, 122, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #a24e6a;
+  letter-spacing: 1.5px;
+  margin: 0;
+}
+
+.product-showcase-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.showcase-image-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.showcase-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.showcase-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.showcase-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--card-foreground);
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.showcase-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: #a24e6a;
+}
+
+/* Shop Button */
+.shop-set-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #fc6587 0%, #f24e77 100%);
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(242, 78, 119, 0.25);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  width: 100%;
+}
+
+.shop-set-cta-btn:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 8px 22px rgba(242, 78, 119, 0.35);
+}
+
+.shop-set-cta-btn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+/* TikTok Branding CTA Container */
+.tiktok-cta-container {
+  background: rgba(17, 17, 17, 0.04);
+  border: 1px dashed rgba(162, 78, 106, 0.25);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.tiktok-cta-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4f444a;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* TikTok Premium Glow Button */
+.tiktok-glow-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #010101;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  transition: all 0.25s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* TikTok brand colors glowing border effect */
+.tiktok-glow-btn::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(90deg, #25f4ee, #fe2c55);
+  border-radius: 13px;
+  z-index: -1;
+  opacity: 0.7;
+  transition: opacity 0.25s ease;
+}
+
+.tiktok-glow-btn:hover {
+  transform: translateY(-2px);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(37, 244, 238, 0.2),
+              0 6px 20px rgba(254, 44, 85, 0.2);
+}
+
+.tiktok-glow-btn:hover::before {
+  opacity: 1;
+}
+
+/* Swiper / Controls Navigation */
+.carousel-nav-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.nav-arrow-btn {
+  background: #fce4ea;
+  border: 1px solid var(--border);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #a24e6a;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(212, 84, 122, 0.08);
+  transition: all 0.2s ease;
+}
+
+.nav-arrow-btn:hover {
+  background: #ffd6e9;
+  transform: scale(1.08);
+  color: #8c3b53;
+}
+
+.nav-arrow-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.carousel-indicators-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 320px;
+  margin: 10px auto 0;
+}
+
+.indicator-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e0a2b4;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.indicator-dot.active {
+  background: #a24e6a;
+  transform: scale(1.3);
+}
+
+/* Tip footer */
+.tip-footer-box {
+  background: linear-gradient(135deg, #fce4ea 0%, #ffd6e9 100%);
+  border-radius: 16px;
+  padding: 14px 20px;
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(212, 84, 122, 0.02);
+}
+
+.tip-text {
+  margin: 0;
+  font-size: 13px;
+  color: #4f444a;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* Loading and empty states */
+.videos-loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  gap: 16px;
+  color: #a24e6a;
+}
+
+.videos-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(162, 78, 106, 0.15);
+  border-radius: 50%;
+  border-top-color: #a24e6a;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

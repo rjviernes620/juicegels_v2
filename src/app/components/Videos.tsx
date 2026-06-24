@@ -1,14 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { ShoppingBag, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { 
+  ShoppingBag, 
+  Sparkles, 
+  ChevronLeft, 
+  ChevronRight, 
+  Play, 
+  Pause, 
+  Volume2, 
+  VolumeX 
+} from "lucide-react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
-
+import { TiktokIcon } from "./About";
+import "../../styles/Videos.css";
 
 type Product = {
   id: string;
+  groupId: string;
   name: string;
   price: number;
+  description: string;
+  descriptionBlocks?: any[];
   image: string;
+  extraImages: string[];
+  shapes: string[];
+  tags: string[];
+  shape: string;
+  length: "Short" | "Medium" | "Long";
+  collection?: string;
+  orderRank?: string;
+  videoUrl?: string;
+  tiktokUrl?: string;
 };
 
 type VideosProps = {
@@ -18,7 +40,7 @@ type VideosProps = {
   isTablet?: boolean;
 };
 
-const VIDEO_SETS = [
+const STATIC_VIDEO_SETS = [
   {
     id: "starlit",
     title: "Handcrafting Starlit Tips",
@@ -346,12 +368,145 @@ const VIDEO_SETS = [
   }
 ];
 
+function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex }: { videoUrl: string; isActive: boolean; index: number; activeIndex: number }) {
+  const videoRef = React.useRef<HTMLVideoElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Lazy load video only if it's near the active slide
+  const isNearActive = Math.abs(index - activeIndex) <= 1;
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (isActive) {
+      // Auto-play when active
+      videoRef.current.play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.log("Autoplay blocked or failed:", err);
+          setIsPlaying(false);
+        });
+    } else {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  }, [isActive, videoUrl]);
+
+  const togglePlay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(console.error);
+    }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.muted = !isMuted;
+    setIsMuted(!isMuted);
+  };
+
+  const handleTimeUpdate = () => {
+    if (!videoRef.current) return;
+    const current = videoRef.current.currentTime;
+    const duration = videoRef.current.duration;
+    if (duration) {
+      setProgress((current / duration) * 100);
+    }
+  };
+
+  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const width = rect.width;
+    const duration = videoRef.current.duration;
+    if (duration) {
+      const newTime = (clickX / width) * duration;
+      videoRef.current.currentTime = newTime;
+      setProgress((newTime / duration) * 100);
+    }
+  };
+
+  return (
+    <div 
+      className={`video-frame-container ${!isPlaying ? "paused" : ""}`}
+      onClick={togglePlay}
+      style={{ cursor: "pointer" }}
+    >
+      {isNearActive && (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          className="native-video-player"
+          loop
+          playsInline
+          muted={isMuted}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadStart={() => setIsLoading(true)}
+          onCanPlay={() => setIsLoading(false)}
+          preload="metadata"
+        />
+      )}
+
+      {/* Center Play Icon Overlay */}
+      <div className="video-center-play-overlay">
+        <Play size={32} fill="currentColor" />
+      </div>
+
+      {/* Loading Spinner */}
+      {isLoading && isNearActive && (
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 6 }}>
+          <div className="videos-spinner"></div>
+        </div>
+      )}
+
+      {/* Controls Overlay */}
+      <div className="video-controls-overlay">
+        <div className="video-title-badge">
+          <Sparkles size={11} fill="currentColor" />
+          Juice Gels Process
+        </div>
+
+        <div className="video-bottom-controls">
+          <button className="video-action-btn" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
+            {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}
+          </button>
+
+          <button className="video-action-btn" onClick={toggleMute} aria-label={isMuted ? "Unmute" : "Mute"}>
+            {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="video-progress-wrapper" onClick={handleProgressBarClick}>
+        <div className="video-progress-bar" style={{ width: `${progress}%` }}></div>
+      </div>
+    </div>
+  );
+}
+
 export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Re-trigger embed parsing on mount and whenever the active slide index changes
+  const isDesktop = !isMobile && !isTablet;
+
+  // Re-trigger TikTok embed parsing on mount/active index change (for backward-compatible slides)
   useEffect(() => {
     try {
       if ((window as any).tiktok && typeof (window as any).tiktok.embed === "function") {
@@ -361,6 +516,45 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
       console.error("TikTok embed trigger error:", e);
     }
   }, [activeIndex]);
+
+  // Combine static configuration and loaded products dynamically
+  const resolvedSets = useMemo(() => {
+    return STATIC_VIDEO_SETS.map(staticSet => {
+      // Find matching representative variant in products list
+      // Note: we match using staticSet.productId which looks like 'JUICEGELS-1202'
+      const matchedProduct = products.find(p => p.id === staticSet.productId);
+
+      if (matchedProduct) {
+        return {
+          id: staticSet.id,
+          title: staticSet.title,
+          productId: staticSet.productId,
+          videoUrl: matchedProduct.videoUrl || null, // retrieved from Sanity
+          tiktokUrl: matchedProduct.tiktokUrl || staticSet.videoUrl, // retrieved from Sanity or fallback to original
+          videoId: staticSet.videoId,
+          product: {
+            id: matchedProduct.id,
+            name: matchedProduct.name,
+            price: matchedProduct.price,
+            image: matchedProduct.image
+          }
+        };
+      } else {
+        // Fallback if product list is not loaded yet
+        return {
+          id: staticSet.id,
+          title: staticSet.title,
+          productId: staticSet.productId,
+          videoUrl: null,
+          tiktokUrl: staticSet.videoUrl,
+          videoId: staticSet.videoId,
+          product: staticSet.defaultProduct
+        };
+      }
+    });
+  }, [products]);
+
+  const activeSet = resolvedSets[activeIndex];
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -374,7 +568,6 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
     if (touchStart === null || touchEnd === null) return;
     const diff = touchStart - touchEnd;
 
-    // Minimum swipe distance of 50px
     if (diff > 50) {
       handleNext();
     } else if (diff < -50) {
@@ -386,7 +579,7 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
   };
 
   const handleNext = () => {
-    setActiveIndex((prev) => Math.min(prev + 1, VIDEO_SETS.length - 1));
+    setActiveIndex((prev) => Math.min(prev + 1, resolvedSets.length - 1));
   };
 
   const handlePrev = () => {
@@ -394,19 +587,9 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
   };
 
   return (
-    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div className="videos-page-container">
       {/* Title Section */}
-      <div 
-        style={{ 
-          position: "relative",
-          overflow: "hidden",
-          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
-          padding: "24px 20px", 
-          textAlign: "center",
-          borderBottom: "1px solid rgba(212, 84, 122, 0.18)"
-        }}
-      >
-        {/* ShaderGradient Background */}
+      <div className="videos-header">
         <ShaderGradientCanvas
           style={{
             position: "absolute",
@@ -465,304 +648,224 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
           />
         </ShaderGradientCanvas>
 
-        {/* Content Wrapper */}
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#a24e6a", margin: "0 0 6px" }}>
-            Juice Gels Studio 🎬
-          </h2>
-          <p style={{ color: "#4f444a", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
+        <div className="videos-header-content">
+          <h2 className="videos-title">Juice Gels Studio 🎬</h2>
+          <p className="videos-subtitle">
             Each set is handcrafted with love and care. Swipe to see how some popular sets were made and tap to shop instantly!
           </p>
         </div>
       </div>
 
-      {/* Videos List Container */}
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "20px 14px", display: "flex", flexDirection: "column", gap: 20, width: "100%", boxSizing: "border-box" }}>
-        
-        {/* Carousel Container */}
-        <div 
-          style={{ 
-            background: "#e0a2b4", 
-            borderRadius: 18, 
-            overflow: "hidden", 
-            border: "1px solid rgba(212, 84, 122, 0.18)",
-            boxShadow: "0 8px 24px rgba(212, 16, 71, 0.08)",
-            position: "relative",
-            display: "flex",
-            flexDirection: "column"
-          }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* Slides Track */}
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-              transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-              transform: `translateX(-${activeIndex * 100}%)`,
-            }}
-          >
-            {VIDEO_SETS.map((videoSet, index) => {
-              const product = products.find((p) => p.id === videoSet.productId) ?? videoSet.defaultProduct;
-
-              return (
-                <div
-                  key={videoSet.id}
-                  style={{
-                    minWidth: "100%",
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    position: "relative"
-                  }}
-                >
-                  {/* Tag Overlay */}
-                  <div 
-                    style={{ 
-                      position: "absolute", 
-                      top: 12, 
-                      left: 12, 
-                      background: "rgba(161, 95, 95, 0.88)", 
-                      backdropFilter: "blur(6px)",
-                      padding: "4px 10px", 
-                      borderRadius: 20, 
-                      fontSize: 11, 
-                      fontWeight: 700, 
-                      color: "#fff9fb",
-                      zIndex: 10,
+      {/* Main Workspace */}
+      <div className="videos-main-content">
+        <div className="videos-workspace">
+          
+          {/* Video player pane */}
+          <div className="video-pane" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+            {/* Desktop and Mobile: Slide rendering (we translate carousel on mobile, or just display active on desktop) */}
+            <div style={{ position: "relative", width: "100%", display: "flex", justifyContent: "center" }}>
+              
+              {isDesktop ? (
+                // On desktop, display only active video player in full-frame container to optimize layout
+                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                  {activeSet.videoUrl ? (
+                    <SingleVideoPlayer 
+                      videoUrl={activeSet.videoUrl} 
+                      isActive={true} 
+                      index={activeIndex} 
+                      activeIndex={activeIndex} 
+                    />
+                  ) : (
+                    // Fallback to TikTok embed if not uploaded to Sanity yet
+                    <div className="video-frame-container" style={{ aspectRatio: "9/16", background: "#000", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                      <blockquote className="tiktok-embed" cite={activeSet.tiktokUrl} data-video-id={activeSet.videoId} style={{ width: "100%", height: "100%", margin: 0, padding: 0 }}>
+                        <section style={{ padding: "60px 20px", textAlign: "center", color: "#fff" }}>
+                          <a target="_blank" title="@juice.gels" href="https://www.tiktok.com/@juice.gels?refer=embed" style={{ color: "#ffd6e9", fontWeight: 600 }}>@juice.gels</a>
+                          <p style={{ margin: "12px 0 0", fontSize: 13, color: "#999" }}>Loading TikTok video...</p>
+                        </section>
+                      </blockquote>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // On mobile/tablet, render a swipable carousel container for native feel
+                <div style={{ overflow: "hidden", width: "100%", borderRadius: 24 }}>
+                  <div
+                    style={{
                       display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+                      width: "100%",
+                      transition: "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                      transform: `translateX(-${activeIndex * 100}%)`,
                     }}
                   >
-                    <Sparkles size={11} />
-                    {videoSet.title}
-                  </div>
-
-                  {/* Interactive TikTok Embed Container */}
-                  <div 
-                    style={{ 
-                      position: "relative", 
-                      width: "100%", 
-                      background: "#000", 
-                      minHeight: 520, 
-                      display: "flex", 
-                      justifyContent: "center", 
-                      alignItems: "center" 
-                    }}
-                  >
-                    <blockquote 
-                      className="tiktok-embed" 
-                      cite={videoSet.videoUrl} 
-                      data-video-id={videoSet.videoId} 
-                      style={{ 
-                        width: "100%",
-                        maxWidth: "100%", 
-                        margin: 0,
-                        padding: 0
-                      }}
-                    > 
-                      <section style={{ padding: "60px 20px", textAlign: "center", color: "#fff" }}> 
-                        <a target="_blank" title="@juice.gels" href="https://www.tiktok.com/@juice.gels?refer=embed" style={{ color: "#ffd6e9", fontWeight: 600, textDecoration: "underline" }}>@juice.gels</a> 
-                        <p style={{ margin: "12px 0 0", fontSize: 13, color: "#4f444a" }}>Loading process video...</p>
-                      </section> 
-                    </blockquote>
-                  </div>
-
-                  {/* Connected Product Graphic Overlay / Footer */}
-                  <div 
-                    style={{ 
-                      background: "rgba(86, 30, 36)",
-                      borderTop: "1px solid rgba(212, 84, 122, 0.18)",
-                      padding: "14px 16px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 12
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                      <div 
-                        style={{ 
-                          width: 52, 
-                          height: 52, 
-                          borderRadius: 10, 
-                          overflow: "hidden", 
-                          background: "#e0a2b4", 
-                          flexShrink: 0,
-                          border: "1px solid rgba(212, 84, 122, 0.18)"
-                        }}
-                      >
-                        <ImageWithFallback 
-                          src={product.image} 
-                          alt={product.name} 
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
-                      </div>
-                      
-                      <div style={{ minWidth: 0 }}>
-                        <p 
-                          style={{ 
-                            margin: "0 0 2px", 
-                            fontSize: 13, 
-                            fontWeight: 700, 
-                            color: "#fff9fb", 
-                            whiteSpace: "nowrap", 
-                            overflow: "hidden", 
-                            textOverflow: "ellipsis" 
+                    {resolvedSets.map((set, index) => {
+                      const isActive = index === activeIndex;
+                      return (
+                        <div
+                          key={set.id}
+                          style={{
+                            minWidth: "100%",
+                            width: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            boxSizing: "border-box"
                           }}
                         >
-                          {product.name}
-                        </p>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#ffd6e9" }}>
-                          £{product.price.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <button 
-                      onClick={() => onShopProduct(product.id)}
-                      style={{ 
-                        display: "inline-flex", 
-                        alignItems: "center", 
-                        gap: 6, 
-                        background: "#f24e77", 
-                        color: "#fff", 
-                        border: "none",
-                        padding: "10px 16px", 
-                        borderRadius: 12, 
-                        fontSize: 12, 
-                        fontWeight: 700, 
-                        cursor: "pointer",
-                        boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)",
-                        transition: "transform 0.15s ease"
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.03)"; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-                    >
-                      <ShoppingBag size={13} />
-                      Shop Set
-                    </button>
+                          {set.videoUrl ? (
+                            <SingleVideoPlayer 
+                              videoUrl={set.videoUrl} 
+                              isActive={isActive} 
+                              index={index} 
+                              activeIndex={activeIndex} 
+                            />
+                          ) : (
+                            // Fallback to TikTok embed
+                            <div className="video-frame-container" style={{ aspectRatio: "9/16", background: "#000", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                              <blockquote className="tiktok-embed" cite={set.tiktokUrl} data-video-id={set.videoId} style={{ width: "100%", height: "100%", margin: 0, padding: 0 }}>
+                                <section style={{ padding: "60px 20px", textAlign: "center", color: "#fff" }}>
+                                  <a target="_blank" title="@juice.gels" href="https://www.tiktok.com/@juice.gels?refer=embed" style={{ color: "#ffd6e9", fontWeight: 600 }}>@juice.gels</a>
+                                  <p style={{ margin: "12px 0 0", fontSize: 13, color: "#999" }}>Loading TikTok video...</p>
+                                </section>
+                              </blockquote>
+                            </div>
+                          )}
+                          
+                          {/* Connected Product Overlay inside Carousel (Mobile/Tablet only) */}
+                          <div style={{ width: "100%", maxWidth: 380, marginTop: 12 }} className="glass-product-card">
+                            <h4 className="card-label">Handcrafting Process</h4>
+                            <div className="product-showcase-row">
+                              <div className="showcase-image-wrapper">
+                                <ImageWithFallback 
+                                  src={set.product.image} 
+                                  alt={set.product.name} 
+                                  className="showcase-image" 
+                                />
+                              </div>
+                              <div className="showcase-details">
+                                <p className="showcase-title">{set.product.name}</p>
+                                <span className="showcase-price">£{set.product.price.toFixed(2)}</span>
+                              </div>
+                            </div>
+                            <button className="shop-set-cta-btn" onClick={() => onShopProduct(set.product.id)}>
+                              <ShoppingBag size={14} />
+                              Shop Set
+                            </button>
+                            
+                            {/* Premium TikTok CTA */}
+                            <div className="tiktok-cta-container">
+                              <p className="tiktok-cta-text">Enjoying this design process? Visit us on TikTok to show some love!</p>
+                              <a 
+                                href={set.tiktokUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="tiktok-glow-btn"
+                              >
+                                <TiktokIcon size={14} />
+                                Watch on TikTok
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              );
-            })}
+              )}
+            </div>
+
+            {/* Carousel Navigation */}
+            <div className="carousel-nav-controls">
+              <button 
+                onClick={handlePrev} 
+                disabled={activeIndex === 0}
+                className="nav-arrow-btn"
+                aria-label="Previous Video"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#a24e6a" }}>
+                {activeIndex + 1} / {resolvedSets.length}
+              </span>
+              <button 
+                onClick={handleNext} 
+                disabled={activeIndex === resolvedSets.length - 1}
+                className="nav-arrow-btn"
+                aria-label="Next Video"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="carousel-indicators-row">
+              {resolvedSets.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveIndex(index)}
+                  className={`indicator-dot ${activeIndex === index ? "active" : ""}`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Left Arrow Button */}
-          {activeIndex > 0 && (
-            <button
-              onClick={handlePrev}
-              style={{
-                position: "absolute",
-                top: 260, // approximate vertical center of the 520px video container
-                transform: "translateY(-50%)",
-                left: 12,
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: "rgba(170, 95, 95, 0.85)",
-                backdropFilter: "blur(4px)",
-                border: "1px solid rgba(212, 84, 122, 0.18)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
-                zIndex: 20,
-                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                color: "#fff9fb",
-                transition: "all 0.15s ease"
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-50%) scale(1.08)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(-50%) scale(1)"; }}
-            >
-              <ChevronLeft size={18} />
-            </button>
+          {/* Connected Product Card Pane (Desktop only) */}
+          {isDesktop && (
+            <div className="info-pane">
+              <div className="glass-product-card" style={{ transition: "all 0.3s ease" }}>
+                <h4 className="card-label">Handcrafting Process</h4>
+                <h3 style={{ fontSize: 22, fontWeight: 800, color: "#a24e6a", margin: "4px 0 16px" }}>
+                  {activeSet.title}
+                </h3>
+                
+                <div className="product-showcase-row">
+                  <div className="showcase-image-wrapper">
+                    <ImageWithFallback 
+                      src={activeSet.product.image} 
+                      alt={activeSet.product.name} 
+                      className="showcase-image" 
+                    />
+                  </div>
+                  <div className="showcase-details">
+                    <p className="showcase-title">{activeSet.product.name}</p>
+                    <span className="showcase-price">£{activeSet.product.price.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <button className="shop-set-cta-btn" onClick={() => onShopProduct(activeSet.product.id)}>
+                  <ShoppingBag size={15} />
+                  Shop Set Instantly
+                </button>
+
+                <hr style={{ border: "0", borderTop: "1px solid rgba(212, 84, 122, 0.12)", margin: "10px 0" }} />
+
+                {/* TikTok CTA */}
+                <div className="tiktok-cta-container">
+                  <p className="tiktok-cta-text">Enjoying this design process? Visit us on TikTok to support the creator and watch comments!</p>
+                  <a 
+                    href={activeSet.tiktokUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="tiktok-glow-btn"
+                  >
+                    <TiktokIcon size={15} />
+                    Watch original on TikTok
+                  </a>
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Right Arrow Button */}
-          {activeIndex < VIDEO_SETS.length - 1 && (
-            <button
-              onClick={handleNext}
-              style={{
-                position: "absolute",
-                top: 260,
-                transform: "translateY(-50%)",
-                right: 12,
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: "rgba(170, 95, 95, 0.85)",
-                backdropFilter: "blur(4px)",
-                border: "1px solid rgba(212, 84, 122, 0.18)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
-                zIndex: 20,
-                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                color: "#fff9fb",
-                transition: "all 0.15s ease"
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-50%) scale(1.08)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(-50%) scale(1)"; }}
-            >
-              <ChevronRight size={18} />
-            </button>
-          )}
-
-          {/* Dots Indicator Overlay */}
-          <div
-            style={{
-              position: "absolute",
-              top: 480, // bottom region of the 520px player viewport
-              left: "50%",
-              transform: "translateX(-50%)",
-              display: "flex",
-              gap: 8,
-              zIndex: 20,
-              background: "rgba(0, 0, 0, 0.4)",
-              padding: "6px 12px",
-              borderRadius: 12
-            }}
-          >
-            {VIDEO_SETS.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveIndex(index)}
-                style={{
-                  width: 8,
-                  height: 8,
-                  padding: 0,
-                  borderRadius: "50%",
-                  border: "none",
-                  background: activeIndex === index ? "#fff" : "rgba(255, 255, 255, 0.5)",
-                  cursor: "pointer",
-                  transition: "background 0.2s"
-                }}
-              />
-            ))}
-          </div>
         </div>
 
         {/* Tip Box */}
-        <div 
-          style={{ 
-            background: "linear-gradient(135deg, #fce4ea 0%, #ffd6e9 100%)", 
-            borderRadius: 14, 
-            padding: "14px 16px", 
-            textAlign: "center",
-            border: "1px solid rgba(212, 84, 122, 0.18)"
-          }}
-        >
-          <p style={{ margin: 0, fontSize: 12, color: "#4f444a", fontWeight: 500, lineHeight: 1.6 }}>
-            💡 Tap <b>Shop Set</b> to select sizes, shapes, lengths and add it straight to your basket!
+        <div className="tip-footer-box">
+          <p className="tip-text">
+            💡 Tap <b>Shop Set</b> to customize sizes, shapes, lengths and add it straight to your basket!
           </p>
         </div>
-        
+
       </div>
     </div>
   );

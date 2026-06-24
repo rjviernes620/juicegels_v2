@@ -174,6 +174,20 @@ export default {
       },
     },
     {
+      name: 'video',
+      type: 'file',
+      title: 'Process Video',
+      options: {
+        accept: 'video/*',
+      },
+    },
+    {
+      name: 'tiktokUrl',
+      type: 'url',
+      title: 'TikTok URL',
+      description: 'The link to the video on TikTok',
+    },
+    {
       name: 'variationsPreview',
       type: 'string',
       title: 'Generated Variations Preview',

@@ -1,34 +1,7 @@
-export type NailLength = "Short" | "Medium" | "Long";
+const SANITY_PROJECT_ID = "5co5ooqr";
+const SANITY_DATASET = "production";
 
-export type Product = {
-  id: string;
-  groupId: string;
-  name: string;
-  price: number;
-  description: string;
-  descriptionBlocks?: any[];
-  image: string;
-  extraImages: string[];
-  shapes: string[];
-  tags: string[];
-  shape: string;
-  length: NailLength;
-  collection?: string;
-  orderRank?: string;
-  videoUrl?: string;
-  tiktokUrl?: string;
-};
-
-const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
-const DEFAULT_LENGTHS = ["Short", "Medium", "Long"] as const;
-
-declare const __SANITY_PROJECT_ID__: string;
-declare const __SANITY_DATASET__: string;
-
-const SANITY_PROJECT_ID = (typeof __SANITY_PROJECT_ID__ !== 'undefined' && __SANITY_PROJECT_ID__) || "5co5ooqr";
-const SANITY_DATASET = (typeof __SANITY_DATASET__ !== 'undefined' && __SANITY_DATASET__) || "production";
-
-function buildSanityImageUrl(ref: string): string {
+function buildSanityImageUrl(ref) {
   if (!ref) return "";
   const parts = ref.split("-");
   if (parts.length < 4) return "";
@@ -38,17 +11,17 @@ function buildSanityImageUrl(ref: string): string {
   return `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/${SANITY_DATASET}/${id}-${dims}.${ext}`;
 }
 
-function intValue(val: any): number {
+function intValue(val) {
   const parsed = parseInt(val, 10);
   return isNaN(parsed) ? 0 : parsed;
 }
 
-function floatValue(val: any): number {
+function floatValue(val) {
   const parsed = parseFloat(val);
   return isNaN(parsed) ? 0 : parsed;
 }
 
-function blocksToPlainText(blocks: any[]): string {
+function blocksToPlainText(blocks) {
   if (!Array.isArray(blocks)) {
     return typeof blocks === 'string' ? blocks : '';
   }
@@ -57,13 +30,16 @@ function blocksToPlainText(blocks: any[]): string {
       if (block._type !== 'block' || !block.children) {
         return '';
       }
-      return block.children.map((child: any) => child.text).join('');
+      return block.children.map((child) => child.text).join('');
     })
     .join('\n');
 }
 
-function parseSanityProducts(sanityProducts: any[]): Product[] {
-  const products: Product[] = [];
+const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
+const DEFAULT_LENGTHS = ["Short", "Medium", "Long"];
+
+function parseSanityProducts(sanityProducts) {
+  const products = [];
 
   for (const sp of sanityProducts) {
     const title = sp.title || "Product";
@@ -72,7 +48,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
     const defaultDescription = "All Nail Sets Include: 1x mini nail file, 1x cuticle pusher, 1x mini buffer block, 1x Nail Glue";
     
     let plainDescription = "";
-    let descriptionBlocks: any[] | undefined = undefined;
+    let descriptionBlocks = undefined;
 
     if (Array.isArray(sp.description)) {
       descriptionBlocks = sp.description;
@@ -106,7 +82,7 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
     const isSingle = title.toLowerCase() === "nail sizing guide" || productId === 286;
 
     if (isSingle) {
-      const extraImages: string[] = [];
+      const extraImages = [];
       if (image2Url) extraImages.push(image2Url);
       if (image3Url) extraImages.push(image3Url);
       if (image4Url) extraImages.push(image4Url);
@@ -170,29 +146,38 @@ function parseSanityProducts(sanityProducts: any[]): Product[] {
   return products;
 }
 
-export async function loadProducts(): Promise<Product[]> {
-  try {
-    const query = encodeURIComponent('*[_type == "product" && !(_id in path("drafts.**"))] { ..., "videoUrl": video.asset->url }');
-    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
-
-    const response = await fetch(url, {
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Sanity API returned status ${response.status}`);
+async function test() {
+  const query = encodeURIComponent(`*[_type == "product" && !(_id in path("drafts.**"))] {
+    ...,
+    "videoUrl": video.asset->url
+  }`);
+  const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
+  
+  console.log("Fetching from Sanity...");
+  const res = await fetch(url);
+  console.log("Status:", res.status);
+  const data = await res.json();
+  if (res.ok) {
+    const raw = data.result || [];
+    console.log("Raw count:", raw.length);
+    const parsed = parseSanityProducts(raw);
+    console.log("Parsed count:", parsed.length);
+    console.log("First parsed product id:", parsed[0]?.id);
+    
+    // Check if any product has an invalid ID, groupId, name, price, shapes, or image
+    let invalidCount = 0;
+    for (const p of parsed) {
+      if (!p.id || !p.groupId || !p.name || typeof p.price !== 'number' || !p.image) {
+        console.warn("Invalid product found:", p);
+        invalidCount++;
+      }
     }
-
-    const data = await response.json();
-    const sanityProducts = data.result || [];
-    if (sanityProducts.length === 0) {
-      throw new Error("No products found in Sanity database.");
-    }
-    return parseSanityProducts(sanityProducts);
-  } catch (error) {
-    console.error("Sanity load failed:", error);
-    throw new Error(
-      "The website is currently down. Please contact juicegels on Instagram if you have a pre-existing order or for further information."
-    );
+    console.log("Invalid products count:", invalidCount);
+    
+    console.log("Includes JUICEGELS-1202:", parsed.some(p => p.id === 'JUICEGELS-1202'));
+  } else {
+    console.error("Error:", data);
   }
 }
+
+test().catch(console.error);

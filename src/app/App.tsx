@@ -25,7 +25,6 @@ import {
   type CollectionDetails
 } from "./types";
 import {
-  LOCKED_VARIATION_PRODUCT_IDS,
   META_CART_ORIGIN,
   CHECKOUT_API_BASE,
   SHIPPING_FREE_THRESHOLD,
@@ -669,24 +668,6 @@ export default function App() {
 
   const toggleWishlist = (id: string) =>
     setWishlist((p) => (p.includes(id) ? p.filter((w) => w !== id) : [...p, id]));
-
-  const validLengths: NailLength[] = ["Short", "Medium", "Long"];
-
-  const isVariationLocked = (product: Product) =>
-    LOCKED_VARIATION_PRODUCT_IDS.has(product.id);
-
-  const getProductRouteId = (product: Product) =>
-    product.id;
-
-  const getProductShapes = (product: Product): string[] => {
-    const raw = (product as Product & { shapes?: string[] }).shapes;
-    return Array.isArray(raw) && raw.length > 0 ? raw : ["Short Almond", "Medium Almond", "Long Almond"];
-  };
-
-  const getProductLengths = (product: Product): NailLength[] => {
-    const raw = (product as Product & { lengths?: NailLength[] }).lengths;
-    return Array.isArray(raw) && raw.length > 0 ? raw : validLengths;
-  };
 
   const syncProductUrl = (product: Product, shape: string, length: NailLength) => {
     const productRouteId = getProductRouteId(product);
