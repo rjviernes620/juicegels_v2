@@ -38,6 +38,7 @@ type VideosProps = {
   onShopProduct: (id: string) => void;
   isMobile?: boolean;
   isTablet?: boolean;
+  isPageActive: boolean;
 };
 
 const STATIC_VIDEO_SETS = [
@@ -368,7 +369,7 @@ const STATIC_VIDEO_SETS = [
   }
 ];
 
-function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex }: { videoUrl: string; isActive: boolean; index: number; activeIndex: number }) {
+function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex, isPageActive }: { videoUrl: string; isActive: boolean; index: number; activeIndex: number; isPageActive: boolean }) {
   const videoRef = React.useRef<HTMLVideoElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
@@ -380,7 +381,7 @@ function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex }: { videoUr
 
   useEffect(() => {
     if (!videoRef.current) return;
-    if (isActive) {
+    if (isActive && isPageActive) {
       // Auto-play when active
       videoRef.current.play()
         .then(() => {
@@ -395,7 +396,13 @@ function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex }: { videoUr
       videoRef.current.currentTime = 0;
       setIsPlaying(false);
     }
-  }, [isActive, videoUrl]);
+  }, [isActive, isPageActive, videoUrl]);
+
+  useEffect(() => {
+    if (!videoRef.current || isPageActive) return;
+    videoRef.current.muted = true;
+    setIsMuted(true);
+  }, [isPageActive]);
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -475,10 +482,6 @@ function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex }: { videoUr
 
       {/* Controls Overlay */}
       <div className="video-controls-overlay">
-        <div className="video-title-badge">
-          <Sparkles size={11} fill="currentColor" />
-          Juice Gels Process
-        </div>
 
         <div className="video-bottom-controls">
           <button className="video-action-btn" onClick={togglePlay} aria-label={isPlaying ? "Pause" : "Play"}>
@@ -499,7 +502,7 @@ function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex }: { videoUr
   );
 }
 
-export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosProps) {
+export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActive }: VideosProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -673,7 +676,8 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
                       videoUrl={activeSet.videoUrl} 
                       isActive={true} 
                       index={activeIndex} 
-                      activeIndex={activeIndex} 
+                      activeIndex={activeIndex}
+                      isPageActive={isPageActive}
                     />
                   ) : (
                     // Fallback to TikTok embed if not uploaded to Sanity yet
@@ -717,7 +721,8 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
                               videoUrl={set.videoUrl} 
                               isActive={isActive} 
                               index={index} 
-                              activeIndex={activeIndex} 
+                              activeIndex={activeIndex}
+                              isPageActive={isPageActive}
                             />
                           ) : (
                             // Fallback to TikTok embed
@@ -842,7 +847,6 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
 
                 {/* TikTok CTA */}
                 <div className="tiktok-cta-container">
-                  <p className="tiktok-cta-text">Enjoying this design process? Visit us on TikTok to support the creator and watch comments!</p>
                   <a 
                     href={activeSet.tiktokUrl} 
                     target="_blank" 
@@ -850,20 +854,13 @@ export function Videos({ products, onShopProduct, isMobile, isTablet }: VideosPr
                     className="tiktok-glow-btn"
                   >
                     <TiktokIcon size={15} />
-                    Watch original on TikTok
+                    Visit @juice.gels on TikTok
                   </a>
                 </div>
               </div>
             </div>
           )}
 
-        </div>
-
-        {/* Tip Box */}
-        <div className="tip-footer-box">
-          <p className="tip-text">
-            💡 Tap <b>Shop Set</b> to customize sizes, shapes, lengths and add it straight to your basket!
-          </p>
         </div>
 
       </div>

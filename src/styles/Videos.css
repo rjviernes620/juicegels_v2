@@ -4,7 +4,7 @@
   min-height: calc(100vh - 50px);
   background-color: var(--background); /* #ffd2e6 */
   padding-bottom: 60px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'DM Sans', sans-serif;
   color: var(--card-foreground);
   transition: background-color 0.3s ease;
 }

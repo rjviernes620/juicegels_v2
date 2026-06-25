@@ -1363,9 +1363,9 @@ export default function App() {
                 cDistance={2.9}
                 cPolarAngle={120}
                 cameraZoom={1}
-                color1="#e5a8e5"
-                color2="#fff9fc"
-                color3="#ffb8d8"
+                color1="#ff8fc7"
+                color2="#ffd1e8"
+                color3="#c9b0ff"
                 destination="onCanvas"
                 embedMode="off"
                 envPreset="city"
@@ -2026,7 +2026,13 @@ export default function App() {
 
       {/* ── Videos (persistently mounted for pre-caching/instant load) ── */}
       <div style={{ display: page === "videos" ? "block" : "none" }}>
-        <Videos products={products} onShopProduct={handleShopProduct} isMobile={isMobile} isTablet={isTablet} />
+        <Videos
+          products={products}
+          onShopProduct={handleShopProduct}
+          isMobile={isMobile}
+          isTablet={isTablet}
+          isPageActive={page === "videos"}
+        />
       </div>
 
       {/* ── Search ── */}
