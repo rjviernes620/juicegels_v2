@@ -108,19 +108,6 @@ const STATIC_VIDEO_SETS = [
     }
   },
   {
-    id: "ghoulglam",
-    title: "Handcrafting Ghoul Glam",
-    productId: "JUICEGELS-9999",
-    videoUrl: "https://www.tiktok.com/@juice.gels/video/7565493075104091414",
-    videoId: "7565493075104091414",
-    defaultProduct: {
-      id: "JUICEGELS-9999",
-      name: "Ghoul Glam Set",
-      price: 15.00,
-      image: "images/nailsize.jpg"
-    }
-  },
-  {
     id: "sparklescream",
     title: "Handcrafting Sparkle Scream",
     productId: "JUICEGELS-1247",
@@ -311,19 +298,6 @@ const STATIC_VIDEO_SETS = [
     defaultProduct: {
       id: "JUICEGELS-1502",
       name: "Kitty Constellation Set",
-      price: 17.50,
-      image: "images/nailsize.jpg"
-    }
-  },
-  {
-    id: "kanrojikisses",
-    title: "Handcrafting Kanroji Kisses",
-    productId: "JUICEGELS-9998",
-    videoUrl: "https://www.tiktok.com/@juice.gels/video/7489878567422070038",
-    videoId: "7489878567422070038",
-    defaultProduct: {
-      id: "JUICEGELS-9998",
-      name: "Kanroji Kisses Set",
       price: 17.50,
       image: "images/nailsize.jpg"
     }
