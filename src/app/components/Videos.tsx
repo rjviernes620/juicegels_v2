@@ -277,19 +277,6 @@ const STATIC_VIDEO_SETS = [
     }
   },
   {
-    id: "chromamuse",
-    title: "Handcrafting Chroma Muse",
-    productId: "JUICEGELS-0256",
-    videoUrl: "https://www.tiktok.com/@juice.gels/video/7502077568544214274",
-    videoId: "7502077568544214274",
-    defaultProduct: {
-      id: "JUICEGELS-0256",
-      name: "Chroma Muse Set",
-      price: 16.50,
-      image: "images/nailsize.jpg"
-    }
-  },
-  {
     id: "kittyconstellation",
     title: "Handcrafting Kitty Constellation",
     productId: "JUICEGELS-1502",
