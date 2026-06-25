@@ -196,3 +196,33 @@ export async function loadProducts(): Promise<Product[]> {
     );
   }
 }
+
+export async function loadTrendingProductIds(): Promise<number[]> {
+  try {
+    const query = encodeURIComponent(
+      '*[_type == "trendingDesigns" && _id == "trendingDesigns"][0]{ "items": products[]->{ productId } }'
+    );
+    const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
+
+    const response = await fetch(url, { cache: "no-store" });
+
+    if (!response.ok) {
+      console.warn(`Trending designs fetch returned status ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    const items = data.result?.items;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return [];
+    }
+
+    return items
+      .map((item: any) => (typeof item?.productId === "number" ? item.productId : null))
+      .filter((id: number | null): id is number => id !== null);
+  } catch (error) {
+    console.warn("Failed to load trending designs:", error);
+    return [];
+  }
+}

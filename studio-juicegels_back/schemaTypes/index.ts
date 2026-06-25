@@ -1,4 +1,5 @@
 import product from './schema'
+import trendingDesigns from './trendingDesigns'
 
-export const schemaTypes = [product]
+export const schemaTypes = [product, trendingDesigns]
 

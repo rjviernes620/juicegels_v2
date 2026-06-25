@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X, Instagram } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
-import { loadProducts, type Product } from "./utils/parseProducts";
+import { loadProducts, loadTrendingProductIds, type Product } from "./utils/parseProducts";
 import { About, TiktokIcon } from "./components/About";
 import { Videos } from "./components/Videos";
 import { Search } from "./components/Search";
@@ -152,6 +152,7 @@ export default function App() {
   const [shippingOptionId, setShippingOptionId] = useState<ShippingOptionId>("tracked48");
   const [isSizeGuideDiscountApplied, setIsSizeGuideDiscountApplied] = useState(false);
   const [isSizeGuideLoading, setIsSizeGuideLoading] = useState(false);
+  const [trendingProductIds, setTrendingProductIds] = useState<number[]>([]);
 
 
   const uniqueProducts = useMemo(
@@ -199,6 +200,19 @@ export default function App() {
     return list;
   }, [uniqueProducts, homeSelectedCollection, homeSortBy]);
 
+  const trendingProducts = useMemo(() => {
+    const eligible = uniqueProducts.filter((p) => p.id !== "JUICEGELS-0286");
+    if (trendingProductIds.length === 0) {
+      return eligible.slice(0, 5);
+    }
+    return trendingProductIds
+      .map((pid) => eligible.find((p) => {
+        const idNum = parseInt(p.id.replace("JUICEGELS-", ""), 10);
+        return idNum === pid;
+      }))
+      .filter((p): p is Product => p != null);
+  }, [uniqueProducts, trendingProductIds]);
+
   const currentBasketUrl = (items: CartItem[]) =>
     buildBasketUrl(items, {
       coupon: searchParams.get("coupon"),
@@ -215,9 +229,13 @@ export default function App() {
       setProductsLoadError(null);
 
       try {
-        const loadedProducts = await loadProducts();
+        const [loadedProducts, loadedTrendingIds] = await Promise.all([
+          loadProducts(),
+          loadTrendingProductIds()
+        ]);
         if (!isCancelled) {
           setProducts(loadedProducts);
+          setTrendingProductIds(loadedTrendingIds);
         }
       } catch (error) {
         if (!isCancelled) {
@@ -1913,52 +1931,68 @@ export default function App() {
 
               <div style={{
                 display: "grid",
-                gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr",
+                gridTemplateColumns: isMobile ? "1fr 1fr" : `repeat(${Math.min(trendingProducts.length || 1, 5)}, 1fr)`,
                 gap: isMobile ? 12 : 16
               }}>
-                {uniqueProducts
-                  .filter((p) => p.id !== "JUICEGELS-0286") // Exclude Sizing Guide
-                  .slice(0, 4)
-                  .map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => openProduct(p)}
-                      style={{
-                        background: "#fc6587",
-                        border: "1px solid rgba(212, 84, 122, 0.18)",
-                        borderRadius: 14,
-                        overflow: "hidden",
-                        textAlign: "left",
-                        cursor: "pointer",
-                        padding: 0,
-                        position: "relative",
-                        display: "block",
-                        width: "100%",
-                        transition: "transform 0.3s ease, box-shadow 0.3s ease"
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-4px)";
-                        e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 101, 135, 0.15)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
-                    >
-                      <ImageWithFallback
-                        src={p.image}
-                        alt={p.name}
-                        style={{ width: "100%", height: 180, objectFit: "cover", display: "block", background: "#b8395d" }}
-                      />
-                      <div style={{
-                        padding: "10px 12px 12px",
-                        background: "linear-gradient(to bottom, rgba(252, 101, 135, 0.95), rgba(219, 39, 119, 1))"
-                      }}>
-                        <p style={{ margin: "0 0 4px", fontSize: 13, color: "#fff9fb", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</p>
-                        <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
-                      </div>
-                    </button>
-                  ))}
+                {trendingProducts.map((p) => {
+                    const style = p.collection ? getCollectionStyle(p.collection) : null;
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => openProduct(p)}
+                        style={{
+                          background: style ? style.cardGradient : "#fc6587",
+                          border: "1px solid rgba(212, 84, 122, 0.18)",
+                          borderRadius: 14,
+                          overflow: "hidden",
+                          textAlign: "left",
+                          cursor: "pointer",
+                          padding: 0,
+                          position: "relative",
+                          display: "block",
+                          width: "100%",
+                          transition: "transform 0.3s ease, box-shadow 0.3s ease"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = "translateY(-4px)";
+                          e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 101, 135, 0.15)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = "translateY(0)";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      >
+                        <ImageWithFallback
+                          src={p.image}
+                          alt={p.name}
+                          style={{ width: "100%", height: 180, objectFit: "cover", display: "block", background: "#b8395d" }}
+                        />
+                        <div style={{
+                          padding: "8px 10px 10px",
+                          background: style ? style.cardGradient : "linear-gradient(to bottom, rgba(252, 101, 135, 0.95), rgba(219, 39, 119, 1))"
+                        }}>
+                          {p.collection && style && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
+                              <span style={{
+                                fontSize: 9,
+                                background: style.badgeBg,
+                                color: "#ffffff",
+                                padding: "1.5px 5px",
+                                borderRadius: 4,
+                                fontWeight: 700,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.03em"
+                              }}>
+                                {style.emoji} {p.collection.replace(" Collection", "")}
+                              </span>
+                            </div>
+                          )}
+                          <p style={{ margin: "0 0 4px", fontSize: 13, color: "#fff9fb", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</p>
+                          <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
               </div>
             </div>
           </div>

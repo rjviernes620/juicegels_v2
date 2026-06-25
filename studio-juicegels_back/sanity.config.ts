@@ -25,6 +25,16 @@ export default defineConfig({
             }),
             S.documentTypeListItem('product')
               .title('Nail Sets (Website Order)'),
+            S.divider(),
+            S.listItem()
+              .title('Trending Designs')
+              .id('trendingDesigns')
+              .child(
+                S.document()
+                  .schemaType('trendingDesigns')
+                  .documentId('trendingDesigns')
+                  .title('Trending Designs')
+              ),
           ]),
     }),
     visionTool()
@@ -34,3 +44,4 @@ export default defineConfig({
     types: schemaTypes,
   },
 })
+
