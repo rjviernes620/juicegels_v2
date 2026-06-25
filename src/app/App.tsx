@@ -1969,7 +1969,7 @@ export default function App() {
                         />
                         <div style={{
                           padding: "8px 10px 10px",
-                          background: style ? style.cardGradient : "linear-gradient(to bottom, rgba(252, 101, 135, 0.95), rgba(219, 39, 119, 1))"
+                          background: style ? style.cardGradient : "#fc6587"
                         }}>
                           {p.collection && style && (
                             <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
