@@ -269,14 +269,14 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#db3636", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>1</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Submit Your Design:</strong>Fill out the custom order form below and tell us about your vision. Feel free to include colours, charms, themes, inspiration photos or any specific details you'd like us to incorporate. The more detail you provide, the better!
+                <strong style={{ color: "#d14d4d" }}>Submit Your Design: </strong>Fill out the custom order form below and tell us about your vision. Feel free to include colours, charms, themes, inspiration photos or any specific details you'd like us to incorporate. The more detail you provide, the better!
               </div>
             </div>
             
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>2</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Check Your Inbox:</strong>You'll receive an automated confirmation email straight away summarising your request. If you'd like to make any changes, simply contact @juicegels on Instagram or email (juicegels@gmail.com).
+                <strong style={{ color: "#d14d4d" }}>Check Your Inbox: </strong>You'll receive an automated confirmation email straight away summarising your request. If you'd like to make any changes, simply contact @juicegels on Instagram or email (juicegels@gmail.com).
 
               </div>
             </div>
@@ -284,7 +284,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>3</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Instagram Consultation:</strong>Juice Gels will get in touch to discuss your design, nail shape and sizing. Once everything has been finalised, a digital design mock-up will be created for your approval. Any changes can be made before production begins.
+                <strong style={{ color: "#d14d4d" }}>Instagram Consultation: </strong>Juice Gels will get in touch to discuss your design, nail shape and sizing. Once everything has been finalised, a digital design mock-up will be created for your approval. Any changes can be made before production begins.
 
               </div>
             </div>
@@ -292,7 +292,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
             <div style={{ display: "flex", gap: 12 }}>
               <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>4</div>
               <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Creation & Dispatch:</strong>Once you've approved your design, your custom set will be carefully handcrafted. Before dispatch, you'll receive a photo of your finished nails, followed by your tracking details once your order has been shipped. Then all that's left to do is enjoy your one-of-a-kind Juice Gels set! 💌
+                <strong style={{ color: "#d14d4d" }}>Creation & Dispatch: </strong>Once you've approved your design, your custom set will be carefully handcrafted. Before dispatch, you'll receive a photo of your finished nails, followed by your tracking details once your order has been shipped. Then all that's left to do is enjoy your one-of-a-kind Juice Gels set! 💌
               </div>
             </div>
           </div>
