@@ -193,7 +193,7 @@ export function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
     if (slides.length <= 1) return;
     timerRef.current = window.setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % slides.length);
-    }, 4500);
+    }, 3500);
   };
 
   const stopTimer = () => {
@@ -1349,7 +1349,7 @@ export function BasketPage({
                 <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 14, padding: "12px 14px", marginBottom: 14, display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ fontSize: 20 }}>✨</span>
                   <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.4 }}>
-                    <strong>20% Off Summer Sale Applied!</strong>
+                    <strong>20% Off Juicy July Applied!</strong>
                     <br />You've got 20% off your entire basket of nail sets!
                   </div>
                 </div>
