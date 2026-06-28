@@ -54,21 +54,47 @@ def read_secret(secret_name, env_var_name=None):
 
 # #LIVE Mode
 
-# if not stripe_api_key:
 
-#   raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
-# stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
-# client = stripe.StripeClient(stripe_api_key)
+stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
+if not stripe_api_key:
+
+  raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
+client = stripe.StripeClient(stripe_api_key)
+
+SHIPPING_OPTIONS = {
+  'tracked24': {
+    'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
+    'label': 'Royal Mail Tracked 24',
+    'amount_pence': 400,
+    'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
+  },
+  'tracked48': {
+    'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
+    'label': 'Royal Mail Tracked 48',
+    'amount_pence': 199,
+    'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
+    'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
+  },
+  'international': {
+    'stripe_rate_id': 'shr_1TnGKVK4CROOpWXUBmC6WzJe',
+    'label': 'Royal Mail International Tracked',
+    'amount_pence': 999,
+    'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
+  },
+}
+
+##TEST Mode
+# client = stripe.StripeClient("sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx")
 
 # SHIPPING_OPTIONS = {
 #   'tracked24': {
-#     'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
+#     'stripe_rate_id': 'shr_1TjOFhK9S4gHGvxwGcIJ8ICh',
 #     'label': 'Royal Mail Tracked 24',
 #     'amount_pence': 400,
 #     'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
 #   },
 #   'tracked48': {
-#     'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
+#     'stripe_rate_id': 'shr_1TjOJVK9S4gHGvxwRClQMfr1',
 #     'label': 'Royal Mail Tracked 48',
 #     'amount_pence': 199,
 #     'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
@@ -81,31 +107,6 @@ def read_secret(secret_name, env_var_name=None):
 #     'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
 #   },
 # }
-
-##TEST Mode
-client = stripe.StripeClient("sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx")
-
-SHIPPING_OPTIONS = {
-  'tracked24': {
-    'stripe_rate_id': 'shr_1TjOFhK9S4gHGvxwGcIJ8ICh',
-    'label': 'Royal Mail Tracked 24',
-    'amount_pence': 400,
-    'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
-  },
-  'tracked48': {
-    'stripe_rate_id': 'shr_1TjOJVK9S4gHGvxwRClQMfr1',
-    'label': 'Royal Mail Tracked 48',
-    'amount_pence': 199,
-    'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
-    'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
-  },
-  'international': {
-    'stripe_rate_id': 'shr_1TlIyvK9S4gHGvxwwsl3tfgS',
-    'label': 'Royal Mail International Tracked',
-    'amount_pence': 950,
-    'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
-  },
-}
 
 def build_checkout_items_param(items):
   encoded_items = []
@@ -1344,10 +1345,10 @@ def create_custom_order():
 @app.route('/stripe-webhook', methods=['POST'])
 def stripe_webhook():
   print("Stripe webhook endpoint called!")
-  webhook_secret = read_secret('stripe_webhook', 'STRIPE_WEBHOOK_SECRET')
+  webhook_secret = read_secret('stripe_webhook_live', 'STRIPE_WEBHOOK_SECRET')
   if not webhook_secret:
     print("Error: Missing Stripe webhook secret.")
-    return jsonify({ 'error': 'Missing Stripe webhook secret file stripe_webhook.' }), 500
+    return jsonify({ 'error': 'Missing Stripe webhook secret file stripe_webhook_live.' }), 500
 
   payload = request.get_data(as_text=True)
   signature = request.headers.get('Stripe-Signature', '')
