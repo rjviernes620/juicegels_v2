@@ -12,6 +12,8 @@ import { CustomOrders } from "./components/CustomOrders";
 import { CookieNotice } from "./components/CookieNotice";
 import { PortableText } from "./components/PortableText";
 import { FAQ } from "./components/FAQ";
+import { PrivacyPolicy } from "./components/PrivacyPolicy";
+import { TermsOfService } from "./components/TermsOfService";
 import { COUNTRIES } from "./utils/countries";
 import { useSEO } from "./utils/useSEO";
 import {
@@ -378,6 +380,16 @@ export default function App() {
 
     if (effectivePath === "/faq") {
       setPage("faq");
+      return;
+    }
+
+    if (effectivePath === "/privacy-policy") {
+      setPage("privacy-policy");
+      return;
+    }
+
+    if (effectivePath === "/terms-of-service") {
+      setPage("terms-of-service");
       return;
     }
 
@@ -2089,6 +2101,16 @@ export default function App() {
         <FAQ isMobile={isMobile} isTablet={isTablet} />
       )}
 
+      {/* ── Privacy Policy ── */}
+      {page === "privacy-policy" && (
+        <PrivacyPolicy isMobile={isMobile} isTablet={isTablet} navigate={navigate} />
+      )}
+
+      {/* ── Terms of Service ── */}
+      {page === "terms-of-service" && (
+        <TermsOfService isMobile={isMobile} isTablet={isTablet} navigate={navigate} />
+      )}
+
       {/* ── Product Detail ── */}
       {page === "product" && selected && (
         <ProductDetailPage
@@ -2189,7 +2211,7 @@ export default function App() {
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: "28px 16px 40px", textAlign: "center", width: "100%", boxSizing: "border-box" }}>
             <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#f86ca5", margin: "0 0 8px" }}>Juice Gels</p>
             <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 16px" }}>Handmade with love🌸</p>
-            <div style={{ display: "flex", justifyContent: "center", gap: 10, rowGap: 8, fontSize: 13, alignItems: "center", flexWrap: "wrap", maxWidth: 320, margin: "0 auto" }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 10, rowGap: 8, fontSize: 13, alignItems: "center", flexWrap: "wrap", maxWidth: 600, margin: "0 auto" }}>
               <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 About Her
               </button>
@@ -2208,6 +2230,14 @@ export default function App() {
               <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
               <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 Videos
+              </button>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/privacy-policy")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+                Privacy Policy
+              </button>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/terms-of-service")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+                Terms of Service
               </button>
               <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
               <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline", fontWeight: 500, whiteSpace: "nowrap" }}>

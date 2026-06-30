@@ -44,7 +44,7 @@ export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?:
             cAzimuthAngle={180}
             cDistance={2.91}
             cPolarAngle={120}
-            cameraZoom={isMobile ? 1 : 1.5}
+            cameraZoom={isMobile ? 1.0 : (isTablet ? 1.5 : 2.5)}
             color1="#ebedff"
             color2="#f3f2f8"
             color3="#dbf8ff"
@@ -58,7 +58,7 @@ export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?:
             grain="off"
             lightType="3d"
             pixelDensity={1}
-            positionX={isMobile ? 0 : 0.8}
+            positionX={isMobile ? 0 : (isTablet ? 0.5 : 0)}
             positionY={1.8}
             positionZ={0}
             range="disabled"
