@@ -83,7 +83,7 @@ export function buildShippingOptions(itemsTotal: number, country: string): Shipp
         estimate: isEurope
           ? "Estimated delivery within 3-5 business days after your order is finished."
           : "Estimated delivery within 6-7 business days after your order is finished.",
-        amount: 9.99,
+        amount: 9.50,
         isFree: false,
       },
     ];

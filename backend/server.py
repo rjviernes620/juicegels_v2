@@ -76,9 +76,9 @@ SHIPPING_OPTIONS = {
     'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
   },
   'international': {
-    'stripe_rate_id': 'shr_1TnGKVK4CROOpWXUBmC6WzJe',
+    'stripe_rate_id': 'shr_1To72LK4CROOpWXUQ4DKmzFE',
     'label': 'Royal Mail International Tracked',
-    'amount_pence': 999,
+    'amount_pence': 950,
     'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
   },
 }
