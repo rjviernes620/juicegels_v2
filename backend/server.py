@@ -805,7 +805,7 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
       'code': code,
       'active': True,
       'limit': 10,
-      'expand': ['data.coupon'],
+      'expand': ['data.promotion.coupon'],
     }
   )
 
@@ -815,7 +815,7 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
       entry
       for entry in matches
       if get_value(entry, 'active', False)
-      and get_value(get_value(entry, 'coupon', {}), 'valid', True)
+      and get_value(get_value(get_value(entry, 'promotion', {}), 'coupon', {}), 'valid', True)
     ),
     None,
   )
@@ -834,7 +834,8 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
     if subtotal_pence < minimum_amount:
       raise ValueError(f'This coupon requires a minimum spend of £{minimum_amount / 100:.2f}.')
 
-  coupon = get_value(promotion_code, 'coupon', {}) or {}
+  promotion = get_value(promotion_code, 'promotion', {}) or {}
+  coupon = get_value(promotion, 'coupon', {}) or {}
   percent_off = get_value(coupon, 'percent_off')
   amount_off = get_value(coupon, 'amount_off')
   amount_off_currency = str(get_value(coupon, 'currency', '') or '').lower()
