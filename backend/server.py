@@ -805,6 +805,7 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
       'code': code,
       'active': True,
       'limit': 10,
+      'expand': ['data.coupon'],
     }
   )
 
