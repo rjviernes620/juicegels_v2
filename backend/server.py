@@ -781,6 +781,11 @@ def format_coupon_description(coupon):
   percent_off = get_value(coupon, 'percent_off')
   amount_off = get_value(coupon, 'amount_off')
 
+  if amount_off is None:
+    currency_options = get_value(coupon, 'currency_options')
+    if currency_options and 'gbp' in currency_options:
+      amount_off = get_value(get_value(currency_options, 'gbp'), 'amount_off')
+
   if percent_off is not None:
     return f"{float(percent_off):g}% off"
 
@@ -832,6 +837,12 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
   percent_off = get_value(coupon, 'percent_off')
   amount_off = get_value(coupon, 'amount_off')
   amount_off_currency = str(get_value(coupon, 'currency', '') or '').lower()
+
+  if amount_off is None:
+    currency_options = get_value(coupon, 'currency_options')
+    if currency_options and 'gbp' in currency_options:
+      amount_off = get_value(get_value(currency_options, 'gbp'), 'amount_off')
+      amount_off_currency = 'gbp'
 
   discount_pence = 0
   if percent_off is not None:
