@@ -206,10 +206,15 @@ export function TermsOfService({
             >
               <BookOpen size={18} /> 1. General Conditions
             </h3>
-            <p style={{ margin: 0 }}>
-              JuiceGels specializes in handmade, custom press-on gel nails. We reserve the right to refuse service,
-              modify designs, or adjust pricing at our discretion. All materials and content on this site are property of JuiceGels.
-            </p>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
+                JuiceGels specializes in handmade, custom press-on gel nails. We reserve the right to refuse service,
+                modify designs, or adjust pricing at our discretion.
+              </li>
+              <li style={{ marginBottom: 0 }}>
+                All materials and content on this site are property of JuiceGels.
+              </li>
+            </ul>
           </div>
 
           {/* Section 2 */}
@@ -227,19 +232,19 @@ export function TermsOfService({
             >
               <Sparkles size={18} /> 2. Sizing and Customization
             </h3>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
                 <strong>Customer Sizing Responsibility:</strong> Every JuiceGels set is custom-crafted to your specific dimensions.
                 It is the customer's sole responsibility to ensure natural nail measurements are correct.
                 We highly recommend purchasing a <strong>Juice Gels Sizing Kit</strong> prior to ordering.
               </li>
-              <li>
+              <li style={{ marginBottom: 8 }}>
                 <strong>Confirmation Window:</strong> We will attempt to contact you up to 24 hours after checkout to confirm your nail sizes.
                 We will contact you via Instagram (@juicegels) only if you have selected it as your preferred communication method for sizing;
                 otherwise, we will communicate via email. If your Instagram account is private, you must message us first to initiate contact.
                 If we are unable to reach you or receive sizing details within a reasonable timeframe, your order may be subject to cancellation.
               </li>
-              <li>
+              <li style={{ marginBottom: 0 }}>
                 <strong>Variations:</strong> Because every nail set is individually handmade by AlyJuice, minor variations in nail art,
                 color shades, or minor detailing may occur. These are characteristic of artisanal, handmade goods and are not considered defects.
               </li>
@@ -261,12 +266,14 @@ export function TermsOfService({
             >
               <DollarSign size={18} /> 3. Payments, Pricing, and Orders
             </h3>
-            <p style={{ margin: "0 0 12px 0" }}>
-              All transactions are securely processed through Stripe. We reserve the right to cancel and refund any order if there are issues with payment authorization, stock, or if we are unable to accommodate custom designs.
-            </p>
-            <p style={{ margin: 0 }}>
-              Prices for our products are subject to change without notice. We reserve the right to modify or discontinue any product or service at any time.
-            </p>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
+                All transactions are securely processed through Stripe. We reserve the right to cancel and refund any order if there are issues with payment authorization, stock, or if we are unable to accommodate custom designs.
+              </li>
+              <li style={{ marginBottom: 0 }}>
+                Prices for our products are subject to change without notice. We reserve the right to modify or discontinue any product or service at any time.
+              </li>
+            </ul>
           </div>
 
           {/* Section 4 */}
@@ -284,14 +291,14 @@ export function TermsOfService({
             >
               <Truck size={18} /> 4. Shipping and Delivery
             </h3>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
                 Orders are shipped using tracked postal services (such as Royal Mail Tracked 24/48 in the UK, or international tracked services).
               </li>
-              <li>
+              <li style={{ marginBottom: 8 }}>
                 Delivery estimates are approximate and do not include handcrafting/processing times.
               </li>
-              <li>
+              <li style={{ marginBottom: 0 }}>
                 JuiceGels is not responsible for shipping delays, package loss, or theft once the carrier has accepted the package and tracking shows dispatch. In any instance regarding issues with delivery, please get in contact with Royal Mail first before reaching out to us.
               </li>
             </ul>
@@ -312,11 +319,11 @@ export function TermsOfService({
             >
               <RotateCcw size={18} /> 5. Returns, Refunds, and Cancellations
             </h3>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
                 <strong>All Sales Are Final:</strong> Due to the hygienic nature of cosmetic press-on nails and because each set is custom-made to your specific size requirements, we do not accept returns, exchanges, or refunds for incorrect size choices or change of mind. This does not affect your statutory rights under the Consumer Rights Act 2015 (or other applicable consumer protection laws in your jurisdiction).
               </li>
-              <li>
+              <li style={{ marginBottom: 0 }}>
                 <strong>Errors on Our Part:</strong> If we made an error in fulfilling your order (e.g., incorrect design or length sent), please contact us within 7 days of delivery at juicegels@gmail.com with photos, and we will arrange a replacement or refund.
               </li>
             </ul>
@@ -337,9 +344,14 @@ export function TermsOfService({
             >
               <Activity size={18} /> 6. Nail Health and Safety
             </h3>
-            <p style={{ margin: 0 }}>
-              JuiceGels is not liable for any allergic reactions or natural nail damage arising from the use of nail glue, sticky tabs, prep tools, or incorrect application/removal techniques. Please read and follow the application and removal instructions carefully.
-            </p>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
+                JuiceGels is not liable for any allergic reactions or natural nail damage arising from the use of nail glue, sticky tabs, prep tools, or incorrect application/removal techniques.
+              </li>
+              <li style={{ marginBottom: 0 }}>
+                Please read and follow the application and removal instructions carefully.
+              </li>
+            </ul>
           </div>
 
           {/* Section 7 */}
@@ -357,10 +369,14 @@ export function TermsOfService({
             >
               <ShieldAlert size={18} /> 7. Governing Law
             </h3>
-            <p style={{ margin: 0 }}>
-              These terms are governed by and construed in accordance with the laws of the United Kingdom.
-              Any disputes arising out of or related to your use of this site or purchases made shall be subject to the exclusive jurisdiction of the UK courts.
-            </p>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
+                These terms are governed by and construed in accordance with the laws of the United Kingdom.
+              </li>
+              <li style={{ marginBottom: 0 }}>
+                Any disputes arising out of or related to your use of this site or purchases made shall be subject to the exclusive jurisdiction of the UK courts.
+              </li>
+            </ul>
           </div>
         </div>
       </div>

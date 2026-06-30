@@ -211,16 +211,16 @@ export function PrivacyPolicy({
               We collect personal information that you provide directly to us when placing an order,
               submitting custom order requests, or contacting us:
             </p>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
                 <strong>Contact Information:</strong> Your first and last name, email address, physical delivery
                 address, phone number, and Instagram handle (used for size and customization confirmation).
               </li>
-              <li>
+              <li style={{ marginBottom: 8 }}>
                 <strong>Order Details:</strong> Information about the specific nail sets, lengths, shapes, quantities,
                 and sizing choices you select.
               </li>
-              <li>
+              <li style={{ marginBottom: 0 }}>
                 <strong>Payment Information:</strong> Payment processing is handled securely through Stripe.
                 We do not store or have access to your full credit/debit card numbers or payment credentials.
               </li>
@@ -245,12 +245,12 @@ export function PrivacyPolicy({
             <p style={{ margin: "0 0 12px 0" }}>
               We use local browser storage (such as LocalStorage) to support essential shopping features:
             </p>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
-              <li>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
                 <strong>juicegels_cart:</strong> Saves your selected nail sets, sizing, and quantities in your basket
                 so you do not lose them while browsing.
               </li>
-              <li>
+              <li style={{ marginBottom: 0 }}>
                 <strong>juicegels_form:</strong> Temporarily keeps your delivery details locally so you do not have to
                 retype them if you navigate back.
               </li>
@@ -277,12 +277,12 @@ export function PrivacyPolicy({
               <Lock size={18} /> 3. How We Use Your Information
             </h3>
             <p style={{ margin: "0 0 12px 0" }}>We use the information we collect to:</p>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 6 }}>
-              <li>Process, fulfill, and ship your orders.</li>
-              <li>Contact you within 24 hours of payment to confirm your nail sizes, shapes, or custom design details.</li>
-              <li>Provide you with photos of your completed sets before shipping.</li>
-              <li>Respond to inquiries, support requests, and custom order forms.</li>
-              <li>Comply with tax, legal, and financial obligations.</li>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 6 }}>Process, fulfill, and ship your orders.</li>
+              <li style={{ marginBottom: 6 }}>Contact you within 24 hours of payment to confirm your nail sizes, shapes, or custom design details.</li>
+              <li style={{ marginBottom: 6 }}>Provide you with photos of your completed sets before shipping.</li>
+              <li style={{ marginBottom: 6 }}>Respond to inquiries, support requests, and custom order forms.</li>
+              <li style={{ marginBottom: 0 }}>Comply with tax, legal, and financial obligations.</li>
             </ul>
           </div>
 
@@ -304,11 +304,11 @@ export function PrivacyPolicy({
             <p style={{ margin: "0 0 12px 0" }}>
               We do not sell, lease, or distribute your personal data to third parties. We share data only with trusted partners necessary to process and deliver your order:
             </p>
-            <ul style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 6 }}>
-              <li>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 6 }}>
                 <strong>Payment Processors:</strong> Stripe (to process transactions).
               </li>
-              <li>
+              <li style={{ marginBottom: 0 }}>
                 <strong>Delivery Services:</strong> Royal Mail (or other courier services) to deliver your packages.
               </li>
             </ul>
@@ -329,10 +329,14 @@ export function PrivacyPolicy({
             >
               <Lock size={18} /> 5. Data Security
             </h3>
-            <p style={{ margin: 0 }}>
-              We implement a variety of security measures to maintain the safety of your personal information.
-              Your transactions are encrypted using Secure Socket Layer (SSL) technology by our third-party payment processor, Stripe.
-            </p>
+            <ul style={{ listStyleType: "disc", paddingLeft: 20, margin: 0 }}>
+              <li style={{ marginBottom: 8 }}>
+                We implement a variety of security measures to maintain the safety of your personal information.
+              </li>
+              <li style={{ marginBottom: 0 }}>
+                Your transactions are encrypted using Secure Socket Layer (SSL) technology by our third-party payment processor, Stripe.
+              </li>
+            </ul>
           </div>
 
           {/* Section 6 */}

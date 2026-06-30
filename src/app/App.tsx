@@ -2239,10 +2239,7 @@ export default function App() {
               <button onClick={() => navigate("/terms-of-service")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 Terms of Service
               </button>
-              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
-              <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline", fontWeight: 500, whiteSpace: "nowrap" }}>
-                Instagram
-              </a>
+
             </div>
             <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
               &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
