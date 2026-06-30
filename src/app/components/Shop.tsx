@@ -1376,6 +1376,14 @@ export function BasketPage({
                           setCouponInput(e.target.value.toUpperCase());
                           if (couponError) setCouponError(null);
                         }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (!isCouponLoading && couponInput.trim()) {
+                              applyCoupon();
+                            }
+                          }
+                        }}
                         style={mkInput(!!couponError)}
                       />
                     </Field>
@@ -1560,6 +1568,14 @@ export function BasketPage({
                           onChange={(e) => {
                             setCouponInput(e.target.value.toUpperCase());
                             if (couponError) setCouponError(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              if (!isCouponLoading && couponInput.trim()) {
+                                applyCoupon();
+                              }
+                            }
                           }}
                           style={mkInput(!!couponError)}
                         />

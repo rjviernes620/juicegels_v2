@@ -496,7 +496,7 @@ export default function App() {
     const saleEnd = new Date("2026-08-01T00:00:00");
     return now < saleEnd;
   };
-  const isNailSetSaleApplied = !hasSizeGuide && hasNailSet && isJuly2026SaleActive();
+  const isNailSetSaleApplied = !hasSizeGuide && hasNailSet && isJuly2026SaleActive() && !couponSummary;
   const nailSetSaleDiscountAmount = isNailSetSaleApplied ? cartTotal * 0.20 : 0;
 
   const couponDiscount = couponSummary?.discountAmount ?? 0;
