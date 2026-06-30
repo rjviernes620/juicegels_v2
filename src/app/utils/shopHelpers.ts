@@ -19,7 +19,7 @@ export const SHIPPING_FREE_THRESHOLD = 30;
 export const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {
   tracked24: "shr_1Ti0hyK4CROOpWXUhiIhLqWy",
   tracked48: "shr_1Ti0ieK4CROOpWXU5Cbop3Ii",
-  international: "shr_1TlIyvK9S4gHGvxwwsl3tfgS",
+  international: "shr_1TnGKVK4CROOpWXUBmC6WzJe",
 };
 
 export const validLengths: NailLength[] = ["Short", "Medium", "Long"];
@@ -83,7 +83,7 @@ export function buildShippingOptions(itemsTotal: number, country: string): Shipp
         estimate: isEurope
           ? "Estimated delivery within 3-5 business days after your order is finished."
           : "Estimated delivery within 6-7 business days after your order is finished.",
-        amount: 9.50,
+        amount: 9.99,
         isFree: false,
       },
     ];
