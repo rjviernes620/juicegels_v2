@@ -371,12 +371,18 @@ def fetch_checkout_line_items(session_or_id):
 def build_order_summary(checkout_session):
   session_id = get_value(checkout_session, 'id', '')
   
-  # Fetch fully expanded checkout session including line items and discounts
+  # Fetch fully expanded checkout session including line items, discounts, and payment method details
   try:
     expanded_session = client.v1.checkout.sessions.retrieve(
       session_id,
       params={
-        'expand': ['line_items', 'discounts', 'discounts.coupon'],
+        'expand': [
+          'line_items', 
+          'discounts', 
+          'discounts.coupon', 
+          'payment_intent', 
+          'payment_intent.payment_method'
+        ],
       },
     )
   except Exception as e:
@@ -415,6 +421,26 @@ def build_order_summary(checkout_session):
   })
   shipping_address = preorder_shipping_address or format_address(get_value(customer_details, 'address', {}) or {})
 
+  # Retrieve Payment Method details
+  payment_intent = get_value(expanded_session, 'payment_intent')
+  payment_method_type = ''
+  card_brand = ''
+  card_last4 = ''
+  card_wallet_type = ''
+  
+  if payment_intent and not isinstance(payment_intent, str):
+    payment_method = get_value(payment_intent, 'payment_method')
+    if payment_method and not isinstance(payment_method, str):
+      payment_method_type = get_value(payment_method, 'type', '') or ''
+      if payment_method_type == 'card':
+        card = get_value(payment_method, 'card', {}) or {}
+        card_brand = get_value(card, 'brand', '') or ''
+        card_last4 = get_value(card, 'last4', '') or ''
+        
+        wallet = get_value(card, 'wallet', {}) or {}
+        if wallet and not isinstance(wallet, str):
+          card_wallet_type = get_value(wallet, 'type', '') or ''
+
   return {
     'session_id': session_id,
     'created_at': format_unix_timestamp(get_value(expanded_session, 'created')),
@@ -437,6 +463,10 @@ def build_order_summary(checkout_session):
     'total': format_money_from_pence(get_value(expanded_session, 'amount_total', 0)),
     'currency': str(get_value(expanded_session, 'currency', '') or '').upper(),
     'line_items': fetch_checkout_line_items(expanded_session),
+    'payment_method_type': payment_method_type,
+    'card_brand': card_brand.lower(),
+    'card_last4': card_last4,
+    'card_wallet_type': card_wallet_type.lower(),
   }
 
 
@@ -615,6 +645,60 @@ def build_customer_email_html(order_summary):
 <p style="margin: 0 0 6px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700;">Shipping Address:</p>
 <p style="margin: 0 0 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #4f444a; white-space: pre-wrap;">{escape_html(order_summary.get("shipping_address", ""))}</p>"""
 
+  # Build payment method HTML
+  pm_type = order_summary.get('payment_method_type', '').lower()
+  brand = order_summary.get('card_brand', '').lower()
+  last4 = order_summary.get('card_last4', '')
+  wallet_type = order_summary.get('card_wallet_type', '').lower()
+
+  payment_logo_html = ''
+  payment_details = 'Paid via Stripe'
+
+  if pm_type == 'card' and last4:
+    if wallet_type == 'apple_pay':
+      payment_logo_html = '<img src="https://img.icons8.com/color/48/000000/apple-pay.png" alt="Apple Pay" width="32" height="32" style="display: block; border: 0;" />'
+      payment_details = "Apple Pay"
+    elif wallet_type == 'google_pay':
+      payment_logo_html = '<img src="https://img.icons8.com/color/48/000000/google-pay.png" alt="Google Pay" width="32" height="32" style="display: block; border: 0;" />'
+      payment_details = "Google Pay"
+    else:
+      supported_brands = ['visa', 'mastercard', 'amex', 'discover', 'jcb', 'diners']
+      brand_name = brand if brand in supported_brands else 'visa'
+      if brand in supported_brands:
+        logo_url = f"https://img.icons8.com/color/48/000000/{brand_name}.png"
+      else:
+        logo_url = "https://img.icons8.com/color/48/000000/bank-card-back.png"
+        
+      payment_logo_html = f'<img src="{logo_url}" alt="{brand.capitalize()}" width="32" height="32" style="display: block; border: 0;" />'
+      payment_details = f"{brand.capitalize() if brand else 'Card'} ending in {last4}"
+  elif pm_type == 'paypal':
+    payment_logo_html = '<img src="https://img.icons8.com/color/48/000000/paypal.png" alt="PayPal" width="32" height="32" style="display: block; border: 0;" />'
+    payment_details = 'PayPal'
+  elif pm_type == 'klarna':
+    payment_logo_html = '<img src="https://img.icons8.com/color/48/000000/klarna.png" alt="Klarna" width="32" height="32" style="display: block; border: 0;" />'
+    payment_details = 'Klarna'
+  elif pm_type == 'revolut_pay':
+    payment_logo_html = '<img src="https://img.icons8.com/color/48/000000/revolut.png" alt="Revolut Pay" width="32" height="32" style="display: block; border: 0;" />'
+    payment_details = 'Revolut Pay'
+  elif pm_type:
+    payment_logo_html = '<img src="https://img.icons8.com/color/48/000000/bank-card-back.png" alt="Payment" width="32" height="32" style="display: block; border: 0;" />'
+    payment_details = pm_type.capitalize()
+  else:
+    payment_logo_html = '<img src="https://img.icons8.com/color/48/000000/bank-card-back.png" alt="Payment" width="32" height="32" style="display: block; border: 0;" />'
+    payment_details = 'Paid via Stripe'
+
+  payment_method_html = f"""<h3 style="margin: 30px 0 12px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ae3c6f; border-bottom: 2px solid rgba(212, 84, 122, 0.15); padding-bottom: 6px;">Payment Method</h3>
+<table border="0" cellpadding="0" cellspacing="0" style="margin: 0 0 20px 0; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; color: #3d1a24;">
+  <tr>
+    <td style="vertical-align: middle; padding-right: 10px;">
+      {payment_logo_html}
+    </td>
+    <td style="vertical-align: middle; font-weight: 500; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #4f444a;">
+      {payment_details}
+    </td>
+  </tr>
+</table>"""
+
   items_table = build_customer_items_table(order_summary.get("line_items", []))
 
   return f"""<!DOCTYPE html>
@@ -678,6 +762,8 @@ def build_customer_email_html(order_summary):
                   <td align="right" style="padding: 12px 0 0 0; font-size: 18px; font-weight: 700; color: #fc6587; border-top: 1px solid rgba(212, 84, 122, 0.15); font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">{escape_html(order_summary.get("total", ""))}</td>
                 </tr>
               </table>
+              
+              {payment_method_html}
               
               {address_html}
             </td>
@@ -1554,13 +1640,12 @@ def create_checkout_session():
       apply_20_percent_discount = True
 
   discounted_subtotal_pence = subtotal_pence
-  if apply_20_percent_discount:
+  if coupon_summary:
+    discounted_subtotal_pence -= coupon_summary['discount_pence']
+  elif apply_20_percent_discount:
     discounted_subtotal_pence -= round(subtotal_pence * 0.20)
-  else:
-    if coupon_summary:
-      discounted_subtotal_pence -= coupon_summary['discount_pence']
-    if apply_size_guide_coupon:
-      discounted_subtotal_pence -= size_guide_discount_pence
+  elif apply_size_guide_coupon:
+    discounted_subtotal_pence -= size_guide_discount_pence
   discounted_subtotal_pence = max(0, discounted_subtotal_pence)
 
   country = str(form.get('country') or 'GB').strip()
@@ -1599,27 +1684,27 @@ def create_checkout_session():
         'shipping_city': form.get('city', ''),
         'shipping_postcode': form.get('postcode', ''),
         'shipping_country': country,
-        'coupon_code': 'lGKkukJL' if apply_20_percent_discount else ('60pCPsnH' if apply_size_guide_coupon else (coupon_summary['code'] if coupon_summary else '')),
+        'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
         'shipping_option_id': shipping_option['id'],
         'shipping_method': shipping_option['label'],
         'shipping_amount_pence': str(shipping_option['amount_pence']),
       },
       'mode': 'payment',
       'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
-      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary and not (apply_size_guide_coupon or apply_20_percent_discount) else ''}",
+      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary else ''}",
     }
 
-    if apply_20_percent_discount:
+    if coupon_summary:
+      session_params['discounts'] = [{
+        'promotion_code': coupon_summary['promotion_code_id'],
+      }]
+    elif apply_20_percent_discount:
       session_params['discounts'] = [{
         'coupon': 'lGKkukJL',
       }]
     elif apply_size_guide_coupon:
       session_params['discounts'] = [{
         'coupon': '60pCPsnH',
-      }]
-    elif coupon_summary:
-      session_params['discounts'] = [{
-        'promotion_code': coupon_summary['promotion_code_id'],
       }]
 
     session = client.v1.checkout.sessions.create(params=session_params)
