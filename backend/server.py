@@ -1772,60 +1772,109 @@ def create_checkout_session():
   except ValueError as error:
     return jsonify({ 'error': str(error) }), 400
 
-  try:
-    session_params = {
-      'line_items': line_items,
-      'customer_email': form.get('email', ''),
-      'billing_address_collection': 'required',
-      'payment_intent_data': {
-        'shipping': {
-          'name': f"{form.get('firstName', '')} {form.get('lastName', '')}".strip(),
-          'phone': form.get('phone', ''),
-          'address': {
-            'line1': form.get('address', ''),
-            'city': form.get('city', ''),
-            'postal_code': form.get('postcode', ''),
-            'country': country,
-          }
-        }
-      },
-      'phone_number_collection': {'enabled': False},
-      'shipping_options': [shipping_option['stripe_shipping_option']],
-      'metadata': {
-        'first_name': form.get('firstName', ''),
-        'last_name': form.get('lastName', ''),
-        'phone': form.get('phone', ''),
-        'instagram': form.get('instagram', ''),
-        'contact_preference': form.get('contactMethod', 'instagram'),
-        'notes': form.get('notes', ''),
-        'shipping_address': form.get('address', ''),
-        'shipping_city': form.get('city', ''),
-        'shipping_postcode': form.get('postcode', ''),
-        'shipping_country': country,
-        'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
-        'shipping_option_id': shipping_option['id'],
-        'shipping_method': shipping_option['label'],
-        'shipping_amount_pence': str(shipping_option['amount_pence']),
-      },
-      'mode': 'payment',
-      'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
-      'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary else ''}",
-    }
+  is_embedded = payload.get('embedded', False)
 
-    if coupon_summary:
+  try:
+    if is_embedded:
+      # Prepare multiple shipping rates for Stripe Checkout to show based on the customer's shipping address
+      rates = [
+        {'shipping_rate': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy'},  # Tracked 24
+        {'shipping_rate': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii'},  # Tracked 48
+        {'shipping_rate': 'shr_1To72LK4CROOpWXUQ4DKmzFE'},  # International
+      ]
+      
+      # If free shipping is applicable, we can pass it as a free custom shipping rate
+      if has_free_shipping or (discounted_subtotal_pence >= 3000): # £30 threshold
+        rates.insert(0, {
+          'shipping_rate_data': {
+            'type': 'fixed_amount',
+            'fixed_amount': {
+              'amount': 0,
+              'currency': 'gbp',
+            },
+            'display_name': 'Free Delivery',
+            'delivery_estimate': {
+              'minimum': {'unit': 'day', 'value': 2},
+              'maximum': {'unit': 'day', 'value': 2},
+            },
+          }
+        })
+
+      session_params = {
+        'line_items': line_items,
+        'customer_email': form.get('email', '').strip() or None,
+        'billing_address_collection': 'required',
+        'shipping_address_collection': {
+          'allowed_countries': ['GB', 'US', 'CA', 'AU', 'NZ', 'IE', 'FR', 'DE'],
+        },
+        'shipping_options': rates,
+        'metadata': {
+          'instagram': form.get('instagram', ''),
+          'contact_preference': form.get('contactMethod', 'instagram'),
+          'notes': form.get('notes', ''),
+          'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
+        },
+        'mode': 'payment',
+        'ui_mode': 'embedded',
+        'return_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
+      }
+    else:
+      session_params = {
+        'line_items': line_items,
+        'customer_email': form.get('email', ''),
+        'billing_address_collection': 'required',
+        'payment_intent_data': {
+          'shipping': {
+            'name': f"{form.get('firstName', '')} {form.get('lastName', '')}".strip(),
+            'phone': form.get('phone', ''),
+            'address': {
+              'line1': form.get('address', ''),
+              'city': form.get('city', ''),
+              'postal_code': form.get('postcode', ''),
+              'country': country,
+            }
+          }
+        },
+        'phone_number_collection': {'enabled': False},
+        'shipping_options': [shipping_option['stripe_shipping_option']],
+        'metadata': {
+          'first_name': form.get('firstName', ''),
+          'last_name': form.get('lastName', ''),
+          'phone': form.get('phone', ''),
+          'instagram': form.get('instagram', ''),
+          'contact_preference': form.get('contactMethod', 'instagram'),
+          'notes': form.get('notes', ''),
+          'shipping_address': form.get('address', ''),
+          'shipping_city': form.get('city', ''),
+          'shipping_postcode': form.get('postcode', ''),
+          'shipping_country': country,
+          'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
+          'shipping_option_id': shipping_option['id'],
+          'shipping_method': shipping_option['label'],
+          'shipping_amount_pence': str(shipping_option['amount_pence']),
+        },
+        'mode': 'payment',
+        'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
+        'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary else ''}",
+      }
+
+    if coupon_summary and not is_embedded:
+      # Embed details for redirect session discounts
       session_params['discounts'] = [{
         'promotion_code': coupon_summary['promotion_code_id'],
       }]
-    elif apply_20_percent_discount:
+    elif apply_20_percent_discount and not is_embedded:
       session_params['discounts'] = [{
         'coupon': 'lGKkukJL',
       }]
-    elif apply_size_guide_coupon:
+    elif apply_size_guide_coupon and not is_embedded:
       session_params['discounts'] = [{
         'coupon': '60pCPsnH',
       }]
 
     session = client.v1.checkout.sessions.create(params=session_params)
+    if is_embedded:
+      return jsonify({ 'clientSecret': session.client_secret, 'url': session.url })
     return jsonify({ 'url': session.url })
   except Exception as e:
     import traceback
