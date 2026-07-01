@@ -204,6 +204,7 @@ function ExpressButtonInner({
 
   const expressOptions = {
     shippingAddressRequired: true,
+    emailRequired: true,
     allowedShippingCountries: ["GB", "US", "CA", "AU", "NZ", "IE", "FR", "DE"],
     buttonType: {
       applePay: "buy" as const,
