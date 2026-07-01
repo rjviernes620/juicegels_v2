@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, ExpressCheckoutElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { type CartItem, type CouponSummary } from "../types";
-import { CHECKOUT_API_BASE } from "../utils/shopHelpers";
+import { CHECKOUT_API_BASE, buildShippingOptions } from "../utils/shopHelpers";
 
 // Retrieve the publishable key from environment variables
 const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "";
@@ -88,30 +88,26 @@ function ExpressButtonInner({
       // Dynamic shipping calculation inside the payment sheet
       const handleShippingAddressChange = (event: any) => {
         const { address, resolve } = event;
-        const isFree = orderTotal >= 30 || !!couponSummary?.freeShipping;
-        const rates = [];
+        
+        // Replicate free shipping promo code checks from App.tsx
+        const isFreeShippingPromoApplied = !!(
+          couponSummary &&
+          (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
+           couponSummary.promotionCodeId === "promo_1ToCW2K4CROOpWXUXvpVGOFN")
+        );
 
-        if (address.country === "GB") {
-          rates.push({
-            id: "tracked48",
-            displayName: "Tracked 48 (Standard)",
-            amount: isFree ? 0 : 400,
-            detail: "2-3 business days",
-          });
-          rates.push({
-            id: "tracked24",
-            displayName: "Tracked 24 (Express)",
-            amount: 480,
-            detail: "1-2 business days",
-          });
-        } else {
-          rates.push({
-            id: "international",
-            displayName: "International Tracked",
-            amount: 1000,
-            detail: "5-7 business days",
-          });
-        }
+        const options = buildShippingOptions(
+          orderTotal,
+          address.country || "GB",
+          isFreeShippingPromoApplied
+        );
+
+        const rates = options.map((option) => ({
+          id: option.id,
+          displayName: option.label,
+          amount: Math.round(option.amount * 100),
+          detail: option.estimate,
+        }));
 
         resolve({ shippingRates: rates });
       };
