@@ -1853,7 +1853,7 @@ export function BasketPage({
                 <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
                   <button onClick={() => navigate("/")} style={{ border: "1.5px solid rgba(212, 84, 122, 0.18)", background: "rgba(128, 33, 65, 0.44)", borderRadius: 12, height: 46, padding: "0 18px", fontSize: 13, fontWeight: 600, color: "#ffd6e9", cursor: "pointer", flexShrink: 0 }}>+ Add more</button>
                   <button onClick={triggerPreorder} style={{ flex: 1, background: "rgba(195, 18, 77, 0.64)", color: "#fff", border: "none", borderRadius: 12, height: 46, fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
-                    Pre-order · £{orderTotal.toFixed(2)}
+                    Process Checkout· £{orderTotal.toFixed(2)}
                   </button>
                 </div>
 
