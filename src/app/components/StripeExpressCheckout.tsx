@@ -130,7 +130,7 @@ function ExpressButtonInner({
   const handleConfirm = async (event: any) => {
     if (!stripe || !elements) return;
 
-    const { shippingAddress, shippingRate } = event;
+    const { shippingAddress, shippingRate, billingDetails } = event;
     const nameParts = (shippingAddress.name || "").trim().split(" ");
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "";
@@ -140,11 +140,11 @@ function ExpressButtonInner({
       instagram: instagramHandle,
       firstName: firstName,
       lastName: lastName,
-      email: shippingAddress.email || "",
-      phone: shippingAddress.phone || "",
+      email: billingDetails?.email || shippingAddress?.email || "",
+      phone: billingDetails?.phone || shippingAddress?.phone || "",
       address: shippingAddress.address.line1 || "",
       city: shippingAddress.address.city || "",
-      postcode: shippingAddress.address.postalCode || "",
+      postcode: shippingAddress.address.postal_code || shippingAddress.address.postalCode || "",
       country: shippingAddress.address.country || "GB",
     };
 
