@@ -33,6 +33,9 @@ export default defineConfig(({ mode }) => {
       __CLOUDFLARE_TURNSTILE_SITE_KEY__: JSON.stringify(
         env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY || ''
       ),
+      'import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY': JSON.stringify(
+        env.VITE_STRIPE_PUBLISHABLE_KEY || env.STRIPE_PUBLISH_KEY || env.STRIPE_PUBLISHABLE_KEY || ''
+      ),
     },
     build: {
       outDir: 'prod',

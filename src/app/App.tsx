@@ -2178,6 +2178,8 @@ export default function App() {
           setForm={setForm}
           setErrors={setErrors}
           initialForm={initialForm}
+          form={form}
+          errors={errors}
         />
       )}
 

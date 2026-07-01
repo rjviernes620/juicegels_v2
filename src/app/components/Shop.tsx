@@ -4,6 +4,7 @@ import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, X, Instagram } from "lu
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 import { Turnstile } from "./ui/Turnstile";
 
+import { StripeExpressCheckout } from "./StripeExpressCheckout";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { PortableText } from "./PortableText";
 import { TiktokIcon } from "./About";
@@ -1242,6 +1243,113 @@ export interface BasketPageProps {
   setForm: React.Dispatch<React.SetStateAction<FormData>>;
   setErrors: React.Dispatch<React.SetStateAction<Partial<FormData>>>;
   initialForm: FormData;
+  form: FormData;
+  errors: Partial<FormData>;
+}
+
+function ContactPreferenceSelector({
+  contactMethod,
+  instagram,
+  errors,
+  onChangeField,
+}: {
+  contactMethod: "instagram" | "email";
+  instagram: string;
+  errors: Record<string, string>;
+  onChangeField: (field: "contactMethod" | "instagram", value: string) => void;
+}) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#fff9fb", marginBottom: 10 }}>
+        How should we contact you to confirm your nail sizes?
+      </label>
+      
+      <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+        <button
+          type="button"
+          onClick={() => onChangeField("contactMethod", "instagram")}
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            padding: "10px 12px",
+            borderRadius: 12,
+            border: `1.5px solid ${contactMethod === "instagram" ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+            background: contactMethod === "instagram" ? "rgba(128, 33, 65, 0.44)" : "#fc6587",
+            color: contactMethod === "instagram" ? "#ffd6e9" : "#fff9fb",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+        >
+          📸 Instagram
+        </button>
+        
+        <button
+          type="button"
+          onClick={() => onChangeField("contactMethod", "email")}
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            padding: "10px 12px",
+            borderRadius: 12,
+            border: `1.5px solid ${contactMethod === "email" ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+            background: contactMethod === "email" ? "rgba(128, 33, 65, 0.44)" : "#fc6587",
+            color: contactMethod === "email" ? "#ffd6e9" : "#fff9fb",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+        >
+          ✉️ Email
+        </button>
+      </div>
+      
+      {contactMethod === "instagram" && (
+        <div style={{ marginTop: 10 }}>
+          <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#fff9fb", marginBottom: 6 }}>
+            Instagram Username
+          </label>
+          <input
+            type="text"
+            placeholder="@yourhandle"
+            value={instagram}
+            onChange={(e) => onChangeField("instagram", e.target.value)}
+            style={{
+              width: "100%",
+              height: 40,
+              padding: "0 12px",
+              borderRadius: 10,
+              border: `1px solid ${errors.instagram ? "#ef4444" : "rgba(212, 84, 122, 0.18)"}`,
+              background: "#fc6587",
+              color: "#fff9fb",
+              fontSize: 13,
+              boxSizing: "border-box",
+            }}
+          />
+          {errors.instagram && (
+            <span style={{ display: "block", color: "#ffd6e9", fontSize: 11, marginTop: 4 }}>
+              {errors.instagram}
+            </span>
+          )}
+          
+          <div style={{ display: "flex", gap: 10, padding: "10px 12px", background: "#fffbeb", borderRadius: 10, border: "1px solid #fef3c7", fontSize: 11, color: "#92400e", lineHeight: 1.4, marginTop: 8 }}>
+            <span style={{ fontSize: 14, flexShrink: 0 }}>⚠️</span>
+            <div>
+              <strong>Private Account:</strong> If your Instagram is private, please message <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> first to ensure we can contact you.
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function BasketPage({
@@ -1271,8 +1379,40 @@ export function BasketPage({
   isMobile,
   setForm,
   setErrors,
-  initialForm
+  initialForm,
+  form,
+  errors
 }: BasketPageProps) {
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  // Separate state specifically for Express Checkout contact details
+  const [expressContactMethod, setExpressContactMethod] = useState<"instagram" | "email" >("instagram");
+  const [expressInstagram, setExpressInstagram] = useState<string>("");
+  const [expressErrors, setExpressErrors] = useState<Record<string, string>>({});
+
+  const handleExpressFormChange = (field: "contactMethod" | "instagram", value: string) => {
+    if (field === "contactMethod") {
+      setExpressContactMethod(value as "instagram" | "email");
+    } else {
+      setExpressInstagram(value);
+    }
+    if (expressErrors[field]) {
+      setExpressErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+    if (validationError) {
+      setValidationError(null);
+    }
+  };
+
+  const handleExpressValidationError = (msg: string | null, fieldErrors?: Record<string, string>) => {
+    setValidationError(msg);
+    if (fieldErrors) {
+      setExpressErrors(fieldErrors);
+    } else {
+      setExpressErrors({});
+    }
+  };
+
   const triggerPreorder = () => {
     setForm(initialForm);
     setErrors({});
@@ -1465,8 +1605,55 @@ export function BasketPage({
                 </div>
               </div>
 
-              <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#4f444a", lineHeight: 1.5, marginBottom: 4 }}>
+              <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#4f444a", lineHeight: 1.5, marginBottom: 14 }}>
                 You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", margin: "20px 0 14px" }}>
+                <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
+                <span style={{ padding: "0 10px", fontSize: 11, fontWeight: 600, color: "#4f444a", letterSpacing: "1px" }}>OR</span>
+                <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
+              </div>
+
+              <div style={{
+                background: "rgba(30, 20, 25, 0.4)",
+                border: "2px dashed rgba(252, 101, 135, 0.4)",
+                borderRadius: 16,
+                padding: 16,
+                boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
+                marginBottom: 20,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 18 }}>⚡</span>
+                  <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#ffd6e9", letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                    Express Checkout
+                  </h3>
+                </div>
+                <p style={{ margin: "0 0 14px", fontSize: 12, color: "#fff9fb", opacity: 0.85, lineHeight: 1.4 }}>
+                  Pay instantly with <strong>Apple Pay</strong> or <strong>Google Pay</strong> using your saved address details.
+                </p>
+
+                <ContactPreferenceSelector
+                  contactMethod={expressContactMethod}
+                  instagram={expressInstagram}
+                  errors={expressErrors}
+                  onChangeField={handleExpressFormChange}
+                />
+
+                {validationError && (
+                  <div style={{ color: "#ffd6e9", fontSize: 12, background: "rgba(239, 68, 68, 0.2)", border: "1px solid rgba(239, 68, 68, 0.4)", borderRadius: 10, padding: "10px 12px", marginBottom: 14 }}>
+                    {validationError}
+                  </div>
+                )}
+
+                <StripeExpressCheckout
+                  cart={cart}
+                  orderTotal={orderTotal}
+                  couponSummary={couponSummary}
+                  contactMethod={expressContactMethod}
+                  instagramHandle={expressInstagram}
+                  onValidationError={handleExpressValidationError}
+                />
               </div>
             </>
           )}
@@ -1669,6 +1856,54 @@ export function BasketPage({
                     Pre-order · £{orderTotal.toFixed(2)}
                   </button>
                 </div>
+
+                {/* Visual Separator */}
+                <div style={{ display: "flex", alignItems: "center", margin: "20px 0 14px" }}>
+                  <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
+                  <span style={{ padding: "0 10px", fontSize: 11, fontWeight: 600, color: "#4f444a", letterSpacing: "1px" }}>OR</span>
+                  <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
+                </div>
+
+                {/* Express Checkout Card */}
+                <div style={{
+                  background: "rgba(30, 20, 25, 0.4)",
+                  border: "2px dashed rgba(252, 101, 135, 0.4)",
+                  borderRadius: 16,
+                  padding: 16,
+                  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.2)",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                    <span style={{ fontSize: 18 }}>⚡</span>
+                    <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#ffd6e9", letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                      Express Checkout
+                    </h3>
+                  </div>
+                  <p style={{ margin: "0 0 14px", fontSize: 12, color: "#fff9fb", opacity: 0.85, lineHeight: 1.4 }}>
+                    Pay instantly with <strong>Apple Pay</strong> or <strong>Google Pay</strong> using your saved address details.
+                  </p>
+
+                  <ContactPreferenceSelector
+                    contactMethod={expressContactMethod}
+                    instagram={expressInstagram}
+                    errors={expressErrors}
+                    onChangeField={handleExpressFormChange}
+                  />
+
+                  {validationError && (
+                    <div style={{ color: "#ffd6e9", fontSize: 12, background: "rgba(239, 68, 68, 0.2)", border: "1px solid rgba(239, 68, 68, 0.4)", borderRadius: 10, padding: "10px 12px", marginBottom: 12 }}>
+                      {validationError}
+                    </div>
+                  )}
+
+                  <StripeExpressCheckout
+                    cart={cart}
+                    orderTotal={orderTotal}
+                    couponSummary={couponSummary}
+                    contactMethod={expressContactMethod}
+                    instagramHandle={expressInstagram}
+                    onValidationError={handleExpressValidationError}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -1839,68 +2074,15 @@ export function PreorderPage({
             </select>
           </Field>
 
-          <Field label="Preferred Contact Method">
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                type="button"
-                onClick={() => handleFormChange("contactMethod", "instagram")}
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  border: `1.5px solid ${form.contactMethod === "instagram" ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                  background: form.contactMethod === "instagram" ? "rgba(128, 33, 65, 0.44)" : "#fc6587",
-                  color: form.contactMethod === "instagram" ? "#ffd6e9" : "#fff9fb",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <span style={{ fontSize: 16 }}>📸</span> Instagram
-              </button>
-              <button
-                type="button"
-                onClick={() => handleFormChange("contactMethod", "email")}
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  border: `1.5px solid ${form.contactMethod === "email" ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                  background: form.contactMethod === "email" ? "rgba(128, 33, 65, 0.44)" : "#fc6587",
-                  color: form.contactMethod === "email" ? "#ffd6e9" : "#fff9fb",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <span style={{ fontSize: 16 }}>✉️</span> Email
-              </button>
+          <Field label="Contact Preference (Selected in Basket)">
+            <div style={{ padding: "10px 12px", background: "rgba(128, 33, 65, 0.22)", borderRadius: 12, border: "1.5px solid rgba(212, 84, 122, 0.18)", fontSize: 13, color: "#fff9fb" }}>
+              {form.contactMethod === "instagram" ? (
+                <span>📸 Instagram: <strong>{form.instagram || "@username"}</strong></span>
+              ) : (
+                <span>✉️ Email: <strong>We will contact you at the email address provided below.</strong></span>
+              )}
             </div>
           </Field>
-
-          {form.contactMethod === "instagram" && (
-            <>
-              <Field label="Instagram username" error={errors.instagram}>
-                <input type="text" placeholder="@juicegels" value={form.instagram} onChange={(e) => handleFormChange("instagram", e.target.value)} style={mkInput(!!errors.instagram)} />
-              </Field>
-              <div style={{ display: "flex", gap: 10, padding: "10px 12px", background: "#fffbeb", borderRadius: 10, border: "1px solid #fef3c7", fontSize: 12, color: "#92400e", lineHeight: 1.45, marginTop: -4 }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
-                <div>
-                  <strong>Private Account notice:</strong> If you have a private Instagram Account and wish to have communications via Instagram, please message the <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> Instagram account first to make sure that communications can be made.
-                </div>
-              </div>
-            </>
-          )}
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <Field label="City" error={errors.city}>

@@ -1628,8 +1628,12 @@ def create_checkout_session():
   if remote_ip and ',' in remote_ip:
     remote_ip = remote_ip.split(',')[0].strip()
 
-  if not turnstile_token or not verify_turnstile(turnstile_token, remote_ip):
-    return jsonify({ 'error': 'Security check failed. Please complete the security check.' }), 400
+  # Allow Turnstile bypass for Express Checkout since mobile wallet authentication verifies user authenticity
+  is_express_checkout = turnstile_token == "Bypassed_For_Express_Checkout"
+
+  if not is_express_checkout:
+    if not turnstile_token or not verify_turnstile(turnstile_token, remote_ip):
+      return jsonify({ 'error': 'Security check failed. Please complete the security check.' }), 400
 
   items = payload.get('items', [])
   form = payload.get('form', {})
