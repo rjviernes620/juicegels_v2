@@ -46,9 +46,13 @@ export function formatMoney(amount: number) {
   return `£${amount.toFixed(2)}`;
 }
 
-export function buildShippingOptions(itemsTotal: number, country: string): ShippingOption[] {
+export function buildShippingOptions(
+  itemsTotal: number,
+  country: string,
+  isFreeShippingApplied: boolean = false
+): ShippingOption[] {
   if (country === "GB" || !country) {
-    const tracked48IsFree = itemsTotal >= SHIPPING_FREE_THRESHOLD;
+    const tracked48IsFree = isFreeShippingApplied || itemsTotal >= SHIPPING_FREE_THRESHOLD;
 
     return [
       {
@@ -56,7 +60,9 @@ export function buildShippingOptions(itemsTotal: number, country: string): Shipp
         stripeRateId: SHIPPING_RATE_IDS.tracked48,
         label: "Royal Mail Tracked 48",
         description: tracked48IsFree
-          ? `Free on orders of ${formatMoney(SHIPPING_FREE_THRESHOLD)} or more.`
+          ? isFreeShippingApplied
+            ? "Free shipping applied."
+            : `Free on orders of ${formatMoney(SHIPPING_FREE_THRESHOLD)} or more.`
           : "Standard tracked delivery. (Free on Orders over £30)",
         estimate: "Estimated delivery within 2 days after your order is finished.",
         amount: tracked48IsFree ? 0 : 1.99,
@@ -66,25 +72,26 @@ export function buildShippingOptions(itemsTotal: number, country: string): Shipp
         id: "tracked24",
         stripeRateId: SHIPPING_RATE_IDS.tracked24,
         label: "Royal Mail Tracked 24",
-        description: "Priority tracked delivery.",
+        description: isFreeShippingApplied ? "Free priority shipping applied." : "Priority tracked delivery.",
         estimate: "Estimated delivery within 1 business day after your order is finished.",
-        amount: 4,
-        isFree: false,
+        amount: isFreeShippingApplied ? 0 : 4,
+        isFree: isFreeShippingApplied,
       },
     ];
   } else {
     const isEurope = EUROPEAN_COUNTRIES.has(country.toUpperCase());
+    const internationalIsFree = isFreeShippingApplied;
     return [
       {
         id: "international",
         stripeRateId: SHIPPING_RATE_IDS.international,
         label: "Royal Mail International Tracked",
-        description: "International tracked delivery.",
+        description: internationalIsFree ? "Free international shipping applied." : "International tracked delivery.",
         estimate: isEurope
           ? "Estimated delivery within 3-5 business days after your order is finished."
           : "Estimated delivery within 6-7 business days after your order is finished.",
-        amount: 9.50,
-        isFree: false,
+        amount: internationalIsFree ? 0 : 9.50,
+        isFree: internationalIsFree,
       },
     ];
   }

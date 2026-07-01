@@ -504,7 +504,16 @@ export default function App() {
   const discountTotal = couponDiscount + nailSetSaleDiscountAmount;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
-  const shippingOptions = useMemo(() => buildShippingOptions(orderTotal, form.country), [orderTotal, form.country]);
+  const isFreeShippingPromoApplied = !!(
+    couponSummary &&
+    (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
+     couponSummary.promotionCodeId === "promo_1ToCW2K4CROOpWXUXvpVGOFN")
+  );
+
+  const shippingOptions = useMemo(
+    () => buildShippingOptions(orderTotal, form.country, isFreeShippingPromoApplied),
+    [orderTotal, form.country, isFreeShippingPromoApplied]
+  );
 
   useEffect(() => {
     if (shippingOptions.length > 0 && !shippingOptions.some((o) => o.id === shippingOptionId)) {

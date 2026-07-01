@@ -269,7 +269,17 @@ EUROPEAN_COUNTRIES = {
 }
 
 
-def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence, country='GB'):
+def is_free_shipping_coupon(coupon_code=None, promotion_code_id=None):
+  if coupon_code:
+    if str(coupon_code).strip().upper() == 'DEV_JUNJUN':
+      return True
+  if promotion_code_id:
+    if str(promotion_code_id).strip() == 'promo_1ToCW2K4CROOpWXUXvpVGOFN':
+      return True
+  return False
+
+
+def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence, country='GB', has_free_shipping_coupon=False):
   shipping_option_id = str(raw_shipping_option_id or '').strip()
   option = SHIPPING_OPTIONS.get(shipping_option_id)
 
@@ -278,10 +288,23 @@ def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence, c
 
   free_threshold_pence = option.get('free_threshold_pence')
   amount_pence = int(option['amount_pence'])
-  is_free = bool(free_threshold_pence is not None and discounted_subtotal_pence >= int(free_threshold_pence))
+  is_free = bool(
+    has_free_shipping_coupon or
+    (free_threshold_pence is not None and discounted_subtotal_pence >= int(free_threshold_pence))
+  )
 
   if is_free:
     amount_pence = 0
+
+  min_days = 2
+  max_days = 2
+  if shipping_option_id == 'tracked24':
+    min_days = 1
+    max_days = 1
+  elif shipping_option_id == 'international':
+    is_europe = str(country or '').strip().upper() in EUROPEAN_COUNTRIES
+    min_days = 3 if is_europe else 6
+    max_days = 5 if is_europe else 7
 
   stripe_shipping_option = (
     {
@@ -295,16 +318,16 @@ def resolve_shipping_option(raw_shipping_option_id, discounted_subtotal_pence, c
         'delivery_estimate': {
           'minimum': {
             'unit': 'day',
-            'value': 2,
+            'value': min_days,
           },
           'maximum': {
             'unit': 'day',
-            'value': 2,
+            'value': max_days,
           },
         },
       },
     }
-    if shipping_option_id == 'tracked48' and is_free
+    if is_free
     else {
       'shipping_rate': option['stripe_rate_id'],
     }
@@ -1698,9 +1721,23 @@ def create_checkout_session():
     discounted_subtotal_pence -= size_guide_discount_pence
   discounted_subtotal_pence = max(0, discounted_subtotal_pence)
 
+  has_free_shipping = False
+  if coupon_summary:
+    has_free_shipping = is_free_shipping_coupon(
+      coupon_code=coupon_summary.get('code'),
+      promotion_code_id=coupon_summary.get('promotion_code_id')
+    )
+  elif raw_coupon_code:
+    has_free_shipping = is_free_shipping_coupon(coupon_code=raw_coupon_code)
+
   country = str(form.get('country') or 'GB').strip()
   try:
-    shipping_option = resolve_shipping_option(shipping_option_id, discounted_subtotal_pence, country)
+    shipping_option = resolve_shipping_option(
+      shipping_option_id,
+      discounted_subtotal_pence,
+      country,
+      has_free_shipping_coupon=has_free_shipping
+    )
   except ValueError as error:
     return jsonify({ 'error': str(error) }), 400
 
