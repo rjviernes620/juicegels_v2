@@ -293,9 +293,22 @@ export default function App() {
 
       if (itemsParam) {
         purchasedItems = parseBasketItemsParam(itemsParam, products);
+        if (typeof window !== "undefined" && window.sessionStorage) {
+          window.sessionStorage.setItem("juicegels_confirmation_items", JSON.stringify(purchasedItems));
+        }
       } else if (productsParam) {
         purchasedItems = parseMetaBasketProductsParam(productsParam, products);
-      } else if (typeof window !== "undefined") {
+        if (typeof window !== "undefined" && window.sessionStorage) {
+          window.sessionStorage.setItem("juicegels_confirmation_items", JSON.stringify(purchasedItems));
+        }
+      } else if (typeof window !== "undefined" && window.sessionStorage) {
+        try {
+          const cached = window.sessionStorage.getItem("juicegels_confirmation_items");
+          if (cached) purchasedItems = JSON.parse(cached) as CartItem[];
+        } catch {}
+      }
+
+      if (purchasedItems.length === 0 && typeof window !== "undefined") {
         try {
           purchasedItems = JSON.parse(localStorage.getItem("juicegels_cart") ?? "[]") as CartItem[];
         } catch {
@@ -310,6 +323,12 @@ export default function App() {
       const sessionId = searchParams.get("session_id");
       const paymentIntentId = searchParams.get("payment_intent");
 
+      // Clean up sensitive Stripe details from browser URL instantly
+      if (typeof window !== "undefined" && window.history && window.history.replaceState) {
+        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?checkout=success";
+        window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
+      }
+
       if (sessionId) {
         fetch(`${CHECKOUT_API_BASE}/api/checkout-session/${sessionId}`)
           .then((res) => {
@@ -317,20 +336,23 @@ export default function App() {
             return res.json();
           })
           .then((data) => {
-            setForm((prev) => ({
-              ...prev,
-              firstName: data.firstName || prev.firstName,
-              lastName: data.lastName || prev.lastName,
-              email: data.email || prev.email,
-              phone: data.phone || prev.phone,
-              address: data.address || prev.address,
-              instagram: data.instagram || prev.instagram,
-              city: data.city || prev.city,
-              postcode: data.postcode || prev.postcode,
-              notes: data.notes || prev.notes,
-              contactMethod: data.contactMethod || prev.contactMethod,
-              country: data.country || prev.country,
-            }));
+            const updatedForm = {
+              firstName: data.firstName || "",
+              lastName: data.lastName || "",
+              email: data.email || "",
+              phone: data.phone || "",
+              address: data.address || "",
+              instagram: data.instagram || "",
+              city: data.city || "",
+              postcode: data.postcode || "",
+              notes: data.notes || "",
+              contactMethod: data.contactMethod || "instagram",
+              country: data.country || "GB",
+            };
+            if (typeof window !== "undefined" && window.sessionStorage) {
+              window.sessionStorage.setItem("juicegels_confirmation_form", JSON.stringify(updatedForm));
+            }
+            setForm((prev) => ({ ...prev, ...updatedForm }));
           })
           .catch((err) => {
             console.error("Error fetching checkout session:", err);
@@ -342,24 +364,35 @@ export default function App() {
             return res.json();
           })
           .then((data) => {
-            setForm((prev) => ({
-              ...prev,
-              firstName: data.firstName || prev.firstName,
-              lastName: data.lastName || prev.lastName,
-              email: data.email || prev.email,
-              phone: data.phone || prev.phone,
-              address: data.address || prev.address,
-              instagram: data.instagram || prev.instagram,
-              city: data.city || prev.city,
-              postcode: data.postcode || prev.postcode,
-              notes: data.notes || prev.notes,
-              contactMethod: data.contactMethod || prev.contactMethod,
-              country: data.country || prev.country,
-            }));
+            const updatedForm = {
+              firstName: data.firstName || "",
+              lastName: data.lastName || "",
+              email: data.email || "",
+              phone: data.phone || "",
+              address: data.address || "",
+              instagram: data.instagram || "",
+              city: data.city || "",
+              postcode: data.postcode || "",
+              notes: data.notes || "",
+              contactMethod: data.contactMethod || "instagram",
+              country: data.country || "GB",
+            };
+            if (typeof window !== "undefined" && window.sessionStorage) {
+              window.sessionStorage.setItem("juicegels_confirmation_form", JSON.stringify(updatedForm));
+            }
+            setForm((prev) => ({ ...prev, ...updatedForm }));
           })
           .catch((err) => {
             console.error("Error fetching payment intent:", err);
           });
+      } else if (typeof window !== "undefined" && window.sessionStorage) {
+        try {
+          const cachedForm = window.sessionStorage.getItem("juicegels_confirmation_form");
+          if (cachedForm) {
+            const data = JSON.parse(cachedForm);
+            setForm((prev) => ({ ...prev, ...data }));
+          }
+        } catch {}
       }
 
       return;
