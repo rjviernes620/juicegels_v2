@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, ExpressCheckoutElement } from "@stripe/react-stripe-js";
+import { Elements, ExpressCheckoutElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { type CartItem, type CouponSummary } from "../types";
 import { CHECKOUT_API_BASE } from "../utils/shopHelpers";
 
@@ -25,73 +25,7 @@ export function StripeExpressCheckout({
   instagramHandle,
   onValidationError,
 }: StripeExpressCheckoutProps) {
-  const [clientSecret, setClientSecret] = useState<string>("");
   const [canPay, setCanPay] = useState<boolean | null>(null);
-  const [loadError, setLoadError] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!stripePromise) return;
-
-    let active = true;
-    const fetchSecret = async () => {
-      try {
-        setLoadError(false);
-        const response = await fetch(`${CHECKOUT_API_BASE}/create-checkout-session`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            embedded: true,
-            items: cart.map((item) => ({
-              product: {
-                id: item.product.id,
-                name: item.product.name,
-                price: item.product.price,
-                description: item.product.description,
-                image: item.product.image,
-              },
-              shape: item.shape,
-              length: item.length,
-              quantity: item.quantity,
-            })),
-            form: {
-              contactMethod: contactMethod,
-              instagram: instagramHandle,
-            },
-            coupon: couponSummary?.code ?? null,
-            promotionCodeId: couponSummary?.promotionCodeId ?? null,
-            turnstileToken: "Bypassed_For_Express_Checkout",
-          }),
-        });
-
-        if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.error || "Failed to create Stripe Checkout Session");
-        }
-
-        const data = await response.json();
-        if (active && data.clientSecret) {
-          setClientSecret(data.clientSecret);
-        }
-      } catch (err) {
-        console.error("Error pre-loading Stripe session:", err);
-        if (active) {
-          setLoadError(true);
-        }
-      }
-    };
-
-    // Debounce the call to avoid hitting the API on every single keystroke
-    const timer = setTimeout(() => {
-      fetchSecret();
-    }, 450);
-
-    return () => {
-      active = false;
-      clearTimeout(timer);
-    };
-  }, [cart, orderTotal, couponSummary, contactMethod, instagramHandle]);
 
   if (!stripePromise) {
     return (
@@ -101,26 +35,20 @@ export function StripeExpressCheckout({
     );
   }
 
-  if (loadError) {
-    return (
-      <div style={{ color: "#ffd6e9", fontSize: 12, textAlign: "center", margin: "10px 0", opacity: 0.85, padding: "8px 12px", background: "rgba(239, 68, 68, 0.15)", borderRadius: 10, border: "1px solid rgba(239, 68, 68, 0.3)" }}>
-        Express payment option is temporarily unavailable. Please proceed with the standard **Pre-order** checkout.
-      </div>
-    );
-  }
-
-  if (!clientSecret) {
-    return (
-      <div style={{ display: "flex", justifyContent: "center", padding: "12px 0" }}>
-        <span style={{ color: "#ffd6e9", fontSize: 12, opacity: 0.8 }}>Loading express payment option...</span>
-      </div>
-    );
-  }
+  // Define Elements options for deferred intent configuration (recommended by Stripe for Express elements)
+  const elementsOptions = {
+    mode: "payment" as const,
+    amount: Math.max(1, Math.round(orderTotal * 100)), // smallest currency subunit (pence)
+    currency: "gbp",
+  };
 
   return (
     <div style={{ width: "100%", marginTop: 14 }}>
-      <Elements stripe={stripePromise} options={{ clientSecret }}>
+      <Elements stripe={stripePromise} options={elementsOptions}>
         <ExpressButtonInner
+          cart={cart}
+          orderTotal={orderTotal}
+          couponSummary={couponSummary}
           contactMethod={contactMethod}
           instagramHandle={instagramHandle}
           onValidationError={onValidationError}
@@ -136,19 +64,148 @@ export function StripeExpressCheckout({
   );
 }
 
-interface InnerProps {
-  contactMethod: "instagram" | "email";
-  instagramHandle: string;
-  onValidationError: (msg: string | null, fieldErrors?: Record<string, string>) => void;
+interface InnerProps extends StripeExpressCheckoutProps {
   setCanPay: (val: boolean) => void;
 }
 
 function ExpressButtonInner({
+  cart,
+  orderTotal,
+  couponSummary,
   contactMethod,
   instagramHandle,
   onValidationError,
   setCanPay,
 }: InnerProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  useEffect(() => {
+    if (!elements) return;
+
+    const expressCheckoutElement = elements.getElement("expressCheckout");
+    if (expressCheckoutElement) {
+      // Dynamic shipping calculation inside the payment sheet
+      const handleShippingAddressChange = (event: any) => {
+        const { address, resolve } = event;
+        const isFree = orderTotal >= 30 || !!couponSummary?.freeShipping;
+        const rates = [];
+
+        if (address.country === "GB") {
+          rates.push({
+            id: "tracked48",
+            displayName: "Tracked 48 (Standard)",
+            amount: isFree ? 0 : 400,
+            detail: "2-3 business days",
+          });
+          rates.push({
+            id: "tracked24",
+            displayName: "Tracked 24 (Express)",
+            amount: 480,
+            detail: "1-2 business days",
+          });
+        } else {
+          rates.push({
+            id: "international",
+            displayName: "International Tracked",
+            amount: 1000,
+            detail: "5-7 business days",
+          });
+        }
+
+        resolve({ shippingRates: rates });
+      };
+
+      const handleShippingRateChange = (event: any) => {
+        const { resolve } = event;
+        resolve({});
+      };
+
+      expressCheckoutElement.on("shippingaddresschange", handleShippingAddressChange);
+      expressCheckoutElement.on("shippingratechange", handleShippingRateChange);
+
+      return () => {
+        expressCheckoutElement.off("shippingaddresschange", handleShippingAddressChange);
+        expressCheckoutElement.off("shippingratechange", handleShippingRateChange);
+      };
+    }
+  }, [elements, orderTotal, couponSummary]);
+
+  const handleConfirm = async (event: any) => {
+    if (!stripe || !elements) return;
+
+    const { shippingAddress, shippingRate } = event;
+    const nameParts = (shippingAddress.name || "").trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+
+    const formPayload = {
+      contactMethod: contactMethod,
+      instagram: instagramHandle,
+      firstName: firstName,
+      lastName: lastName,
+      email: shippingAddress.email || "",
+      phone: shippingAddress.phone || "",
+      address: shippingAddress.address.line1 || "",
+      city: shippingAddress.address.city || "",
+      postcode: shippingAddress.address.postalCode || "",
+      country: shippingAddress.address.country || "GB",
+    };
+
+    try {
+      // 1. Create PaymentIntent dynamically on confirmation
+      const response = await fetch(`${CHECKOUT_API_BASE}/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          embedded: true,
+          items: cart.map((item) => ({
+            product: {
+              id: item.product.id,
+              name: item.product.name,
+              price: item.product.price,
+              description: item.product.description,
+              image: item.product.image,
+            },
+            shape: item.shape,
+            length: item.length,
+            quantity: item.quantity,
+          })),
+          form: formPayload,
+          shippingOptionId: shippingRate.id,
+          coupon: couponSummary?.code ?? null,
+          promotionCodeId: couponSummary?.promotionCodeId ?? null,
+          turnstileToken: "Bypassed_For_Express_Checkout",
+        }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to initialize payment.");
+      }
+
+      const { clientSecret } = await response.json();
+
+      // 2. Submit payment intent confirmation to Stripe
+      const { error } = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/confirmation?checkout=success&items=${buildItemsParam(cart)}`,
+        },
+      });
+
+      if (error) {
+        onValidationError(error.message);
+      }
+    } catch (err: any) {
+      console.error("Error during payment confirmation:", err);
+      onValidationError(err.message || "An unexpected error occurred during checkout.");
+    }
+  };
+
   const expressOptions = {
     shippingAddressRequired: true,
     allowedShippingCountries: ["GB", "US", "CA", "AU", "NZ", "IE", "FR", "DE"],
@@ -164,7 +221,7 @@ function ExpressButtonInner({
       const { resolve, reject } = event;
       onValidationError(null);
 
-      // Validate the custom fields synchronously before triggering payment sheet
+      // Enforce custom username validation
       if (contactMethod === "instagram" && !instagramHandle.trim()) {
         onValidationError("Instagram handle is required to confirm press-on nail sizes.", { instagram: "Required" });
         reject();
@@ -185,10 +242,11 @@ function ExpressButtonInner({
         );
         setCanPay(hasMethods);
       }}
-      onConfirm={() => {
-        // Stripe automatically redirects on session confirmation
-        console.log("Express payment authorized. Redirecting to confirmation page...");
-      }}
+      onConfirm={handleConfirm}
     />
   );
+}
+
+function buildItemsParam(cart: CartItem[]) {
+  return cart.map((item) => `${item.product.id}:${item.quantity}`).join(",");
 }

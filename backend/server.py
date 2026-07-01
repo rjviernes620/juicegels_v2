@@ -890,6 +890,133 @@ def handle_completed_checkout_session(checkout_session):
   print("Customer confirmation email process completed.")
 
 
+def handle_completed_payment_intent(payment_intent):
+  print("Building order summary for completed PaymentIntent...")
+  order_summary = build_order_summary_from_payment_intent(payment_intent)
+
+  print("Sending store owner order email notification (Express)...")
+  try:
+    send_pingram_order_email(order_summary)
+    print("Store owner order email notification successfully sent.")
+  except Exception as e:
+    print(f"Failed to send store owner email notification: {e}")
+    import traceback
+    traceback.print_exc()
+    raise
+
+  print("Sending customer purchase confirmation email (Express)...")
+  send_customer_order_email(order_summary)
+  print("Customer confirmation email process completed.")
+
+
+def build_order_summary_from_payment_intent(payment_intent):
+  intent_id = get_value(payment_intent, 'id', '')
+  metadata = get_value(payment_intent, 'metadata', {}) or {}
+  
+  charges = get_value(payment_intent, 'charges', {}) or {}
+  charges_data = get_value(charges, 'data', []) or []
+  customer_email = ''
+  billing_details = {}
+  card_brand = ''
+  card_last4 = ''
+  card_wallet_type = ''
+  payment_method_type = ''
+  
+  if charges_data and len(charges_data) > 0:
+    charge = charges_data[0]
+    billing_details = get_value(charge, 'billing_details', {}) or {}
+    customer_email = get_value(billing_details, 'email', '')
+    
+    payment_method_details = get_value(charge, 'payment_method_details', {}) or {}
+    payment_method_type = get_value(payment_method_details, 'type', '') or ''
+    if payment_method_type == 'card':
+      card = get_value(payment_method_details, 'card', {}) or {}
+      card_brand = get_value(card, 'brand', '') or ''
+      card_last4 = get_value(card, 'last4', '') or ''
+      wallet = get_value(card, 'wallet', {}) or {}
+      if wallet and not isinstance(wallet, str):
+        card_wallet_type = get_value(wallet, 'type', '') or ''
+        
+  shipping = get_value(payment_intent, 'shipping', {}) or {}
+  shipping_name = get_value(shipping, 'name', '')
+  shipping_address_obj = get_value(shipping, 'address', {}) or {}
+  shipping_address = format_address(shipping_address_obj)
+  
+  first_name = ''
+  last_name = ''
+  if shipping_name:
+    name_parts = shipping_name.strip().split(' ', 1)
+    first_name = name_parts[0]
+    last_name = name_parts[1] if len(name_parts) > 1 else ''
+    
+  phone = get_value(shipping, 'phone', '') or get_value(billing_details, 'phone', '') or ''
+  
+  # Parse items list from metadata
+  items_param = metadata.get('items', '')
+  line_items = []
+  subtotal_pence = 0
+  
+  try:
+    catalog = get_meta_catalog()
+    catalog_by_id = {p['id']: p for p in catalog}
+  except Exception as cat_err:
+    print(f"Error fetching catalog to build Express Order summary: {cat_err}")
+    catalog_by_id = {}
+  
+  if items_param:
+    for part in items_param.split(','):
+      if not part:
+        continue
+      if ':' in part:
+        prod_id, qty_str = part.split(':', 1)
+        qty = parse_int(qty_str, 1)
+        prod = catalog_by_id.get(prod_id)
+        if prod:
+          price = float(prod.get('price', 0))
+          unit_amount = round(price * 100)
+          subtotal_pence += unit_amount * qty
+          
+          line_items.append({
+            'description': prod.get('name', 'Product'),
+            'quantity': qty,
+            'unit_price': format_money_from_pence(unit_amount),
+            'line_total': format_money_from_pence(unit_amount * qty),
+          })
+          
+  total_amount = get_value(payment_intent, 'amount', 0)
+  shipping_amount_pence = total_amount - subtotal_pence
+  
+  coupon_code = metadata.get('coupon_code', '')
+  
+  return {
+    'session_id': intent_id,
+    'created_at': format_unix_timestamp(get_value(payment_intent, 'created')),
+    'payment_status': 'paid',
+    'customer_email': customer_email,
+    'first_name': first_name,
+    'last_name': last_name,
+    'phone': phone,
+    'instagram': metadata.get('instagram', ''),
+    'contact_preference': metadata.get('contact_preference', 'instagram'),
+    'notes': metadata.get('notes', ''),
+    'coupon_code': coupon_code,
+    'coupon_name': coupon_code,
+    'billing_address': format_address(get_value(billing_details, 'address', {}) or {}),
+    'shipping_address': shipping_address,
+    'shipping_method': metadata.get('shipping_method', 'Tracked Shipping'),
+    'shipping': format_money_from_pence(max(0, shipping_amount_pence)),
+    'subtotal': format_money_from_pence(subtotal_pence),
+    'discount': format_money_from_pence(max(0, subtotal_pence + max(0, shipping_amount_pence) - total_amount)),
+    'total': format_money_from_pence(total_amount),
+    'currency': str(get_value(payment_intent, 'currency', '') or '').upper(),
+    'line_items': line_items,
+    'payment_method_type': payment_method_type,
+    'card_brand': card_brand.lower(),
+    'card_last4': card_last4,
+    'card_wallet_type': card_wallet_type.lower(),
+  }
+
+
 def format_coupon_description(coupon):
   percent_off = get_value(coupon, 'percent_off')
   amount_off = get_value(coupon, 'amount_off')
@@ -1556,6 +1683,17 @@ def stripe_webhook():
       import traceback
       traceback.print_exc()
       return jsonify({ 'error': 'Failed to process completed checkout session.' }), 500
+  elif get_value(event, 'type') == 'payment_intent.succeeded':
+    try:
+      payment_intent = get_value(get_value(event, 'data', {}) or {}, 'object', {}) or {}
+      print(f"Stripe webhook: processing payment_intent.succeeded with ID: {get_value(payment_intent, 'id', '')}")
+      handle_completed_payment_intent(payment_intent)
+      print("Stripe webhook: successfully processed payment_intent.succeeded.")
+    except Exception as e:
+      print(f"Stripe webhook error while processing completed payment intent: {e}")
+      import traceback
+      traceback.print_exc()
+      return jsonify({ 'error': 'Failed to process completed payment intent.' }), 500
   else:
     print(f"Stripe webhook: ignoring unhandled event type: {get_value(event, 'type')}")
 
@@ -1768,62 +1906,47 @@ def create_checkout_session():
   is_embedded = payload.get('embedded', False)
   shipping_option = None
 
-  if not is_embedded:
-    country = str(form.get('country') or 'GB').strip()
-    try:
-      shipping_option = resolve_shipping_option(
-        shipping_option_id,
-        discounted_subtotal_pence,
-        country,
-        has_free_shipping_coupon=has_free_shipping
-      )
-    except ValueError as error:
-      return jsonify({ 'error': str(error) }), 400
+  if is_embedded and not shipping_option_id:
+    shipping_option_id = 'tracked48'
+
+  country = str(form.get('country') or 'GB').strip()
+  try:
+    shipping_option = resolve_shipping_option(
+      shipping_option_id,
+      discounted_subtotal_pence,
+      country,
+      has_free_shipping_coupon=has_free_shipping
+    )
+  except ValueError as error:
+    return jsonify({ 'error': str(error) }), 400
 
   try:
     if is_embedded:
-      # Prepare multiple shipping rates for Stripe Checkout to show based on the customer's shipping address
-      rates = [
-        {'shipping_rate': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy'},  # Tracked 24
-        {'shipping_rate': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii'},  # Tracked 48
-        {'shipping_rate': 'shr_1To72LK4CROOpWXUQ4DKmzFE'},  # International
-      ]
-      
-      # If free shipping is applicable, we can pass it as a free custom shipping rate
-      if has_free_shipping or (discounted_subtotal_pence >= 3000): # £30 threshold
-        rates.insert(0, {
-          'shipping_rate_data': {
-            'type': 'fixed_amount',
-            'fixed_amount': {
-              'amount': 0,
-              'currency': 'gbp',
-            },
-            'display_name': 'Free Delivery',
-            'delivery_estimate': {
-              'minimum': {'unit': 'day', 'value': 2},
-              'maximum': {'unit': 'day', 'value': 2},
-            },
-          }
-        })
-
-      session_params = {
-        'line_items': line_items,
-        'customer_email': form.get('email', '').strip() or None,
-        'billing_address_collection': 'required',
-        'shipping_address_collection': {
-          'allowed_countries': ['GB', 'US', 'CA', 'AU', 'NZ', 'IE', 'FR', 'DE'],
-        },
-        'shipping_options': rates,
+      intent = client.v1.payment_intents.create(params={
+        'amount': discounted_subtotal_pence + shipping_option['amount_pence'],
+        'currency': 'gbp',
         'metadata': {
+          'first_name': form.get('firstName', ''),
+          'last_name': form.get('lastName', ''),
+          'phone': form.get('phone', ''),
           'instagram': form.get('instagram', ''),
           'contact_preference': form.get('contactMethod', 'instagram'),
           'notes': form.get('notes', ''),
+          'shipping_address': form.get('address', ''),
+          'shipping_city': form.get('city', ''),
+          'shipping_postcode': form.get('postcode', ''),
+          'shipping_country': country,
           'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
+          'shipping_option_id': shipping_option['id'],
+          'shipping_method': shipping_option['label'],
+          'shipping_amount_pence': str(shipping_option['amount_pence']),
+          'items': items_param,
         },
-        'mode': 'payment',
-        'ui_mode': 'embedded_page',
-        'return_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
-      }
+        'automatic_payment_methods': {
+          'enabled': True,
+        },
+      })
+      return jsonify({ 'clientSecret': intent.client_secret })
     else:
       session_params = {
         'line_items': line_items,
@@ -1879,8 +2002,6 @@ def create_checkout_session():
       }]
 
     session = client.v1.checkout.sessions.create(params=session_params)
-    if is_embedded:
-      return jsonify({ 'clientSecret': session.client_secret, 'url': session.url })
     return jsonify({ 'url': session.url })
   except Exception as e:
     import traceback
