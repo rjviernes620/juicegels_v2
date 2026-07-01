@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, X, Instagram } from "lucide-react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
+import { Turnstile } from "./ui/Turnstile";
 
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { PortableText } from "./PortableText";
@@ -1710,6 +1711,7 @@ export interface PreorderPageProps {
   checkoutError: string | null;
   isMobile: boolean;
   showStripeRedirectModal: boolean;
+  setTurnstileToken: (token: string | null) => void;
 }
 
 export function PreorderPage({
@@ -1734,7 +1736,8 @@ export function PreorderPage({
   isSubmitting,
   checkoutError,
   isMobile,
-  showStripeRedirectModal
+  showStripeRedirectModal,
+  setTurnstileToken
 }: PreorderPageProps) {
   return (
     <main style={{ maxWidth: isMobile ? undefined : 1200, margin: "0 auto", padding: isMobile ? "18px 18px 48px" : "32px 32px 64px", width: "100%", boxSizing: "border-box" }}>
@@ -1954,6 +1957,13 @@ export function PreorderPage({
               })}
             </div>
           </Field>
+
+          <div style={{ display: "flex", justifyContent: "center", margin: "16px 0 0" }}>
+            <Turnstile 
+              onVerify={setTurnstileToken} 
+              onExpire={() => setTurnstileToken(null)} 
+            />
+          </div>
         </div>
 
         {/* Right Column: Checkout Summary (Sticky) */}

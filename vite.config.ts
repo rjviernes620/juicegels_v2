@@ -30,6 +30,9 @@ export default defineConfig(({ mode }) => {
       __SANITY_DATASET__: JSON.stringify(
         env.VITE_SANITY_DATASET || env.SANITY_DATASET || ''
       ),
+      __CLOUDFLARE_TURNSTILE_SITE_KEY__: JSON.stringify(
+        env.VITE_CLOUDFLARE_TURNSTILE_SITE_KEY || ''
+      ),
     },
     build: {
       outDir: 'prod',

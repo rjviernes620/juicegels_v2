@@ -1397,12 +1397,52 @@ def send_custom_order_emails(summary):
     raise RuntimeError(f'Pingram custom order emails failed: {error}') from error
 
 
+def verify_turnstile(token, remote_ip=None):
+  import urllib.request
+  import urllib.parse
+  import json
+  
+  secret_key = read_secret('cloudflare_turnstile_secret_key', 'CLOUDFLARE_TURNSTILE_SECRET_KEY')
+  if not secret_key:
+    secret_key = '1x00000000000000000000000000000000'
+
+  url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+  data = {
+    'secret': secret_key,
+    'response': token
+  }
+  if remote_ip:
+    data['remoteip'] = remote_ip
+
+  encoded_data = urllib.parse.urlencode(data).encode('utf-8')
+  req = urllib.request.Request(url, data=encoded_data, method='POST')
+  
+  try:
+    with urllib.request.urlopen(req, timeout=10) as response:
+      res_body = response.read().decode('utf-8')
+      res_data = json.loads(res_body)
+      return res_data.get('success', False)
+  except Exception as e:
+    print(f"Turnstile verification error: {e}")
+    return False
+
+
 @app.route('/create-custom-order', methods=['POST', 'OPTIONS'])
 def create_custom_order():
   if request.method == 'OPTIONS':
     return jsonify({}), 204
 
   payload = request.get_json(force=True)
+  turnstile_token = payload.get('turnstileToken')
+
+  # Determine remote IP for Turnstile verification
+  remote_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+  if remote_ip and ',' in remote_ip:
+    remote_ip = remote_ip.split(',')[0].strip()
+
+  if not turnstile_token or not verify_turnstile(turnstile_token, remote_ip):
+    return jsonify({ 'error': 'Security check failed. Please complete the security check.' }), 400
+
   name = str(payload.get('name', '')).strip()
   email = str(payload.get('email', '')).strip()
   instagram = str(payload.get('instagram', '')).strip()
@@ -1527,6 +1567,16 @@ def create_checkout_session():
     return jsonify({}), 204
 
   payload = request.get_json(force=True)
+  turnstile_token = payload.get('turnstileToken')
+
+  # Determine remote IP for Turnstile verification
+  remote_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+  if remote_ip and ',' in remote_ip:
+    remote_ip = remote_ip.split(',')[0].strip()
+
+  if not turnstile_token or not verify_turnstile(turnstile_token, remote_ip):
+    return jsonify({ 'error': 'Security check failed. Please complete the security check.' }), 400
+
   items = payload.get('items', [])
   form = payload.get('form', {})
   raw_coupon_code = payload.get('coupon', '')

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
+import { Turnstile } from "./ui/Turnstile";
 
 
 const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
@@ -37,6 +38,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const handleInputChange = (field: keyof FormData, value: any) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -123,6 +125,11 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
     e.preventDefault();
     if (!validate()) return;
 
+    if (!turnstileToken) {
+      setSubmitError("Please complete the security check.");
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitError(null);
     setFileError(null);
@@ -133,7 +140,10 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          turnstileToken,
+        }),
       });
 
       if (!response.ok) {
@@ -143,6 +153,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
 
       setSubmitSuccess(true);
       setForm(initialForm);
+      setTurnstileToken(null);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "An error occurred.");
     } finally {
@@ -524,6 +535,13 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
                     ))}
                   </div>
                 )}
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "center", margin: "12px 0" }}>
+                <Turnstile 
+                  onVerify={setTurnstileToken} 
+                  onExpire={() => setTurnstileToken(null)} 
+                />
               </div>
 
               {submitError && <p style={{ color: "#c0392b", fontSize: 12, margin: 0 }}>{submitError}</p>}

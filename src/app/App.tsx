@@ -147,6 +147,7 @@ export default function App() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showStripeRedirectModal, setShowStripeRedirectModal] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [couponInput, setCouponInput] = useState("");
   const [couponSummary, setCouponSummary] = useState<CouponSummary | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
@@ -891,6 +892,11 @@ export default function App() {
 
     if (!validate()) return;
 
+    if (!turnstileToken) {
+      setCheckoutError("Please complete the security check.");
+      return;
+    }
+
     if (cart.length === 0) {
       setCheckoutError("Your basket is empty.");
       return;
@@ -927,6 +933,7 @@ export default function App() {
           shippingRateId: selectedShippingOption?.stripeRateId ?? SHIPPING_RATE_IDS.tracked48,
           shippingOptionId: selectedShippingOption?.id ?? "tracked48",
           checkoutPath: "/confirmation",
+          turnstileToken,
         }),
       });
 
@@ -2190,6 +2197,7 @@ export default function App() {
           checkoutError={checkoutError}
           isMobile={isMobile}
           showStripeRedirectModal={showStripeRedirectModal}
+          setTurnstileToken={setTurnstileToken}
         />
       )}
 
