@@ -10,11 +10,7 @@ import {
 
 export const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 export const META_CART_ORIGIN = "meta_shops";
-export const CHECKOUT_API_BASE =
-  typeof window !== "undefined" &&
-  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-    ? "http://localhost:4000"
-    : "https://juicegels-v2.onrender.com";
+export const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
 export const SHIPPING_FREE_THRESHOLD = 30;
 export const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {
   tracked24: "shr_1Ti0hyK4CROOpWXUhiIhLqWy",

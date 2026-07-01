@@ -1426,6 +1426,23 @@ def verify_turnstile(token, remote_ip=None):
   import json
   
   secret_key = read_secret('cloudflare_turnstile_secret_key', 'CLOUDFLARE_TURNSTILE_SECRET_KEY')
+  
+  # Allow dummy tokens during local testing or if no secret key is configured
+  is_dummy_token = token in ('XXXX.DUMMY.TOKEN.XXXX', 'XXXX.DUMMY.TOKEN.XXXX2', 'XXXX.DUMMY.TOKEN.XXXX3') or 'DUMMY' in token
+  if is_dummy_token:
+    is_local = False
+    try:
+      from flask import request
+      if request and request.host:
+        host = request.host.lower()
+        if 'localhost' in host or '127.0.0.1' in host or '192.168.' in host:
+          is_local = True
+    except Exception:
+      pass
+      
+    if not secret_key or is_local:
+      secret_key = '1x00000000000000000000000000000000'
+  
   if not secret_key:
     secret_key = '1x00000000000000000000000000000000'
 
