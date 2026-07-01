@@ -1821,7 +1821,7 @@ def create_checkout_session():
           'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
         },
         'mode': 'payment',
-        'ui_mode': 'embedded',
+        'ui_mode': 'embedded_page',
         'return_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
       }
     else:
