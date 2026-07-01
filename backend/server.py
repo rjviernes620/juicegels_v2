@@ -436,13 +436,17 @@ def build_order_summary(checkout_session):
   if not coupon_name:
     coupon_name = get_value(metadata, 'coupon_code', '')
 
+  shipping_details = get_value(expanded_session, 'shipping_details', {}) or {}
+  shipping_address_obj = get_value(shipping_details, 'address', {}) or {}
+  wallet_shipping_address = format_address(shipping_address_obj)
+
   preorder_shipping_address = format_address({
     'line1': get_value(metadata, 'shipping_address', ''),
     'city': get_value(metadata, 'shipping_city', ''),
     'postal_code': get_value(metadata, 'shipping_postcode', ''),
     'country': get_value(metadata, 'shipping_country', ''),
   })
-  shipping_address = preorder_shipping_address or format_address(get_value(customer_details, 'address', {}) or {})
+  shipping_address = preorder_shipping_address or wallet_shipping_address or format_address(get_value(customer_details, 'address', {}) or {})
 
   # Retrieve Payment Method details
   payment_intent = get_value(expanded_session, 'payment_intent')
@@ -1571,16 +1575,26 @@ def get_checkout_session(session_id):
     )
     metadata = session.metadata or {}
     
+    shipping_details = getattr(session, 'shipping_details', None) or {}
+    shipping_address = getattr(shipping_details, 'address', None) or {}
+    
     first_name = metadata.get('first_name', '')
     last_name = metadata.get('last_name', '')
-    address = metadata.get('shipping_address', '')
-    city = metadata.get('shipping_city', '')
-    postcode = metadata.get('shipping_postcode', '')
-    country = metadata.get('shipping_country', '')
+    
+    shipping_name = getattr(shipping_details, 'name', '') or ''
+    if shipping_name:
+      name_parts = shipping_name.strip().split(' ', 1)
+      first_name = name_parts[0]
+      last_name = name_parts[1] if len(name_parts) > 1 else ''
+
+    address = metadata.get('shipping_address', '') or getattr(shipping_address, 'line1', '')
+    city = metadata.get('shipping_city', '') or getattr(shipping_address, 'city', '')
+    postcode = metadata.get('shipping_postcode', '') or getattr(shipping_address, 'postal_code', '')
+    country = metadata.get('shipping_country', '') or getattr(shipping_address, 'country', '')
     email = (session.customer_details.email if session.customer_details else None) or session.customer_email or ''
     contact_method = metadata.get('contact_preference', 'instagram')
     instagram = metadata.get('instagram', '')
-    phone = metadata.get('phone', '')
+    phone = getattr(shipping_details, 'phone', '') or metadata.get('phone', '') or ''
     notes = metadata.get('notes', '')
     
     return jsonify({
