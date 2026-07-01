@@ -1885,7 +1885,7 @@ def create_checkout_session():
   except Exception as e:
     import traceback
     traceback.print_exc()
-    return jsonify({ 'error': 'internal server error' }), 500
+    return jsonify({ 'error': str(e) }), 500
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 4000))
