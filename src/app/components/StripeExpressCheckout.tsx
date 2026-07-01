@@ -27,6 +27,7 @@ export function StripeExpressCheckout({
 }: StripeExpressCheckoutProps) {
   const [clientSecret, setClientSecret] = useState<string>("");
   const [canPay, setCanPay] = useState<boolean | null>(null);
+  const [loadError, setLoadError] = useState<boolean>(false);
 
   useEffect(() => {
     if (!stripePromise) return;
@@ -34,6 +35,7 @@ export function StripeExpressCheckout({
     let active = true;
     const fetchSecret = async () => {
       try {
+        setLoadError(false);
         const response = await fetch(`${CHECKOUT_API_BASE}/create-checkout-session`, {
           method: "POST",
           headers: {
@@ -73,6 +75,9 @@ export function StripeExpressCheckout({
         }
       } catch (err) {
         console.error("Error pre-loading Stripe session:", err);
+        if (active) {
+          setLoadError(true);
+        }
       }
     };
 
@@ -91,6 +96,14 @@ export function StripeExpressCheckout({
     return (
       <div style={{ color: "#ffd6e9", fontSize: 12, textAlign: "center", margin: "10px 0", opacity: 0.8 }}>
         Stripe is not initialized. Please verify your Stripe publishable key in .env.
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div style={{ color: "#ffd6e9", fontSize: 12, textAlign: "center", margin: "10px 0", opacity: 0.85, padding: "8px 12px", background: "rgba(239, 68, 68, 0.15)", borderRadius: 10, border: "1px solid rgba(239, 68, 68, 0.3)" }}>
+        Express payment option is temporarily unavailable. Please proceed with the standard **Pre-order** checkout.
       </div>
     );
   }

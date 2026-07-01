@@ -1765,18 +1765,20 @@ def create_checkout_session():
   elif raw_coupon_code:
     has_free_shipping = is_free_shipping_coupon(coupon_code=raw_coupon_code)
 
-  country = str(form.get('country') or 'GB').strip()
-  try:
-    shipping_option = resolve_shipping_option(
-      shipping_option_id,
-      discounted_subtotal_pence,
-      country,
-      has_free_shipping_coupon=has_free_shipping
-    )
-  except ValueError as error:
-    return jsonify({ 'error': str(error) }), 400
-
   is_embedded = payload.get('embedded', False)
+  shipping_option = None
+
+  if not is_embedded:
+    country = str(form.get('country') or 'GB').strip()
+    try:
+      shipping_option = resolve_shipping_option(
+        shipping_option_id,
+        discounted_subtotal_pence,
+        country,
+        has_free_shipping_coupon=has_free_shipping
+      )
+    except ValueError as error:
+      return jsonify({ 'error': str(error) }), 400
 
   try:
     if is_embedded:
