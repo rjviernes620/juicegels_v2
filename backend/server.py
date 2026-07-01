@@ -1752,6 +1752,59 @@ def get_checkout_session(session_id):
     print(f"Error retrieving checkout session: {e}")
     return jsonify({'error': 'Failed to retrieve checkout session'}), 500
 
+@app.route('/api/payment-intent/<intent_id>', methods=['GET', 'OPTIONS'])
+def get_payment_intent_details(intent_id):
+  if request.method == 'OPTIONS':
+    return jsonify({}), 204
+
+  try:
+    intent = client.v1.payment_intents.retrieve(
+      intent_id,
+      params={
+        'expand': ['payment_method'],
+      }
+    )
+    metadata = intent.metadata or {}
+    
+    shipping_details = getattr(intent, 'shipping', None) or {}
+    shipping_address = getattr(shipping_details, 'address', None) or {}
+    
+    first_name = metadata.get('first_name', '')
+    last_name = metadata.get('last_name', '')
+    
+    shipping_name = getattr(shipping_details, 'name', '') or ''
+    if shipping_name and not (first_name or last_name):
+      name_parts = shipping_name.strip().split(' ', 1)
+      first_name = name_parts[0]
+      last_name = name_parts[1] if len(name_parts) > 1 else ''
+
+    address = metadata.get('shipping_address', '') or getattr(shipping_address, 'line1', '')
+    city = metadata.get('shipping_city', '') or getattr(shipping_address, 'city', '')
+    postcode = metadata.get('shipping_postcode', '') or getattr(shipping_address, 'postal_code', '')
+    country = metadata.get('shipping_country', '') or getattr(shipping_address, 'country', '')
+    email = metadata.get('email', '') or getattr(intent, 'receipt_email', '') or ''
+    contact_method = metadata.get('contact_preference', 'instagram')
+    instagram = metadata.get('instagram', '')
+    phone = getattr(shipping_details, 'phone', '') or metadata.get('phone', '') or ''
+    notes = metadata.get('notes', '')
+    
+    return jsonify({
+      'firstName': first_name,
+      'lastName': last_name,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'city': city,
+      'postcode': postcode,
+      'country': country,
+      'contactMethod': contact_method,
+      'instagram': instagram,
+      'notes': notes
+    })
+  except Exception as e:
+    print(f"Error retrieving payment intent details: {e}")
+    return jsonify({'error': 'Failed to retrieve payment intent'}), 500
+
 @app.route('/create-checkout-session', methods=['POST', 'OPTIONS'])
 
 def create_checkout_session():

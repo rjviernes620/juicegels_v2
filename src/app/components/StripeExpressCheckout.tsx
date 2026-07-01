@@ -244,5 +244,13 @@ function ExpressButtonInner({
 }
 
 function buildItemsParam(cart: CartItem[]) {
-  return cart.map((item) => `${item.product.id}:${item.quantity}`).join(",");
+  return cart
+    .map((item) => {
+      const prodId = encodeURIComponent(item.product.id);
+      const shape = encodeURIComponent(item.shape);
+      const length = encodeURIComponent(item.length);
+      const qty = encodeURIComponent(item.quantity);
+      return `${prodId}|${shape}|${length}|${qty}`;
+    })
+    .join(",");
 }

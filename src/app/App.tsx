@@ -308,6 +308,8 @@ export default function App() {
       setPage("confirmation");
 
       const sessionId = searchParams.get("session_id");
+      const paymentIntentId = searchParams.get("payment_intent");
+
       if (sessionId) {
         fetch(`${CHECKOUT_API_BASE}/api/checkout-session/${sessionId}`)
           .then((res) => {
@@ -332,6 +334,31 @@ export default function App() {
           })
           .catch((err) => {
             console.error("Error fetching checkout session:", err);
+          });
+      } else if (paymentIntentId) {
+        fetch(`${CHECKOUT_API_BASE}/api/payment-intent/${paymentIntentId}`)
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch payment intent details");
+            return res.json();
+          })
+          .then((data) => {
+            setForm((prev) => ({
+              ...prev,
+              firstName: data.firstName || prev.firstName,
+              lastName: data.lastName || prev.lastName,
+              email: data.email || prev.email,
+              phone: data.phone || prev.phone,
+              address: data.address || prev.address,
+              instagram: data.instagram || prev.instagram,
+              city: data.city || prev.city,
+              postcode: data.postcode || prev.postcode,
+              notes: data.notes || prev.notes,
+              contactMethod: data.contactMethod || prev.contactMethod,
+              country: data.country || prev.country,
+            }));
+          })
+          .catch((err) => {
+            console.error("Error fetching payment intent:", err);
           });
       }
 
