@@ -152,6 +152,12 @@ def get_value(source, key, default=None):
   if source is None:
     return default
 
+  try:
+    if key in source:
+      return source[key]
+  except:
+    pass
+
   if isinstance(source, dict):
     return source.get(key, default)
 
@@ -1012,17 +1018,17 @@ def build_order_summary_from_payment_intent(payment_intent):
     last_name = name_parts[1] if len(name_parts) > 1 else ''
     
   if not first_name:
-    first_name = metadata.get('first_name', '')
+    first_name = get_value(metadata, 'first_name', '')
   if not last_name:
-    last_name = metadata.get('last_name', '')
+    last_name = get_value(metadata, 'last_name', '')
     
   if not customer_email:
-    customer_email = metadata.get('email', '') or get_value(payment_intent, 'receipt_email', '') or ''
+    customer_email = get_value(metadata, 'email', '') or get_value(payment_intent, 'receipt_email', '') or ''
     
-  phone = get_value(shipping, 'phone', '') or get_value(billing_details, 'phone', '') or metadata.get('phone', '') or ''
+  phone = get_value(shipping, 'phone', '') or get_value(billing_details, 'phone', '') or get_value(metadata, 'phone', '') or ''
   
   # Parse items list from metadata
-  items_param = metadata.get('items', '')
+  items_param = get_value(metadata, 'items', '')
   line_items = []
   subtotal_pence = 0
   
@@ -1055,7 +1061,7 @@ def build_order_summary_from_payment_intent(payment_intent):
   total_amount = get_value(payment_intent, 'amount', 0)
   shipping_amount_pence = total_amount - subtotal_pence
   
-  coupon_code = metadata.get('coupon_code', '')
+  coupon_code = get_value(metadata, 'coupon_code', '')
   
   return {
     'session_id': intent_id,
@@ -1065,14 +1071,14 @@ def build_order_summary_from_payment_intent(payment_intent):
     'first_name': first_name,
     'last_name': last_name,
     'phone': phone,
-    'instagram': metadata.get('instagram', ''),
-    'contact_preference': metadata.get('contact_preference', 'instagram'),
-    'notes': metadata.get('notes', ''),
+    'instagram': get_value(metadata, 'instagram', ''),
+    'contact_preference': get_value(metadata, 'contact_preference', 'instagram'),
+    'notes': get_value(metadata, 'notes', ''),
     'coupon_code': coupon_code,
     'coupon_name': coupon_code,
     'billing_address': format_address(get_value(billing_details, 'address', {}) or {}),
     'shipping_address': shipping_address,
-    'shipping_method': metadata.get('shipping_method', 'Tracked Shipping'),
+    'shipping_method': get_value(metadata, 'shipping_method', 'Tracked Shipping'),
     'shipping': format_money_from_pence(max(0, shipping_amount_pence)),
     'subtotal': format_money_from_pence(subtotal_pence),
     'discount': format_money_from_pence(max(0, subtotal_pence + max(0, shipping_amount_pence) - total_amount)),
@@ -1758,7 +1764,7 @@ def stripe_webhook():
       print(f"Stripe webhook: processing payment_intent.succeeded with ID: {get_value(payment_intent, 'id', '')}")
       
       metadata = get_value(payment_intent, 'metadata', {}) or {}
-      if not metadata or not metadata.get('items'):
+      if not metadata or not get_value(metadata, 'items'):
         print("Stripe webhook: payment_intent.succeeded does not contain 'items' metadata. Assuming standard Checkout Session payment. Skipping to avoid duplicate emails.")
         return jsonify({ 'received': True })
       
@@ -1844,24 +1850,24 @@ def get_payment_intent_details(intent_id):
     shipping_details = getattr(intent, 'shipping', None) or {}
     shipping_address = getattr(shipping_details, 'address', None) or {}
     
-    first_name = metadata.get('first_name', '')
-    last_name = metadata.get('last_name', '')
+    first_name = get_value(metadata, 'first_name', '')
+    last_name = get_value(metadata, 'last_name', '')
     
-    shipping_name = getattr(shipping_details, 'name', '') or ''
+    shipping_name = get_value(shipping_details, 'name', '') or ''
     if shipping_name and not (first_name or last_name):
       name_parts = shipping_name.strip().split(' ', 1)
       first_name = name_parts[0]
       last_name = name_parts[1] if len(name_parts) > 1 else ''
 
-    address = metadata.get('shipping_address', '') or getattr(shipping_address, 'line1', '')
-    city = metadata.get('shipping_city', '') or getattr(shipping_address, 'city', '')
-    postcode = metadata.get('shipping_postcode', '') or getattr(shipping_address, 'postal_code', '')
-    country = metadata.get('shipping_country', '') or getattr(shipping_address, 'country', '')
-    email = metadata.get('email', '') or getattr(intent, 'receipt_email', '') or ''
-    contact_method = metadata.get('contact_preference', 'instagram')
-    instagram = metadata.get('instagram', '')
-    phone = getattr(shipping_details, 'phone', '') or metadata.get('phone', '') or ''
-    notes = metadata.get('notes', '')
+    address = get_value(metadata, 'shipping_address', '') or get_value(shipping_address, 'line1', '')
+    city = get_value(metadata, 'shipping_city', '') or get_value(shipping_address, 'city', '')
+    postcode = get_value(metadata, 'shipping_postcode', '') or get_value(shipping_address, 'postal_code', '')
+    country = get_value(metadata, 'shipping_country', '') or get_value(shipping_address, 'country', '')
+    email = get_value(metadata, 'email', '') or get_value(intent, 'receipt_email', '') or ''
+    contact_method = get_value(metadata, 'contact_preference', 'instagram')
+    instagram = get_value(metadata, 'instagram', '')
+    phone = get_value(shipping_details, 'phone', '') or get_value(metadata, 'phone', '') or ''
+    notes = get_value(metadata, 'notes', '')
     
     return jsonify({
       'firstName': first_name,
