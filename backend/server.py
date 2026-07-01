@@ -909,6 +909,60 @@ def handle_completed_payment_intent(payment_intent):
   print("Customer confirmation email process completed.")
 
 
+def fetch_catalog_products():
+  import urllib.request
+  import json
+  
+  project_id = "5co5ooqr"
+  dataset = "production"
+  query = '*[_type == "product" && !(_id in path("drafts.**"))]{title, baseId, productId, price, description, image, image2, image3, image4, tags}'
+  encoded_query = quote(query)
+  url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
+  
+  req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+  with urllib.request.urlopen(req) as response:
+    res = json.loads(response.read().decode('utf-8'))
+    return res.get('result', [])
+
+
+def get_catalog_items_by_id():
+  sanity_products = fetch_catalog_products()
+  DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"]
+  DEFAULT_LENGTHS = ["Short", "Medium", "Long"]
+  
+  catalog_by_id = {}
+  for p in sanity_products:
+    title = p.get('title', '')
+    product_id = p.get('productId') or p.get('baseId')
+    if product_id is None:
+      continue
+    product_id = int(product_id)
+    price = float(p.get('price', 0))
+    
+    is_single = title.lower() == 'nail sizing guide' or product_id == 286
+    
+    if is_single:
+      variant_id = f"JUICEGELS-{str(product_id).zfill(4)}"
+      catalog_by_id[variant_id] = {
+        'id': variant_id,
+        'name': title,
+        'price': price
+      }
+    else:
+      for s_idx, shape in enumerate(DEFAULT_SHAPES):
+        for l_idx, length in enumerate(DEFAULT_LENGTHS):
+          offset = s_idx * 3 + l_idx
+          id_num = product_id + offset
+          variant_id = f"JUICEGELS-{str(id_num).zfill(4)}"
+          display_name = f"{title} - {shape} - {length}"
+          catalog_by_id[variant_id] = {
+            'id': variant_id,
+            'name': display_name,
+            'price': price
+          }
+  return catalog_by_id
+
+
 def build_order_summary_from_payment_intent(payment_intent):
   intent_id = get_value(payment_intent, 'id', '')
   metadata = get_value(payment_intent, 'metadata', {}) or {}
@@ -940,7 +994,15 @@ def build_order_summary_from_payment_intent(payment_intent):
   shipping = get_value(payment_intent, 'shipping', {}) or {}
   shipping_name = get_value(shipping, 'name', '')
   shipping_address_obj = get_value(shipping, 'address', {}) or {}
-  shipping_address = format_address(shipping_address_obj)
+  wallet_shipping_address = format_address(shipping_address_obj)
+  
+  preorder_shipping_address = format_address({
+    'line1': get_value(metadata, 'shipping_address', ''),
+    'city': get_value(metadata, 'shipping_city', ''),
+    'postal_code': get_value(metadata, 'shipping_postcode', ''),
+    'country': get_value(metadata, 'shipping_country', ''),
+  })
+  shipping_address = preorder_shipping_address or wallet_shipping_address
   
   first_name = ''
   last_name = ''
@@ -949,7 +1011,15 @@ def build_order_summary_from_payment_intent(payment_intent):
     first_name = name_parts[0]
     last_name = name_parts[1] if len(name_parts) > 1 else ''
     
-  phone = get_value(shipping, 'phone', '') or get_value(billing_details, 'phone', '') or ''
+  if not first_name:
+    first_name = metadata.get('first_name', '')
+  if not last_name:
+    last_name = metadata.get('last_name', '')
+    
+  if not customer_email:
+    customer_email = metadata.get('email', '') or get_value(payment_intent, 'receipt_email', '') or ''
+    
+  phone = get_value(shipping, 'phone', '') or get_value(billing_details, 'phone', '') or metadata.get('phone', '') or ''
   
   # Parse items list from metadata
   items_param = metadata.get('items', '')
@@ -957,8 +1027,7 @@ def build_order_summary_from_payment_intent(payment_intent):
   subtotal_pence = 0
   
   try:
-    catalog = get_meta_catalog()
-    catalog_by_id = {p['id']: p for p in catalog}
+    catalog_by_id = get_catalog_items_by_id()
   except Exception as cat_err:
     print(f"Error fetching catalog to build Express Order summary: {cat_err}")
     catalog_by_id = {}
@@ -1687,6 +1756,12 @@ def stripe_webhook():
     try:
       payment_intent = get_value(get_value(event, 'data', {}) or {}, 'object', {}) or {}
       print(f"Stripe webhook: processing payment_intent.succeeded with ID: {get_value(payment_intent, 'id', '')}")
+      
+      metadata = get_value(payment_intent, 'metadata', {}) or {}
+      if not metadata or not metadata.get('items'):
+        print("Stripe webhook: payment_intent.succeeded does not contain 'items' metadata. Assuming standard Checkout Session payment. Skipping to avoid duplicate emails.")
+        return jsonify({ 'received': True })
+      
       handle_completed_payment_intent(payment_intent)
       print("Stripe webhook: successfully processed payment_intent.succeeded.")
     except Exception as e:
@@ -1975,12 +2050,13 @@ def create_checkout_session():
 
   try:
     if is_embedded:
-      intent = client.v1.payment_intents.create(params={
+      intent_params = {
         'amount': discounted_subtotal_pence + shipping_option['amount_pence'],
         'currency': 'gbp',
         'metadata': {
           'first_name': form.get('firstName', ''),
           'last_name': form.get('lastName', ''),
+          'email': form.get('email', '').strip() if form.get('email') else '',
           'phone': form.get('phone', ''),
           'instagram': form.get('instagram', ''),
           'contact_preference': form.get('contactMethod', 'instagram'),
@@ -1998,7 +2074,12 @@ def create_checkout_session():
         'automatic_payment_methods': {
           'enabled': True,
         },
-      })
+      }
+      customer_email = form.get('email', '').strip() if form.get('email') else ''
+      if customer_email:
+        intent_params['receipt_email'] = customer_email
+
+      intent = client.v1.payment_intents.create(params=intent_params)
       return jsonify({ 'clientSecret': intent.client_secret })
     else:
       session_params = {
