@@ -1878,6 +1878,8 @@ def get_payment_intent_details(intent_id):
     })
   except Exception as e:
     print(f"Error retrieving payment intent details: {e}")
+    import traceback
+    traceback.print_exc()
     return jsonify({'error': 'Failed to retrieve payment intent'}), 500
 
 @app.route('/create-checkout-session', methods=['POST', 'OPTIONS'])
