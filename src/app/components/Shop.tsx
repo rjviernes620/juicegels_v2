@@ -5,6 +5,7 @@ import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 import { Turnstile } from "./ui/Turnstile";
 
 import { StripeExpressCheckout } from "./StripeExpressCheckout";
+import { LocalErrorBoundary } from "./ErrorBoundary";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { PortableText } from "./PortableText";
 import { TiktokIcon } from "./About";
@@ -1646,14 +1647,16 @@ export function BasketPage({
                   </div>
                 )}
 
-                <StripeExpressCheckout
-                  cart={cart}
-                  orderTotal={orderTotal}
-                  couponSummary={couponSummary}
-                  contactMethod={expressContactMethod}
-                  instagramHandle={expressInstagram}
-                  onValidationError={handleExpressValidationError}
-                />
+                <LocalErrorBoundary>
+                  <StripeExpressCheckout
+                    cart={cart}
+                    orderTotal={orderTotal}
+                    couponSummary={couponSummary}
+                    contactMethod={expressContactMethod}
+                    instagramHandle={expressInstagram}
+                    onValidationError={handleExpressValidationError}
+                  />
+                </LocalErrorBoundary>
               </div>
             </>
           )}
@@ -1895,14 +1898,16 @@ export function BasketPage({
                     </div>
                   )}
 
-                  <StripeExpressCheckout
-                    cart={cart}
-                    orderTotal={orderTotal}
-                    couponSummary={couponSummary}
-                    contactMethod={expressContactMethod}
-                    instagramHandle={expressInstagram}
-                    onValidationError={handleExpressValidationError}
-                  />
+                  <LocalErrorBoundary>
+                    <StripeExpressCheckout
+                      cart={cart}
+                      orderTotal={orderTotal}
+                      couponSummary={couponSummary}
+                      contactMethod={expressContactMethod}
+                      instagramHandle={expressInstagram}
+                      onValidationError={handleExpressValidationError}
+                    />
+                  </LocalErrorBoundary>
                 </div>
               </div>
             </div>

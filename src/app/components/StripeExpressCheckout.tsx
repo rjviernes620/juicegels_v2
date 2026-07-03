@@ -50,17 +50,19 @@ export function StripeExpressCheckout({
 
   return (
     <div style={{ width: "100%", marginTop: 14 }}>
-      <Elements stripe={stripePromise} options={elementsOptions}>
-        <ExpressButtonInner
-          cart={cart}
-          orderTotal={orderTotal}
-          couponSummary={couponSummary}
-          contactMethod={contactMethod}
-          instagramHandle={instagramHandle}
-          onValidationError={onValidationError}
-          setCanPay={setCanPay}
-        />
-      </Elements>
+      {canPay !== false && (
+        <Elements stripe={stripePromise} options={elementsOptions}>
+          <ExpressButtonInner
+            cart={cart}
+            orderTotal={orderTotal}
+            couponSummary={couponSummary}
+            contactMethod={contactMethod}
+            instagramHandle={instagramHandle}
+            onValidationError={onValidationError}
+            setCanPay={setCanPay}
+          />
+        </Elements>
+      )}
       {canPay === false && (
         <p style={{ color: "#ffd6e9", fontSize: 12, textAlign: "center", marginTop: 8, opacity: 0.8 }}>
           Google Pay / Apple Pay is not available on this device or browser.

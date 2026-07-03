@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import App from "./app/App.tsx";
+import { RouteErrorBoundary } from "./app/components/ErrorBoundary.tsx";
 import "./styles/index.css";
 
 function normalizeRedirectedRoute() {
@@ -20,18 +21,18 @@ function normalizeRedirectedRoute() {
 normalizeRedirectedRoute();
 
 const router = createBrowserRouter([
-  { path: "/", element: <App /> },
-  { path: "/home", element: <App /> },
-  { path: "/basket", element: <App /> },
-  { path: "/about", element: <App /> },
-  { path: "/videos", element: <App /> },
-  { path: "/search", element: <App /> },
-  { path: "/shop", element: <App /> },
-  { path: "/faq", element: <App /> },
-  { path: "/product/:id", element: <App /> },
-  { path: "/checkout-success", element: <App /> },
-  { path: "/confirmation", element: <App /> },
-  { path: "*", element: <App /> },
+  { path: "/", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/home", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/basket", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/about", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/videos", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/search", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/shop", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/faq", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/product/:id", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/checkout-success", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/confirmation", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "*", element: <App />, errorElement: <RouteErrorBoundary /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(
