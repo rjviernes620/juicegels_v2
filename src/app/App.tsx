@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, Menu, X, Instagram } from "lucide-react";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
+import { MaintenancePage } from "./components/MaintenancePage";
 import { loadProducts, loadTrendingProductIds, type Product } from "./utils/parseProducts";
 import { About, TiktokIcon } from "./components/About";
 import { Videos } from "./components/Videos";
@@ -116,6 +117,7 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [productsLoadError, setProductsLoadError] = useState<string | null>(null);
+  const [isMaintenanceMode, setIsMaintenanceMode] = useState<boolean>(false);
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [homeSelectedCollection, setHomeSelectedCollection] = useState("All");
   const [homeSortBy, setHomeSortBy] = useState("featured");
@@ -258,6 +260,27 @@ export default function App() {
 
     return () => {
       isCancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkStatus = async () => {
+      try {
+        const response = await fetch(`${CHECKOUT_API_BASE}/api/status`);
+        if (response.ok) {
+          const data = await response.json();
+          if (isMounted && data.maintenance) {
+            setIsMaintenanceMode(true);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch server status:", error);
+      }
+    };
+    checkStatus();
+    return () => {
+      isMounted = false;
     };
   }, []);
 
@@ -1035,6 +1058,10 @@ export default function App() {
     if (!selected) return null;
     return getCollectionDetails(selected, products);
   }, [selected, products]);
+
+  if (isMaintenanceMode) {
+    return <MaintenancePage />;
+  }
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: isMobile ? 430 : "100%", margin: "0 auto", minHeight: "100vh", background: "#ffd2e6", display: "flex", flexDirection: "column" }}>
