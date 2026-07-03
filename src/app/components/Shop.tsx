@@ -369,13 +369,13 @@ export function ShopPage({
 }: ShopPageProps) {
   return (
     <main>
-      <div 
-        style={{ 
+      <div
+        style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
-          padding: "28px 20px 22px", 
-          textAlign: "center" 
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)",
+          padding: "28px 20px 22px",
+          textAlign: "center"
         }}
       >
         {/* ShaderGradient Background */}
@@ -488,12 +488,13 @@ export function ShopPage({
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}>
-              <style dangerouslySetInnerHTML={{__html: `
+              <style dangerouslySetInnerHTML={{
+                __html: `
                 .no-scrollbar::-webkit-scrollbar {
                   display: none;
                 }
               `}} />
-              
+
               {/* "All Sets" Chip */}
               <button
                 onClick={() => setHomeSelectedCollection("All")}
@@ -1264,7 +1265,7 @@ function ContactPreferenceSelector({
       <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#fff9fb", marginBottom: 10 }}>
         How should we contact you to confirm your nail sizes?
       </label>
-      
+
       <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
         <button
           type="button"
@@ -1288,7 +1289,7 @@ function ContactPreferenceSelector({
         >
           📸 Instagram
         </button>
-        
+
         <button
           type="button"
           onClick={() => onChangeField("contactMethod", "email")}
@@ -1312,7 +1313,7 @@ function ContactPreferenceSelector({
           ✉️ Email
         </button>
       </div>
-      
+
       {contactMethod === "instagram" && (
         <div style={{ marginTop: 10 }}>
           <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#fff9fb", marginBottom: 6 }}>
@@ -1340,7 +1341,7 @@ function ContactPreferenceSelector({
               {errors.instagram}
             </span>
           )}
-          
+
           <div style={{ display: "flex", gap: 10, padding: "10px 12px", background: "#fffbeb", borderRadius: 10, border: "1px solid #fef3c7", fontSize: 11, color: "#92400e", lineHeight: 1.4, marginTop: 8 }}>
             <span style={{ fontSize: 14, flexShrink: 0 }}>⚠️</span>
             <div>
@@ -1387,7 +1388,7 @@ export function BasketPage({
   const [validationError, setValidationError] = useState<string | null>(null);
 
   // Separate state specifically for Express Checkout contact details
-  const [expressContactMethod, setExpressContactMethod] = useState<"instagram" | "email" >("instagram");
+  const [expressContactMethod, setExpressContactMethod] = useState<"instagram" | "email">("instagram");
   const [expressInstagram, setExpressInstagram] = useState<string>("");
   const [expressErrors, setExpressErrors] = useState<Record<string, string>>({});
 
@@ -1882,7 +1883,7 @@ export function BasketPage({
                     </h3>
                   </div>
                   <p style={{ margin: "0 0 14px", fontSize: 12, color: "#fff9fb", opacity: 0.85, lineHeight: 1.4 }}>
-                    Pay instantly with <strong>Apple Pay</strong> or <strong>Google Pay</strong> using your saved address details.
+                    Pay instantly with <strong>Apple Pay</strong> or <strong>Google Pay</strong>.
                   </p>
 
                   <ContactPreferenceSelector
@@ -2143,9 +2144,9 @@ export function PreorderPage({
           </Field>
 
           <div style={{ display: "flex", justifyContent: "center", margin: "16px 0 0" }}>
-            <Turnstile 
-              onVerify={setTurnstileToken} 
-              onExpire={() => setTurnstileToken(null)} 
+            <Turnstile
+              onVerify={setTurnstileToken}
+              onExpire={() => setTurnstileToken(null)}
             />
           </div>
         </div>
