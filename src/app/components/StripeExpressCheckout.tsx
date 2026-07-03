@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, ExpressCheckoutElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { type CartItem, type CouponSummary } from "../types";
@@ -42,11 +42,11 @@ export function StripeExpressCheckout({
   }
 
   // Define Elements options for deferred intent configuration (recommended by Stripe for Express elements)
-  const elementsOptions = {
+  const elementsOptions = useMemo(() => ({
     mode: "payment" as const,
     amount: Math.max(1, Math.round(orderTotal * 100)), // smallest currency subunit (pence)
     currency: "gbp",
-  };
+  }), [orderTotal]);
 
   return (
     <div style={{ width: "100%", marginTop: 14 }}>
@@ -126,8 +126,12 @@ function ExpressButtonInner({
       expressCheckoutElement.on("shippingratechange", handleShippingRateChange);
 
       return () => {
-        expressCheckoutElement.off("shippingaddresschange", handleShippingAddressChange);
-        expressCheckoutElement.off("shippingratechange", handleShippingRateChange);
+        try {
+          expressCheckoutElement.off("shippingaddresschange", handleShippingAddressChange);
+          expressCheckoutElement.off("shippingratechange", handleShippingRateChange);
+        } catch (e) {
+          console.debug("Failed to remove event listeners from expressCheckoutElement (likely already destroyed):", e);
+        }
       };
     }
   }, [elements, orderTotal, couponSummary]);
@@ -207,7 +211,7 @@ function ExpressButtonInner({
     }
   };
 
-  const expressOptions = {
+  const expressOptions = useMemo(() => ({
     shippingAddressRequired: true,
     emailRequired: true,
     allowedShippingCountries: ["GB", "US", "CA", "AU", "NZ", "IE", "FR", "DE"],
@@ -232,7 +236,7 @@ function ExpressButtonInner({
 
       resolve();
     },
-  };
+  }), [contactMethod, instagramHandle, onValidationError]);
 
   return (
     <ExpressCheckoutElement

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion } from "motion/react";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, X, Instagram } from "lucide-react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
@@ -1255,7 +1255,7 @@ function ContactPreferenceSelector({
 }: {
   contactMethod: "instagram" | "email";
   instagram: string;
-  errors: Record<string, string>;
+  errors: Record<string, string | undefined>;
   onChangeField: (field: "contactMethod" | "instagram", value: string) => void;
 }) {
   return (
@@ -1404,14 +1404,14 @@ export function BasketPage({
     }
   };
 
-  const handleExpressValidationError = (msg: string | null, fieldErrors?: Record<string, string>) => {
+  const handleExpressValidationError = useCallback((msg: string | null, fieldErrors?: Record<string, string>) => {
     setValidationError(msg);
     if (fieldErrors) {
       setExpressErrors(fieldErrors);
     } else {
       setExpressErrors({});
     }
-  };
+  }, []);
 
   const triggerPreorder = () => {
     setForm(initialForm);
@@ -2074,15 +2074,12 @@ export function PreorderPage({
             </select>
           </Field>
 
-          <Field label="Contact Preference (Selected in Basket)">
-            <div style={{ padding: "10px 12px", background: "rgba(128, 33, 65, 0.22)", borderRadius: 12, border: "1.5px solid rgba(212, 84, 122, 0.18)", fontSize: 13, color: "#fff9fb" }}>
-              {form.contactMethod === "instagram" ? (
-                <span>📸 Instagram: <strong>{form.instagram || "@username"}</strong></span>
-              ) : (
-                <span>✉️ Email: <strong>We will contact you at the email address provided below.</strong></span>
-              )}
-            </div>
-          </Field>
+          <ContactPreferenceSelector
+            contactMethod={form.contactMethod}
+            instagram={form.instagram}
+            errors={{ instagram: errors.instagram }}
+            onChangeField={(field, value) => handleFormChange(field, value)}
+          />
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             <Field label="City" error={errors.city}>
