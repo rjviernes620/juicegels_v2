@@ -2,11 +2,17 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, ExpressCheckoutElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { type CartItem, type CouponSummary } from "../types";
-import { CHECKOUT_API_BASE, buildShippingOptions } from "../utils/shopHelpers";
+import { CHECKOUT_API_BASE, buildShippingOptions, isLocalDev, STRIPE_FREE_SHIPPING_PROMO_ID } from "../utils/shopHelpers";
 
-// Retrieve the publishable key from environment variables
-const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "";
+// Retrieve the publishable key from environment variables with a test fallback for local development
+const getPublishableKey = () => {
+  return isLocalDev()
+    ? (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_51TgWqGK9S4gHGvxwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    : (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY_LIVE || "");
+};
+const stripePublishableKey = getPublishableKey();
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
+
 
 interface StripeExpressCheckoutProps {
   cart: CartItem[];
@@ -89,11 +95,10 @@ function ExpressButtonInner({
       const handleShippingAddressChange = (event: any) => {
         const { address, resolve } = event;
         
-        // Replicate free shipping promo code checks from App.tsx
         const isFreeShippingPromoApplied = !!(
           couponSummary &&
           (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
-           couponSummary.promotionCodeId === "promo_1ToCW2K4CROOpWXUXvpVGOFN")
+           couponSummary.promotionCodeId === STRIPE_FREE_SHIPPING_PROMO_ID)
         );
 
         const options = buildShippingOptions(

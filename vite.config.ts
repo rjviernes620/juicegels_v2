@@ -36,6 +36,18 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY': JSON.stringify(
         env.VITE_STRIPE_PUBLISHABLE_KEY || env.STRIPE_PUBLISH_KEY || env.STRIPE_PUBLISHABLE_KEY || ''
       ),
+      'import.meta.env.VITE_STRIPE_SHIPPING_TRACKED24': JSON.stringify(
+        env.VITE_STRIPE_SHIPPING_TRACKED24 || env.STRIPE_SHIPPING_TRACKED24 || ''
+      ),
+      'import.meta.env.VITE_STRIPE_SHIPPING_TRACKED48': JSON.stringify(
+        env.VITE_STRIPE_SHIPPING_TRACKED48 || env.STRIPE_SHIPPING_TRACKED48 || ''
+      ),
+      'import.meta.env.VITE_STRIPE_SHIPPING_INTERNATIONAL': JSON.stringify(
+        env.VITE_STRIPE_SHIPPING_INTERNATIONAL || env.STRIPE_SHIPPING_INTERNATIONAL || ''
+      ),
+      'import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID': JSON.stringify(
+        env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID || env.STRIPE_FREE_SHIPPING_PROMO_ID || ''
+      ),
     },
     build: {
       outDir: 'prod',

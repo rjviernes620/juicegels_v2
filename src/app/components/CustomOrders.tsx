@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 import { Turnstile } from "./ui/Turnstile";
 
-
-const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
+import { CHECKOUT_API_BASE } from "../utils/shopHelpers";
 
 type Attachment = {
   filename: string;

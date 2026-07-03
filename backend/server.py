@@ -52,61 +52,100 @@ def read_secret(secret_name, env_var_name=None):
 
   return ''
 
-# #LIVE Mode
+# Load local .env file if it exists (for local development)
+def load_dotenv():
+  dot_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '.env')
+  if os.path.isfile(dot_env_path):
+    with open(dot_env_path, 'r', encoding='utf-8') as f:
+      for line in f:
+        line = line.strip()
+        if not line or line.startswith('#'):
+          continue
+        if '=' in line:
+          key, val = line.split('=', 1)
+          key = key.strip()
+          val = val.strip().strip("'").strip('"')
+          if key:
+            # Overwrite only if not already set by system environment
+            if key not in os.environ:
+              os.environ[key] = val
 
+load_dotenv()
 
-stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
-if not stripe_api_key:
+# Determine if running in production/live or development/test mode
+render_env = os.environ.get('RENDER') == 'true'
+stripe_mode = os.environ.get('STRIPE_MODE') or os.environ.get('ENV') or os.environ.get('FLASK_ENV')
+is_production = (stripe_mode in ['production', 'live']) or (render_env and stripe_mode != 'development')
 
-  raise RuntimeError('Missing Stripe secret file stripe_live_v1.')
+# --- STRIPE KEYS & SECRETS ---
+if is_production:
+  stripe_api_key = read_secret('stripe_live_v1', 'STRIPE_SECRET_KEY')
+  if not stripe_api_key:
+    raise RuntimeError('Missing Stripe live secret key (stripe_live_v1 / STRIPE_SECRET_KEY).')
+  webhook_secret = read_secret('stripe_webhook_live', 'STRIPE_WEBHOOK_SECRET')
+else:
+  # In development, try to load STRIPE_SECRET_KEY or stripe_test_v1.
+  # Fall back to the hardcoded test key if not set in environment or secrets.
+  stripe_api_key = read_secret('stripe_test_v1', 'STRIPE_SECRET_KEY') or \
+                   read_secret('stripe_test_v1', 'STRIPE_TEST_SECRET_KEY') or \
+                   "sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx"
+  webhook_secret = read_secret('stripe_webhook_test', 'STRIPE_WEBHOOK_SECRET') or \
+                   read_secret('stripe_webhook_test', 'STRIPE_WEBHOOK_SECRET_TEST')
+
 client = stripe.StripeClient(stripe_api_key)
+
+# --- SHIPPING RATE IDs ---
+if is_production:
+  default_tracked24 = 'shr_1Ti0hyK4CROOpWXUhiIhLqWy'
+  default_tracked48 = 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii'
+  default_intl = 'shr_1To72LK4CROOpWXUQ4DKmzFE'
+else:
+  default_tracked24 = 'shr_1TjOFhK9S4gHGvxwGcIJ8ICh'
+  default_tracked48 = 'shr_1TjOJVK9S4gHGvxwRClQMfr1'
+  default_intl = 'shr_1TlIyvK9S4gHGvxwwsl3tfgS'
+
+# Allow overriding shipping rates via environment variables or secret files
+rate_tracked24 = read_secret('stripe_shipping_tracked24', 'STRIPE_SHIPPING_TRACKED24') or default_tracked24
+rate_tracked48 = read_secret('stripe_shipping_tracked48', 'STRIPE_SHIPPING_TRACKED48') or default_tracked48
+rate_intl = read_secret('stripe_shipping_international', 'STRIPE_SHIPPING_INTERNATIONAL') or default_intl
 
 SHIPPING_OPTIONS = {
   'tracked24': {
-    'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
+    'stripe_rate_id': rate_tracked24,
     'label': 'Royal Mail Tracked 24',
     'amount_pence': 400,
     'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
   },
   'tracked48': {
-    'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
+    'stripe_rate_id': rate_tracked48,
     'label': 'Royal Mail Tracked 48',
     'amount_pence': 199,
     'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
     'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
   },
   'international': {
-    'stripe_rate_id': 'shr_1To72LK4CROOpWXUQ4DKmzFE',
+    'stripe_rate_id': rate_intl,
     'label': 'Royal Mail International Tracked',
     'amount_pence': 950,
     'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
   },
 }
 
-##TEST Mode
-# client = stripe.StripeClient("sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx")
+# --- COUPONS & PROMOTIONS ---
+if is_production:
+  default_coupon_20 = 'lGKkukJL'
+  default_coupon_size = '60pCPsnH'
+  default_free_shipping_promo = 'promo_1ToCW2K4CROOpWXUXvpVGOFN'
+else:
+  # In development, default to live coupon IDs (or user overrides)
+  default_coupon_20 = 'lGKkukJL'
+  default_coupon_size = '60pCPsnH'
+  default_free_shipping_promo = 'promo_1ToCW2K4CROOpWXUXvpVGOFN'
 
-# SHIPPING_OPTIONS = {
-#   'tracked24': {
-#     'stripe_rate_id': 'shr_1TjOFhK9S4gHGvxwGcIJ8ICh',
-#     'label': 'Royal Mail Tracked 24',
-#     'amount_pence': 400,
-#     'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
-#   },
-#   'tracked48': {
-#     'stripe_rate_id': 'shr_1TjOJVK9S4gHGvxwRClQMfr1',
-#     'label': 'Royal Mail Tracked 48',
-#     'amount_pence': 199,
-#     'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
-#     'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
-#   },
-#   'international': {
-#     'stripe_rate_id': 'shr_1TlIyvK9S4gHGvxwwsl3tfgS',
-#     'label': 'Royal Mail International Tracked',
-#     'amount_pence': 950,
-#     'estimate_text': 'Estimated delivery within 3-5 business days (Europe) or 6-7 business days (Rest of World) after the order is finished.',
-#   },
-# }
+STRIPE_COUPON_20 = read_secret('stripe_coupon_20', 'STRIPE_COUPON_20') or default_coupon_20
+STRIPE_COUPON_SIZE = read_secret('stripe_coupon_size', 'STRIPE_COUPON_SIZE') or default_coupon_size
+STRIPE_FREE_SHIPPING_PROMO_ID = read_secret('stripe_free_shipping_promo_id', 'STRIPE_FREE_SHIPPING_PROMO_ID') or default_free_shipping_promo
+
 
 def build_checkout_items_param(items):
   encoded_items = []
@@ -280,7 +319,7 @@ def is_free_shipping_coupon(coupon_code=None, promotion_code_id=None):
     if str(coupon_code).strip().upper() == 'DEV_JUNJUN':
       return True
   if promotion_code_id:
-    if str(promotion_code_id).strip() == 'promo_1ToCW2K4CROOpWXUXvpVGOFN':
+    if str(promotion_code_id).strip() == STRIPE_FREE_SHIPPING_PROMO_ID:
       return True
   return False
 
@@ -1967,13 +2006,15 @@ def create_checkout_session():
         print(f"Error searching for existing Stripe product for SKU {NAIL_SIZE_GUIDE_PRODUCT_ID}: {e}")
       
       if not stripe_product_id:
-        stripe_product_id = 'prod_UhOWU4BodmJb0F'
-        try:
-          fallback_prod = client.v1.products.retrieve(stripe_product_id)
-          if fallback_prod.description:
-            client.v1.products.update(stripe_product_id, params={'description': ''})
-        except Exception as fallback_err:
-          print(f"Error checking/clearing description on fallback Stripe product {stripe_product_id}: {fallback_err}")
+        fallback_default = 'prod_UhOWU4BodmJb0F' if is_production else ''
+        stripe_product_id = read_secret('stripe_fallback_product_id', 'STRIPE_FALLBACK_PRODUCT_ID') or fallback_default
+        if stripe_product_id:
+          try:
+            fallback_prod = client.v1.products.retrieve(stripe_product_id)
+            if fallback_prod.description:
+              client.v1.products.update(stripe_product_id, params={'description': ''})
+          except Exception as fallback_err:
+            print(f"Error checking/clearing description on fallback Stripe product {stripe_product_id}: {fallback_err}")
 
     price_data = {
       'currency': 'gbp',
@@ -2073,7 +2114,7 @@ def create_checkout_session():
           'shipping_city': form.get('city', ''),
           'shipping_postcode': form.get('postcode', ''),
           'shipping_country': country,
-          'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
+          'coupon_code': coupon_summary['code'] if coupon_summary else (STRIPE_COUPON_SIZE if apply_size_guide_coupon else (STRIPE_COUPON_20 if apply_20_percent_discount else '')),
           'shipping_option_id': shipping_option['id'],
           'shipping_method': shipping_option['label'],
           'shipping_amount_pence': str(shipping_option['amount_pence']),
@@ -2119,7 +2160,7 @@ def create_checkout_session():
           'shipping_city': form.get('city', ''),
           'shipping_postcode': form.get('postcode', ''),
           'shipping_country': country,
-          'coupon_code': coupon_summary['code'] if coupon_summary else ('60pCPsnH' if apply_size_guide_coupon else ('lGKkukJL' if apply_20_percent_discount else '')),
+          'coupon_code': coupon_summary['code'] if coupon_summary else (STRIPE_COUPON_SIZE if apply_size_guide_coupon else (STRIPE_COUPON_20 if apply_20_percent_discount else '')),
           'shipping_option_id': shipping_option['id'],
           'shipping_method': shipping_option['label'],
           'shipping_amount_pence': str(shipping_option['amount_pence']),
@@ -2136,11 +2177,11 @@ def create_checkout_session():
       }]
     elif apply_20_percent_discount and not is_embedded:
       session_params['discounts'] = [{
-        'coupon': 'lGKkukJL',
+        'coupon': STRIPE_COUPON_20,
       }]
     elif apply_size_guide_coupon and not is_embedded:
       session_params['discounts'] = [{
-        'coupon': '60pCPsnH',
+        'coupon': STRIPE_COUPON_SIZE,
       }]
 
     session = client.v1.checkout.sessions.create(params=session_params)

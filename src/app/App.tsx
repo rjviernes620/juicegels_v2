@@ -45,7 +45,9 @@ import {
   getCollectionStyle,
   buildBasketUrl,
   parseBasketItemsParam,
-  parseMetaBasketProductsParam
+  parseMetaBasketProductsParam,
+  isLocalDev,
+  STRIPE_FREE_SHIPPING_PROMO_ID
 } from "./utils/shopHelpers";
 import {
   ShopPage,
@@ -567,7 +569,7 @@ export default function App() {
   const isFreeShippingPromoApplied = !!(
     couponSummary &&
     (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
-     couponSummary.promotionCodeId === "promo_1ToCW2K4CROOpWXUXvpVGOFN")
+     couponSummary.promotionCodeId === STRIPE_FREE_SHIPPING_PROMO_ID)
   );
 
   const shippingOptions = useMemo(
@@ -2325,6 +2327,29 @@ export default function App() {
             </p>
           </div>
         </footer>
+      )}
+      {isLocalDev() && (
+        <div style={{
+          position: "fixed",
+          bottom: 16,
+          left: 16,
+          background: "#e11d48", // Rose-600
+          color: "#ffffff",
+          padding: "6px 12px",
+          borderRadius: 10,
+          fontSize: 11,
+          fontWeight: "bold",
+          zIndex: 99999,
+          pointerEvents: "none",
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1)",
+          border: "1px solid rgba(255, 255, 255, 0.2)",
+          display: "flex",
+          alignItems: "center",
+          gap: 6
+        }}>
+          <span style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "#4ade80" }}></span>
+          Stripe Test Mode
+        </div>
       )}
     </div>
   );

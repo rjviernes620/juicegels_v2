@@ -10,13 +10,23 @@ import {
 
 export const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 export const META_CART_ORIGIN = "meta_shops";
-export const CHECKOUT_API_BASE = "https://juicegels-v2.onrender.com";
+export const CHECKOUT_API_BASE = import.meta.env.VITE_CHECKOUT_API_BASE || 
+  (import.meta.env.DEV ? "http://localhost:4000" : "https://juicegels-v2.onrender.com");
+export const isLocalDev = () =>
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
 export const SHIPPING_FREE_THRESHOLD = 30;
 export const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {
-  tracked24: "shr_1Ti0hyK4CROOpWXUhiIhLqWy",
-  tracked48: "shr_1Ti0ieK4CROOpWXU5Cbop3Ii",
-  international: "shr_1TnGKVK4CROOpWXUBmC6WzJe",
+  tracked24: isLocalDev() ? "shr_1TjOFhK9S4gHGvxwGcIJ8ICh" : "shr_1Ti0hyK4CROOpWXUhiIhLqWy",
+  tracked48: isLocalDev() ? "shr_1TjOJVK9S4gHGvxRClQMfr1" : "shr_1Ti0ieK4CROOpWXU5Cbop3Ii",
+  international: isLocalDev() ? "shr_1TlIyvK9S4gHGvxwwsl3tfgS" : "shr_1To72LK4CROOpWXUQ4DKmzFE",
 };
+
+export const STRIPE_FREE_SHIPPING_PROMO_ID = isLocalDev()
+  ? (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID || "promo_1ToCW2K4CROOpWXUXvpVGOFN")
+  : (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID_LIVE || "");
+
 
 export const validLengths: NailLength[] = ["Short", "Medium", "Long"];
 
