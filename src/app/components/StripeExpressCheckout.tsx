@@ -8,7 +8,7 @@ import { CHECKOUT_API_BASE, buildShippingOptions, isLocalDev, STRIPE_FREE_SHIPPI
 const getPublishableKey = () => {
   return isLocalDev()
     ? (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_51TgWqGK9S4gHGvxwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-    : (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY_LIVE || "");
+    : (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY_LIVE || import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
 };
 const stripePublishableKey = getPublishableKey();
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;

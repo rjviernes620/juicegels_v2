@@ -36,6 +36,9 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY': JSON.stringify(
         env.VITE_STRIPE_PUBLISHABLE_KEY || env.STRIPE_PUBLISH_KEY || env.STRIPE_PUBLISHABLE_KEY || ''
       ),
+      'import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY_LIVE': JSON.stringify(
+        env.VITE_STRIPE_PUBLISHABLE_KEY_LIVE || env.STRIPE_PUBLISH_KEY_LIVE || env.STRIPE_PUBLISHABLE_KEY_LIVE || env.STRIPE_PUBLISH_KEY || env.STRIPE_PUBLISHABLE_KEY || ''
+      ),
       'import.meta.env.VITE_STRIPE_SHIPPING_TRACKED24': JSON.stringify(
         env.VITE_STRIPE_SHIPPING_TRACKED24 || env.STRIPE_SHIPPING_TRACKED24 || ''
       ),
