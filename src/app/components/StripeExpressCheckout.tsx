@@ -230,10 +230,19 @@ function ExpressButtonInner({
       onValidationError(null);
 
       // Enforce custom username validation
-      if (contactMethod === "instagram" && !instagramHandle.trim()) {
-        onValidationError("Instagram handle is required to confirm press-on nail sizes.", { instagram: "Required" });
-        reject();
-        return;
+      if (contactMethod === "instagram") {
+        const handle = instagramHandle.trim();
+        const cleanHandle = handle.replace(/^@/, "");
+        if (!cleanHandle) {
+          onValidationError("Instagram handle is required to confirm press-on nail sizes.", { instagram: "Required" });
+          reject();
+          return;
+        }
+        if (!/^[a-zA-Z0-9._]+$/.test(cleanHandle)) {
+          onValidationError("Please enter a valid Instagram username (letters, numbers, periods, and underscores only).", { instagram: "Invalid format" });
+          reject();
+          return;
+        }
       }
 
       resolve();

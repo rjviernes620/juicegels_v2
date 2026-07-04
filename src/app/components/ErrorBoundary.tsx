@@ -53,17 +53,18 @@ export class LocalErrorBoundary extends Component<LocalProps, LocalState> {
   }
 }
 
-// ── Global Router Error Boundary ──
-export function RouteErrorBoundary() {
-  const error = useRouteError() as any;
-  console.error("RouteErrorBoundary caught a routing/render error:", error);
+// ── Reusable Error Page Presentation Component ──
+interface ErrorPageProps {
+  errorTitle?: string;
+  errorMessage?: string;
+  errorEmoji?: string;
+}
 
-  const errorMessage = error instanceof Error
-    ? error.message
-    : typeof error === "string"
-      ? error
-      : error?.statusText || error?.message || "An unknown error occurred.";
-
+export function ErrorPage({
+  errorTitle = "Something went wrong",
+  errorMessage = "An unexpected error occurred.",
+  errorEmoji = "💅"
+}: ErrorPageProps) {
   const handleReload = () => {
     window.location.href = "/";
   };
@@ -91,7 +92,7 @@ export function RouteErrorBoundary() {
         boxShadow: "0 24px 64px rgba(0, 0, 0, 0.4)",
         textAlign: "center"
       }}>
-        <div style={{ fontSize: 54, marginBottom: 16 }}>💅</div>
+        <div style={{ fontSize: 54, marginBottom: 16 }}>{errorEmoji}</div>
         
         <h1 style={{
           fontFamily: "'Lobster', serif",
@@ -100,7 +101,7 @@ export function RouteErrorBoundary() {
           margin: "0 0 12px",
           letterSpacing: "0.5px"
         }}>
-          Something went wrong
+          {errorTitle}
         </h1>
         
         <p style={{
@@ -178,4 +179,52 @@ export function RouteErrorBoundary() {
       </div>
     </div>
   );
+}
+
+// ── Global Router Error Boundary ──
+export function RouteErrorBoundary() {
+  const error = useRouteError() as any;
+  console.error("RouteErrorBoundary caught a routing/render error:", error);
+
+  const errorMessage = error instanceof Error
+    ? error.message
+    : typeof error === "string"
+      ? error
+      : error?.statusText || error?.message || "An unknown error occurred.";
+
+  return <ErrorPage errorMessage={errorMessage} />;
+}
+
+// ── Top-Level Class Error Boundary ──
+interface GlobalProps {
+  children: ReactNode;
+}
+
+interface GlobalState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+export class GlobalErrorBoundary extends Component<GlobalProps, GlobalState> {
+  constructor(props: GlobalProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): GlobalState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("GlobalErrorBoundary caught an error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      const errorMessage = this.state.error?.message || "An unexpected error occurred.";
+      return <ErrorPage errorMessage={errorMessage} />;
+    }
+
+    return this.props.children;
+  }
 }

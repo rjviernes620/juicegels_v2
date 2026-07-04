@@ -974,7 +974,15 @@ export default function App() {
     if (!form.phone.trim()) e.phone = "Required";
     if (!form.address.trim()) e.address = "Required";
     if (!form.city.trim()) e.city = "Required";
-    if (form.contactMethod === "instagram" && !form.instagram.trim()) e.instagram = "Required";
+    if (form.contactMethod === "instagram") {
+      const handle = form.instagram.trim();
+      const cleanHandle = handle.replace(/^@/, "");
+      if (!cleanHandle) {
+        e.instagram = "Required";
+      } else if (!/^[a-zA-Z0-9._]+$/.test(cleanHandle)) {
+        e.instagram = "Valid username required (letters, numbers, periods, underscores)";
+      }
+    }
     if (!form.postcode.trim()) e.postcode = "Required";
     if (!form.country.trim()) e.country = "Required";
     setErrors(e);

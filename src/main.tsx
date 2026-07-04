@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import App from "./app/App.tsx";
-import { RouteErrorBoundary } from "./app/components/ErrorBoundary.tsx";
+import { RouteErrorBoundary, GlobalErrorBoundary, ErrorPage } from "./app/components/ErrorBoundary.tsx";
 import "./styles/index.css";
 
 function normalizeRedirectedRoute() {
@@ -32,9 +32,12 @@ const router = createBrowserRouter([
   { path: "/product/:id", element: <App />, errorElement: <RouteErrorBoundary /> },
   { path: "/checkout-success", element: <App />, errorElement: <RouteErrorBoundary /> },
   { path: "/confirmation", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/error", element: <ErrorPage />, errorElement: <RouteErrorBoundary /> },
   { path: "*", element: <App />, errorElement: <RouteErrorBoundary /> },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />
+  <GlobalErrorBoundary>
+    <RouterProvider router={router} />
+  </GlobalErrorBoundary>
 );
