@@ -10,9 +10,6 @@ const getPublishableKey = () => {
     ? (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_51TgWqGK9S4gHGvxwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     : (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY_LIVE || import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
 };
-const stripePublishableKey = getPublishableKey();
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
-
 
 interface StripeExpressCheckoutProps {
   cart: CartItem[];
@@ -21,6 +18,7 @@ interface StripeExpressCheckoutProps {
   contactMethod: "instagram" | "email";
   instagramHandle: string;
   onValidationError: (msg: string | null, fieldErrors?: Record<string, string>) => void;
+  stripePublishableKey?: string;
 }
 
 export function StripeExpressCheckout({
@@ -30,8 +28,15 @@ export function StripeExpressCheckout({
   contactMethod,
   instagramHandle,
   onValidationError,
+  stripePublishableKey: propPublishableKey,
 }: StripeExpressCheckoutProps) {
   const [canPay, setCanPay] = useState<boolean | null>(null);
+
+  // Initialize Stripe promise dynamically based on the passed-in publishable key
+  const stripePromise = useMemo(() => {
+    const activeKey = propPublishableKey || getPublishableKey();
+    return activeKey ? loadStripe(activeKey) : null;
+  }, [propPublishableKey]);
 
   if (!stripePromise) {
     return (

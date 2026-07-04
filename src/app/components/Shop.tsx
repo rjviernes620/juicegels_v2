@@ -1247,6 +1247,7 @@ export interface BasketPageProps {
   initialForm: FormData;
   form: FormData;
   errors: Partial<FormData>;
+  stripePublishableKey?: string;
 }
 
 function ContactPreferenceSelector({
@@ -1383,7 +1384,8 @@ export function BasketPage({
   setErrors,
   initialForm,
   form,
-  errors
+  errors,
+  stripePublishableKey
 }: BasketPageProps) {
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -1656,6 +1658,7 @@ export function BasketPage({
                     contactMethod={expressContactMethod}
                     instagramHandle={expressInstagram}
                     onValidationError={handleExpressValidationError}
+                    stripePublishableKey={stripePublishableKey}
                   />
                 </LocalErrorBoundary>
               </div>
@@ -1907,6 +1910,7 @@ export function BasketPage({
                       contactMethod={expressContactMethod}
                       instagramHandle={expressInstagram}
                       onValidationError={handleExpressValidationError}
+                      stripePublishableKey={stripePublishableKey}
                     />
                   </LocalErrorBoundary>
                 </div>

@@ -118,6 +118,8 @@ export default function App() {
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [productsLoadError, setProductsLoadError] = useState<string | null>(null);
   const [isMaintenanceMode, setIsMaintenanceMode] = useState<boolean>(false);
+  const [stripePublishableKey, setStripePublishableKey] = useState<string>("");
+
   const [wishlist, setWishlist] = useState<string[]>([]);
   const [homeSelectedCollection, setHomeSelectedCollection] = useState("All");
   const [homeSortBy, setHomeSortBy] = useState("featured");
@@ -270,8 +272,13 @@ export default function App() {
         const response = await fetch(`${CHECKOUT_API_BASE}/api/status`);
         if (response.ok) {
           const data = await response.json();
-          if (isMounted && data.maintenance) {
-            setIsMaintenanceMode(true);
+          if (isMounted) {
+            if (data.maintenance) {
+              setIsMaintenanceMode(true);
+            }
+            if (data.stripe_publishable_key) {
+              setStripePublishableKey(data.stripe_publishable_key);
+            }
           }
         }
       } catch (error) {
@@ -2277,6 +2284,7 @@ export default function App() {
           initialForm={initialForm}
           form={form}
           errors={errors}
+          stripePublishableKey={stripePublishableKey}
         />
       )}
 

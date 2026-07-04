@@ -1296,10 +1296,22 @@ def check_maintenance():
 
 @app.route('/api/status', methods=['GET', 'OPTIONS'])
 def api_status():
+  mode = get_stripe_mode()
+  if mode == 'test':
+    pub_key = read_secret('stripe_test_publish_key', 'STRIPE_TEST_PUBLISH_KEY')
+    if not pub_key:
+      pub_key = "pk_test_51TgWqGK9S4gHGvxwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  else:
+    pub_key = read_secret('stripe_publish', 'STRIPE_PUBLISH_KEY')
+    if not pub_key:
+      pub_key = ""
+
   return jsonify({
     'maintenance': is_maintenance_active(),
-    'stripe_mode': get_stripe_mode()
+    'stripe_mode': mode,
+    'stripe_publishable_key': pub_key
   })
+
 
 
 @app.route('/api/meta-catalog', methods=['GET'])
