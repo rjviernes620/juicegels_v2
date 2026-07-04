@@ -26,12 +26,12 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
   return (
     <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
-      <div 
-        style={{ 
+      <div
+        style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
-          padding: "36px 20px 28px", 
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)",
+          padding: "36px 20px 28px",
           textAlign: "center",
           borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
           display: "flex",
@@ -102,35 +102,35 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
         {/* Content Wrapper */}
         <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
           <div style={{ position: "relative" }}>
-            <div 
-              style={{ 
-                width: 144, 
-                height: 144, 
-                borderRadius: "50%", 
+            <div
+              style={{
+                width: 144,
+                height: 144,
+                borderRadius: "50%",
                 overflow: "hidden",
                 border: "4px solid #ffd6e9",
                 boxShadow: "0 8px 24px rgba(212, 16, 71, 0.15)",
                 background: "#e0a2b4"
               }}
             >
-              <ImageWithFallback 
-                src="images/about_alyssa.png" 
-                alt="AlyJuice - Founder of Juice Gels" 
+              <ImageWithFallback
+                src="images/about_alyssa.png"
+                alt="AlyJuice - Founder of Juice Gels"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
-            <span 
-              style={{ 
-                position: "absolute", 
-                bottom: 4, 
-                right: 8, 
-                background: "#fc6587", 
-                color: "#3d1a24", 
-                borderRadius: "50%", 
-                width: 32, 
-                height: 32, 
-                display: "flex", 
-                alignItems: "center", 
+            <span
+              style={{
+                position: "absolute",
+                bottom: 4,
+                right: 8,
+                background: "#fc6587",
+                color: "#3d1a24",
+                borderRadius: "50%",
+                width: 32,
+                height: 32,
+                display: "flex",
+                alignItems: "center",
                 justifyContent: "center",
                 fontSize: 16,
                 boxShadow: "0 4px 10px rgba(0,0,0,0.1)"
@@ -141,24 +141,24 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
           </div>
 
           <div>
-            <h2 
-              style={{ 
-                fontFamily: "'Lobster', serif", 
-                fontSize: 32, 
-                color: "#fc6587", 
+            <h2
+              style={{
+                fontFamily: "'Lobster', serif",
+                fontSize: 32,
+                color: "#fc6587",
                 margin: "0 0 6px",
                 lineHeight: 1.2
               }}
             >
               Hi, I'm AlyJuice
             </h2>
-            <p 
-              style={{ 
-                color: "#4f444a", 
-                margin: 0, 
-                fontSize: 13, 
+            <p
+              style={{
+                color: "#4f444a",
+                margin: 0,
+                fontSize: 13,
                 fontWeight: 500,
-                letterSpacing: "0.02em" 
+                letterSpacing: "0.02em"
               }}
             >
               🌸 Founder of Juice Gels 🌸
@@ -169,14 +169,14 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
 
       {/* Main Content Area */}
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", gap: 24, width: "100%", boxSizing: "border-box" }}>
-        
+
         {/* More Than Just Nails Section */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <h3 
-            style={{ 
-              fontFamily: "'Lobster', serif", 
-              fontSize: 22, 
-              color: "#fc6587", 
+          <h3
+            style={{
+              fontFamily: "'Lobster', serif",
+              fontSize: 22,
+              color: "#fc6587",
               margin: 0
             }}
           >
@@ -194,11 +194,11 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
         </div>
 
         {/* Highlighted box on freedom */}
-        <div 
-          style={{ 
-            background: "#ffb8d8", 
-            borderRadius: 16, 
-            padding: "20px 18px", 
+        <div
+          style={{
+            background: "#ffb8d8",
+            borderRadius: 16,
+            padding: "20px 18px",
             border: "1px solid rgba(212, 84, 122, 0.18)",
             display: "flex",
             flexDirection: "column",
@@ -219,11 +219,11 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
 
         {/* Why Juice Gels? */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <h3 
-            style={{ 
-              fontFamily: "'Lobster', serif", 
-              fontSize: 22, 
-              color: "#fc6587", 
+          <h3
+            style={{
+              fontFamily: "'Lobster', serif",
+              fontSize: 22,
+              color: "#fc6587",
               margin: "0 0 4px"
             }}
           >
@@ -235,14 +235,14 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             Whether you're looking for a confidence boost, getting ready for a night out, planning a holiday, dressing for a special occasion or simply obsessed with a new trend you've seen online, Juice Gels gives you the freedom to wear the nails you want, when you want.
           </p>
-          
-          <div 
-            style={{ 
-              background: "#ffb8d8", 
-              borderRadius: 14, 
-              padding: "16px", 
-              display: "flex", 
-              flexDirection: "column", 
+
+          <div
+            style={{
+              background: "#ffb8d8",
+              borderRadius: 14,
+              padding: "16px",
+              display: "flex",
+              flexDirection: "column",
               gap: 10,
               marginTop: 6
             }}
@@ -281,19 +281,19 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
             Every order, message, tag and recommendation means the world.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            Thank you for supporting a small business built around creativity, self-expression and the belief that beautiful nails should be accessible to everyone.
+            Thank you for supporting a business built around creativity, self-expression and the belief that beautiful nails should be accessible to everyone.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             I can't wait to see how you wear your Juice Gels.
           </p>
-          
+
           <div style={{ marginTop: 10 }}>
             <p style={{ margin: 0, fontSize: 14, color: "#4f444a" }}>Love,</p>
-            <p 
-              style={{ 
-                fontFamily: "'Lobster', serif", 
-                fontSize: 26, 
-                color: "#fc6587", 
+            <p
+              style={{
+                fontFamily: "'Lobster', serif",
+                fontSize: 26,
+                color: "#fc6587",
                 margin: "4px 0 0",
                 letterSpacing: "0.05em"
               }}
@@ -304,8 +304,8 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
         </div>
 
         {/* Instagram/Footer link block */}
-        <div 
-          style={{ 
+        <div
+          style={{
             marginTop: 16,
             padding: "16px",
             background: "linear-gradient(135deg, #fce4ea 0%, #ffd6e9 100%)",
@@ -322,21 +322,21 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
             Want to see daily updates & new nail drops?
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
-            <a 
-              href="https://instagram.com/juicegels" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              style={{ 
-                display: "inline-flex", 
-                alignItems: "center", 
+            <a
+              href="https://instagram.com/juicegels"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
                 justifyContent: "center",
-                gap: 8, 
-                background: "#f24e77", 
-                color: "#fff", 
-                padding: "10px 20px", 
-                borderRadius: 24, 
-                fontSize: 13, 
-                fontWeight: 600, 
+                gap: 8,
+                background: "#f24e77",
+                color: "#fff",
+                padding: "10px 20px",
+                borderRadius: 24,
+                fontSize: 13,
+                fontWeight: 600,
                 textDecoration: "none",
                 boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)"
               }}
@@ -344,21 +344,21 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
               <Instagram size={16} />
               Follow @juicegels
             </a>
-            <a 
-              href="https://tiktok.com/@juice.gels" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              style={{ 
-                display: "inline-flex", 
-                alignItems: "center", 
+            <a
+              href="https://tiktok.com/@juice.gels"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
                 justifyContent: "center",
-                gap: 8, 
-                background: "#f24e77", 
-                color: "#fff", 
-                padding: "10px 20px", 
-                borderRadius: 24, 
-                fontSize: 13, 
-                fontWeight: 600, 
+                gap: 8,
+                background: "#f24e77",
+                color: "#fff",
+                padding: "10px 20px",
+                borderRadius: 24,
+                fontSize: 13,
+                fontWeight: 600,
                 textDecoration: "none",
                 boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)"
               }}
