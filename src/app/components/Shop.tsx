@@ -1262,7 +1262,7 @@ function ContactPreferenceSelector({
 }) {
   return (
     <div style={{ marginBottom: 14 }}>
-      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#fff9fb", marginBottom: 10 }}>
+      <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#fc6f87", marginBottom: 10 }}>
         How should we contact you to confirm your nail sizes?
       </label>
 
@@ -1316,7 +1316,7 @@ function ContactPreferenceSelector({
 
       {contactMethod === "instagram" && (
         <div style={{ marginTop: 10 }}>
-          <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#fff9fb", marginBottom: 6 }}>
+          <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#fc6f87", marginBottom: 6 }}>
             Instagram Username
           </label>
           <input
