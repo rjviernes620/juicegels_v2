@@ -190,28 +190,14 @@ class DynamicString:
         return other + str(self)
 
 def get_coupon_20():
-    mode = get_stripe_mode()
-    if mode == 'test':
-        return read_secret('stripe_coupon_20_test', 'STRIPE_TEST_COUPON_20') or \
-               read_secret('stripe_coupon_20', 'STRIPE_COUPON_20') or 'lGKkukJL'
-    else:
-        return read_secret('stripe_coupon_20', 'STRIPE_COUPON_20') or 'lGKkukJL'
+    return 'lGKkukJL'
 
 def get_coupon_size():
-    mode = get_stripe_mode()
-    if mode == 'test':
-        return read_secret('stripe_coupon_size_test', 'STRIPE_TEST_COUPON_SIZE') or \
-               read_secret('stripe_coupon_size', 'STRIPE_COUPON_SIZE') or '60pCPsnH'
-    else:
-        return read_secret('stripe_coupon_size', 'STRIPE_COUPON_SIZE') or '60pCPsnH'
+    return '60pCPsnH'
 
 def get_free_shipping_promo_id():
-    mode = get_stripe_mode()
-    if mode == 'test':
-        return read_secret('stripe_free_shipping_promo_id_test', 'STRIPE_TEST_FREE_SHIPPING_PROMO_ID') or \
-               read_secret('stripe_free_shipping_promo_id', 'STRIPE_FREE_SHIPPING_PROMO_ID') or 'promo_1ToCW2K4CROOpWXUXvpVGOFN'
-    else:
-        return read_secret('stripe_free_shipping_promo_id', 'STRIPE_FREE_SHIPPING_PROMO_ID') or 'promo_1ToCW2K4CROOpWXUXvpVGOFN'
+    return 'promo_1ToCW2K4CROOpWXUXvpVGOFN'
+
 
 STRIPE_COUPON_20 = DynamicString(get_coupon_20)
 STRIPE_COUPON_SIZE = DynamicString(get_coupon_size)
