@@ -1862,7 +1862,7 @@ def stripe_webhook():
   print("Stripe webhook endpoint called!")
   mode = get_stripe_mode()
   if mode == 'test':
-    webhook_secret = read_secret('stripe_webhook_test', 'STRIPE_TEST_WEBHOOK_SECRET')
+    webhook_secret = read_secret('stripe_webhook', 'STRIPE_TEST_WEBHOOK_SECRET')
     if not webhook_secret:
       print("Warning: STRIPE_TEST_WEBHOOK_SECRET not configured. Falling back to STRIPE_WEBHOOK_SECRET.")
       webhook_secret = read_secret('stripe_webhook_live', 'STRIPE_WEBHOOK_SECRET')
