@@ -10,6 +10,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STRIPE_MODE_FILE = os.path.join(BASE_DIR, 'stripe_mode.flag')
 MAINTENANCE_FILE = os.path.join(BASE_DIR, 'maintenance.flag')
 
+# ANSI Colors
+COLOR_RESET = "\033[0m"
+COLOR_BOLD = "\033[1m"
+COLOR_RED = "\033[31m"
+COLOR_GREEN = "\033[32m"
+COLOR_YELLOW = "\033[33m"
+COLOR_BLUE = "\033[34m"
+COLOR_CYAN = "\033[36m"
+COLOR_WHITE = "\033[37m"
+
+def colorize(text, color):
+    if sys.stdout.isatty():
+        return f"{color}{text}{COLOR_RESET}"
+    return text
+
 def get_stripe_mode():
     if os.path.isfile(STRIPE_MODE_FILE):
         with open(STRIPE_MODE_FILE, 'r') as f:
@@ -21,11 +36,12 @@ def get_stripe_mode():
 def set_stripe_mode(mode):
     mode = mode.lower()
     if mode not in ('live', 'test'):
-        print(f"Error: Invalid stripe mode '{mode}'. Use 'live' or 'test'.")
+        print(colorize(f"Error: Invalid stripe mode '{mode}'. Use 'live' or 'test'.", COLOR_RED))
         sys.exit(1)
     with open(STRIPE_MODE_FILE, 'w') as f:
         f.write(mode)
-    print(f"Stripe mode successfully set to: {mode.upper()}")
+    mode_colored = colorize(mode.upper(), COLOR_GREEN if mode == 'live' else COLOR_YELLOW)
+    print(f"Stripe mode successfully set to: {mode_colored}")
 
 def is_maintenance_active():
     return os.path.isfile(MAINTENANCE_FILE)
@@ -34,11 +50,11 @@ def set_maintenance(active):
     if active:
         with open(MAINTENANCE_FILE, 'w') as f:
             f.write('active')
-        print("Maintenance mode: ENABLED (All storefront website API requests will be blocked).")
+        print(colorize("Maintenance mode: ENABLED (All storefront website API requests will be blocked).", COLOR_RED + COLOR_BOLD))
     else:
         if os.path.isfile(MAINTENANCE_FILE):
             os.remove(MAINTENANCE_FILE)
-        print("Maintenance mode: DISABLED (Website API requests are active).")
+        print(colorize("Maintenance mode: DISABLED (Website API requests are active).", COLOR_GREEN + COLOR_BOLD))
 
 def find_processes(pattern):
     pids = []
@@ -113,7 +129,7 @@ def check_server_running():
     return False, "Offline"
 
 def reset_server():
-    print("Attempting to reload server...")
+    print(colorize("Attempting to reload server...", COLOR_CYAN))
     
     # 1. Look for Gunicorn (Linux/Unix only)
     if sys.platform != 'win32':
@@ -121,10 +137,10 @@ def reset_server():
         if master_pid:
             try:
                 os.kill(master_pid, signal.SIGHUP)
-                print(f"Successfully sent SIGHUP reload signal to Gunicorn master process (PID {master_pid}).")
+                print(colorize(f"Successfully sent SIGHUP reload signal to Gunicorn master process (PID {master_pid}).", COLOR_GREEN))
                 return
             except Exception as e:
-                print(f"Failed to signal Gunicorn master process: {e}")
+                print(colorize(f"Failed to signal Gunicorn master process: {e}", COLOR_RED))
 
     # 2. If Gunicorn is not found, look for standalone server.py processes
     server_pids = find_processes('server.py')
@@ -132,28 +148,93 @@ def reset_server():
         try:
             for pid in server_pids:
                 # Under Windows, SIGHUP does not exist, and SIGTERM kills standalone.
-                # SIGTERM is supported on Windows as well.
                 os.kill(pid, signal.SIGTERM)
-                print(f"Sent SIGTERM to standalone server process (PID {pid}). Process manager should restart it.")
+                print(colorize(f"Sent SIGTERM to standalone server process (PID {pid}). Process manager should restart it.", COLOR_YELLOW))
             return
         except Exception as e:
-            print(f"Failed to signal standalone processes: {e}")
+            print(colorize(f"Failed to signal standalone processes: {e}", COLOR_RED))
 
-    print("Error: Could not find any running Gunicorn or server.py processes.")
-    print("If running locally, please restart the server in your terminal.")
+    print(colorize("Error: Could not find any running Gunicorn or server.py processes.", COLOR_RED))
+    print(colorize("If running locally, please restart the server in your terminal.", COLOR_YELLOW))
 
 def show_status():
     stripe_mode = get_stripe_mode()
     maint_active = is_maintenance_active()
     running, run_status = check_server_running()
     
-    print("=" * 60)
-    print(" JUICEGELS BACKEND SERVER STATUS")
-    print("=" * 60)
-    print(f"  Process Status:   {run_status}")
-    print(f"  Stripe Server:    {stripe_mode.upper()} mode")
-    print(f"  Maintenance:      {'ACTIVE (Website offline)' if maint_active else 'INACTIVE (Website live)'}")
-    print("=" * 60)
+    # Format values with color
+    if stripe_mode == 'live':
+        stripe_str = colorize("LIVE mode", COLOR_GREEN + COLOR_BOLD)
+    else:
+        stripe_str = colorize("TEST mode", COLOR_YELLOW + COLOR_BOLD)
+        
+    if maint_active:
+        maint_str = colorize("ACTIVE (Website offline)", COLOR_RED + COLOR_BOLD)
+    else:
+        maint_str = colorize("INACTIVE (Website live)", COLOR_GREEN + COLOR_BOLD)
+        
+    if running:
+        status_str = colorize(run_status, COLOR_GREEN)
+    else:
+        status_str = colorize(run_status, COLOR_RED)
+        
+    print(colorize("=" * 60, COLOR_CYAN))
+    print(colorize(" JUICEGELS BACKEND SERVER STATUS", COLOR_CYAN + COLOR_BOLD))
+    print(colorize("=" * 60, COLOR_CYAN))
+    print(f"  Process Status:   {status_str}")
+    print(f"  Stripe Server:    {stripe_str}")
+    print(f"  Maintenance:      {maint_str}")
+    print(colorize("=" * 60, COLOR_CYAN))
+
+def start_interactive_shell():
+    show_status()
+    print(colorize("\nEntering interactive control shell.", COLOR_CYAN))
+    print(colorize("Type 'help' for a list of commands, or 'exit' to quit.\n", COLOR_WHITE))
+    
+    while True:
+        try:
+            # Set up the prompt with a cool icon/color
+            prompt = colorize("juicegels-control> ", COLOR_BLUE)
+            cmd_line = input(prompt).strip()
+            if not cmd_line:
+                continue
+            
+            parts = cmd_line.split()
+            cmd = parts[0].lower()
+            
+            if cmd in ('exit', 'quit'):
+                print(colorize("Exiting control tool. Goodbye!", COLOR_CYAN))
+                break
+            elif cmd == 'help':
+                print(colorize("Available commands:", COLOR_BOLD))
+                print(f"  {colorize('status', COLOR_GREEN):<25} Show current server settings and process status")
+                print(f"  {colorize('stripe live', COLOR_GREEN):<25} Switch Stripe client to LIVE mode")
+                print(f"  {colorize('stripe test', COLOR_GREEN):<25} Switch Stripe client to TEST mode")
+                print(f"  {colorize('maintenance on', COLOR_GREEN):<25} Turn maintenance mode ON (blocks checkout/apis)")
+                print(f"  {colorize('maintenance off', COLOR_GREEN):<25} Turn maintenance mode OFF (restores storefront)")
+                print(f"  {colorize('reset', COLOR_GREEN):<25} Reload server workers (sends SIGHUP/SIGTERM)")
+                print(f"  {colorize('exit / quit', COLOR_GREEN):<25} Exit interactive control mode")
+            elif cmd == 'status':
+                show_status()
+            elif cmd == 'stripe':
+                if len(parts) < 2 or parts[1].lower() not in ('live', 'test'):
+                    print(colorize("Error: Specify 'live' or 'test'. Example: stripe test", COLOR_RED))
+                else:
+                    set_stripe_mode(parts[1])
+            elif cmd == 'maintenance':
+                if len(parts) < 2 or parts[1].lower() not in ('on', 'off'):
+                    print(colorize("Error: Specify 'on' or 'off'. Example: maintenance on", COLOR_RED))
+                else:
+                    set_maintenance(parts[1].lower() == 'on')
+            elif cmd == 'reset':
+                reset_server()
+            else:
+                print(colorize(f"Unknown command: '{cmd}'. Type 'help' for a list of commands.", COLOR_RED))
+        except (KeyboardInterrupt, EOFError):
+            print(colorize("\nExiting control tool. Goodbye!", COLOR_CYAN))
+            break
+        except Exception as e:
+            print(colorize(f"Error executing command: {e}", COLOR_RED))
 
 def main():
     parser = argparse.ArgumentParser(
@@ -186,10 +267,13 @@ Examples:
     # Reset command
     subparsers.add_parser("reset", help="Restart/reload the server workers")
     
+    # Interactive command (explicit option)
+    subparsers.add_parser("interactive", help="Start the interactive shell (default)")
+    
     args = parser.parse_args()
     
-    if not args.command:
-        parser.print_help()
+    if not args.command or args.command == "interactive":
+        start_interactive_shell()
         sys.exit(0)
         
     if args.command == "status":
