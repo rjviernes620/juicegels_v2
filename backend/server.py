@@ -9,6 +9,11 @@ from pingram import Pingram
 import stripe
 from urllib.parse import quote
 
+import base64
+import hashlib
+import hmac
+import struct
+import time
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -1277,16 +1282,103 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
 def add_cors_headers(response):
   response.headers["Access-Control-Allow-Origin"] = "*"
   response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
-  response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+  response.headers["Access-Control-Allow-Headers"] = "Content-Type, X-Maintenance-Bypass"
   return response
+
+
+def verify_totp(secret, code, window=1):
+  """
+  Verifies a TOTP code against a base32-encoded secret.
+  window = 1 allows for clock drift of 30 seconds backward or forward.
+  """
+  try:
+    secret = secret.replace(' ', '').upper()
+    missing_padding = len(secret) % 8
+    if missing_padding:
+      secret += '=' * (8 - missing_padding)
+    key = base64.b32decode(secret)
+  except Exception:
+    return False
+
+  try:
+    target_code = int(code)
+  except ValueError:
+    return False
+
+  now = int(time.time()) // 30
+  for step in range(now - window, now + window + 1):
+    msg = struct.pack('>Q', step)
+    h = hmac.new(key, msg, hashlib.sha1).digest()
+    offset = h[-1] & 0x0F
+    truncated_hash = struct.unpack('>I', h[offset:offset+4])[0] & 0x7FFFFFFF
+    computed_code = truncated_hash % 1000000
+    if computed_code == target_code:
+      return True
+  return False
+
+
+def generate_bypass_token():
+  secret = read_secret('maintenance_2fa_secret', 'MAINTENANCE_2FA_SECRET')
+  if not secret:
+    return None
+  timestamp = str(int(time.time()))
+  sig = hmac.new(secret.encode('utf-8'), timestamp.encode('utf-8'), hashlib.sha256).hexdigest()
+  return f"{timestamp}:{sig}"
+
+
+def verify_bypass_token(token, max_age_days=30):
+  if not token or ':' not in token:
+    return False
+  secret = read_secret('maintenance_2fa_secret', 'MAINTENANCE_2FA_SECRET')
+  if not secret:
+    return False
+  try:
+    timestamp_str, sig = token.split(':', 1)
+    timestamp = int(timestamp_str)
+  except Exception:
+    return False
+
+  current_time = int(time.time())
+  if current_time - timestamp > max_age_days * 86400 or current_time < timestamp - 3600:
+    return False
+
+  expected_sig = hmac.new(secret.encode('utf-8'), timestamp_str.encode('utf-8'), hashlib.sha256).hexdigest()
+  return hmac.compare_digest(sig, expected_sig)
+
+
+@app.route('/api/maintenance-login', methods=['POST', 'OPTIONS'])
+def maintenance_login():
+  if request.method == 'OPTIONS':
+    return '', 204
+  data = request.get_json() or {}
+  code = data.get('code', '').strip()
+
+  secret = read_secret('maintenance_2fa_secret', 'MAINTENANCE_2FA_SECRET')
+  if not secret:
+    return jsonify({'success': False, 'message': '2FA bypass is not configured on this server.'}), 500
+
+  if not code:
+    return jsonify({'success': False, 'message': 'Verification code is required.'}), 400
+
+  if verify_totp(secret, code):
+    token = generate_bypass_token()
+    if token:
+      return jsonify({'success': True, 'token': token})
+    return jsonify({'success': False, 'message': 'Failed to generate bypass token.'}), 500
+
+  return jsonify({'success': False, 'message': 'Invalid verification code.'}), 401
 
 
 @app.before_request
 def check_maintenance():
   if request.method == 'OPTIONS':
     return None
+  # Bypass maintenance check for status, stripe-webhook, and login API
+  if request.path in ('/api/status', '/stripe-webhook', '/api/maintenance-login'):
+    return None
   if is_maintenance_active():
-    if request.path in ('/api/status', '/stripe-webhook'):
+    bypass_token = request.headers.get('X-Maintenance-Bypass')
+    if bypass_token and verify_bypass_token(bypass_token):
       return None
     return jsonify({
       'maintenance': True,
@@ -1306,10 +1398,16 @@ def api_status():
     if not pub_key:
       pub_key = ""
 
+  bypass_token = request.headers.get('X-Maintenance-Bypass')
+  bypass_active = False
+  if bypass_token and verify_bypass_token(bypass_token):
+    bypass_active = True
+
   return jsonify({
-    'maintenance': is_maintenance_active(),
+    'maintenance': is_maintenance_active() if not bypass_active else False,
     'stripe_mode': mode,
-    'stripe_publishable_key': pub_key
+    'stripe_publishable_key': pub_key,
+    'bypass_active': bypass_active
   })
 
 

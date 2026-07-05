@@ -186,6 +186,38 @@ def show_status():
     print(f"  Maintenance:      {maint_str}")
     print(colorize("=" * 60, COLOR_CYAN))
 
+def generate_2fa():
+    import base64
+    import os
+    import urllib.parse
+    
+    # 20 bytes random seed (160 bits, standard for TOTP)
+    raw_bytes = os.urandom(20)
+    secret = base64.b32encode(raw_bytes).decode('utf-8').replace('=', '')
+    
+    print(colorize("=" * 60, COLOR_CYAN))
+    print(colorize(" GENERATED 2FA SECRET KEY FOR MAINTENANCE BYPASS", COLOR_CYAN + COLOR_BOLD))
+    print(colorize("=" * 60, COLOR_CYAN))
+    print(f"  Secret Key (Base32): {colorize(secret, COLOR_YELLOW + COLOR_BOLD)}")
+    print(colorize("-" * 60, COLOR_CYAN))
+    
+    # Construct provisioning URI (standard TOTP URL)
+    issuer = "JuiceGels"
+    label = "Admin Bypass"
+    encoded_issuer = urllib.parse.quote(issuer)
+    encoded_label = urllib.parse.quote(label)
+    otpauth_uri = f"otpauth://totp/{encoded_issuer}:{encoded_label}?secret={secret}&issuer={encoded_issuer}"
+    
+    print(colorize("Setup Instructions:", COLOR_BOLD))
+    print("1. Enter the Secret Key manually in your authenticator app (Google Authenticator, Authy, etc.).")
+    print("   Or scan/import the following provisioning link if your app supports pasting URLs:")
+    print(f"   {colorize(otpauth_uri, COLOR_GREEN)}")
+    print("\n2. Configure the server environment variable:")
+    print(f"   Set {colorize('MAINTENANCE_2FA_SECRET', COLOR_WHITE + COLOR_BOLD)} to the Secret Key generated above.")
+    print("   For local testing, place it in your .env file:")
+    print(f"   MAINTENANCE_2FA_SECRET={secret}")
+    print(colorize("=" * 60, COLOR_CYAN))
+
 def start_interactive_shell():
     show_status()
     print(colorize("\nEntering interactive control shell.", COLOR_CYAN))
@@ -212,6 +244,7 @@ def start_interactive_shell():
                 print(f"  {colorize('stripe test', COLOR_GREEN):<25} Switch Stripe client to TEST mode")
                 print(f"  {colorize('maintenance on', COLOR_GREEN):<25} Turn maintenance mode ON (blocks checkout/apis)")
                 print(f"  {colorize('maintenance off', COLOR_GREEN):<25} Turn maintenance mode OFF (restores storefront)")
+                print(f"  {colorize('generate-2fa', COLOR_GREEN):<25} Generate a new 2FA secret key for maintenance bypass")
                 print(f"  {colorize('reset', COLOR_GREEN):<25} Reload server workers (sends SIGHUP/SIGTERM)")
                 print(f"  {colorize('exit / quit', COLOR_GREEN):<25} Exit interactive control mode")
             elif cmd == 'status':
@@ -226,6 +259,8 @@ def start_interactive_shell():
                     print(colorize("Error: Specify 'on' or 'off'. Example: maintenance on", COLOR_RED))
                 else:
                     set_maintenance(parts[1].lower() == 'on')
+            elif cmd == 'generate-2fa':
+                generate_2fa()
             elif cmd == 'reset':
                 reset_server()
             else:
@@ -247,6 +282,7 @@ Examples:
   python control.py stripe live
   python control.py maintenance on
   python control.py maintenance off
+  python control.py generate-2fa
   python control.py reset
 """
     )
@@ -263,6 +299,9 @@ Examples:
     # Maintenance command
     maint_parser = subparsers.add_parser("maintenance", help="Toggle maintenance mode")
     maint_parser.add_argument("state", choices=["on", "off"], help="Maintenance state: on or off")
+    
+    # Generate 2FA command
+    subparsers.add_parser("generate-2fa", help="Generate a new 2FA secret key for maintenance bypass")
     
     # Reset command
     subparsers.add_parser("reset", help="Restart/reload the server workers")
@@ -282,6 +321,8 @@ Examples:
         set_stripe_mode(args.mode)
     elif args.command == "maintenance":
         set_maintenance(args.state == "on")
+    elif args.command == "generate-2fa":
+        generate_2fa()
     elif args.command == "reset":
         reset_server()
 

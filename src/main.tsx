@@ -18,6 +18,31 @@ function normalizeRedirectedRoute() {
   history.replaceState(null, "", nextUrl);
 }
 
+// Intercept global fetch to inject X-Maintenance-Bypass header if the token is available
+(() => {
+  const originalFetch = window.fetch;
+  window.fetch = function (input, init) {
+    const token = localStorage.getItem("maintenance_bypass_token");
+    if (token) {
+      init = init || {};
+      init.headers = init.headers || {};
+      if (init.headers instanceof Headers) {
+        init.headers.set("X-Maintenance-Bypass", token);
+      } else if (Array.isArray(init.headers)) {
+        const index = init.headers.findIndex(([k]) => k.toLowerCase() === "x-maintenance-bypass");
+        if (index !== -1) {
+          init.headers[index] = ["X-Maintenance-Bypass", token];
+        } else {
+          init.headers.push(["X-Maintenance-Bypass", token]);
+        }
+      } else {
+        init.headers["X-Maintenance-Bypass"] = token;
+      }
+    }
+    return originalFetch(input, init);
+  };
+})();
+
 normalizeRedirectedRoute();
 
 const router = createBrowserRouter([
