@@ -183,7 +183,7 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
             Nails are art in motion 💃
           </h3>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
-            These hands are some of the hardest-working parts of our bodies, carrying us through everyday tasks, work, hobbies and the moments that make up our lives. They're also one of the parts of ourselves we see most often.
+            Your hands are some of the hardest-working parts of our bodies, carrying us through everyday tasks, work, hobbies and the moments that make up our lives. They're also one of the parts of ourselves we see most often.
           </p>
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             There's something special about looking down and being greeted by something beautiful, creative and expressive. Nail art has the power to reflect a mood, complete an outfit, celebrate a moment or simply make an ordinary day feel a little more exciting.
@@ -212,7 +212,7 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
           <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#e34c88", fontWeight: 700 }}>
             Press-on nails offer that freedom.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#4f444a", fontWeight: 500 }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#f9f9f9ff", fontWeight: 700 }}>
             That's how Juice Gels was born.
           </p>
         </div>
