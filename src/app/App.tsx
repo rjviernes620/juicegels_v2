@@ -337,7 +337,7 @@ export default function App() {
         try {
           const cached = window.sessionStorage.getItem("juicegels_confirmation_items");
           if (cached) purchasedItems = JSON.parse(cached) as CartItem[];
-        } catch {}
+        } catch { }
       }
 
       if (purchasedItems.length === 0 && typeof window !== "undefined") {
@@ -424,7 +424,7 @@ export default function App() {
             const data = JSON.parse(cachedForm);
             setForm((prev) => ({ ...prev, ...data }));
           }
-        } catch {}
+        } catch { }
       }
 
       return;
@@ -599,7 +599,7 @@ export default function App() {
   const isFreeShippingPromoApplied = !!(
     couponSummary &&
     (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
-     couponSummary.promotionCodeId === STRIPE_FREE_SHIPPING_PROMO_ID)
+      couponSummary.promotionCodeId === STRIPE_FREE_SHIPPING_PROMO_ID)
   );
 
   const shippingOptions = useMemo(
@@ -1631,8 +1631,8 @@ export default function App() {
                   lineHeight: 1.6,
                   fontWeight: 400
                 }}>
-                  Salon-quality, reusable manicures in minutes. 
-                  Every set is lovingly handcrafted with professional-grade gel polish, 
+                  Salon-quality, reusable manicures in minutes.
+                  Every set is lovingly handcrafted with professional-grade gel polish,
                   specifically designed to fit your unique style.
                 </p>
 
@@ -1919,7 +1919,7 @@ export default function App() {
           <div style={{ background: "#fff0f4", padding: "54px 20px 48px", borderTop: "1px solid rgba(212,84,122,0.08)", borderBottom: "1px solid rgba(212,84,122,0.08)" }}>
             <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
               <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fc6587", marginBottom: 28 }}>How It Works</h3>
-              
+
               <div style={{
                 display: "flex",
                 flexDirection: isMobile ? "column" : "row",
@@ -2067,64 +2067,64 @@ export default function App() {
                 gap: isMobile ? 12 : 16
               }}>
                 {trendingProducts.map((p) => {
-                    const style = p.collection ? getCollectionStyle(p.collection) : null;
-                    return (
-                      <button
-                        key={p.id}
-                        onClick={() => openProduct(p)}
-                        style={{
-                          background: style ? style.cardGradient : "#fc6587",
-                          border: "1px solid rgba(212, 84, 122, 0.18)",
-                          borderRadius: 14,
-                          overflow: "hidden",
-                          textAlign: "left",
-                          cursor: "pointer",
-                          padding: 0,
-                          position: "relative",
-                          display: "block",
-                          width: "100%",
-                          transition: "transform 0.3s ease, box-shadow 0.3s ease"
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = "translateY(-4px)";
-                          e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 101, 135, 0.15)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = "translateY(0)";
-                          e.currentTarget.style.boxShadow = "none";
-                        }}
-                      >
-                        <ImageWithFallback
-                          src={p.image}
-                          alt={p.name}
-                          style={{ width: "100%", height: 180, objectFit: "cover", display: "block", background: "#b8395d" }}
-                        />
-                        <div style={{
-                          padding: "8px 10px 10px",
-                          background: style ? style.cardGradient : "#fc6587"
-                        }}>
-                          {p.collection && style && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
-                              <span style={{
-                                fontSize: 9,
-                                background: style.badgeBg,
-                                color: "#ffffff",
-                                padding: "1.5px 5px",
-                                borderRadius: 4,
-                                fontWeight: 700,
-                                textTransform: "uppercase",
-                                letterSpacing: "0.03em"
-                              }}>
-                                {style.emoji} {p.collection.replace(" Collection", "")}
-                              </span>
-                            </div>
-                          )}
-                          <p style={{ margin: "0 0 4px", fontSize: 13, color: "#fff9fb", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</p>
-                          <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
-                        </div>
-                      </button>
-                    );
-                  })}
+                  const style = p.collection ? getCollectionStyle(p.collection) : null;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => openProduct(p)}
+                      style={{
+                        background: style ? style.cardGradient : "#fc6587",
+                        border: "1px solid rgba(212, 84, 122, 0.18)",
+                        borderRadius: 14,
+                        overflow: "hidden",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        padding: 0,
+                        position: "relative",
+                        display: "block",
+                        width: "100%",
+                        transition: "transform 0.3s ease, box-shadow 0.3s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "translateY(-4px)";
+                        e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 101, 135, 0.15)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    >
+                      <ImageWithFallback
+                        src={p.image}
+                        alt={p.name}
+                        style={{ width: "100%", height: 180, objectFit: "cover", display: "block", background: "#b8395d" }}
+                      />
+                      <div style={{
+                        padding: "8px 10px 10px",
+                        background: style ? style.cardGradient : "#fc6587"
+                      }}>
+                        {p.collection && style && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
+                            <span style={{
+                              fontSize: 9,
+                              background: style.badgeBg,
+                              color: "#ffffff",
+                              padding: "1.5px 5px",
+                              borderRadius: 4,
+                              fontWeight: 700,
+                              textTransform: "uppercase",
+                              letterSpacing: "0.03em"
+                            }}>
+                              {style.emoji} {p.collection.replace(" Collection", "")}
+                            </span>
+                          </div>
+                        )}
+                        <p style={{ margin: "0 0 4px", fontSize: 13, color: "#fff9fb", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.name}</p>
+                        <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -2366,7 +2366,7 @@ export default function App() {
 
             </div>
             <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
-              &copy; {new Date().getFullYear()} Juice Gels. All rights reserved.
+              &copy; {new Date().getFullYear()} Juice Gels. All rights reserved. Website by <a href="https://rjviernes.tech" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline" }}>Roel</a>
             </p>
           </div>
         </footer>
