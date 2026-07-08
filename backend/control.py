@@ -7,7 +7,6 @@ import argparse
 
 # Resolve the backend directory path dynamically
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STRIPE_MODE_FILE = os.path.join(BASE_DIR, 'stripe_mode.flag')
 MAINTENANCE_FILE = os.path.join(BASE_DIR, 'maintenance.flag')
 
 # ANSI Colors
@@ -25,26 +24,11 @@ def colorize(text, color):
         return f"{color}{text}{COLOR_RESET}"
     return text
 
-def get_stripe_mode():
-    if os.path.isfile(STRIPE_MODE_FILE):
-        with open(STRIPE_MODE_FILE, 'r') as f:
-            mode = f.read().strip().lower()
-            if mode in ('live', 'test'):
-                return mode
-    return 'live'
-
-def set_stripe_mode(mode):
-    mode = mode.lower()
-    if mode not in ('live', 'test'):
-        print(colorize(f"Error: Invalid stripe mode '{mode}'. Use 'live' or 'test'.", COLOR_RED))
-        sys.exit(1)
-    with open(STRIPE_MODE_FILE, 'w') as f:
-        f.write(mode)
-    mode_colored = colorize(mode.upper(), COLOR_GREEN if mode == 'live' else COLOR_YELLOW)
-    print(f"Stripe mode successfully set to: {mode_colored}")
-
 def is_maintenance_active():
     return os.path.isfile(MAINTENANCE_FILE)
+
+def get_stripe_mode():
+    return 'test' if is_maintenance_active() else 'live'
 
 def set_maintenance(active):
     if active:
@@ -240,8 +224,6 @@ def start_interactive_shell():
             elif cmd == 'help':
                 print(colorize("Available commands:", COLOR_BOLD))
                 print(f"  {colorize('status', COLOR_GREEN):<25} Show current server settings and process status")
-                print(f"  {colorize('stripe live', COLOR_GREEN):<25} Switch Stripe client to LIVE mode")
-                print(f"  {colorize('stripe test', COLOR_GREEN):<25} Switch Stripe client to TEST mode")
                 print(f"  {colorize('maintenance on', COLOR_GREEN):<25} Turn maintenance mode ON (blocks checkout/apis)")
                 print(f"  {colorize('maintenance off', COLOR_GREEN):<25} Turn maintenance mode OFF (restores storefront)")
                 print(f"  {colorize('generate-2fa', COLOR_GREEN):<25} Generate a new 2FA secret key for maintenance bypass")
@@ -250,10 +232,7 @@ def start_interactive_shell():
             elif cmd == 'status':
                 show_status()
             elif cmd == 'stripe':
-                if len(parts) < 2 or parts[1].lower() not in ('live', 'test'):
-                    print(colorize("Error: Specify 'live' or 'test'. Example: stripe test", COLOR_RED))
-                else:
-                    set_stripe_mode(parts[1])
+                print(colorize("Note: Stripe mode is now automatically tied to maintenance mode. Switch maintenance mode to toggle Stripe.", COLOR_YELLOW))
             elif cmd == 'maintenance':
                 if len(parts) < 2 or parts[1].lower() not in ('on', 'off'):
                     print(colorize("Error: Specify 'on' or 'off'. Example: maintenance on", COLOR_RED))
@@ -278,8 +257,6 @@ def main():
         epilog="""
 Examples:
   python control.py status
-  python control.py stripe test
-  python control.py stripe live
   python control.py maintenance on
   python control.py maintenance off
   python control.py generate-2fa
@@ -291,10 +268,6 @@ Examples:
     
     # Status command
     subparsers.add_parser("status", help="Show current server settings and status")
-    
-    # Stripe command
-    stripe_parser = subparsers.add_parser("stripe", help="Switch Stripe modes")
-    stripe_parser.add_argument("mode", choices=["live", "test"], help="Stripe mode: live or test")
     
     # Maintenance command
     maint_parser = subparsers.add_parser("maintenance", help="Toggle maintenance mode")
@@ -317,8 +290,6 @@ Examples:
         
     if args.command == "status":
         show_status()
-    elif args.command == "stripe":
-        set_stripe_mode(args.mode)
     elif args.command == "maintenance":
         set_maintenance(args.state == "on")
     elif args.command == "generate-2fa":

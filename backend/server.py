@@ -81,16 +81,14 @@ load_dotenv()
 import collections.abc
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-STRIPE_MODE_FILE = os.path.join(BASE_DIR, 'stripe_mode.flag')
 MAINTENANCE_FILE = os.path.join(BASE_DIR, 'maintenance.flag')
 
+def is_maintenance_active():
+    return os.path.isfile(MAINTENANCE_FILE)
+
 def get_stripe_mode():
-    if os.path.isfile(STRIPE_MODE_FILE):
-        with open(STRIPE_MODE_FILE, 'r') as f:
-            mode = f.read().strip().lower()
-            if mode in ('live', 'test'):
-                return mode
-    return 'live'
+    return 'test' if is_maintenance_active() else 'live'
+
 
 def get_stripe_client():
     mode = get_stripe_mode()
@@ -168,8 +166,7 @@ class DynamicShippingOptions(collections.abc.Mapping):
     def values(self):
         return get_shipping_options().values()
 
-def is_maintenance_active():
-    return os.path.isfile(MAINTENANCE_FILE)
+
 
 client = StripeClientProxy()
 SHIPPING_OPTIONS = DynamicShippingOptions()

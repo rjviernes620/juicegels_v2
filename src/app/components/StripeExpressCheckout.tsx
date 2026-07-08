@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, ExpressCheckoutElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { type CartItem, type CouponSummary } from "../types";
-import { CHECKOUT_API_BASE, buildShippingOptions, isLocalDev, STRIPE_FREE_SHIPPING_PROMO_ID } from "../utils/shopHelpers";
+import { CHECKOUT_API_BASE, buildShippingOptions, isLocalDev, getStripeFreeShippingPromoId } from "../utils/shopHelpers";
 
 // Retrieve the publishable key from environment variables with a test fallback for local development
 const getPublishableKey = () => {
@@ -102,16 +102,18 @@ function ExpressButtonInner({
       const handleShippingAddressChange = (event: any) => {
         const { address, resolve } = event;
         
+        const activePromoId = getStripeFreeShippingPromoId(propPublishableKey);
         const isFreeShippingPromoApplied = !!(
           couponSummary &&
           (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
-           couponSummary.promotionCodeId === STRIPE_FREE_SHIPPING_PROMO_ID)
+           couponSummary.promotionCodeId === activePromoId)
         );
 
         const options = buildShippingOptions(
           orderTotal,
           address.country || "GB",
-          isFreeShippingPromoApplied
+          isFreeShippingPromoApplied,
+          propPublishableKey
         );
 
         const rates = options.map((option) => ({

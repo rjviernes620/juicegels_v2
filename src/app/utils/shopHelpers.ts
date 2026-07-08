@@ -27,6 +27,26 @@ export const STRIPE_FREE_SHIPPING_PROMO_ID = isLocalDev()
   ? (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID || "promo_1ToCW2K4CROOpWXUXvpVGOFN")
   : (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID_LIVE || "");
 
+export function getStripeShippingRateIds(stripePublishableKey?: string): Record<ShippingOptionId, string> {
+  const isTestMode = stripePublishableKey
+    ? stripePublishableKey.startsWith("pk_test")
+    : isLocalDev();
+  return {
+    tracked24: isTestMode ? "shr_1TjOFhK9S4gHGvxwGcIJ8ICh" : "shr_1Ti0hyK4CROOpWXUhiIhLqWy",
+    tracked48: isTestMode ? "shr_1TjOJVK9S4gHGvxRClQMfr1" : "shr_1Ti0ieK4CROOpWXU5Cbop3Ii",
+    international: isTestMode ? "shr_1TlIyvK9S4gHGvxwwsl3tfgS" : "shr_1To72LK4CROOpWXUQ4DKmzFE",
+  };
+}
+
+export function getStripeFreeShippingPromoId(stripePublishableKey?: string): string {
+  const isTestMode = stripePublishableKey
+    ? stripePublishableKey.startsWith("pk_test")
+    : isLocalDev();
+  return isTestMode
+    ? (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID || "promo_1ToCW2K4CROOpWXUXvpVGOFN")
+    : (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID_LIVE || "");
+}
+
 
 export const validLengths: NailLength[] = ["Short", "Medium", "Long"];
 
@@ -55,15 +75,17 @@ export function formatMoney(amount: number) {
 export function buildShippingOptions(
   itemsTotal: number,
   country: string,
-  isFreeShippingApplied: boolean = false
+  isFreeShippingApplied: boolean = false,
+  stripePublishableKey?: string
 ): ShippingOption[] {
+  const rateIds = getStripeShippingRateIds(stripePublishableKey);
   if (country === "GB" || !country) {
     const tracked48IsFree = isFreeShippingApplied || itemsTotal >= SHIPPING_FREE_THRESHOLD;
 
     return [
       {
         id: "tracked48",
-        stripeRateId: SHIPPING_RATE_IDS.tracked48,
+        stripeRateId: rateIds.tracked48,
         label: "Royal Mail Tracked 48",
         description: tracked48IsFree
           ? isFreeShippingApplied
@@ -76,7 +98,7 @@ export function buildShippingOptions(
       },
       {
         id: "tracked24",
-        stripeRateId: SHIPPING_RATE_IDS.tracked24,
+        stripeRateId: rateIds.tracked24,
         label: "Royal Mail Tracked 24",
         description: isFreeShippingApplied ? "Free priority shipping applied." : "Priority tracked delivery.",
         estimate: "Estimated delivery within 1 business day after your order is finished.",
@@ -90,7 +112,7 @@ export function buildShippingOptions(
     return [
       {
         id: "international",
-        stripeRateId: SHIPPING_RATE_IDS.international,
+        stripeRateId: rateIds.international,
         label: "Royal Mail International Tracked",
         description: internationalIsFree ? "Free international shipping applied." : "International tracked delivery.",
         estimate: isEurope

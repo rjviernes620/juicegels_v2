@@ -31,7 +31,6 @@ import {
   META_CART_ORIGIN,
   CHECKOUT_API_BASE,
   SHIPPING_FREE_THRESHOLD,
-  SHIPPING_RATE_IDS,
   isVariationLocked,
   getProductRouteId,
   getProductShapes,
@@ -48,7 +47,8 @@ import {
   parseBasketItemsParam,
   parseMetaBasketProductsParam,
   isLocalDev,
-  STRIPE_FREE_SHIPPING_PROMO_ID
+  getStripeShippingRateIds,
+  getStripeFreeShippingPromoId
 } from "./utils/shopHelpers";
 import {
   ShopPage,
@@ -596,15 +596,16 @@ export default function App() {
   const discountTotal = couponDiscount + nailSetSaleDiscountAmount;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
+  const activePromoId = getStripeFreeShippingPromoId(stripePublishableKey);
   const isFreeShippingPromoApplied = !!(
     couponSummary &&
     (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
-      couponSummary.promotionCodeId === STRIPE_FREE_SHIPPING_PROMO_ID)
+      couponSummary.promotionCodeId === activePromoId)
   );
 
   const shippingOptions = useMemo(
-    () => buildShippingOptions(orderTotal, form.country, isFreeShippingPromoApplied),
-    [orderTotal, form.country, isFreeShippingPromoApplied]
+    () => buildShippingOptions(orderTotal, form.country, isFreeShippingPromoApplied, stripePublishableKey),
+    [orderTotal, form.country, isFreeShippingPromoApplied, stripePublishableKey]
   );
 
   useEffect(() => {
@@ -1039,7 +1040,7 @@ export default function App() {
           form,
           coupon: couponSummary?.code ?? null,
           promotionCodeId: couponSummary?.promotionCodeId ?? null,
-          shippingRateId: selectedShippingOption?.stripeRateId ?? SHIPPING_RATE_IDS.tracked48,
+          shippingRateId: selectedShippingOption?.stripeRateId ?? getStripeShippingRateIds(stripePublishableKey).tracked48,
           shippingOptionId: selectedShippingOption?.id ?? "tracked48",
           checkoutPath: "/confirmation",
           turnstileToken,
