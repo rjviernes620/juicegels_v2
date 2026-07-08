@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { 
-  ShoppingBag, 
-  Sparkles, 
-  ChevronLeft, 
-  ChevronRight, 
-  Play, 
-  Pause, 
-  Volume2, 
-  VolumeX 
+import {
+  ShoppingBag,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 import { TiktokIcon } from "./About";
@@ -409,7 +409,7 @@ function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex, isPageActiv
   };
 
   return (
-    <div 
+    <div
       className={`video-frame-container ${!isPlaying ? "paused" : ""}`}
       onClick={togglePlay}
       style={{ cursor: "pointer" }}
@@ -459,6 +459,32 @@ function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex, isPageActiv
       <div className="video-progress-wrapper" onClick={handleProgressBarClick}>
         <div className="video-progress-bar" style={{ width: `${progress}%` }}></div>
       </div>
+    </div>
+  );
+}
+
+function ComingSoonBox({ style }: { style?: React.CSSProperties }) {
+  return (
+    <div
+      style={{
+        background: "linear-gradient(135deg, #fce4ea 0%, #ffd6e9 100%)",
+        borderRadius: 16,
+        padding: "16px 18px",
+        textAlign: "center",
+        border: "1px dashed rgba(212, 84, 122, 0.3)",
+        boxShadow: "0 4px 12px rgba(212, 84, 122, 0.03)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+        ...style
+      }}
+    >
+      <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#a24e6a" }}>
+        🎥 Coming Soon - Video tutorials🎥
+      </h4>
+      <p style={{ margin: 0, fontSize: 11.5, color: "#4f444a", lineHeight: 1.45, fontWeight: 500 }}>
+        We're currently creating step-by-step application and removal videos to make the process even easier. Check back soon!
+      </p>
     </div>
   );
 }
@@ -623,20 +649,20 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
       {/* Main Workspace */}
       <div className="videos-main-content">
         <div className="videos-workspace">
-          
+
           {/* Video player pane */}
           <div className="video-pane" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
             {/* Desktop and Mobile: Slide rendering (we translate carousel on mobile, or just display active on desktop) */}
             <div style={{ position: "relative", width: "100%", display: "flex", justifyContent: "center" }}>
-              
+
               {isDesktop ? (
                 // On desktop, display only active video player in full-frame container to optimize layout
                 <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
                   {activeSet.videoUrl ? (
-                    <SingleVideoPlayer 
-                      videoUrl={activeSet.videoUrl} 
-                      isActive={true} 
-                      index={activeIndex} 
+                    <SingleVideoPlayer
+                      videoUrl={activeSet.videoUrl}
+                      isActive={true}
+                      index={activeIndex}
                       activeIndex={activeIndex}
                       isPageActive={isPageActive}
                     />
@@ -678,10 +704,10 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
                           }}
                         >
                           {set.videoUrl ? (
-                            <SingleVideoPlayer 
-                              videoUrl={set.videoUrl} 
-                              isActive={isActive} 
-                              index={index} 
+                            <SingleVideoPlayer
+                              videoUrl={set.videoUrl}
+                              isActive={isActive}
+                              index={index}
                               activeIndex={activeIndex}
                               isPageActive={isPageActive}
                             />
@@ -696,16 +722,16 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
                               </blockquote>
                             </div>
                           )}
-                          
+
                           {/* Connected Product Overlay inside Carousel (Mobile/Tablet only) */}
                           <div style={{ width: "100%", maxWidth: 380, marginTop: 12 }} className="glass-product-card">
                             <h4 className="card-label">Handcrafting Process</h4>
                             <div className="product-showcase-row">
                               <div className="showcase-image-wrapper">
-                                <ImageWithFallback 
-                                  src={set.product.image} 
-                                  alt={set.product.name} 
-                                  className="showcase-image" 
+                                <ImageWithFallback
+                                  src={set.product.image}
+                                  alt={set.product.name}
+                                  className="showcase-image"
                                 />
                               </div>
                               <div className="showcase-details">
@@ -717,14 +743,14 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
                               <ShoppingBag size={14} />
                               Shop Set
                             </button>
-                            
+
                             {/* Premium TikTok CTA */}
                             <div className="tiktok-cta-container">
                               <p className="tiktok-cta-text">Enjoying this design process? Visit us on TikTok to show some love!</p>
-                              <a 
-                                href={set.tiktokUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
+                              <a
+                                href={set.tiktokUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="tiktok-glow-btn"
                               >
                                 <TiktokIcon size={14} />
@@ -732,6 +758,8 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
                               </a>
                             </div>
                           </div>
+
+                          <ComingSoonBox style={{ width: "100%", maxWidth: 380, marginTop: 12 }} />
                         </div>
                       );
                     })}
@@ -742,8 +770,8 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
 
             {/* Carousel Navigation */}
             <div className="carousel-nav-controls">
-              <button 
-                onClick={handlePrev} 
+              <button
+                onClick={handlePrev}
                 disabled={activeIndex === 0}
                 className="nav-arrow-btn"
                 aria-label="Previous Video"
@@ -753,8 +781,8 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
               <span style={{ fontSize: 13, fontWeight: 700, color: "#a24e6a" }}>
                 {activeIndex + 1} / {resolvedSets.length}
               </span>
-              <button 
-                onClick={handleNext} 
+              <button
+                onClick={handleNext}
                 disabled={activeIndex === resolvedSets.length - 1}
                 className="nav-arrow-btn"
                 aria-label="Next Video"
@@ -784,13 +812,13 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
                 <h3 style={{ fontSize: 22, fontWeight: 800, color: "#a24e6a", margin: "4px 0 16px" }}>
                   {activeSet.title}
                 </h3>
-                
+
                 <div className="product-showcase-row">
                   <div className="showcase-image-wrapper">
-                    <ImageWithFallback 
-                      src={activeSet.product.image} 
-                      alt={activeSet.product.name} 
-                      className="showcase-image" 
+                    <ImageWithFallback
+                      src={activeSet.product.image}
+                      alt={activeSet.product.name}
+                      className="showcase-image"
                     />
                   </div>
                   <div className="showcase-details">
@@ -808,10 +836,10 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
 
                 {/* TikTok CTA */}
                 <div className="tiktok-cta-container">
-                  <a 
-                    href={activeSet.tiktokUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={activeSet.tiktokUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="tiktok-glow-btn"
                   >
                     <TiktokIcon size={15} />
@@ -819,6 +847,8 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
                   </a>
                 </div>
               </div>
+
+              <ComingSoonBox />
             </div>
           )}
 

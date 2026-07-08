@@ -231,18 +231,47 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
       ),
     },
     {
-      id: "apply-glue",
+      id: "prep-nails",
       category: "application",
-      question: "How do I apply my nails with glue?",
+      question: "How do I prep my natural nails before application?",
       answer: (
         <div style={{ lineHeight: 1.6 }}>
-          <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-            <li>Wash and dry your hands thoroughly.</li>
-            <li>Gently push back your cuticles using the included cuticle pusher.</li>
-            <li>Lightly file and buff your natural nails using the included tools.</li>
-            <li>Apply a small drop of nail glue to your natural nail.</li>
-            <li>Place the press-on nail at the cuticle and press firmly for 10–15 seconds.</li>
-            <li>Avoid water for at least one hour for the strongest hold.</li>
+          <p style={{ margin: "0 0 10px 0" }}>Preparation is the secret to long-lasting press-on nails. Before applying your set:</p>
+          <ul style={{ margin: 0, paddingLeft: 8, display: "flex", flexDirection: "column", gap: 6, listStyleType: "none" }}>
+            <li>✔️ Wash your hands thoroughly with soap and water.</li>
+            <li>✔️ Push back your cuticles using the wooden cuticle stick.</li>
+            <li>✔️ Gently buff the surface of your natural nails to remove shine.</li>
+            <li>✔️ Wipe each nail with the included alcohol wipe to remove oils and dust.</li>
+            <li>✔️ Make sure your nails are completely dry before applying.</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: "apply-glue",
+      category: "application",
+      question: "How do I apply my nails with nail glue?",
+      answer: (
+        <div style={{ lineHeight: 1.6 }}>
+          <p style={{ margin: "0 0 10px 0" }}>
+            <strong>Best for:</strong> Long-lasting wear (typically 1–2 weeks with proper application).
+          </p>
+          <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+            <li>
+              <strong>Step 1:</strong> Select the correct press-on nail for each finger.
+            </li>
+            <li>
+              <strong>Step 2:</strong> Apply a small amount of nail glue to both your natural nail and the inside of the press-on nail. <span style={{ opacity: 0.8, fontSize: 12 }}>(A little goes a long way—too much glue can spill out around the edges.)</span>
+            </li>
+            <li>
+              <strong>Step 3:</strong> Align the press-on with your cuticle before placing it down.
+            </li>
+            <li>
+              <strong>Step 4:</strong> Press firmly for 30–60 seconds, applying even pressure across the entire nail.
+            </li>
+            <li>
+              <strong>Step 5:</strong> Avoid water, lotions and oils for at least 1–2 hours after application to allow the glue to fully cure.
+            </li>
           </ol>
         </div>
       ),
@@ -253,14 +282,25 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
       question: "How do I apply my nails with sticky tabs?",
       answer: (
         <div style={{ lineHeight: 1.6 }}>
-          <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-            <li>Wash and dry your hands thoroughly.</li>
-            <li>Gently push back your cuticles using the included cuticle pusher.</li>
-            <li>Lightly file and buff your natural nails using the included tools.</li>
-            <li>Select a sticky tab that best matches your nail size and apply it to your natural nail.</li>
-            <li>Remove the backing and place the press-on nail at the cuticle.</li>
-            <li>Press firmly for 10–15 seconds.</li>
-            <li>For longer wear, avoid soaking your hands in water immediately after application.</li>
+          <p style={{ margin: "0 0 10px 0" }}>
+            <strong>Best for:</strong> Short-term wear, special occasions, photoshoots or anyone who loves switching up their nails.
+          </p>
+          <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+            <li>
+              <strong>Step 1:</strong> Choose the sticky tab that best matches the size of your natural nail.
+            </li>
+            <li>
+              <strong>Step 2:</strong> Apply the sticky tab to your natural nail and press firmly.
+            </li>
+            <li>
+              <strong>Step 3:</strong> Peel away the protective film from the tab.
+            </li>
+            <li>
+              <strong>Step 4:</strong> Align the press-on with your cuticle and press firmly for 30–60 seconds.
+            </li>
+            <li>
+              <strong>Step 5:</strong> Avoid getting your hands wet for at least 30 minutes after application.
+            </li>
           </ol>
         </div>
       ),
@@ -271,21 +311,40 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
       question: "How do I remove my nails safely?",
       answer: (
         <div style={{ lineHeight: 1.6 }}>
-          <p style={{ margin: "0 0 6px 0", fontWeight: 600, color: "#fff9fb" }}>If applied with nail glue:</p>
-          <ol style={{ margin: "0 0 14px 0", paddingLeft: 16, display: "flex", flexDirection: "column", gap: 4 }}>
-            <li>Soak your nails in warm, soapy water for 10–15 minutes to help soften the glue.</li>
-            <li>Gently wiggle the press-on from the sides using the cuticle pusher until it loosens naturally.</li>
-            <li>Buff away any remaining glue and moisturise your natural nails.</li>
-            <li>Carefully place your Juice Gels nails back into their case for future use.</li>
+          <p style={{ margin: "0 0 10px 0", fontStyle: "italic", fontWeight: 500 }}>
+            Never force or pull your press-on nails off, as this can damage your natural nails.
+          </p>
+          <p style={{ margin: "12px 0 6px 0", fontWeight: 600, color: "#fff9fb" }}>Removing Nail Glue:</p>
+          <ol style={{ margin: "0 0 14px 0", paddingLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+            <li>Fill a bowl with warm, soapy water and add a small amount of oil (such as cuticle, olive or baby oil).</li>
+            <li>Soak your nails for 10–15 minutes.</li>
+            <li>Gently lift the edges using the wooden cuticle stick.</li>
+            <li>If there's resistance, soak for a little longer.</li>
+            <li>Remove any remaining glue with a nail buffer and wash your hands.</li>
           </ol>
-          <p style={{ margin: "0 0 6px 0", fontWeight: 600, color: "#fff9fb" }}>If applied with sticky tabs:</p>
-          <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 4 }}>
-            <li>Warm, soapy water can help loosen the sticky tabs.</li>
-            <li>Gently lift the press-on from the sides using the cuticle pusher until it releases.</li>
-            <li>Remove any remaining sticky tab residue from your natural nails.</li>
-            <li>Lightly buff if needed and moisturise your nails.</li>
-            <li>Carefully place your Juice Gels nails back into their case for future use.</li>
+          <p style={{ margin: "0 0 6px 0", fontWeight: 600, color: "#fff9fb" }}>Removing Sticky Tabs:</p>
+          <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
+            <li>Soak your hands in warm water for 5–10 minutes.</li>
+            <li>Gently lift the sides of the press-on using the cuticle stick.</li>
+            <li>Peel away the sticky tab from your natural nail.</li>
+            <li>Remove any residue before storing your Juice Gels for your next wear.</li>
           </ol>
+        </div>
+      ),
+    },
+    {
+      id: "care-nails",
+      category: "application",
+      question: "How do I care for and store my Juice Gels?",
+      answer: (
+        <div style={{ lineHeight: 1.6 }}>
+          <p style={{ margin: "0 0 10px 0" }}>Want to wear your set again and again?</p>
+          <ul style={{ margin: 0, paddingLeft: 8, display: "flex", flexDirection: "column", gap: 6, listStyleType: "none" }}>
+            <li>♡ Store your nails back in their case after use.</li>
+            <li>♡ Remove any leftover glue or sticky tabs before storing.</li>
+            <li>♡ Keep away from prolonged exposure to water and harsh cleaning products.</li>
+            <li>♡ Treat your press-ons with the same care you would a fresh salon manicure.</li>
+          </ul>
         </div>
       ),
     },

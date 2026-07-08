@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion } from "motion/react";
-import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, X, Instagram } from "lucide-react";
+import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, X, Instagram, ChevronDown } from "lucide-react";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 import { Turnstile } from "./ui/Turnstile";
 
@@ -665,6 +665,147 @@ export function ShopPage({
   );
 }
 
+// ── ProductGuides Component ──
+function ProductGuides() {
+  const [openSection, setOpenSection] = useState<"apply" | "remove" | null>(null);
+
+  const toggleSection = (section: "apply" | "remove") => {
+    setOpenSection((prev) => (prev === section ? null : section));
+  };
+
+  const itemStyle: React.CSSProperties = {
+    background: "#ff8fc7",
+    borderRadius: 12,
+    border: "1px solid rgba(212, 84, 122, 0.18)",
+    marginBottom: 8,
+    overflow: "hidden",
+    transition: "all 0.2s ease"
+  };
+
+  const buttonStyle: React.CSSProperties = {
+    width: "100%",
+    padding: "12px 14px",
+    background: "none",
+    border: "none",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    cursor: "pointer",
+    textAlign: "left",
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 600,
+    color: "#fff9fb",
+  };
+
+  const contentStyle = (isOpen: boolean): React.CSSProperties => ({
+    maxHeight: isOpen ? "800px" : "0px",
+    overflow: "hidden",
+    transition: "max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+  });
+
+  const innerStyle: React.CSSProperties = {
+    padding: "0 14px 14px",
+    fontSize: 12.5,
+    color: "#4f444a",
+    borderTop: "1px solid rgba(212, 84, 122, 0.08)",
+    lineHeight: 1.5,
+  };
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      {/* Application Guide */}
+      <div style={itemStyle}>
+        <button type="button" onClick={() => toggleSection("apply")} style={buttonStyle}>
+          <span style={titleStyle}>💅 Application Guide</span>
+          <ChevronDown
+            size={16}
+            style={{
+              color: "#fff9fb",
+              transform: openSection === "apply" ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease",
+            }}
+          />
+        </button>
+        <div style={contentStyle(openSection === "apply")}>
+          <div style={innerStyle}>
+            <p style={{ margin: "0 0 8px 0", fontWeight: 600, color: "#fff9fb" }}>Before You Begin (Prep):</p>
+            <ul style={{ margin: "0 0 12px 0", paddingLeft: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+              <li>✔️ Wash your hands thoroughly with soap & water.</li>
+              <li>✔️ Push back your cuticles using the cuticle stick.</li>
+              <li>✔️ Gently buff your natural nails to remove shine.</li>
+              <li>✔️ Wipe each nail with the alcohol wipe to remove oils.</li>
+              <li>✔️ Make sure your nails are completely dry.</li>
+            </ul>
+
+            <p style={{ margin: "0 0 4px 0", fontWeight: 600, color: "#fff9fb" }}>Applying with Nail Glue (1–2 Weeks):</p>
+            <ol style={{ margin: "0 0 12px 0", paddingLeft: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+              <li>Select the correct size nail for each finger.</li>
+              <li>Apply a small amount of glue to both your natural nail and the inside of the press-on.</li>
+              <li>Align with your cuticle and press firmly for 30–60 seconds.</li>
+              <li>Avoid water, lotions and oils for at least 1–2 hours.</li>
+            </ol>
+
+            <p style={{ margin: "0 0 4px 0", fontWeight: 600, color: "#fff9fb" }}>Applying with Sticky Tabs (Temporary):</p>
+            <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+              <li>Choose the sticky tab matching your nail size and apply it.</li>
+              <li>Peel away the protective film from the tab.</li>
+              <li>Align with your cuticle and press firmly for 30–60 seconds.</li>
+              <li>Avoid getting your hands wet for at least 30 minutes.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      {/* Removal & Care */}
+      <div style={itemStyle}>
+        <button type="button" onClick={() => toggleSection("remove")} style={buttonStyle}>
+          <span style={titleStyle}>🌸 Removal & Care</span>
+          <ChevronDown
+            size={16}
+            style={{
+              color: "#fff9fb",
+              transform: openSection === "remove" ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease",
+            }}
+          />
+        </button>
+        <div style={contentStyle(openSection === "remove")}>
+          <div style={innerStyle}>
+            <p style={{ margin: "0 0 8px 0", fontStyle: "italic", color: "#fff9fb" }}>
+              Never force or pull press-on nails off, as this can damage natural nails.
+            </p>
+
+            <p style={{ margin: "0 0 4px 0", fontWeight: 600, color: "#fff9fb" }}>Removing Nail Glue:</p>
+            <ol style={{ margin: "0 0 12px 0", paddingLeft: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+              <li>Soak in warm, soapy water with a small amount of oil for 10–15 mins.</li>
+              <li>Gently lift the edges using the wooden cuticle stick.</li>
+              <li>If there is resistance, soak for a little longer.</li>
+              <li>Remove remaining glue with a buffer and wash hands.</li>
+            </ol>
+
+            <p style={{ margin: "0 0 4px 0", fontWeight: 600, color: "#fff9fb" }}>Removing Sticky Tabs:</p>
+            <ol style={{ margin: "0 0 12px 0", paddingLeft: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+              <li>Soak your hands in warm water for 5–10 minutes.</li>
+              <li>Gently lift the sides of the press-on using the cuticle stick.</li>
+              <li>Peel the sticky tab off and remove any residue.</li>
+            </ol>
+
+            <p style={{ margin: "0 0 4px 0", fontWeight: 600, color: "#fff9fb" }}>Caring for Your Set:</p>
+            <ul style={{ margin: 0, paddingLeft: 12, display: "flex", flexDirection: "column", gap: 4 }}>
+              <li>♡ Store your nails back in their case after use.</li>
+              <li>♡ Remove leftover glue/tabs before storing.</li>
+              <li>♡ Keep away from prolonged water and harsh chemicals.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── ProductDetailPage Component ──
 export interface ProductDetailPageProps {
   selected: Product;
@@ -754,6 +895,8 @@ export function ProductDetailPage({
               </p>
             )}
           </div>
+
+          <ProductGuides />
 
           {collectionDetails && (() => {
             const style = getCollectionStyle(collectionDetails.name);
@@ -1017,6 +1160,8 @@ export function ProductDetailPage({
               </p>
             )}
           </div>
+
+          <ProductGuides />
 
           {collectionDetails && (() => {
             const style = getCollectionStyle(collectionDetails.name);
