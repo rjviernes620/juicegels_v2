@@ -2331,7 +2331,7 @@ export default function App() {
         />
       )}
 
-      {page !== "product" && page !== "basket" && (
+      {page !== "basket" && (
         <footer style={{ borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: "28px 16px 40px", textAlign: "center", width: "100%", boxSizing: "border-box" }}>
             <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#f86ca5", margin: "0 0 8px" }}>Juice Gels</p>
