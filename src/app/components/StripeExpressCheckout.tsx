@@ -101,12 +101,12 @@ function ExpressButtonInner({
       // Dynamic shipping calculation inside the payment sheet
       const handleShippingAddressChange = (event: any) => {
         const { address, resolve } = event;
-        
+
         const activePromoId = getStripeFreeShippingPromoId(propPublishableKey);
         const isFreeShippingPromoApplied = !!(
           couponSummary &&
           (couponSummary.code.toUpperCase() === "DEV_JUNJUN" ||
-           couponSummary.promotionCodeId === activePromoId)
+            couponSummary.promotionCodeId === activePromoId)
         );
 
         const options = buildShippingOptions(
