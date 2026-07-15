@@ -2364,29 +2364,32 @@ def get_checkout_session(session_id):
         'expand': ['customer_details'],
       }
     )
-    metadata = session.metadata or {}
+    metadata = get_value(session, 'metadata', None) or {}
     
-    shipping_details = getattr(session, 'shipping_details', None) or {}
-    shipping_address = getattr(shipping_details, 'address', None) or {}
+    shipping_details = get_value(session, 'shipping_details', None) or {}
+    shipping_address = get_value(shipping_details, 'address', None) or {}
     
-    first_name = metadata.get('first_name', '')
-    last_name = metadata.get('last_name', '')
+    first_name = get_value(metadata, 'first_name', '')
+    last_name = get_value(metadata, 'last_name', '')
     
-    shipping_name = getattr(shipping_details, 'name', '') or ''
+    shipping_name = get_value(shipping_details, 'name', '') or ''
     if shipping_name:
       name_parts = shipping_name.strip().split(' ', 1)
       first_name = name_parts[0]
       last_name = name_parts[1] if len(name_parts) > 1 else ''
 
-    address = metadata.get('shipping_address', '') or getattr(shipping_address, 'line1', '')
-    city = metadata.get('shipping_city', '') or getattr(shipping_address, 'city', '')
-    postcode = metadata.get('shipping_postcode', '') or getattr(shipping_address, 'postal_code', '')
-    country = metadata.get('shipping_country', '') or getattr(shipping_address, 'country', '')
-    email = (session.customer_details.email if session.customer_details else None) or session.customer_email or ''
-    contact_method = metadata.get('contact_preference', 'instagram')
-    instagram = metadata.get('instagram', '')
-    phone = getattr(shipping_details, 'phone', '') or metadata.get('phone', '') or ''
-    notes = metadata.get('notes', '')
+    address = get_value(metadata, 'shipping_address', '') or get_value(shipping_address, 'line1', '')
+    city = get_value(metadata, 'shipping_city', '') or get_value(shipping_address, 'city', '')
+    postcode = get_value(metadata, 'shipping_postcode', '') or get_value(shipping_address, 'postal_code', '')
+    country = get_value(metadata, 'shipping_country', '') or get_value(shipping_address, 'country', '')
+    
+    customer_details = get_value(session, 'customer_details', None)
+    email = get_value(customer_details, 'email', '') or get_value(session, 'customer_email', '') or ''
+    
+    contact_method = get_value(metadata, 'contact_preference', 'instagram')
+    instagram = get_value(metadata, 'instagram', '')
+    phone = get_value(shipping_details, 'phone', '') or get_value(metadata, 'phone', '') or ''
+    notes = get_value(metadata, 'notes', '')
     
     return jsonify({
       'firstName': first_name,
