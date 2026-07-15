@@ -30,6 +30,14 @@ export default {
       group: 'overview',
     },
     {
+      name: 'testOrder',
+      type: 'boolean',
+      title: 'Test Order',
+      initialValue: false,
+      readOnly: true,
+      group: 'overview',
+    },
+    {
       name: 'status',
       type: 'string',
       title: 'Order Status',
@@ -161,9 +169,10 @@ export default {
       orderId: 'orderId',
       status: 'status',
       createdAt: 'createdAt',
+      testOrder: 'testOrder',
     },
     prepare(selection: any) {
-      const { firstName, lastName, instagram, orderId, status, createdAt } = selection;
+      const { firstName, lastName, instagram, orderId, status, createdAt, testOrder } = selection;
       const fullName = [firstName, lastName].filter(Boolean).join(' ');
       const customerInfo = instagram ? `${fullName} (@${instagram.replace(/^@/, '')})` : fullName;
       
@@ -178,11 +187,20 @@ export default {
       };
       
       const statusLabel = statusLabels[status] || status || 'Pending';
+      const isTest = testOrder === true;
       const shortId = orderId ? (orderId.startsWith('cs_') ? orderId.substring(0, 10) + '...' : orderId) : 'No ID';
+
+      const subtitleParts = [];
+      if (isTest) {
+        subtitleParts.push('🧪 TEST');
+      }
+      subtitleParts.push(shortId);
+      subtitleParts.push(statusLabel);
+      subtitleParts.push(createdAt || '');
 
       return {
         title: customerInfo || 'Anonymous Customer',
-        subtitle: `${shortId} | ${statusLabel} | ${createdAt || ''}`,
+        subtitle: subtitleParts.filter(Boolean).join(' | '),
       };
     },
   },

@@ -575,6 +575,8 @@ def build_order_summary(checkout_session):
         if wallet and not isinstance(wallet, str):
           card_wallet_type = get_value(wallet, 'type', '') or ''
 
+  livemode = get_value(expanded_session, 'livemode', False)
+
   return {
     'session_id': session_id,
     'created_at': format_unix_timestamp(get_value(expanded_session, 'created')),
@@ -601,6 +603,7 @@ def build_order_summary(checkout_session):
     'card_brand': card_brand.lower(),
     'card_last4': card_last4,
     'card_wallet_type': card_wallet_type.lower(),
+    'livemode': livemode,
   }
 
 
@@ -1006,6 +1009,7 @@ def save_order_to_sanity(order_summary):
     'orderId': stripe_session_id,
     'status': 'pending_sizes',
     'createdAt': order_summary.get('created_at', ''),
+    'testOrder': not order_summary.get('livemode', True),
     'customer': {
       'firstName': order_summary.get('first_name', ''),
       'lastName': order_summary.get('last_name', ''),
@@ -1152,6 +1156,10 @@ def create_sendcloud_parcel(order_summary):
   last_name = order_summary.get('last_name', '')
   name = f"{first_name} {last_name}".strip() or "Customer"
 
+  is_test = not order_summary.get('livemode', True)
+  if is_test:
+    name = f"[TEST] {name}".strip()
+
   address = order_summary.get('shipping_address', '')
   city = order_summary.get('shipping_city', '')
   postcode = order_summary.get('shipping_postcode', '')
@@ -1160,6 +1168,8 @@ def create_sendcloud_parcel(order_summary):
   customer_email = order_summary.get('customer_email', '')
   phone = order_summary.get('phone', '')
   session_id = order_summary.get('session_id', '')
+  if is_test:
+    session_id = f"test-{session_id}"
   shipping_method_name = order_summary.get('shipping_method', '')
 
   # Dynamically resolve Sendcloud Shipping Method ID from user's checkout choice
@@ -1430,6 +1440,7 @@ def build_order_summary_from_payment_intent(payment_intent):
   shipping_amount_pence = total_amount - subtotal_pence
   
   coupon_code = get_value(metadata, 'coupon_code', '')
+  livemode = get_value(payment_intent, 'livemode', False)
   
   return {
     'session_id': intent_id,
@@ -1457,6 +1468,7 @@ def build_order_summary_from_payment_intent(payment_intent):
     'card_brand': card_brand.lower(),
     'card_last4': card_last4,
     'card_wallet_type': card_wallet_type.lower(),
+    'livemode': livemode,
   }
 
 
@@ -2275,14 +2287,33 @@ def stripe_webhook():
   payload = request.get_data(as_text=True)
   signature = request.headers.get('Stripe-Signature', '')
 
+  event = None
   try:
     event = stripe.Webhook.construct_event(payload, signature, webhook_secret)
     print(f"Stripe Webhook event constructed successfully: {get_value(event, 'type')} (ID: {get_value(event, 'id')})")
-  except Exception as e:
-    print(f"Stripe Webhook signature verification failed: {e}")
-    import traceback
-    traceback.print_exc()
-    return jsonify({ 'error': 'Invalid webhook signature.' }), 400
+  except Exception as primary_err:
+    # Try the alternative webhook secret if signature verification fails (e.g. signature mismatch due to test vs live mode)
+    alt_secret = None
+    if mode == 'test':
+      alt_secret = read_secret('stripe_webhook_live', 'STRIPE_WEBHOOK_SECRET')
+    else:
+      alt_secret = read_secret('stripe_webhook', 'STRIPE_TEST_WEBHOOK_SECRET')
+
+    if alt_secret and alt_secret != webhook_secret:
+      try:
+        event = stripe.Webhook.construct_event(payload, signature, alt_secret)
+        print(f"Stripe Webhook event constructed successfully using alternative secret: {get_value(event, 'type')} (ID: {get_value(event, 'id')})")
+      except Exception:
+        # Fall back to raising the original primary signature verification error
+        print(f"Stripe Webhook signature verification failed with both primary and alternative secrets. Primary error: {primary_err}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({ 'error': 'Invalid webhook signature.' }), 400
+    else:
+      print(f"Stripe Webhook signature verification failed: {primary_err}")
+      import traceback
+      traceback.print_exc()
+      return jsonify({ 'error': 'Invalid webhook signature.' }), 400
 
   if get_value(event, 'type') == 'checkout.session.completed':
     try:
@@ -2504,7 +2535,7 @@ def create_checkout_session():
         print(f"Error searching for existing Stripe product for SKU {NAIL_SIZE_GUIDE_PRODUCT_ID}: {e}")
       
       if not stripe_product_id:
-        fallback_default = 'prod_UhOWU4BodmJb0F' if is_production else ''
+        fallback_default = 'prod_UhOWU4BodmJb0F' if get_stripe_mode() == 'live' else ''
         stripe_product_id = read_secret('stripe_fallback_product_id', 'STRIPE_FALLBACK_PRODUCT_ID') or fallback_default
         if stripe_product_id:
           try:
