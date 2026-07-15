@@ -50,10 +50,14 @@ def read_secret(secret_name, env_var_name=None):
 
     return candidate_value
 
-  secret_path = os.path.join(RENDER_SECRET_DIR, secret_name)
-  if os.path.isfile(secret_path):
-    with open(secret_path, 'r', encoding='utf-8') as secret_file:
-      return secret_file.read().strip()
+  # If not found in environment variables, check the secret directory (/etc/secrets)
+  # Check for all candidate names since Render secret files might be named in uppercase (e.g. env_var_name)
+  # or lowercase (e.g. secret_name).
+  for candidate_name in candidate_names:
+    secret_path = os.path.join(RENDER_SECRET_DIR, candidate_name)
+    if os.path.isfile(secret_path):
+      with open(secret_path, 'r', encoding='utf-8') as secret_file:
+        return secret_file.read().strip()
 
   return ''
 
