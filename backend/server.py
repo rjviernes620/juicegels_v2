@@ -109,13 +109,13 @@ def get_shipping_options():
         return {
           'tracked24': {
             'stripe_rate_id': 'shr_1TjOFhK9S4gHGvxwGcIJ8ICh',
-            'label': 'Royal Mail Tracked 24',
+            'label': 'Royal Mail Tracked 24 QR',
             'amount_pence': 400,
             'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
           },
           'tracked48': {
             'stripe_rate_id': 'shr_1TjOJVK9S4gHGvxwRClQMfr1',
-            'label': 'Royal Mail Tracked 48',
+            'label': 'Royal Mail Tracked 48 QR',
             'amount_pence': 199,
             'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
             'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
@@ -131,13 +131,13 @@ def get_shipping_options():
         return {
           'tracked24': {
             'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
-            'label': 'Royal Mail Tracked 24',
+            'label': 'Royal Mail Tracked 24 QR',
             'amount_pence': 400,
             'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
           },
           'tracked48': {
             'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
-            'label': 'Royal Mail Tracked 48',
+            'label': 'Royal Mail Tracked 48 QR',
             'amount_pence': 199,
             'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
             'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
@@ -1061,6 +1061,156 @@ def save_order_to_sanity(order_summary):
     return None
 
 
+def resolve_sendcloud_shipping_method_id(checkout_shipping_method_name):
+  import urllib.request
+  import json
+  import base64
+
+  public_key = read_secret('sendcloud_public_key', 'SENDCLOUD_PUBLIC_KEY')
+  secret_key = read_secret('sendcloud_secret_key', 'SENDCLOUD_SECRET_KEY')
+
+  if not public_key or not secret_key:
+    return None
+
+  url = "https://panel.sendcloud.sc/api/v2/shipping_methods"
+  auth_str = f"{public_key}:{secret_key}"
+  base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
+
+  headers = {
+    'Authorization': f'Basic {base64_auth}',
+    'User-Agent': 'JuiceGels Flask Backend'
+  }
+
+  try:
+    req = urllib.request.Request(url, headers=headers, method='GET')
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      methods = res.get('shipping_methods', [])
+      
+      clean_name = str(checkout_shipping_method_name or '').lower().strip()
+      if not clean_name:
+        return None
+
+      print(f"Resolving Sendcloud shipping method ID for name: '{checkout_shipping_method_name}'...")
+      
+      # Step 1: Look for exact match
+      for method in methods:
+        m_name = str(method.get('name', '')).lower().strip()
+        if clean_name == m_name:
+          print(f"Exact match found: '{method.get('name')}' (ID: {method.get('id')})")
+          return method.get('id')
+          
+      # Step 2: Look for substring match (e.g. "tracked 24", "tracked 48", etc.)
+      for method in methods:
+        m_name = str(method.get('name', '')).lower().strip()
+        if "tracked 24" in clean_name and "tracked 24" in m_name:
+          print(f"Fuzzy match (tracked 24) found: '{method.get('name')}' (ID: {method.get('id')})")
+          return method.get('id')
+        if "tracked 48" in clean_name and "tracked 48" in m_name:
+          print(f"Fuzzy match (tracked 48) found: '{method.get('name')}' (ID: {method.get('id')})")
+          return method.get('id')
+        if "evri" in clean_name and "evri" in m_name:
+          print(f"Fuzzy match (evri) found: '{method.get('name')}' (ID: {method.get('id')})")
+          return method.get('id')
+        if "yodel" in clean_name and "yodel" in m_name:
+          print(f"Fuzzy match (yodel) found: '{method.get('name')}' (ID: {method.get('id')})")
+          return method.get('id')
+
+      # Step 3: Generic substring match fallback
+      for method in methods:
+        m_name = str(method.get('name', '')).lower().strip()
+        if clean_name in m_name or m_name in clean_name:
+          print(f"Generic substring match found: '{method.get('name')}' (ID: {method.get('id')})")
+          return method.get('id')
+          
+      print(f"No match found in Sendcloud methods. Fallback to default shipping method.")
+      return None
+  except Exception as e:
+    print(f"Error fetching shipping methods from Sendcloud: {e}")
+    return None
+
+
+def create_sendcloud_parcel(order_summary):
+  import urllib.request
+  import json
+  import base64
+
+  public_key = read_secret('sendcloud_public_key', 'SENDCLOUD_PUBLIC_KEY')
+  secret_key = read_secret('sendcloud_secret_key', 'SENDCLOUD_SECRET_KEY')
+
+  if not public_key or not secret_key:
+    print("Warning: Sendcloud API keys are not configured. Skipping automated shipping order creation.")
+    return None
+
+  url = "https://panel.sendcloud.sc/api/v2/parcels"
+
+  first_name = order_summary.get('first_name', '')
+  last_name = order_summary.get('last_name', '')
+  name = f"{first_name} {last_name}".strip() or "Customer"
+
+  address = order_summary.get('shipping_address', '')
+  city = order_summary.get('shipping_city', '')
+  postcode = order_summary.get('shipping_postcode', '')
+  country = order_summary.get('shipping_country', 'GB')
+
+  customer_email = order_summary.get('customer_email', '')
+  phone = order_summary.get('phone', '')
+  session_id = order_summary.get('session_id', '')
+  shipping_method_name = order_summary.get('shipping_method', '')
+
+  # Dynamically resolve Sendcloud Shipping Method ID from user's checkout choice
+  shipping_method_id = resolve_sendcloud_shipping_method_id(shipping_method_name)
+
+  parcel_data = {
+    "parcel": {
+      "name": name,
+      "address": address,
+      "city": city,
+      "postal_code": postcode,
+      "country": country,
+      "email": customer_email,
+      "phone": phone,
+      "client_reference": session_id,
+      "request_label": False
+    }
+  }
+
+  if shipping_method_id:
+    parcel_data["parcel"]["shipment"] = {
+      "id": shipping_method_id
+    }
+
+  auth_str = f"{public_key}:{secret_key}"
+  base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
+
+  headers = {
+    'Authorization': f'Basic {base64_auth}',
+    'Content-Type': 'application/json',
+    'User-Agent': 'JuiceGels Flask Backend'
+  }
+
+  try:
+    req = urllib.request.Request(
+      url,
+      data=json.dumps(parcel_data).encode('utf-8'),
+      headers=headers,
+      method='POST'
+    )
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      print(f"Successfully created parcel in Sendcloud. Response: {res}")
+      return res
+  except Exception as e:
+    print(f"Error creating parcel in Sendcloud: {e}")
+    if hasattr(e, 'read'):
+      try:
+        err_body = e.read().decode('utf-8')
+        print(f"Sendcloud API Error details: {err_body}")
+      except:
+        pass
+    return None
+
+
 def handle_completed_checkout_session(checkout_session):
   payment_status = get_value(checkout_session, 'payment_status', '')
   if payment_status != 'paid':
@@ -1084,12 +1234,17 @@ def handle_completed_checkout_session(checkout_session):
     print(f"Failed to send store owner email notification: {e}")
     import traceback
     traceback.print_exc()
-    # Propagate the error to webhook handler if owner notification fails
     raise
 
   print("Sending customer purchase confirmation email...")
   send_customer_order_email(order_summary)
   print("Customer confirmation email process completed.")
+
+  print("Creating automated shipping order in Sendcloud...")
+  try:
+    create_sendcloud_parcel(order_summary)
+  except Exception as e:
+    print(f"Failed to create shipping order in Sendcloud: {e}")
 
 
 def handle_completed_payment_intent(payment_intent):
@@ -1115,6 +1270,12 @@ def handle_completed_payment_intent(payment_intent):
   print("Sending customer purchase confirmation email (Express)...")
   send_customer_order_email(order_summary)
   print("Customer confirmation email process completed.")
+
+  print("Creating automated shipping order in Sendcloud (Express)...")
+  try:
+    create_sendcloud_parcel(order_summary)
+  except Exception as e:
+    print(f"Failed to create shipping order in Sendcloud (Express): {e}")
 
 
 
@@ -2489,6 +2650,437 @@ def create_checkout_session():
     traceback.print_exc()
     return jsonify({ 'error': str(e) }), 500
 
+
+def load_email_template(filename):
+  import os
+  template_path = os.path.join(os.path.dirname(__file__), 'email_templates', filename)
+  if not os.path.exists(template_path):
+    raise FileNotFoundError(f"Template not found at: {template_path}")
+  with open(template_path, 'r', encoding='utf-8') as f:
+    return f.read()
+
+
+def get_order_from_sanity(stripe_id):
+  import urllib.request
+  import json
+  from urllib.parse import quote
+
+  project_id = "5co5ooqr"
+  dataset = "production"
+  sanitized_id = f"order-{stripe_id}"
+
+  # Query Sanity by ID or orderId
+  query = f'*[_type == "order" && (_id == "{sanitized_id}" || orderId == "{stripe_id}")][0]'
+  encoded_query = quote(query)
+  url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
+
+  try:
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      return res.get('result')
+  except Exception as e:
+    print(f"Error querying Sanity for order {stripe_id}: {e}")
+    return None
+
+
+def update_order_in_sanity(stripe_id, status, carrier=None, tracking_number=None):
+  import urllib.request
+  import json
+  from datetime import datetime, timezone
+
+  token = read_secret('sanity_write_token', 'SANITY_WRITE_TOKEN')
+  if not token:
+    print("Warning: SANITY_WRITE_TOKEN is not configured. Skipping updating order in Sanity.")
+    return None
+
+  project_id = "5co5ooqr"
+  dataset = "production"
+  url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/mutate/{dataset}"
+
+  sanitized_id = f"order-{stripe_id}"
+
+  # Construct set patch
+  set_patch = {
+    "status": status
+  }
+  if carrier and tracking_number:
+    set_patch["tracking"] = {
+      "carrier": carrier,
+      "trackingNumber": tracking_number,
+      "dispatchedAt": datetime.now(timezone.utc).isoformat()
+    }
+
+  payload = {
+    "mutations": [
+      {
+        "patch": {
+          "id": sanitized_id,
+          "set": set_patch
+        }
+      }
+    ]
+  }
+
+  try:
+    headers = {
+      'Content-Type': 'application/json',
+      'Authorization': f'Bearer {token}'
+    }
+    req = urllib.request.Request(
+      url,
+      data=json.dumps(payload).encode('utf-8'),
+      headers=headers,
+      method='POST'
+    )
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      print(f"Successfully updated order {sanitized_id} in Sanity. Result: {res}")
+      return res
+  except Exception as e:
+    print(f"Error updating order {sanitized_id} in Sanity: {e}")
+    return None
+
+
+def get_tracking_url_fallback(carrier, tracking_number, postcode=""):
+  if not tracking_number:
+    return ""
+  carrier_clean = str(carrier or "").lower()
+  tracking_clean = str(tracking_number).strip()
+  postcode_clean = str(postcode or "").replace(" ", "").upper()
+
+  if 'royal' in carrier_clean:
+    return f"https://www.royalmail.com/track-your-item?trackNumber={tracking_clean}"
+  elif 'evri' in carrier_clean or 'hermes' in carrier_clean:
+    return f"https://www.evri.com/track-a-parcel?trackingNumber={tracking_clean}"
+  elif 'yodel' in carrier_clean:
+    if postcode_clean:
+      return f"https://www.yodel.co.uk/tracking/{tracking_clean}/{postcode_clean}"
+    else:
+      return f"https://www.yodel.co.uk/tracking/{tracking_clean}"
+  return ""
+
+
+def send_despatched_email_via_pingram(order_doc, carrier, tracking_number, tracking_url):
+  import asyncio
+  from pingram import Pingram
+  
+  customer_obj = order_doc.get('customer', {})
+  customer_email = customer_obj.get('email', '').strip()
+  if not customer_email:
+    print("Warning: customer_email is empty. Skipping despatched email.")
+    return None
+
+  first_name = customer_obj.get('firstName', '').strip()
+  last_name = customer_obj.get('lastName', '').strip()
+  customer_name = f"{first_name} {last_name}".strip() or "there"
+
+  postcode = order_doc.get('shipping', {}).get('shippingAddress', '').strip().split('\n')[-1] # Simple postcode heuristic
+  if not tracking_url:
+    tracking_url = get_tracking_url_fallback(carrier, tracking_number, postcode)
+
+  # Reconstruct items list for table builder
+  items = []
+  for item in order_doc.get('items', []):
+    items.append({
+      'description': item.get('description', ''),
+      'quantity': item.get('quantity', 1),
+      'unit_price': item.get('unitPrice', ''),
+      'line_total': item.get('lineTotal', '')
+    })
+  items_table_html = build_customer_items_table(items)
+
+  shipping_address = order_doc.get('shipping', {}).get('shippingAddress', '')
+
+  try:
+    template = load_email_template('order_despatched.html')
+    html_content = template
+    html_content = html_content.replace('{customer_name}', escape_html(customer_name))
+    html_content = html_content.replace('{carrier_name}', escape_html(carrier))
+    html_content = html_content.replace('{tracking_number}', escape_html(tracking_number))
+    html_content = html_content.replace('{tracking_url}', escape_html(tracking_url))
+    html_content = html_content.replace('{items_table}', items_table_html)
+    html_content = html_content.replace('{shipping_address}', escape_html(shipping_address))
+  except Exception as e:
+    print(f"Error loading order_despatched template: {e}")
+    return None
+
+  from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or 'Juice Gels').strip()
+  from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or 'neworder@juicegels.com').strip()
+
+  pingram_api_key = read_secret('pingram_v1', 'PINGRAM_API_KEY')
+  if not pingram_api_key:
+    print("Warning: PINGRAM_API_KEY is not configured. Skipping despatched email.")
+    return None
+
+  notification_payload = {
+    'type': 'email_compose_preview',
+    'to': {
+      'email': customer_email,
+    },
+    'email': {
+      'subject': 'Your Juice Gels Order is on its Way! 🚚',
+      'html': html_content,
+      'senderEmail': from_address,
+      'senderName': from_name,
+    },
+    'options': {
+      'email': {
+        'replyToAddresses': ['juicegels@gmail.com'],
+      }
+    }
+  }
+
+  async def send():
+    async with Pingram(
+      api_key=pingram_api_key,
+      base_url='https://api.eu.pingram.io',
+    ) as client_instance:
+      return await client_instance.send(notification_payload)
+
+  try:
+    print(f"Triggering async Pingram call to send despatched email to {customer_email}...")
+    try:
+      loop = asyncio.get_event_loop()
+    except RuntimeError:
+      loop = asyncio.new_event_loop()
+      asyncio.set_event_loop(loop)
+      
+    if loop.is_running():
+      import threading
+      future = asyncio.run_coroutine_threadsafe(send(), loop)
+      result = future.result()
+    else:
+      result = loop.run_until_complete(send())
+    print(f"Despatched email successfully sent. Response: {result}")
+    return result
+  except Exception as error:
+    print(f"Error sending despatched email to {customer_email}: {error}")
+    return None
+
+
+def send_delivered_email_via_pingram(order_doc, carrier, tracking_number):
+  import asyncio
+  from pingram import Pingram
+  
+  customer_obj = order_doc.get('customer', {})
+  customer_email = customer_obj.get('email', '').strip()
+  if not customer_email:
+    print("Warning: customer_email is empty. Skipping delivered email.")
+    return None
+
+  first_name = customer_obj.get('firstName', '').strip()
+  last_name = customer_obj.get('lastName', '').strip()
+  customer_name = f"{first_name} {last_name}".strip() or "there"
+
+  items = []
+  for item in order_doc.get('items', []):
+    items.append({
+      'description': item.get('description', ''),
+      'quantity': item.get('quantity', 1),
+      'unit_price': item.get('unitPrice', ''),
+      'line_total': item.get('lineTotal', '')
+    })
+  items_table_html = build_customer_items_table(items)
+
+  try:
+    template = load_email_template('order_delivered.html')
+    html_content = template
+    html_content = html_content.replace('{customer_name}', escape_html(customer_name))
+    html_content = html_content.replace('{carrier_name}', escape_html(carrier))
+    html_content = html_content.replace('{tracking_number}', escape_html(tracking_number))
+    html_content = html_content.replace('{items_table}', items_table_html)
+  except Exception as e:
+    print(f"Error loading order_delivered template: {e}")
+    return None
+
+  from_name = str(os.environ.get('PINGRAM_FROM_NAME', '') or 'Juice Gels').strip()
+  from_address = str(os.environ.get('PINGRAM_FROM_EMAIL', '') or 'neworder@juicegels.com').strip()
+
+  pingram_api_key = read_secret('pingram_v1', 'PINGRAM_API_KEY')
+  if not pingram_api_key:
+    print("Warning: PINGRAM_API_KEY is not configured. Skipping delivered email.")
+    return None
+
+  notification_payload = {
+    'type': 'email_compose_preview',
+    'to': {
+      'email': customer_email,
+    },
+    'email': {
+      'subject': 'Your Juice Gels Order has been Delivered! 💖',
+      'html': html_content,
+      'senderEmail': from_address,
+      'senderName': from_name,
+    },
+    'options': {
+      'email': {
+        'replyToAddresses': ['juicegels@gmail.com'],
+      }
+    }
+  }
+
+  async def send():
+    async with Pingram(
+      api_key=pingram_api_key,
+      base_url='https://api.eu.pingram.io',
+    ) as client_instance:
+      return await client_instance.send(notification_payload)
+
+  try:
+    print(f"Triggering async Pingram call to send delivered email to {customer_email}...")
+    try:
+      loop = asyncio.get_event_loop()
+    except RuntimeError:
+      loop = asyncio.new_event_loop()
+      asyncio.set_event_loop(loop)
+      
+    if loop.is_running():
+      import threading
+      future = asyncio.run_coroutine_threadsafe(send(), loop)
+      result = future.result()
+    else:
+      result = loop.run_until_complete(send())
+    print(f"Delivered email successfully sent. Response: {result}")
+    return result
+  except Exception as error:
+    print(f"Error sending delivered email to {customer_email}: {error}")
+    return None
+
+
+@app.route('/api/shipping-webhook', methods=['POST', 'OPTIONS'])
+def shipping_webhook():
+  if request.method == 'OPTIONS':
+    return '', 204
+
+  payload = request.get_json() or {}
+  print(f"Received shipping webhook: {payload}")
+
+  action = payload.get('action')  # Sendcloud
+  event = payload.get('event')    # Shippo
+
+  status_type = None  # 'despatched' or 'delivered'
+  tracking_number = None
+  tracking_url = None
+  carrier_name = "Courier"
+  reference_id = None
+
+  if action == 'parcel_status_changed':
+    parcel = payload.get('parcel', {})
+    status_obj = parcel.get('status', {})
+    status_id = status_obj.get('id')
+    status_msg = status_obj.get('message', '').lower()
+
+    # Determine status type based on Sendcloud codes and status message
+    if status_id in (1, 1000) or 'ready to send' in status_msg or 'announced' in status_msg or 'parcel announced' in status_msg:
+      status_type = 'despatched'
+    elif status_id == 2000 or 'delivered' in status_msg or status_obj.get('code') == 'delivered':
+      status_type = 'delivered'
+    else:
+      print(f"Sendcloud status '{status_msg}' ({status_id}) is not a dispatch or delivery milestone. Skipping.")
+      return jsonify({'success': True, 'message': 'Ignored status'}), 200
+
+    tracking_number = parcel.get('tracking_number')
+    tracking_url = parcel.get('tracking_url')
+
+    carrier_info = parcel.get('carrier', {})
+    carrier_code = carrier_info.get('code', '').lower()
+    if 'royal_mail' in carrier_code:
+      carrier_name = 'Royal Mail'
+    elif 'evri' in carrier_code or 'hermes' in carrier_code:
+      carrier_name = 'Evri'
+    elif 'yodel' in carrier_code:
+      carrier_name = 'Yodel'
+    else:
+      carrier_name = carrier_info.get('name', 'Courier')
+
+    reference_id = parcel.get('client_reference') or parcel.get('external_order_id')
+
+  elif event == 'transaction_created':
+    data = payload.get('data', {})
+    status = data.get('status', '').upper()
+    if status == 'SUCCESS':
+      status_type = 'despatched'
+      tracking_number = data.get('tracking_number')
+      tracking_url = data.get('tracking_url_provider')
+
+      tracking_url_provider = tracking_url.lower() if tracking_url else ""
+      if 'royalmail' in tracking_url_provider:
+        carrier_name = 'Royal Mail'
+      elif 'evri' in tracking_url_provider or 'hermes' in tracking_url_provider:
+        carrier_name = 'Evri'
+      elif 'yodel' in tracking_url_provider:
+        carrier_name = 'Yodel'
+      else:
+        carrier_name = 'Courier'
+
+      reference_id = data.get('metadata')
+  else:
+    print("Unsupported webhook source or event type.")
+    return jsonify({'error': 'Unsupported webhook source'}), 400
+
+  if not reference_id:
+    print("Webhook payload did not contain a client reference or order ID.")
+    return jsonify({'error': 'Missing reference'}), 400
+
+  # Clean reference ID
+  clean_id = str(reference_id).strip()
+  if clean_id.startswith('order-'):
+    clean_id = clean_id.replace('order-', '')
+
+  print(f"Processing shipping event '{status_type}' for order reference: {clean_id}")
+
+  if clean_id == "cs_test_mock_123456":
+    # Bypass Sanity for local testing and return mock data
+    order_doc = {
+      "customer": {
+        "firstName": "Jane",
+        "lastName": "Doe",
+        "email": "rjviernes620@gmail.com"
+      },
+      "items": [
+        {
+          "description": "Custom Press-On Nails Set - French Almond",
+          "quantity": 1,
+          "unitPrice": "£35.00",
+          "lineTotal": "£35.00"
+        }
+      ],
+      "shipping": {
+        "shippingAddress": "Jane Doe\n123 Nail Lane\nLondon\nEC1A 1BB\nUnited Kingdom"
+      },
+      "status": "pending_sizes"
+    }
+  else:
+    order_doc = get_order_from_sanity(clean_id)
+    if not order_doc:
+      print(f"Order {clean_id} not found in Sanity. Cannot send email.")
+      return jsonify({'error': 'Order not found'}), 404
+
+  current_status = order_doc.get('status')
+
+  if status_type == 'despatched':
+    if current_status in ('dispatched', 'delivered'):
+      print(f"Order {clean_id} is already marked as {current_status} in Sanity. Skipping email to avoid duplicates.")
+      return jsonify({'success': True, 'message': 'Already processed'}), 200
+
+    if clean_id != "cs_test_mock_123456":
+      update_order_in_sanity(clean_id, 'dispatched', carrier_name, tracking_number)
+    send_despatched_email_via_pingram(order_doc, carrier_name, tracking_number, tracking_url)
+
+  elif status_type == 'delivered':
+    if current_status == 'delivered':
+      print(f"Order {clean_id} is already marked as delivered in Sanity. Skipping email to avoid duplicates.")
+      return jsonify({'success': True, 'message': 'Already processed'}), 200
+
+    if clean_id != "cs_test_mock_123456":
+      update_order_in_sanity(clean_id, 'delivered', carrier_name, tracking_number)
+    send_delivered_email_via_pingram(order_doc, carrier_name, tracking_number)
+
+  return jsonify({'success': True})
+
+
 if __name__ == "__main__":
+
     port = int(os.environ.get("PORT", 4000))
     app.run(host="0.0.0.0", port=port)

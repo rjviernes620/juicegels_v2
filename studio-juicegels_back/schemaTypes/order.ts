@@ -2,12 +2,32 @@ export default {
   name: 'order',
   type: 'document',
   title: 'Orders',
+  groups: [
+    {
+      name: 'overview',
+      title: '📋 Overview',
+      default: true,
+    },
+    {
+      name: 'items',
+      title: '🛍️ Items',
+    },
+    {
+      name: 'shipping',
+      title: '📦 Shipping & Tracking',
+    },
+    {
+      name: 'financials',
+      title: '💰 Financials',
+    },
+  ],
   fields: [
     {
       name: 'orderId',
       type: 'string',
       title: 'Order ID / Stripe ID',
       readOnly: true,
+      group: 'overview',
     },
     {
       name: 'status',
@@ -20,22 +40,26 @@ export default {
           { title: '⚒️ In Production', value: 'in_production' },
           { title: '📸 Photo Sent for Confirmation', value: 'photo_sent' },
           { title: '📦 Dispatched', value: 'dispatched' },
+          { title: '🚚 Delivered', value: 'delivered' },
           { title: '❌ Cancelled', value: 'cancelled' },
         ],
       },
       initialValue: 'pending_sizes',
       validation: (Rule: any) => Rule.required(),
+      group: 'overview',
     },
     {
       name: 'createdAt',
       type: 'string',
       title: 'Ordered At',
       readOnly: true,
+      group: 'overview',
     },
     {
       name: 'customer',
       type: 'object',
       title: 'Customer Details',
+      group: 'overview',
       fields: [
         { name: 'firstName', type: 'string', title: 'First Name' },
         { name: 'lastName', type: 'string', title: 'Last Name' },
@@ -49,6 +73,7 @@ export default {
       name: 'items',
       type: 'array',
       title: 'Ordered Items',
+      group: 'items',
       of: [
         {
           type: 'object',
@@ -66,6 +91,7 @@ export default {
       name: 'financials',
       type: 'object',
       title: 'Financial Summary',
+      group: 'financials',
       fields: [
         { name: 'subtotal', type: 'string', title: 'Subtotal' },
         { name: 'discount', type: 'string', title: 'Discount' },
@@ -83,6 +109,7 @@ export default {
       name: 'shipping',
       type: 'object',
       title: 'Shipping Address & Method',
+      group: 'shipping',
       fields: [
         { name: 'shippingMethod', type: 'string', title: 'Shipping Method' },
         { name: 'shippingAddress', type: 'text', title: 'Shipping Address' },
@@ -93,6 +120,7 @@ export default {
       name: 'tracking',
       type: 'object',
       title: 'Shipping Tracking Details',
+      group: 'shipping',
       fields: [
         {
           name: 'carrier',
@@ -116,11 +144,13 @@ export default {
       type: 'text',
       title: 'Customer Order Notes',
       readOnly: true,
+      group: 'overview',
     },
     {
       name: 'internalNotes',
       type: 'text',
       title: 'Internal Notes (Only visible to you)',
+      group: 'overview',
     },
   ],
   preview: {
@@ -143,6 +173,7 @@ export default {
         in_production: '⚒️ In Production',
         photo_sent: '📸 Photo Sent',
         dispatched: '📦 Dispatched',
+        delivered: '🚚 Delivered',
         cancelled: '❌ Cancelled',
       };
       

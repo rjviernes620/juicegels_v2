@@ -86,7 +86,7 @@ export function buildShippingOptions(
       {
         id: "tracked48",
         stripeRateId: rateIds.tracked48,
-        label: "Royal Mail Tracked 48",
+        label: "Royal Mail Tracked 48 QR",
         description: tracked48IsFree
           ? isFreeShippingApplied
             ? "Free shipping applied."
@@ -99,7 +99,7 @@ export function buildShippingOptions(
       {
         id: "tracked24",
         stripeRateId: rateIds.tracked24,
-        label: "Royal Mail Tracked 24",
+        label: "Royal Mail Tracked 24 QR",
         description: isFreeShippingApplied ? "Free priority shipping applied." : "Priority tracked delivery.",
         estimate: "Estimated delivery within 1 business day after your order is finished.",
         amount: isFreeShippingApplied ? 0 : 4,
