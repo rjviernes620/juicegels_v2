@@ -1092,7 +1092,7 @@ export default function App() {
     return getCollectionDetails(selected, products);
   }, [selected, products]);
 
-  if (isMaintenanceMode) {
+  if (isMaintenanceMode && page !== "confirmation") {
     return (
       <MaintenancePage
         onBypassSuccess={(token) => {

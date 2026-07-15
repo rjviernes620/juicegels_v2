@@ -1656,6 +1656,9 @@ def check_maintenance():
   # Bypass maintenance check for status, stripe-webhook, login, and admin toggle
   if request.path in ('/api/status', '/stripe-webhook', '/api/maintenance-login', '/api/admin/maintenance'):
     return None
+  # Also bypass checks for checkout sessions and payment intents to allow order confirmation rendering
+  if request.path.startswith('/api/checkout-session/') or request.path.startswith('/api/payment-intent/'):
+    return None
   if is_maintenance_active():
     bypass_token = request.headers.get('X-Maintenance-Bypass')
     if bypass_token and verify_bypass_token(bypass_token):
