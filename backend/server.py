@@ -1240,6 +1240,43 @@ def resolve_sendcloud_shipping_method_id(order_summary):
     return None
 
 
+def get_sendcloud_integration_id():
+  public_key = read_secret('sendcloud_public_key', 'SENDCLOUD_PUBLIC_KEY')
+  secret_key = read_secret('sendcloud_secret_key', 'SENDCLOUD_SECRET_KEY')
+
+  if not public_key or not secret_key:
+    return None
+
+  url = "https://panel.sendcloud.sc/api/v2/integrations"
+  auth_str = f"{public_key}:{secret_key}"
+  import base64
+  import urllib.request
+  import json
+
+  base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
+
+  headers = {
+    'Authorization': f'Basic {base64_auth}',
+    'User-Agent': 'JuiceGels Flask Backend'
+  }
+
+  try:
+    req = urllib.request.Request(url, headers=headers, method='GET')
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      integrations = res if isinstance(res, list) else res.get('integrations', [])
+      
+      for integration in integrations:
+        if str(integration.get('system', '')).lower() == 'api':
+          return integration.get('id')
+      
+      if integrations:
+        return integrations[0].get('id')
+  except Exception as e:
+    print(f"Error fetching Sendcloud integrations: {e}")
+  return None
+
+
 def get_sendcloud_sender_address_id():
   public_key = read_secret('sendcloud_public_key', 'SENDCLOUD_PUBLIC_KEY')
   secret_key = read_secret('sendcloud_secret_key', 'SENDCLOUD_SECRET_KEY')
@@ -1337,6 +1374,12 @@ def create_sendcloud_parcel(order_summary):
     print("Warning: Sendcloud API keys are not configured. Skipping automated shipping order creation.")
     return None
 
+  # Retrieve dynamic Integration ID from user's Sendcloud account
+  integration_id = get_sendcloud_integration_id()
+  if not integration_id:
+    print("Warning: Could not retrieve a valid Integration ID from Sendcloud. Skipping order creation.")
+    return None
+
   first_name = order_summary.get('first_name', '')
   last_name = order_summary.get('last_name', '')
   name = f"{first_name} {last_name}".strip() or "Customer"
@@ -1374,57 +1417,67 @@ def create_sendcloud_parcel(order_summary):
   customer_email = order_summary.get('customer_email', '')
   phone = order_summary.get('phone', '')
 
+  session_id = order_summary.get('session_id', '')
   order_number = order_summary.get('order_number', '')
   if not order_number:
-    order_number = order_summary.get('session_id', '')
+    order_number = session_id
     if is_test:
       order_number = f"test-{order_number}"
     if len(order_number) > 50:
       order_number = order_number[-50:]
 
-  # Dynamically resolve Sendcloud Shipping Method ID and map to v3 option code
-  shipping_method_id = resolve_sendcloud_shipping_method_id(order_summary)
-  shipping_option_code = map_shipping_method_id_to_v3_code(shipping_method_id)
+  shipping_method_name = order_summary.get('shipping_method', '')
 
-  sender_address_id = get_sendcloud_sender_address_id()
+  total_str = str(order_summary.get('total', '0.00')).replace('£', '').replace('$', '').strip()
+  currency = order_summary.get('currency', 'GBP')
 
-  url = "https://panel.sendcloud.sc/api/v3/shipments"
+  # Map items
+  parcel_items = []
+  for idx, item in enumerate(order_summary.get('line_items', [])):
+    item_price = str(item.get('unit_price', '0.00')).replace('£', '').replace('$', '').strip()
+    parcel_items.append({
+      "description": item.get('description', 'Product'),
+      "quantity": int(item.get('quantity', 1)),
+      "weight": "0.100", # default item weight in kg
+      "value": item_price,
+      "sku": f"ITEM-{idx}"
+    })
 
-  parcel_data = {
-    "to_address": {
-      "name": name,
-      "address_line_1": address_line_1,
-      "address_line_2": raw_line2 or "",
-      "house_number": house_number or "",
-      "postal_code": postcode,
-      "city": city,
-      "country_code": country,
-      "email": customer_email,
-      "phone_number": phone
-    },
-    "parcels": [
-      {
-        "weight": {
-          "value": "0.100", # default small parcel weight
-          "unit": "kg"
-        }
+  if not parcel_items:
+    parcel_items.append({
+      "description": "Juice Gels Product",
+      "quantity": 1,
+      "weight": "0.100",
+      "value": total_str,
+      "sku": "SKU-DEFAULT"
+    })
+
+  url = "https://panel.sendcloud.sc/api/v3/orders"
+
+  order_data = {
+    "order_id": session_id,
+    "order_number": order_number,
+    "order_details": {
+      "integration": {
+        "id": int(integration_id)
       }
-    ],
-    "order_number": order_number
+    },
+    "name": name,
+    "email": customer_email,
+    "address": address_line_1,
+    "address_2": raw_line2 or "",
+    "house_number": house_number or "",
+    "city": city,
+    "postal_code": postcode,
+    "country": country,
+    "phone": phone,
+    "total_order_value": total_str,
+    "currency": currency,
+    "shipping_method_checkout_name": shipping_method_name,
+    "parcel_items": parcel_items
   }
 
-  if sender_address_id is not None:
-    parcel_data["from_address"] = {
-      "sender_address_id": sender_address_id
-    }
-
-  if shipping_option_code:
-    parcel_data["ship_with"] = {
-      "type": "shipping_option_code",
-      "properties": {
-        "shipping_option_code": shipping_option_code
-      }
-    }
+  payload = [order_data]
 
   auth_str = f"{public_key}:{secret_key}"
   base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
@@ -1438,16 +1491,16 @@ def create_sendcloud_parcel(order_summary):
   try:
     req = urllib.request.Request(
       url,
-      data=json.dumps(parcel_data).encode('utf-8'),
+      data=json.dumps(payload).encode('utf-8'),
       headers=headers,
       method='POST'
     )
     with urllib.request.urlopen(req) as response:
       res = json.loads(response.read().decode('utf-8'))
-      print(f"Successfully created parcel/shipment in Sendcloud. Response: {res}")
+      print(f"Successfully created order in Sendcloud. Response: {res}")
       return res
   except Exception as e:
-    print(f"Error creating parcel in Sendcloud: {e}")
+    print(f"Error creating order in Sendcloud: {e}")
     if hasattr(e, 'read'):
       try:
         err_body = e.read().decode('utf-8')
