@@ -25,7 +25,7 @@ def colorize(text, color):
     return text
 
 def is_maintenance_active():
-    return os.path.isfile(MAINTENANCE_FILE) or os.environ.get('MAINTENANCE_MODE', '').lower() in ('true', 'on', '1')
+    return os.path.isfile(MAINTENANCE_FILE)
 
 def get_stripe_mode():
     return 'test' if is_maintenance_active() else 'live'
@@ -60,7 +60,7 @@ def find_processes(pattern):
     if sys.platform == 'win32':
         try:
             # We use powershell to query Win32_Process and filter by command line
-            cmd = f'powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object {{ $_.CommandLine -like \'*{pattern}*\' -and $_.Name -like \'*python*\' }} | Select-Object -ExpandProperty ProcessId"'
+            cmd = f'powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object {{ $_.CommandLine -like \'*{pattern}*\' }} | Select-Object -ExpandProperty ProcessId"'
             output = subprocess.check_output(cmd, shell=True).decode().strip()
             for p in output.split():
                 if p.strip().isdigit() and int(p) != os.getpid():

@@ -84,7 +84,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MAINTENANCE_FILE = os.path.join(BASE_DIR, 'maintenance.flag')
 
 def is_maintenance_active():
-    return os.path.isfile(MAINTENANCE_FILE) or os.environ.get('MAINTENANCE_MODE', '').lower() in ('true', 'on', '1')
+    return os.path.isfile(MAINTENANCE_FILE)
 
 def get_stripe_mode():
     return 'test' if is_maintenance_active() else 'live'
