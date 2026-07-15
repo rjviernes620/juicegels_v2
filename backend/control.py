@@ -179,6 +179,32 @@ def generate_2fa():
     raw_bytes = os.urandom(20)
     secret = base64.b32encode(raw_bytes).decode('utf-8').replace('=', '')
     
+    # Automatically write/update local .env file
+    env_path = os.path.join(os.path.dirname(BASE_DIR), '.env')
+    updated = False
+    lines = []
+    if os.path.exists(env_path):
+        with open(env_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.strip().startswith('MAINTENANCE_2FA_SECRET='):
+                    lines.append(f"MAINTENANCE_2FA_SECRET={secret}\n")
+                    updated = True
+                else:
+                    lines.append(line)
+        if not updated:
+            if lines and not lines[-1].endswith('\n'):
+                lines[-1] += '\n'
+            lines.append(f"MAINTENANCE_2FA_SECRET={secret}\n")
+    else:
+        lines.append(f"MAINTENANCE_2FA_SECRET={secret}\n")
+        
+    try:
+        with open(env_path, 'w', encoding='utf-8') as f:
+            f.writelines(lines)
+        env_write_msg = colorize(f"Successfully updated local .env file with the new secret key.", COLOR_GREEN + COLOR_BOLD)
+    except Exception as e:
+        env_write_msg = colorize(f"Failed to update local .env file: {e}", COLOR_RED + COLOR_BOLD)
+
     print(colorize("=" * 60, COLOR_CYAN))
     print(colorize(" GENERATED 2FA SECRET KEY FOR MAINTENANCE BYPASS", COLOR_CYAN + COLOR_BOLD))
     print(colorize("=" * 60, COLOR_CYAN))
@@ -197,9 +223,8 @@ def generate_2fa():
     print("   Or scan/import the following provisioning link if your app supports pasting URLs:")
     print(f"   {colorize(otpauth_uri, COLOR_GREEN)}")
     print("\n2. Configure the server environment variable:")
-    print(f"   Set {colorize('MAINTENANCE_2FA_SECRET', COLOR_WHITE + COLOR_BOLD)} to the Secret Key generated above.")
-    print("   For local testing, place it in your .env file:")
-    print(f"   MAINTENANCE_2FA_SECRET={secret}")
+    print(f"   {env_write_msg}")
+    print(f"   For production, set {colorize('MAINTENANCE_2FA_SECRET', COLOR_WHITE + COLOR_BOLD)} to: {colorize(secret, COLOR_YELLOW)}")
     print(colorize("=" * 60, COLOR_CYAN))
 
 def start_interactive_shell():
