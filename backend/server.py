@@ -84,6 +84,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MAINTENANCE_FILE = os.path.join(BASE_DIR, 'maintenance.flag')
 
 def is_maintenance_active():
+    # Support toggling via Render environment variable (MAINTENANCE_MODE=true/1)
+    env_flag = os.environ.get('MAINTENANCE_MODE', '').strip().lower()
+    if env_flag and env_flag not in ('false', '0', 'no', 'off'):
+        return True
     return os.path.isfile(MAINTENANCE_FILE)
 
 def get_stripe_mode():
