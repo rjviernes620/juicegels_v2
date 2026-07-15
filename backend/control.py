@@ -40,6 +40,55 @@ def set_maintenance(active):
             os.remove(MAINTENANCE_FILE)
         print(colorize("Maintenance mode: DISABLED (Website API requests are active).", COLOR_GREEN + COLOR_BOLD))
 
+# Hardcoded API base — always targets the live Render service
+RENDER_API_BASE = 'https://juicegels-v2.onrender.com'
+
+def remote_set_maintenance(active):
+    """Toggle maintenance mode on the live server via HTTP.
+    Reads MAINTENANCE_2FA_SECRET from the environment (already set as a Render secret)
+    — no prompts, no secrets on the command line.
+    """
+    import urllib.request
+    import urllib.error
+    import json as _json
+
+    secret = os.environ.get('MAINTENANCE_2FA_SECRET', '').strip()
+    if not secret:
+        print(colorize(
+            'Error: MAINTENANCE_2FA_SECRET is not set in the environment.\n'
+            'Make sure this Render service has the secret configured.',
+            COLOR_RED
+        ))
+        return
+
+    action = 'on' if active else 'off'
+    url = RENDER_API_BASE + '/api/admin/maintenance'
+    payload = _json.dumps({'action': action, 'secret': secret}).encode('utf-8')
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={'Content-Type': 'application/json'},
+        method='POST',
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = _json.loads(resp.read().decode('utf-8'))
+            if data.get('success'):
+                if active:
+                    print(colorize('Maintenance mode: ENABLED on live server.', COLOR_RED + COLOR_BOLD))
+                else:
+                    print(colorize('Maintenance mode: DISABLED on live server.', COLOR_GREEN + COLOR_BOLD))
+            else:
+                print(colorize(f"Server error: {data.get('message', 'Unknown error')}", COLOR_RED))
+    except urllib.error.HTTPError as e:
+        try:
+            body = _json.loads(e.read().decode('utf-8'))
+            print(colorize(f"Error {e.code}: {body.get('message', e.reason)}", COLOR_RED))
+        except Exception:
+            print(colorize(f'HTTP error {e.code}: {e.reason}', COLOR_RED))
+    except Exception as e:
+        print(colorize(f'Failed to reach server: {e}', COLOR_RED))
+
 def find_processes(pattern):
     pids = []
     # Try /proc first (highly reliable on Linux container systems like Render)
@@ -262,7 +311,7 @@ def start_interactive_shell():
                 if len(parts) < 2 or parts[1].lower() not in ('on', 'off'):
                     print(colorize("Error: Specify 'on' or 'off'. Example: maintenance on", COLOR_RED))
                 else:
-                    set_maintenance(parts[1].lower() == 'on')
+                    remote_set_maintenance(parts[1].lower() == 'on')
             elif cmd == 'generate-2fa':
                 generate_2fa()
             elif cmd == 'reset':
@@ -277,7 +326,7 @@ def start_interactive_shell():
 
 def main():
     parser = argparse.ArgumentParser(
-        description="JuiceGels Render Shell Control Tool",
+        description="JuiceGels Backend Control Tool",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -286,37 +335,41 @@ Examples:
   python control.py maintenance off
   python control.py generate-2fa
   python control.py reset
+
+The 'maintenance' command always targets the live server at:
+  https://juicegels-v2.onrender.com
+You will be prompted for your 2FA code — nothing is passed on the command line.
 """
     )
-    
+
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
-    
+
     # Status command
     subparsers.add_parser("status", help="Show current server settings and status")
-    
+
     # Maintenance command
-    maint_parser = subparsers.add_parser("maintenance", help="Toggle maintenance mode")
+    maint_parser = subparsers.add_parser("maintenance", help="Toggle maintenance mode on the live server")
     maint_parser.add_argument("state", choices=["on", "off"], help="Maintenance state: on or off")
-    
+
     # Generate 2FA command
     subparsers.add_parser("generate-2fa", help="Generate a new 2FA secret key for maintenance bypass")
-    
+
     # Reset command
     subparsers.add_parser("reset", help="Restart/reload the server workers")
-    
+
     # Interactive command (explicit option)
     subparsers.add_parser("interactive", help="Start the interactive shell (default)")
-    
+
     args = parser.parse_args()
-    
+
     if not args.command or args.command == "interactive":
         start_interactive_shell()
         sys.exit(0)
-        
+
     if args.command == "status":
         show_status()
     elif args.command == "maintenance":
-        set_maintenance(args.state == "on")
+        remote_set_maintenance(args.state == "on")
     elif args.command == "generate-2fa":
         generate_2fa()
     elif args.command == "reset":

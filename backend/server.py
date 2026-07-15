@@ -1641,8 +1641,8 @@ def maintenance_login():
 def check_maintenance():
   if request.method == 'OPTIONS':
     return None
-  # Bypass maintenance check for status, stripe-webhook, and login API
-  if request.path in ('/api/status', '/stripe-webhook', '/api/maintenance-login'):
+  # Bypass maintenance check for status, stripe-webhook, login, and admin toggle
+  if request.path in ('/api/status', '/stripe-webhook', '/api/maintenance-login', '/api/admin/maintenance'):
     return None
   if is_maintenance_active():
     bypass_token = request.headers.get('X-Maintenance-Bypass')
@@ -1678,6 +1678,41 @@ def api_status():
     'bypass_active': bypass_active
   })
 
+
+@app.route('/api/admin/maintenance', methods=['POST', 'OPTIONS'])
+def admin_maintenance_toggle():
+  """Toggle maintenance mode from the Render shell via HTTP.
+  Authenticated by MAINTENANCE_2FA_SECRET read silently from the Render environment
+  by control.py — no user input or prompts needed in the console.
+  Usage from Render shell:
+    python control.py maintenance on
+    python control.py maintenance off
+  """
+  if request.method == 'OPTIONS':
+    return '', 204
+
+  data = request.get_json() or {}
+  action = data.get('action', '').strip().lower()  # 'on' or 'off'
+  provided_secret = data.get('secret', '').strip()
+
+  if action not in ('on', 'off'):
+    return jsonify({'success': False, 'message': "action must be 'on' or 'off'."}), 400
+
+  if not provided_secret:
+    return jsonify({'success': False, 'message': 'Missing secret.'}), 401
+
+  expected_secret = read_secret('maintenance_2fa_secret', 'MAINTENANCE_2FA_SECRET')
+  if not expected_secret or not hmac.compare_digest(provided_secret, expected_secret):
+    return jsonify({'success': False, 'message': 'Invalid secret.'}), 403
+
+  if action == 'on':
+    with open(MAINTENANCE_FILE, 'w') as f:
+      f.write('active')
+    return jsonify({'success': True, 'maintenance': True, 'message': 'Maintenance mode ENABLED.'})
+  else:
+    if os.path.isfile(MAINTENANCE_FILE):
+      os.remove(MAINTENANCE_FILE)
+    return jsonify({'success': True, 'maintenance': False, 'message': 'Maintenance mode DISABLED.'})
 
 
 @app.route('/api/meta-catalog', methods=['GET'])
