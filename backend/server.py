@@ -1362,6 +1362,36 @@ def map_shipping_method_id_to_v3_code(shipping_method_id):
     return None
 
 
+def get_order_from_sanity(session_id):
+  import urllib.request
+  import json
+  from urllib.parse import quote
+
+  token = read_secret('sanity_write_token', 'SANITY_WRITE_TOKEN')
+  if not token:
+    return None
+
+  project_id = "5co5ooqr"
+  dataset = "production"
+  
+  query = f'*[_type == "order" && (_id == "order-{session_id}" || orderId == "{session_id}")][0]'
+  encoded_query = quote(query)
+  url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
+
+  try:
+    headers = {
+      'Authorization': f'Bearer {token}',
+      'User-Agent': 'JuiceGels Flask Backend'
+    }
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      return res.get('result')
+  except Exception as e:
+    print(f"Error fetching order from Sanity: {e}")
+    return None
+
+
 def create_sendcloud_parcel(order_summary):
   import urllib.request
   import json
@@ -1434,18 +1464,79 @@ def create_sendcloud_parcel(order_summary):
 
   # Map items to order_items under order_details
   order_items = []
-  for idx, item in enumerate(order_summary.get('line_items', [])):
-    order_items.append({
-      "name": item.get('description', 'Product'),
-      "quantity": int(item.get('quantity', 1)),
-      "sku": f"ITEM-{idx}"
-    })
+  
+  # Try to retrieve rich order items directly from Sanity database
+  sanity_order = get_order_from_sanity(session_id)
+  sanity_items = sanity_order.get('items', []) if sanity_order else []
+  
+  if sanity_items:
+    print(f"Retrieved {len(sanity_items)} items directly from Sanity database.")
+    for idx, item in enumerate(sanity_items):
+      desc = item.get('description', 'Product')
+      
+      # Append custom specifications/attributes if present
+      detail_parts = []
+      for attr in ['size', 'sizes', 'fit', 'length', 'shape', 'style', 'customization']:
+        val = item.get(attr)
+        if val:
+          if isinstance(val, (list, dict)):
+            val_str = json.dumps(val)
+          else:
+            val_str = str(val)
+          detail_parts.append(f"{attr.capitalize()}: {val_str}")
+      
+      if detail_parts:
+        desc = f"{desc} ({', '.join(detail_parts)})"
+
+      item_price = str(item.get('unitPrice', '0.00')).replace('£', '').replace('$', '').strip()
+      qty = int(item.get('quantity', 1))
+      
+      try:
+        item_val = float(item_price) * qty
+        item_total_price_str = f"{item_val:.2f}"
+      except:
+        item_total_price_str = "0.00"
+
+      order_items.append({
+        "name": desc,
+        "quantity": qty,
+        "sku": item.get('sku', '') or f"ITEM-{idx}",
+        "total_price": {
+          "value": item_total_price_str,
+          "currency": currency
+        }
+      })
+  else:
+    # Fallback to Stripe's raw line items
+    for idx, item in enumerate(order_summary.get('line_items', [])):
+      item_price = str(item.get('unit_price', '0.00')).replace('£', '').replace('$', '').strip()
+      qty = int(item.get('quantity', 1))
+      
+      try:
+        item_val = float(item_price) * qty
+        item_total_price_str = f"{item_val:.2f}"
+      except:
+        item_total_price_str = item_price
+
+      order_items.append({
+        "name": item.get('description', 'Product'),
+        "quantity": qty,
+        "sku": f"ITEM-{idx}",
+        "total_price": {
+          "value": item_total_price_str,
+          "currency": currency
+        }
+      })
 
   if not order_items:
     order_items.append({
       "name": "Juice Gels Product",
       "quantity": 1,
-      "sku": "SKU-DEFAULT"
+      "sku": "SKU-DEFAULT",
+      "total_price": {
+        "value": total_str,
+        "currency": currency
+      }
     })
 
   url = "https://panel.sendcloud.sc/api/v3/orders"
@@ -1456,13 +1547,13 @@ def create_sendcloud_parcel(order_summary):
     "order_number": order_number,
     "shipping_address": {
       "name": name,
-      "line1": address_line_1,
-      "line2": raw_line2 or "",
+      "address_line_1": address_line_1,
+      "address_line_2": raw_line2 or "",
       "house_number": house_number or "",
       "city": city,
       "postal_code": postcode,
-      "country": country,
-      "phone": phone,
+      "country_code": country,
+      "phone_number": phone,
       "email": customer_email
     },
     "order_details": {
@@ -1474,8 +1565,7 @@ def create_sendcloud_parcel(order_summary):
         "code": "created",
         "message": "Order imported"
       },
-      "order_items": order_items,
-      "shipping_method_checkout_name": shipping_method_name
+      "order_items": order_items
     },
     "payment_details": {
       "total_price": {
