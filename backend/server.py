@@ -1366,6 +1366,7 @@ def create_sendcloud_parcel(order_summary):
   import urllib.request
   import json
   import base64
+  from datetime import datetime, timezone
 
   public_key = read_secret('sendcloud_public_key', 'SENDCLOUD_PUBLIC_KEY')
   secret_key = read_secret('sendcloud_secret_key', 'SENDCLOUD_SECRET_KEY')
@@ -1431,50 +1432,61 @@ def create_sendcloud_parcel(order_summary):
   total_str = str(order_summary.get('total', '0.00')).replace('£', '').replace('$', '').strip()
   currency = order_summary.get('currency', 'GBP')
 
-  # Map items
-  parcel_items = []
+  # Map items to order_items under order_details
+  order_items = []
   for idx, item in enumerate(order_summary.get('line_items', [])):
-    item_price = str(item.get('unit_price', '0.00')).replace('£', '').replace('$', '').strip()
-    parcel_items.append({
-      "description": item.get('description', 'Product'),
+    order_items.append({
+      "name": item.get('description', 'Product'),
       "quantity": int(item.get('quantity', 1)),
-      "weight": "0.100", # default item weight in kg
-      "value": item_price,
       "sku": f"ITEM-{idx}"
     })
 
-  if not parcel_items:
-    parcel_items.append({
-      "description": "Juice Gels Product",
+  if not order_items:
+    order_items.append({
+      "name": "Juice Gels Product",
       "quantity": 1,
-      "weight": "0.100",
-      "value": total_str,
       "sku": "SKU-DEFAULT"
     })
 
   url = "https://panel.sendcloud.sc/api/v3/orders"
+  order_created_at_iso = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 
   order_data = {
-    "order_id": session_id,
+    "order_id": order_number,
     "order_number": order_number,
+    "shipping_address": {
+      "name": name,
+      "line1": address_line_1,
+      "line2": raw_line2 or "",
+      "house_number": house_number or "",
+      "city": city,
+      "postal_code": postcode,
+      "country": country,
+      "phone": phone,
+      "email": customer_email
+    },
     "order_details": {
       "integration": {
         "id": int(integration_id)
-      }
+      },
+      "order_created_at": order_created_at_iso,
+      "status": {
+        "code": "created",
+        "message": "Order imported"
+      },
+      "order_items": order_items,
+      "shipping_method_checkout_name": shipping_method_name
     },
-    "name": name,
-    "email": customer_email,
-    "address": address_line_1,
-    "address_2": raw_line2 or "",
-    "house_number": house_number or "",
-    "city": city,
-    "postal_code": postcode,
-    "country": country,
-    "phone": phone,
-    "total_order_value": total_str,
-    "currency": currency,
-    "shipping_method_checkout_name": shipping_method_name,
-    "parcel_items": parcel_items
+    "payment_details": {
+      "total_price": {
+        "value": total_str,
+        "currency": currency
+      },
+      "status": {
+        "code": "paid"
+      },
+      "is_cash_on_delivery": False
+    }
   }
 
   payload = [order_data]
