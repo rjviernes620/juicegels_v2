@@ -536,6 +536,12 @@ def build_order_summary(checkout_session):
     get_value(metadata, 'shipping_method', '')
     or resolve_shipping_label(get_value(metadata, 'shipping_option_id', ''), shipping_rate_id)
   )
+  shipping_option_id = get_value(metadata, 'shipping_option_id', '')
+  if not shipping_option_id and shipping_rate_id:
+    for opt_id, entry in SHIPPING_OPTIONS.items():
+      if entry['stripe_rate_id'] == shipping_rate_id:
+        shipping_option_id = opt_id
+        break
 
   # Retrieve Coupon Name
   coupon_name = ''
@@ -551,13 +557,16 @@ def build_order_summary(checkout_session):
   shipping_address_obj = get_value(shipping_details, 'address', {}) or {}
   wallet_shipping_address = format_address(shipping_address_obj)
 
-  preorder_shipping_address = format_address({
+  preorder_address_obj = {
     'line1': get_value(metadata, 'shipping_address', ''),
     'city': get_value(metadata, 'shipping_city', ''),
     'postal_code': get_value(metadata, 'shipping_postcode', ''),
     'country': get_value(metadata, 'shipping_country', ''),
-  })
-  shipping_address = preorder_shipping_address or wallet_shipping_address or format_address(get_value(customer_details, 'address', {}) or {})
+  }
+  is_preorder_addr = any(str(preorder_address_obj.get(k) or '').strip() for k in preorder_address_obj)
+  active_address_obj = preorder_address_obj if is_preorder_addr else (shipping_address_obj or get_value(customer_details, 'address', {}) or {})
+
+  shipping_address = format_address(active_address_obj)
 
   # Retrieve Payment Method details
   payment_intent = get_value(expanded_session, 'payment_intent')
@@ -596,7 +605,13 @@ def build_order_summary(checkout_session):
     'coupon_name': coupon_name,
     'billing_address': format_address(get_value(customer_details, 'address', {}) or {}),
     'shipping_address': shipping_address,
+    'shipping_line1': get_value(active_address_obj, 'line1', ''),
+    'shipping_line2': get_value(active_address_obj, 'line2', ''),
+    'shipping_city': get_value(active_address_obj, 'city', ''),
+    'shipping_postcode': get_value(active_address_obj, 'postal_code', ''),
+    'shipping_country': get_value(active_address_obj, 'country', 'GB'),
     'shipping_method': shipping_method,
+    'shipping_option_id': shipping_option_id,
     'shipping': format_money_from_pence(shipping_amount_pence),
     'subtotal': format_money_from_pence(get_value(expanded_session, 'amount_subtotal', 0)),
     'discount': format_money_from_pence(get_value(total_details, 'amount_discount', 0)),
@@ -1073,7 +1088,7 @@ def save_order_to_sanity(order_summary):
     return None
 
 
-def resolve_sendcloud_shipping_method_id(checkout_shipping_method_name):
+def resolve_sendcloud_shipping_method_id(order_summary):
   import urllib.request
   import json
   import base64
@@ -1084,7 +1099,7 @@ def resolve_sendcloud_shipping_method_id(checkout_shipping_method_name):
   if not public_key or not secret_key:
     return None
 
-  url = "https://panel.sendcloud.sc/api/v2/shipping_methods"
+  url = "https://panel.sendcloud.sc/api/v3/shipping-methods"
   auth_str = f"{public_key}:{secret_key}"
   base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
 
@@ -1097,14 +1112,41 @@ def resolve_sendcloud_shipping_method_id(checkout_shipping_method_name):
     req = urllib.request.Request(url, headers=headers, method='GET')
     with urllib.request.urlopen(req) as response:
       res = json.loads(response.read().decode('utf-8'))
-      methods = res.get('shipping_methods', [])
+      if isinstance(res, list):
+        methods = res
+      else:
+        methods = res.get('shipping_methods', [])
       
+      shipping_option_id = str(order_summary.get('shipping_option_id', '')).lower().strip()
+      checkout_shipping_method_name = order_summary.get('shipping_method', '')
       clean_name = str(checkout_shipping_method_name or '').lower().strip()
+
+      print(f"Resolving Sendcloud shipping method for option ID: '{shipping_option_id}', name: '{checkout_shipping_method_name}'...")
+
+      # 1. Match based on predefined shipping_option_id
+      if shipping_option_id == 'tracked24':
+        for method in methods:
+          m_name = str(method.get('name', '')).lower().strip()
+          if "tracked 24" in m_name and ("small parcel" in m_name or "parcel" in m_name):
+            print(f"Direct match (tracked24 small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
+            return method.get('id')
+      elif shipping_option_id == 'tracked48':
+        for method in methods:
+          m_name = str(method.get('name', '')).lower().strip()
+          if "tracked 48" in m_name and ("small parcel" in m_name or "parcel" in m_name):
+            print(f"Direct match (tracked48 small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
+            return method.get('id')
+      elif shipping_option_id == 'international':
+        for method in methods:
+          m_name = str(method.get('name', '')).lower().strip()
+          if "international" in m_name:
+            print(f"Direct match (international) found: '{method.get('name')}' (ID: {method.get('id')})")
+            return method.get('id')
+
+      # 2. Fallback to name-based matching if shipping_option_id is not matched or not set
       if not clean_name:
         return None
 
-      print(f"Resolving Sendcloud shipping method ID for name: '{checkout_shipping_method_name}'...")
-      
       # Step 1: Look for exact match
       for method in methods:
         m_name = str(method.get('name', '')).lower().strip()
@@ -1112,14 +1154,26 @@ def resolve_sendcloud_shipping_method_id(checkout_shipping_method_name):
           print(f"Exact match found: '{method.get('name')}' (ID: {method.get('id')})")
           return method.get('id')
           
-      # Step 2: Look for substring match (e.g. "tracked 24", "tracked 48", etc.)
+      # Step 2: Prioritize "small parcel" or "parcel" for Tracked 24 and Tracked 48
       for method in methods:
         m_name = str(method.get('name', '')).lower().strip()
         if "tracked 24" in clean_name and "tracked 24" in m_name:
-          print(f"Fuzzy match (tracked 24) found: '{method.get('name')}' (ID: {method.get('id')})")
+          if "small parcel" in m_name or "parcel" in m_name:
+            print(f"Fuzzy match (tracked 24 small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
+            return method.get('id')
+        if "tracked 48" in clean_name and "tracked 48" in m_name:
+          if "small parcel" in m_name or "parcel" in m_name:
+            print(f"Fuzzy match (tracked 48 small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
+            return method.get('id')
+
+      # Step 3: Substring match fallback for tracked 24/48, evri, yodel
+      for method in methods:
+        m_name = str(method.get('name', '')).lower().strip()
+        if "tracked 24" in clean_name and "tracked 24" in m_name:
+          print(f"Fuzzy match (tracked 24 fallback) found: '{method.get('name')}' (ID: {method.get('id')})")
           return method.get('id')
         if "tracked 48" in clean_name and "tracked 48" in m_name:
-          print(f"Fuzzy match (tracked 48) found: '{method.get('name')}' (ID: {method.get('id')})")
+          print(f"Fuzzy match (tracked 48 fallback) found: '{method.get('name')}' (ID: {method.get('id')})")
           return method.get('id')
         if "evri" in clean_name and "evri" in m_name:
           print(f"Fuzzy match (evri) found: '{method.get('name')}' (ID: {method.get('id')})")
@@ -1128,7 +1182,7 @@ def resolve_sendcloud_shipping_method_id(checkout_shipping_method_name):
           print(f"Fuzzy match (yodel) found: '{method.get('name')}' (ID: {method.get('id')})")
           return method.get('id')
 
-      # Step 3: Generic substring match fallback
+      # Step 4: Generic substring match fallback
       for method in methods:
         m_name = str(method.get('name', '')).lower().strip()
         if clean_name in m_name or m_name in clean_name:
@@ -1139,6 +1193,91 @@ def resolve_sendcloud_shipping_method_id(checkout_shipping_method_name):
       return None
   except Exception as e:
     print(f"Error fetching shipping methods from Sendcloud: {e}")
+    return None
+
+
+def get_sendcloud_sender_address_id():
+  public_key = read_secret('sendcloud_public_key', 'SENDCLOUD_PUBLIC_KEY')
+  secret_key = read_secret('sendcloud_secret_key', 'SENDCLOUD_SECRET_KEY')
+
+  if not public_key or not secret_key:
+    return None
+
+  url = "https://panel.sendcloud.sc/api/v2/user/addresses/sender"
+  auth_str = f"{public_key}:{secret_key}"
+  import base64
+  import urllib.request
+  import json
+
+  base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
+
+  headers = {
+    'Authorization': f'Basic {base64_auth}',
+    'User-Agent': 'JuiceGels Flask Backend'
+  }
+
+  try:
+    req = urllib.request.Request(url, headers=headers, method='GET')
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      if isinstance(res, list):
+        addresses = res
+      else:
+        addresses = res.get('sender_addresses', [])
+      
+      if addresses:
+        for addr in addresses:
+          if addr.get('is_default'):
+            return addr.get('id')
+        return addresses[0].get('id')
+  except Exception as e:
+    print(f"Error fetching Sendcloud sender addresses: {e}")
+  return None
+
+
+def map_shipping_method_id_to_v3_code(shipping_method_id):
+  if not shipping_method_id:
+    return None
+
+  public_key = read_secret('sendcloud_public_key', 'SENDCLOUD_PUBLIC_KEY')
+  secret_key = read_secret('sendcloud_secret_key', 'SENDCLOUD_SECRET_KEY')
+
+  if not public_key or not secret_key:
+    return None
+
+  url = "https://panel.sendcloud.sc/api/v3/compat/shipping-options"
+  auth_str = f"{public_key}:{secret_key}"
+  import base64
+  import urllib.request
+  import json
+  
+  base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
+
+  headers = {
+    'Authorization': f'Basic {base64_auth}',
+    'Content-Type': 'application/json',
+    'User-Agent': 'JuiceGels Flask Backend'
+  }
+
+  payload = {
+    "shipping_method_ids": [int(shipping_method_id)]
+  }
+
+  try:
+    req = urllib.request.Request(
+      url,
+      data=json.dumps(payload).encode('utf-8'),
+      headers=headers,
+      method='POST'
+    )
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      data = res.get('data', {})
+      code = data.get(str(shipping_method_id))
+      print(f"Mapped Sendcloud shipping method ID {shipping_method_id} to v3 code: '{code}'")
+      return code
+  except Exception as e:
+    print(f"Error mapping shipping method ID to v3 code: {e}")
     return None
 
 
@@ -1154,8 +1293,6 @@ def create_sendcloud_parcel(order_summary):
     print("Warning: Sendcloud API keys are not configured. Skipping automated shipping order creation.")
     return None
 
-  url = "https://panel.sendcloud.sc/api/v2/parcels"
-
   first_name = order_summary.get('first_name', '')
   last_name = order_summary.get('last_name', '')
   name = f"{first_name} {last_name}".strip() or "Customer"
@@ -1164,38 +1301,79 @@ def create_sendcloud_parcel(order_summary):
   if is_test:
     name = f"[TEST] {name}".strip()
 
-  address = order_summary.get('shipping_address', '')
+  raw_line1 = order_summary.get('shipping_line1', '')
+  raw_line2 = order_summary.get('shipping_line2', '')
   city = order_summary.get('shipping_city', '')
   postcode = order_summary.get('shipping_postcode', '')
   country = order_summary.get('shipping_country', 'GB')
+
+  # Fallback just in case raw_line1 is empty
+  if not raw_line1:
+    parts = [p.strip() for p in str(order_summary.get('shipping_address', '')).split(',') if p.strip()]
+    if parts:
+      raw_line1 = parts[0]
+      if len(parts) > 1:
+        raw_line2 = ", ".join(parts[1:])
+
+  # Extract house number from raw_line1 for Sendcloud compatibility
+  house_number = ""
+  address_line_1 = raw_line1
+  words = raw_line1.split()
+  if words:
+    first_word = words[0]
+    if any(char.isdigit() for char in first_word):
+      house_number = first_word
+      address_line_1 = " ".join(words[1:])
+      if not address_line_1:
+        address_line_1 = raw_line1
 
   customer_email = order_summary.get('customer_email', '')
   phone = order_summary.get('phone', '')
   session_id = order_summary.get('session_id', '')
   if is_test:
     session_id = f"test-{session_id}"
-  shipping_method_name = order_summary.get('shipping_method', '')
+  # Dynamically resolve Sendcloud Shipping Method ID and map to v3 option code
+  shipping_method_id = resolve_sendcloud_shipping_method_id(order_summary)
+  shipping_option_code = map_shipping_method_id_to_v3_code(shipping_method_id)
 
-  # Dynamically resolve Sendcloud Shipping Method ID from user's checkout choice
-  shipping_method_id = resolve_sendcloud_shipping_method_id(shipping_method_name)
+  sender_address_id = get_sendcloud_sender_address_id()
+
+  url = "https://panel.sendcloud.sc/api/v3/shipments"
 
   parcel_data = {
-    "parcel": {
+    "to_address": {
       "name": name,
-      "address": address,
-      "city": city,
+      "address_line_1": address_line_1,
+      "address_line_2": raw_line2 or "",
+      "house_number": house_number or "",
       "postal_code": postcode,
-      "country": country,
+      "city": city,
+      "country_code": country,
       "email": customer_email,
-      "phone": phone,
-      "client_reference": session_id,
-      "request_label": False
-    }
+      "phone_number": phone
+    },
+    "parcels": [
+      {
+        "weight": {
+          "value": "0.100", # default small parcel weight
+          "unit": "kg"
+        }
+      }
+    ],
+    "order_number": session_id
   }
 
-  if shipping_method_id:
-    parcel_data["parcel"]["shipment"] = {
-      "id": shipping_method_id
+  if sender_address_id is not None:
+    parcel_data["from_address"] = {
+      "sender_address_id": sender_address_id
+    }
+
+  if shipping_option_code:
+    parcel_data["ship_with"] = {
+      "type": "shipping_option_code",
+      "properties": {
+        "shipping_option_code": shipping_option_code
+      }
     }
 
   auth_str = f"{public_key}:{secret_key}"
@@ -1216,7 +1394,7 @@ def create_sendcloud_parcel(order_summary):
     )
     with urllib.request.urlopen(req) as response:
       res = json.loads(response.read().decode('utf-8'))
-      print(f"Successfully created parcel in Sendcloud. Response: {res}")
+      print(f"Successfully created parcel/shipment in Sendcloud. Response: {res}")
       return res
   except Exception as e:
     print(f"Error creating parcel in Sendcloud: {e}")
@@ -1384,14 +1562,28 @@ def build_order_summary_from_payment_intent(payment_intent):
   shipping_address_obj = get_value(shipping, 'address', {}) or {}
   wallet_shipping_address = format_address(shipping_address_obj)
   
-  preorder_shipping_address = format_address({
+  preorder_address_obj = {
     'line1': get_value(metadata, 'shipping_address', ''),
     'city': get_value(metadata, 'shipping_city', ''),
     'postal_code': get_value(metadata, 'shipping_postcode', ''),
     'country': get_value(metadata, 'shipping_country', ''),
-  })
-  shipping_address = preorder_shipping_address or wallet_shipping_address
+  }
+  is_preorder_addr = any(str(preorder_address_obj.get(k) or '').strip() for k in preorder_address_obj)
+  active_address_obj = preorder_address_obj if is_preorder_addr else shipping_address_obj
+
+  shipping_address = format_address(active_address_obj)
   
+  shipping_option_id = get_value(metadata, 'shipping_option_id', '')
+  if not shipping_option_id:
+    shipping_method_val = get_value(metadata, 'shipping_method', '') or shipping_name or ''
+    shipping_val_lower = str(shipping_method_val).lower()
+    if 'tracked 24' in shipping_val_lower or 'tracked24' in shipping_val_lower:
+      shipping_option_id = 'tracked24'
+    elif 'tracked 48' in shipping_val_lower or 'tracked48' in shipping_val_lower:
+      shipping_option_id = 'tracked48'
+    elif 'international' in shipping_val_lower:
+      shipping_option_id = 'international'
+
   first_name = ''
   last_name = ''
   if shipping_name:
@@ -1461,7 +1653,13 @@ def build_order_summary_from_payment_intent(payment_intent):
     'coupon_name': coupon_code,
     'billing_address': format_address(get_value(billing_details, 'address', {}) or {}),
     'shipping_address': shipping_address,
+    'shipping_line1': get_value(active_address_obj, 'line1', ''),
+    'shipping_line2': get_value(active_address_obj, 'line2', ''),
+    'shipping_city': get_value(active_address_obj, 'city', ''),
+    'shipping_postcode': get_value(active_address_obj, 'postal_code', ''),
+    'shipping_country': get_value(active_address_obj, 'country', 'GB'),
     'shipping_method': get_value(metadata, 'shipping_method', 'Tracked Shipping'),
+    'shipping_option_id': shipping_option_id,
     'shipping': format_money_from_pence(max(0, shipping_amount_pence)),
     'subtotal': format_money_from_pence(subtotal_pence),
     'discount': format_money_from_pence(max(0, subtotal_pence + max(0, shipping_amount_pence) - total_amount)),
