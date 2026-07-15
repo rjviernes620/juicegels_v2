@@ -118,6 +118,7 @@ export default function App() {
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [productsLoadError, setProductsLoadError] = useState<string | null>(null);
   const [isMaintenanceMode, setIsMaintenanceMode] = useState<boolean>(false);
+  const [isMaintenanceActive, setIsMaintenanceActive] = useState<boolean>(false);
   const [stripePublishableKey, setStripePublishableKey] = useState<string>("");
 
   const [wishlist, setWishlist] = useState<string[]>([]);
@@ -266,10 +267,17 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    // Clear any persistent local token on startup to force re-authentication
+    try {
+      localStorage.removeItem("maintenance_bypass_token");
+    } catch (e) {
+      console.error(e);
+    }
+
     let isMounted = true;
     const checkStatus = async () => {
       try {
-        const bypassToken = localStorage.getItem("maintenance_bypass_token") ?? "";
+        const bypassToken = (window as any).maintenance_bypass_token || localStorage.getItem("maintenance_bypass_token") || "";
         const headers: Record<string, string> = {};
         if (bypassToken) {
           headers["X-Maintenance-Bypass"] = bypassToken;
@@ -280,6 +288,9 @@ export default function App() {
           if (isMounted) {
             if (data.maintenance) {
               setIsMaintenanceMode(true);
+            }
+            if (data.maintenance_mode_active) {
+              setIsMaintenanceActive(true);
             }
             if (data.stripe_publishable_key) {
               setStripePublishableKey(data.stripe_publishable_key);
@@ -1082,11 +1093,41 @@ export default function App() {
   }, [selected, products]);
 
   if (isMaintenanceMode) {
-    return <MaintenancePage />;
+    return (
+      <MaintenancePage
+        onBypassSuccess={(token) => {
+          (window as any).maintenance_bypass_token = token;
+          setIsMaintenanceMode(false);
+          setIsMaintenanceActive(true);
+        }}
+      />
+    );
   }
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: isMobile ? 430 : "100%", margin: "0 auto", minHeight: "100vh", background: "#ffd2e6", display: "flex", flexDirection: "column" }}>
+      {isMaintenanceActive && (
+        <div style={{
+          background: "linear-gradient(90deg, #e53e3e 0%, #dd6b20 100%)",
+          color: "#ffffff",
+          textAlign: "center",
+          padding: "8px 16px",
+          fontSize: "13px",
+          fontWeight: 700,
+          position: "sticky",
+          top: 0,
+          zIndex: 9999,
+          boxShadow: "0 2px 10px rgba(0,0,0,0.12)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+          letterSpacing: "0.5px",
+          textTransform: "uppercase"
+        }}>
+          <span>⚠️ Maintenance Mode Active (Test environment bypass active)</span>
+        </div>
+      )}
       <CookieNotice
         consent={cookieConsent}
         onAccept={() => handleConsentChange("accepted")}

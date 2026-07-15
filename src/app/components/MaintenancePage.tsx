@@ -2,7 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { Instagram, Lock, Loader2 } from "lucide-react";
 import { CHECKOUT_API_BASE } from "../utils/shopHelpers";
 
-export function MaintenancePage() {
+interface MaintenancePageProps {
+  onBypassSuccess?: (token: string) => void;
+}
+
+export function MaintenancePage({ onBypassSuccess }: MaintenancePageProps) {
   const [clickCount, setClickCount] = useState(0);
   const [showLogin, setShowLogin] = useState(false);
   const [code, setCode] = useState("");
@@ -56,11 +60,17 @@ export function MaintenancePage() {
 
       if (response.ok && data.success && data.token) {
         setSuccess(true);
-        localStorage.setItem("maintenance_bypass_token", data.token);
-        // Reload to let fetch interceptor load storefront
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        if (onBypassSuccess) {
+          setTimeout(() => {
+            onBypassSuccess(data.token);
+          }, 800);
+        } else {
+          localStorage.setItem("maintenance_bypass_token", data.token);
+          // Reload to let fetch interceptor load storefront
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
       } else {
         setError(data.message || "Invalid verification code.");
         triggerShake();

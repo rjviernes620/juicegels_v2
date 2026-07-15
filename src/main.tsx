@@ -20,9 +20,16 @@ function normalizeRedirectedRoute() {
 
 // Intercept global fetch to inject X-Maintenance-Bypass header if the token is available
 (() => {
+  // Clear any existing maintenance token from localStorage on fresh page load to force re-authentication
+  try {
+    localStorage.removeItem("maintenance_bypass_token");
+  } catch (e) {
+    console.error("Failed to clear maintenance_bypass_token from localStorage:", e);
+  }
+
   const originalFetch = window.fetch;
   window.fetch = function (input, init) {
-    const token = localStorage.getItem("maintenance_bypass_token");
+    const token = (window as any).maintenance_bypass_token || localStorage.getItem("maintenance_bypass_token");
     if (token) {
       init = init || {};
       init.headers = init.headers || {};

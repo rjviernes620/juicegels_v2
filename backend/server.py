@@ -1687,7 +1687,8 @@ def api_status():
     'maintenance': is_maintenance_active() if not bypass_active else False,
     'stripe_mode': mode,
     'stripe_publishable_key': pub_key,
-    'bypass_active': bypass_active
+    'bypass_active': bypass_active,
+    'maintenance_mode_active': is_maintenance_active()
   })
 
 
