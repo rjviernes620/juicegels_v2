@@ -1099,7 +1099,7 @@ def resolve_sendcloud_shipping_method_id(order_summary):
   if not public_key or not secret_key:
     return None
 
-  url = "https://panel.sendcloud.sc/api/v3/shipping-methods"
+  url = "https://panel.sendcloud.sc/api/v2/shipping_methods"
   auth_str = f"{public_key}:{secret_key}"
   base64_auth = base64.b64encode(auth_str.encode('utf-8')).decode('utf-8')
 
