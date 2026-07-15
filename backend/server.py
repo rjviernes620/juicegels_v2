@@ -2403,6 +2403,8 @@ def get_checkout_session(session_id):
     })
   except Exception as e:
     print(f"Error retrieving checkout session: {e}")
+    import traceback
+    traceback.print_exc()
     return jsonify({'error': 'Failed to retrieve checkout session'}), 500
 
 @app.route('/api/payment-intent/<intent_id>', methods=['GET', 'OPTIONS'])
