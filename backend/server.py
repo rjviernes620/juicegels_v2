@@ -995,6 +995,49 @@ def send_customer_order_email(order_summary):
 
 
 
+def get_next_order_number(livemode):
+  import urllib.request
+  import json
+  from urllib.parse import quote
+
+  token = read_secret('sanity_write_token', 'SANITY_WRITE_TOKEN')
+  if not token:
+    return None
+
+  project_id = "5co5ooqr"
+  dataset = "production"
+  
+  test_order_val = "false" if livemode else "true"
+  query = f'*[_type == "order" && testOrder == {test_order_val} && defined(orderNumber)] | order(orderNumber desc)[0].orderNumber'
+  encoded_query = quote(query)
+  url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/query/{dataset}?query={encoded_query}"
+
+  try:
+    headers = {
+      'Authorization': f'Bearer {token}',
+      'User-Agent': 'JuiceGels Flask Backend'
+    }
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      latest_num_str = res.get('result')
+      
+      prefix = "JUICEGELS_LIVE_" if livemode else "JUICEGELS_TEST_"
+      
+      next_num = 1
+      if latest_num_str and str(latest_num_str).startswith(prefix):
+        try:
+          num_part = str(latest_num_str)[len(prefix):]
+          next_num = int(num_part) + 1
+        except Exception as parse_err:
+          print(f"Error parsing order number from '{latest_num_str}': {parse_err}")
+          
+      return f"{prefix}{str(next_num).zfill(4)}"
+  except Exception as e:
+    print(f"Error fetching latest order number from Sanity: {e}")
+    return None
+
+
 def save_order_to_sanity(order_summary):
   import urllib.request
   import json
@@ -1026,6 +1069,7 @@ def save_order_to_sanity(order_summary):
     '_id': sanitized_id,
     '_type': 'order',
     'orderId': stripe_session_id,
+    'orderNumber': order_summary.get('order_number', ''),
     'status': 'pending_sizes',
     'createdAt': order_summary.get('created_at', ''),
     'testOrder': not order_summary.get('livemode', True),
@@ -1329,9 +1373,15 @@ def create_sendcloud_parcel(order_summary):
 
   customer_email = order_summary.get('customer_email', '')
   phone = order_summary.get('phone', '')
-  session_id = order_summary.get('session_id', '')
-  if is_test:
-    session_id = f"test-{session_id}"
+
+  order_number = order_summary.get('order_number', '')
+  if not order_number:
+    order_number = order_summary.get('session_id', '')
+    if is_test:
+      order_number = f"test-{order_number}"
+    if len(order_number) > 50:
+      order_number = order_number[-50:]
+
   # Dynamically resolve Sendcloud Shipping Method ID and map to v3 option code
   shipping_method_id = resolve_sendcloud_shipping_method_id(order_summary)
   shipping_option_code = map_shipping_method_id_to_v3_code(shipping_method_id)
@@ -1360,7 +1410,7 @@ def create_sendcloud_parcel(order_summary):
         }
       }
     ],
-    "order_number": session_id
+    "order_number": order_number
   }
 
   if sender_address_id is not None:
@@ -1416,6 +1466,18 @@ def handle_completed_checkout_session(checkout_session):
   print("Building order summary for completed checkout session...")
   order_summary = build_order_summary(checkout_session)
 
+  # Generate human-readable order number
+  livemode = order_summary.get('livemode', True)
+  order_number = get_next_order_number(livemode)
+  if order_number:
+    order_summary['order_number'] = order_number
+    print(f"Generated order number: {order_number}")
+  else:
+    fallback_id = order_summary.get('session_id', '')
+    if len(fallback_id) > 50:
+      fallback_id = fallback_id[-50:]
+    order_summary['order_number'] = fallback_id
+
   print("Saving order to Sanity database...")
   try:
     save_order_to_sanity(order_summary)
@@ -1446,6 +1508,18 @@ def handle_completed_checkout_session(checkout_session):
 def handle_completed_payment_intent(payment_intent):
   print("Building order summary for completed PaymentIntent...")
   order_summary = build_order_summary_from_payment_intent(payment_intent)
+
+  # Generate human-readable order number
+  livemode = order_summary.get('livemode', True)
+  order_number = get_next_order_number(livemode)
+  if order_number:
+    order_summary['order_number'] = order_number
+    print(f"Generated order number: {order_number}")
+  else:
+    fallback_id = order_summary.get('session_id', '')
+    if len(fallback_id) > 50:
+      fallback_id = fallback_id[-50:]
+    order_summary['order_number'] = fallback_id
 
   print("Saving order to Sanity database (Express)...")
   try:
