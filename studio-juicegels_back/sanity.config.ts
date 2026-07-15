@@ -35,6 +35,9 @@ export default defineConfig({
                   .documentId('trendingDesigns')
                   .title('Trending Designs')
               ),
+            S.divider(),
+            S.documentTypeListItem('order')
+              .title('Orders'),
           ]),
     }),
     visionTool()

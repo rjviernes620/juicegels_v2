@@ -968,6 +968,99 @@ def send_customer_order_email(order_summary):
     return None
 
 
+
+def save_order_to_sanity(order_summary):
+  import urllib.request
+  import json
+
+  token = read_secret('sanity_write_token', 'SANITY_WRITE_TOKEN')
+  if not token:
+    print("Warning: SANITY_WRITE_TOKEN is not configured. Skipping saving order to Sanity.")
+    return None
+
+  project_id = "5co5ooqr"
+  dataset = "production"
+  url = f"https://{project_id}.api.sanity.io/v2021-10-21/data/mutate/{dataset}"
+
+  stripe_session_id = order_summary.get('session_id', '')
+  sanitized_id = f"order-{stripe_session_id}"
+
+  items = []
+  for idx, item in enumerate(order_summary.get('line_items', [])):
+    items.append({
+      '_key': f"item-{idx}",
+      '_type': 'object',
+      'description': item.get('description', ''),
+      'quantity': item.get('quantity', 1),
+      'unitPrice': item.get('unit_price', ''),
+      'lineTotal': item.get('line_total', '')
+    })
+
+  order_doc = {
+    '_id': sanitized_id,
+    '_type': 'order',
+    'orderId': stripe_session_id,
+    'status': 'pending_sizes',
+    'createdAt': order_summary.get('created_at', ''),
+    'customer': {
+      'firstName': order_summary.get('first_name', ''),
+      'lastName': order_summary.get('last_name', ''),
+      'email': order_summary.get('customer_email', ''),
+      'phone': order_summary.get('phone', ''),
+      'instagram': order_summary.get('instagram', ''),
+      'contactPreference': order_summary.get('contact_preference', 'instagram')
+    },
+    'items': items,
+    'financials': {
+      'subtotal': order_summary.get('subtotal', ''),
+      'discount': order_summary.get('discount', ''),
+      'shipping': order_summary.get('shipping', ''),
+      'total': order_summary.get('total', ''),
+      'currency': order_summary.get('currency', ''),
+      'paymentStatus': order_summary.get('payment_status', ''),
+      'paymentMethodType': order_summary.get('payment_method_type', ''),
+      'cardBrand': order_summary.get('card_brand', ''),
+      'cardLast4': order_summary.get('card_last4', ''),
+      'cardWalletType': order_summary.get('card_wallet_type', '')
+    },
+    'shipping': {
+      'shippingMethod': order_summary.get('shipping_method', ''),
+      'shippingAddress': order_summary.get('shipping_address', ''),
+      'billingAddress': order_summary.get('billing_address', '')
+    },
+    'customerNotes': order_summary.get('notes', '')
+  }
+
+  payload = {
+    "mutations": [
+      {
+        "createOrReplace": order_doc
+      }
+    ]
+  }
+
+  try:
+    headers = {
+      'Content-Type': 'application/json',
+      'Authorization': f'Bearer {token}'
+    }
+    req = urllib.request.Request(
+      url,
+      data=json.dumps(payload).encode('utf-8'),
+      headers=headers,
+      method='POST'
+    )
+    with urllib.request.urlopen(req) as response:
+      res = json.loads(response.read().decode('utf-8'))
+      print(f"Successfully saved order {sanitized_id} to Sanity CMS. Result: {res}")
+      return res
+  except Exception as e:
+    print(f"Error saving order to Sanity CMS: {e}")
+    import traceback
+    traceback.print_exc()
+    return None
+
+
 def handle_completed_checkout_session(checkout_session):
   payment_status = get_value(checkout_session, 'payment_status', '')
   if payment_status != 'paid':
@@ -976,6 +1069,12 @@ def handle_completed_checkout_session(checkout_session):
 
   print("Building order summary for completed checkout session...")
   order_summary = build_order_summary(checkout_session)
+
+  print("Saving order to Sanity database...")
+  try:
+    save_order_to_sanity(order_summary)
+  except Exception as db_err:
+    print(f"Failed to save order to Sanity database: {db_err}")
 
   print("Sending store owner order email notification...")
   try:
@@ -997,6 +1096,12 @@ def handle_completed_payment_intent(payment_intent):
   print("Building order summary for completed PaymentIntent...")
   order_summary = build_order_summary_from_payment_intent(payment_intent)
 
+  print("Saving order to Sanity database (Express)...")
+  try:
+    save_order_to_sanity(order_summary)
+  except Exception as db_err:
+    print(f"Failed to save order to Sanity database (Express): {db_err}")
+
   print("Sending store owner order email notification (Express)...")
   try:
     send_pingram_order_email(order_summary)
@@ -1010,6 +1115,7 @@ def handle_completed_payment_intent(payment_intent):
   print("Sending customer purchase confirmation email (Express)...")
   send_customer_order_email(order_summary)
   print("Customer confirmation email process completed.")
+
 
 
 def fetch_catalog_products():
