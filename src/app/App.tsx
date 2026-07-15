@@ -269,7 +269,12 @@ export default function App() {
     let isMounted = true;
     const checkStatus = async () => {
       try {
-        const response = await fetch(`${CHECKOUT_API_BASE}/api/status`);
+        const bypassToken = localStorage.getItem("maintenance_bypass_token") ?? "";
+        const headers: Record<string, string> = {};
+        if (bypassToken) {
+          headers["X-Maintenance-Bypass"] = bypassToken;
+        }
+        const response = await fetch(`${CHECKOUT_API_BASE}/api/status`, { headers });
         if (response.ok) {
           const data = await response.json();
           if (isMounted) {
@@ -290,6 +295,7 @@ export default function App() {
       isMounted = false;
     };
   }, []);
+
 
 
   useEffect(() => {
