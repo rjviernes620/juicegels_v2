@@ -1068,8 +1068,7 @@ def save_order_to_sanity(order_summary):
   order_doc = {
     '_id': sanitized_id,
     '_type': 'order',
-    'orderId': stripe_session_id,
-    'orderNumber': order_summary.get('order_number', ''),
+    'orderId': order_summary.get('order_number', ''),
     'status': 'pending_sizes',
     'createdAt': order_summary.get('created_at', ''),
     'testOrder': not order_summary.get('livemode', True),
@@ -1169,26 +1168,12 @@ def resolve_sendcloud_shipping_method_id(order_summary):
 
       # 1. Match based on predefined shipping_option_id
       if shipping_option_id == 'tracked24':
-        # Prioritize QR Small Parcel first
-        for method in methods:
-          m_name = str(method.get('name', '')).lower().strip()
-          if "tracked 24" in m_name and "qr" in m_name and ("small parcel" in m_name or "parcel" in m_name):
-            print(f"Direct match (tracked24 QR small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
-            return method.get('id')
-        # Fallback to standard Tracked 24 Small Parcel
         for method in methods:
           m_name = str(method.get('name', '')).lower().strip()
           if "tracked 24" in m_name and ("small parcel" in m_name or "parcel" in m_name):
             print(f"Direct match (tracked24 small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
             return method.get('id')
       elif shipping_option_id == 'tracked48':
-        # Prioritize QR Small Parcel first
-        for method in methods:
-          m_name = str(method.get('name', '')).lower().strip()
-          if "tracked 48" in m_name and "qr" in m_name and ("small parcel" in m_name or "parcel" in m_name):
-            print(f"Direct match (tracked48 QR small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
-            return method.get('id')
-        # Fallback to standard Tracked 48 Small Parcel
         for method in methods:
           m_name = str(method.get('name', '')).lower().strip()
           if "tracked 48" in m_name and ("small parcel" in m_name or "parcel" in m_name):
