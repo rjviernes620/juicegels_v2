@@ -1169,12 +1169,26 @@ def resolve_sendcloud_shipping_method_id(order_summary):
 
       # 1. Match based on predefined shipping_option_id
       if shipping_option_id == 'tracked24':
+        # Prioritize QR Small Parcel first
+        for method in methods:
+          m_name = str(method.get('name', '')).lower().strip()
+          if "tracked 24" in m_name and "qr" in m_name and ("small parcel" in m_name or "parcel" in m_name):
+            print(f"Direct match (tracked24 QR small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
+            return method.get('id')
+        # Fallback to standard Tracked 24 Small Parcel
         for method in methods:
           m_name = str(method.get('name', '')).lower().strip()
           if "tracked 24" in m_name and ("small parcel" in m_name or "parcel" in m_name):
             print(f"Direct match (tracked24 small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
             return method.get('id')
       elif shipping_option_id == 'tracked48':
+        # Prioritize QR Small Parcel first
+        for method in methods:
+          m_name = str(method.get('name', '')).lower().strip()
+          if "tracked 48" in m_name and "qr" in m_name and ("small parcel" in m_name or "parcel" in m_name):
+            print(f"Direct match (tracked48 QR small parcel) found: '{method.get('name')}' (ID: {method.get('id')})")
+            return method.get('id')
+        # Fallback to standard Tracked 48 Small Parcel
         for method in methods:
           m_name = str(method.get('name', '')).lower().strip()
           if "tracked 48" in m_name and ("small parcel" in m_name or "parcel" in m_name):
@@ -1458,6 +1472,10 @@ def create_sendcloud_parcel(order_summary):
       order_number = order_number[-50:]
 
   shipping_method_name = order_summary.get('shipping_method', '')
+  
+  # Resolve the exact shipping option code from Stripe/Checkout data
+  shipping_method_id = resolve_sendcloud_shipping_method_id(order_summary)
+  shipping_option_code = map_shipping_method_id_to_v3_code(shipping_method_id)
 
   total_str = str(order_summary.get('total', '0.00')).replace('£', '').replace('$', '').strip()
   currency = order_summary.get('currency', 'GBP')
@@ -1578,6 +1596,16 @@ def create_sendcloud_parcel(order_summary):
       "is_cash_on_delivery": False
     }
   }
+
+  if shipping_option_code:
+    order_data["shipping_details"] = {
+      "ship_with": {
+        "type": "shipping_option_code",
+        "properties": {
+          "shipping_option_code": shipping_option_code
+        }
+      }
+    }
 
   payload = [order_data]
 
