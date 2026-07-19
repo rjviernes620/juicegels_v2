@@ -10,7 +10,7 @@ import {
 
 export const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 export const META_CART_ORIGIN = "meta_shops";
-export const CHECKOUT_API_BASE = import.meta.env.VITE_CHECKOUT_API_BASE || 
+export const CHECKOUT_API_BASE = import.meta.env.VITE_CHECKOUT_API_BASE ||
   (import.meta.env.DEV ? "http://localhost:4000" : "https://juicegels-v2.onrender.com");
 export const isLocalDev = () =>
   window.location.hostname === "localhost" ||
@@ -86,7 +86,7 @@ export function buildShippingOptions(
       {
         id: "tracked48",
         stripeRateId: rateIds.tracked48,
-        label: "Royal Mail Tracked 48 QR",
+        label: "Royal Mail Tracked 48",
         description: tracked48IsFree
           ? isFreeShippingApplied
             ? "Free shipping applied."
@@ -99,7 +99,7 @@ export function buildShippingOptions(
       {
         id: "tracked24",
         stripeRateId: rateIds.tracked24,
-        label: "Royal Mail Tracked 24 QR",
+        label: "Royal Mail Tracked 24",
         description: isFreeShippingApplied ? "Free priority shipping applied." : "Priority tracked delivery.",
         estimate: "Estimated delivery within 1 business day after your order is finished.",
         amount: isFreeShippingApplied ? 0 : 4,
@@ -165,7 +165,7 @@ export function getCollectionDetails(product: Product, allProducts: Product[]): 
   const otherProducts = allProducts.filter(p => {
     if (!p.collection || p.collection !== product.collection) return false;
     if (p.groupId === product.groupId) return false;
-    
+
     const key = p.groupId.trim().toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);

@@ -2374,6 +2374,7 @@ export interface ConfirmationPageProps {
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
   setForm: React.Dispatch<React.SetStateAction<FormData>>;
   initialForm: FormData;
+  isMobile: boolean;
 }
 
 export function ConfirmationPage({
@@ -2383,63 +2384,117 @@ export function ConfirmationPage({
   navigate,
   setCart,
   setForm,
-  initialForm
+  initialForm,
+  isMobile
 }: ConfirmationPageProps) {
   return (
-    <main style={{ padding: "44px 22px", textAlign: "center" }}>
-      <div style={{ width: 68, height: 68, borderRadius: "50%", background: "#e0a2b4", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px" }}>
-        <Check size={30} style={{ color: "#ffd6e9" }} />
-      </div>
-      <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 24, color: "#fc6587", margin: "0 0 8px" }}>Order Placed!</h2>
-      <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: "0 0 6px" }}>
-        Thank you, <strong>{form.firstName}</strong>! Your pre-order of {confirmationCount} item{confirmationCount !== 1 ? "s" : ""} is confirmed.
-      </p>
-      <p style={{ color: "#4f444a", fontSize: 12, margin: "0 0 24px", lineHeight: 1.5 }}>
-        A confirmation will be sent to <strong>{form.email}</strong>.<br />
-        {form.contactMethod === "email" ? (
-          <span>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
-        ) : (
-          <>
-            <span>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
-            <br />
-            <span style={{ color: "#92400e", fontSize: 11, display: "block", marginTop: 4 }}>
-              ⚠️ If your Instagram account is private, please message <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> first to make sure that communications can be made.
-            </span>
-          </>
-        )}
-      </p>
+    <main
+      style={{
+        display: isMobile ? "block" : "grid",
+        gridTemplateColumns: isMobile ? undefined : "1.1fr 0.9fr",
+        gap: isMobile ? undefined : 32,
+        padding: isMobile ? "44px 22px" : "44px 24px",
+        maxWidth: 1200,
+        margin: "0 auto",
+        width: "100%",
+        boxSizing: "border-box",
+        textAlign: isMobile ? "center" : "left"
+      }}
+    >
+      {/* Left Column: Success Header + warnings + CTA button */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: isMobile ? "center" : "flex-start",
+          textAlign: isMobile ? "center" : "left"
+        }}
+      >
+        <div style={{ width: 68, height: 68, borderRadius: "50%", background: "#e0a2b4", display: "flex", alignItems: "center", justifyContent: "center", margin: isMobile ? "0 auto 18px" : "0 0 18px" }}>
+          <Check size={30} style={{ color: "#ffd6e9" }} />
+        </div>
 
-      <div style={{ background: "#e0a2b4", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 14 }}>
-        <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 13, color: "#fff9fb" }}>Items ordered</p>
-        {confirmationItems.map((item, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-            <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 40, height: 40, borderRadius: 7, objectFit: "cover", background: "#fce4ea" }} />
-            <div>
-              <p style={{ margin: 0, fontSize: 12, fontWeight: 500, color: "#fff9fb" }}>{item.product.name}</p>
-              <p style={{ margin: 0, fontSize: 11, color: "rgba(255, 249, 251, 0.85)" }}>{getCartItemDetailText(item)}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+        <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 24 : 32, color: "#fc6587", margin: "0 0 12px" }}>Order Placed!</h2>
 
-      <div style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 13, padding: "14px", textAlign: "left", marginBottom: 24 }}>
-        <p style={{ margin: "0 0 5px", fontWeight: 600, fontSize: 13, color: "#fff9fb" }}>Delivering to</p>
-        <p style={{ margin: 0, fontSize: 12, color: "#ffffff", lineHeight: 1.6 }}>
-          {form.firstName} {form.lastName}<br />
-          {form.address}<br />
-          {form.city}, {form.postcode}
-          {form.country && form.country !== "GB" && (
+        <p style={{ color: "#4f444a", fontSize: isMobile ? 13 : 16, lineHeight: 1.7, margin: "0 0 10px" }}>
+          Thank you, <strong>{form.firstName}</strong>! Your pre-order of {confirmationCount} item{confirmationCount !== 1 ? "s" : ""} is confirmed.
+        </p>
+
+        <p style={{ color: "#4f444a", fontSize: isMobile ? 12 : 14, margin: "0 0 24px", lineHeight: 1.6 }}>
+          A confirmation will be sent to <strong>{form.email}</strong>.<br />
+          {form.contactMethod === "email" ? (
+            <span>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
+          ) : (
             <>
+              <span>You will be contacted via Instagram from <strong>@juicegels</strong> within 24 hours to confirm your nail sizes.</span>
               <br />
-              {COUNTRIES.find((c) => c.code === form.country)?.name || form.country}
+              <span style={{ color: "#92400e", fontSize: isMobile ? 11 : 12, display: "block", marginTop: 4 }}>
+                ⚠️ If your Instagram account is private, please message <a href="https://instagram.com/juicegels" target="_blank" rel="noopener noreferrer" style={{ color: "#92400e", fontWeight: 700, textDecoration: "underline" }}>@juicegels</a> first to make sure that communications can be made.
+              </span>
             </>
           )}
         </p>
+
+        {/* Button removed from here and moved to the right column below */}
       </div>
 
-      <button onClick={() => { navigate("/"); setCart([]); setForm(initialForm); }} style={{ background: "#c281a9", color: "#fff", border: "none", borderRadius: 12, height: 46, width: "100%", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
-        Continue Shopping
-      </button>
+      {/* Right Column: Invoice items + Shipping details */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+          boxSizing: "border-box"
+        }}
+      >
+        <div style={{ background: "#e0a2b4", borderRadius: 13, padding: "16px", textAlign: "left" }}>
+          <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: "#fff9fb" }}>Items ordered</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {confirmationItems.map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <ImageWithFallback src={item.product.image} alt={item.product.name} style={{ width: 44, height: 44, borderRadius: 8, objectFit: "cover", background: "#fce4ea", flexShrink: 0 }} />
+                <div>
+                  <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#fff9fb" }}>{item.product.name}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "rgba(255, 249, 251, 0.85)" }}>{getCartItemDetailText(item)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 13, padding: "16px", textAlign: "left" }}>
+          <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 14, color: "#fff9fb" }}>Delivering to</p>
+          <p style={{ margin: 0, fontSize: 13, color: "#ffffff", lineHeight: 1.6 }}>
+            <strong>{form.firstName} {form.lastName}</strong><br />
+            {form.address}<br />
+            {form.city}, {form.postcode}
+            {form.country && form.country !== "GB" && (
+              <>
+                <br />
+                {COUNTRIES.find((c) => c.code === form.country)?.name || form.country}
+              </>
+            )}
+          </p>
+        </div>
+
+        <button
+          onClick={() => { navigate("/"); setCart([]); setForm(initialForm); }}
+          style={{
+            background: "#c281a9",
+            color: "#fff",
+            border: "none",
+            borderRadius: 12,
+            height: 46,
+            width: "100%",
+            fontWeight: 600,
+            fontSize: 14,
+            cursor: "pointer",
+            boxSizing: "border-box"
+          }}
+        >
+          Continue Shopping
+        </button>
+      </div>
     </main>
   );
 }

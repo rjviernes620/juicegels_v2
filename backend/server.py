@@ -117,13 +117,13 @@ def get_shipping_options():
         return {
           'tracked24': {
             'stripe_rate_id': 'shr_1TjOFhK9S4gHGvxwGcIJ8ICh',
-            'label': 'Royal Mail Tracked 24 QR',
+            'label': 'Royal Mail Tracked 24',
             'amount_pence': 400,
             'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
           },
           'tracked48': {
             'stripe_rate_id': 'shr_1TjOJVK9S4gHGvxwRClQMfr1',
-            'label': 'Royal Mail Tracked 48 QR',
+            'label': 'Royal Mail Tracked 48',
             'amount_pence': 199,
             'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
             'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,
@@ -139,13 +139,13 @@ def get_shipping_options():
         return {
           'tracked24': {
             'stripe_rate_id': 'shr_1Ti0hyK4CROOpWXUhiIhLqWy',
-            'label': 'Royal Mail Tracked 24 QR',
+            'label': 'Royal Mail Tracked 24',
             'amount_pence': 400,
             'estimate_text': 'Estimated delivery within 1 business day after the order is finished.',
           },
           'tracked48': {
             'stripe_rate_id': 'shr_1Ti0ieK4CROOpWXU5Cbop3Ii',
-            'label': 'Royal Mail Tracked 48 QR',
+            'label': 'Royal Mail Tracked 48',
             'amount_pence': 199,
             'estimate_text': 'Estimated delivery within 2 days after the order is finished.',
             'free_threshold_pence': FREE_TRACKED48_THRESHOLD_PENCE,

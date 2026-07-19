@@ -6,6 +6,7 @@ import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { MaintenancePage } from "./components/MaintenancePage";
 import { loadProducts, loadTrendingProductIds, type Product } from "./utils/parseProducts";
 import { About, TiktokIcon } from "./components/About";
+import { CheckoutProgressBar } from "./components/CheckoutProgressBar";
 import { Videos } from "./components/Videos";
 import { Search } from "./components/Search";
 import { Contact } from "./components/Contact";
@@ -1480,46 +1481,7 @@ export default function App() {
 
       {/* ── Progress bar (basket / preorder / confirmation) ── */}
       {(page === "basket" || page === "preorder" || page === "confirmation") && (
-        <div style={{ display: "flex", padding: "10px 20px", gap: 6, alignItems: "center", background: "#fc6587", borderBottom: "1px solid rgba(212, 84, 122, 0.18)" }}>
-          {(["Basket", "Details", "Done"] as const).map((label, i) => {
-            const active = (page === "basket" && i === 0) || (page === "preorder" && i === 1) || (page === "confirmation" && i === 2);
-            const done = (page === "preorder" && i === 0) || (page === "confirmation" && i <= 1);
-            const isClickable = page === "preorder" && i === 0;
-            return (
-              <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, flex: i < 2 ? 1 : undefined }}>
-                <div
-                  onClick={() => {
-                    if (isClickable) {
-                      setPage("basket");
-                    }
-                  }}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 5,
-                    cursor: isClickable ? "pointer" : "default"
-                  }}
-                  title={isClickable ? "Go back to Basket" : undefined}
-                >
-                  <div style={{ width: 22, height: 22, borderRadius: "50%", background: done ? "#ffd6e9" : active ? "#f7b8ca" : "#fce4ea", border: `2px solid ${active || done ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {done ? <Check size={11} color="#fff" /> : <span style={{ fontSize: 10, color: active ? "#fff9fb" : "#4f444a", fontWeight: 600 }}>{i + 1}</span>}
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      color: active ? "#fff9fb" : "#4f444a",
-                      fontWeight: active ? 600 : 400,
-                      textDecoration: isClickable ? "underline" : "none"
-                    }}
-                  >
-                    {label}
-                  </span>
-                </div>
-                {i < 2 && <div style={{ flex: 1, height: 1.5, background: done ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)", borderRadius: 2 }} />}
-              </div>
-            );
-          })}
-        </div>
+        <CheckoutProgressBar page={page} setPage={setPage} />
       )}
 
       {/* ── Home ── */}
@@ -2375,6 +2337,7 @@ export default function App() {
           setCart={setCart}
           setForm={setForm}
           initialForm={initialForm}
+          isMobile={isMobile}
         />
       )}
 
