@@ -157,14 +157,6 @@ export default {
       },
     },
     {
-      name: 'image4',
-      type: 'image',
-      title: 'Image 4',
-      options: {
-        hotspot: true,
-      },
-    },
-    {
       name: 'tags',
       type: 'array',
       title: 'Tags',

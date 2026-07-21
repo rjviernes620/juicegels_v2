@@ -2286,7 +2286,6 @@ def get_meta_catalog():
     img_ref = get_image_ref(p.get('image'))
     img2_ref = get_image_ref(p.get('image2'))
     img3_ref = get_image_ref(p.get('image3'))
-    img4_ref = get_image_ref(p.get('image4'))
     
     is_single = title.lower() == 'nail sizing guide' or product_id == 286
     
@@ -2294,10 +2293,9 @@ def get_meta_catalog():
       variant_id = f"JUICEGELS-{str(product_id).zfill(4)}"
       
       img1 = build_sanity_image_url(img_ref) or f"{frontend_base_url}/images/{variant_id}.jpg"
-      img2 = build_sanity_image_url(img2_ref) or f"{frontend_base_url}/images/coin.jpeg"
-      img3 = build_sanity_image_url(img3_ref) or f"{frontend_base_url}/images/nailsize.jpg"
-      img4 = build_sanity_image_url(img4_ref) or f"{frontend_base_url}/images/tape.jpg"
-      additional_images = ",".join(filter(None, [img2, img3, img4]))
+      img2 = build_sanity_image_url(img2_ref) or f"{frontend_base_url}/images/Nail 2.jpeg"
+      img3 = build_sanity_image_url(img3_ref) or f"{frontend_base_url}/images/coin 2.jpeg"
+      additional_images = ",".join(filter(None, [img2, img3]))
       
       product_link = f"{frontend_base_url}/product/{variant_id}?shape=Square&length=Short"
       
@@ -2313,7 +2311,7 @@ def get_meta_catalog():
         img1,
         img2,
         img3,
-        img4,
+        '',
         'new',
         'in stock',
         product_link,  # link (standard)
@@ -2335,10 +2333,9 @@ def get_meta_catalog():
           variant_id = f"JUICEGELS-{str(id_num).zfill(4)}"
           
           img1 = build_sanity_image_url(img_ref) or f"{frontend_base_url}/images/{variant_id}.jpg"
-          img2 = build_sanity_image_url(img2_ref) or f"{frontend_base_url}/images/coin.jpeg"
-          img3 = build_sanity_image_url(img3_ref) or f"{frontend_base_url}/images/nailsize.jpg"
-          img4 = build_sanity_image_url(img4_ref) or f"{frontend_base_url}/images/tape.jpg"
-          additional_images = ",".join(filter(None, [img2, img3, img4]))
+          img2 = build_sanity_image_url(img2_ref) or f"{frontend_base_url}/images/Nail 2.jpeg"
+          img3 = build_sanity_image_url(img3_ref) or f"{frontend_base_url}/images/coin 2.jpeg"
+          additional_images = ",".join(filter(None, [img2, img3]))
           
           product_link = f"{frontend_base_url}/product/{variant_id}?shape={shape}&length={length}"
           
@@ -2354,7 +2351,7 @@ def get_meta_catalog():
             img1,
             img2,
             img3,
-            img4,
+            '',
             'new',
             'in stock',
             product_link,  # link (standard)

@@ -71,9 +71,6 @@ function parseSanityProducts(sanityProducts) {
     const image3Ref = sp.image3?.asset?._ref || "";
     const image3Url = image3Ref ? buildSanityImageUrl(image3Ref) : "";
 
-    const image4Ref = sp.image4?.asset?._ref || "";
-    const image4Url = image4Ref ? buildSanityImageUrl(image4Ref) : "";
-
     const tags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
     const orderRank = sp.orderRank || "";
     const videoUrl = sp.videoUrl || "";
@@ -85,7 +82,6 @@ function parseSanityProducts(sanityProducts) {
       const extraImages = [];
       if (image2Url) extraImages.push(image2Url);
       if (image3Url) extraImages.push(image3Url);
-      if (image4Url) extraImages.push(image4Url);
 
       products.push({
         id: `JUICEGELS-${productId.toString().padStart(4, '0')}`,
@@ -109,9 +105,8 @@ function parseSanityProducts(sanityProducts) {
       const groupId = `juicegels_${title.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}set`;
       
       const extraImages = [
-        image2Url || "images/coin.jpeg",
-        image3Url || "images/nailsize.jpg",
-        image4Url || "images/tape.jpg"
+        image2Url || "images/Nail 2.jpeg",
+        image3Url || "images/coin 2.jpeg"
       ];
       
       DEFAULT_SHAPES.forEach((shape, sIdx) => {
