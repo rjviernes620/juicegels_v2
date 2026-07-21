@@ -1069,6 +1069,7 @@ def save_order_to_sanity(order_summary):
     '_id': sanitized_id,
     '_type': 'order',
     'orderId': order_summary.get('order_number', ''),
+    'stripeSessionId': stripe_session_id,
     'status': 'pending_sizes',
     'createdAt': order_summary.get('created_at', ''),
     'testOrder': not order_summary.get('livemode', True),

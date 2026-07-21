@@ -25,7 +25,14 @@ export default {
     {
       name: 'orderId',
       type: 'string',
-      title: 'Order ID / Stripe ID',
+      title: 'Order ID',
+      readOnly: true,
+      group: 'overview',
+    },
+    {
+      name: 'stripeSessionId',
+      type: 'string',
+      title: 'Stripe Session ID',
       readOnly: true,
       group: 'overview',
     },
@@ -188,7 +195,7 @@ export default {
       
       const statusLabel = statusLabels[status] || status || 'Pending';
       const isTest = testOrder === true;
-      const shortId = orderId ? (orderId.startsWith('cs_') ? orderId.substring(0, 10) + '...' : orderId) : 'No ID';
+      const shortId = orderId || 'No ID';
 
       const subtitleParts = [];
       if (isTest) {
