@@ -848,7 +848,7 @@ export function ProductDetailPage({
         <ImageWithFallback
           src={[selected.image, ...selected.extraImages][activeImg]}
           alt={selected.name}
-          style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "#e0a2b4" }}
+          style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "transparent" }}
         />
 
         {selected.extraImages.length > 0 && (
@@ -867,7 +867,7 @@ export function ProductDetailPage({
                   background: "none"
                 }}
               >
-                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "#e0a2b4" }} />
+                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "transparent" }} />
               </button>
             ))}
           </div>
@@ -1110,7 +1110,7 @@ export function ProductDetailPage({
           <ImageWithFallback
             src={[selected.image, ...selected.extraImages][activeImg]}
             alt={selected.name}
-            style={{ width: "100%", height: 420, objectFit: "contain", display: "block", background: "#e0a2b4", borderRadius: 18, border: "1px solid rgba(212, 84, 122, 0.12)" }}
+            style={{ width: "100%", height: 420, objectFit: "contain", display: "block", background: "transparent", borderRadius: 18, border: "1px solid rgba(212, 84, 122, 0.12)" }}
           />
 
           {selected.extraImages.length > 0 && (
@@ -1129,7 +1129,7 @@ export function ProductDetailPage({
                     background: "none"
                   }}
                 >
-                  <ImageWithFallback src={img} alt="" style={{ width: 56, height: 56, objectFit: "contain", display: "block", background: "#e0a2b4" }} />
+                  <ImageWithFallback src={img} alt="" style={{ width: 56, height: 56, objectFit: "contain", display: "block", background: "transparent" }} />
                 </button>
               ))}
             </div>
