@@ -1056,13 +1056,15 @@ def save_order_to_sanity(order_summary):
 
   items = []
   for idx, item in enumerate(order_summary.get('line_items', [])):
+    img_url = item.get('image', '') or item.get('imageUrl', '') or item.get('image_url', '')
     items.append({
       '_key': f"item-{idx}",
       '_type': 'object',
       'description': item.get('description', ''),
       'quantity': item.get('quantity', 1),
       'unitPrice': item.get('unit_price', ''),
-      'lineTotal': item.get('line_total', '')
+      'lineTotal': item.get('line_total', ''),
+      'imageUrl': img_url
     })
 
   order_doc = {

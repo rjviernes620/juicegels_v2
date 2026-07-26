@@ -1,3 +1,5 @@
+import { OrderItemsList } from '../components/OrderItemsList'
+
 export default {
   name: 'order',
   type: 'document',
@@ -89,16 +91,40 @@ export default {
       type: 'array',
       title: 'Ordered Items',
       group: 'items',
+      components: {
+        input: OrderItemsList,
+      },
       of: [
         {
           type: 'object',
           name: 'orderItem',
+          title: 'Order Item',
           fields: [
             { name: 'description', type: 'string', title: 'Description' },
             { name: 'quantity', type: 'number', title: 'Quantity' },
             { name: 'unitPrice', type: 'string', title: 'Unit Price' },
             { name: 'lineTotal', type: 'string', title: 'Line Total' },
+            { name: 'imageUrl', type: 'url', title: 'Image URL' },
+            { name: 'image', type: 'image', title: 'Image', options: { hotspot: true } },
           ],
+          preview: {
+            select: {
+              title: 'description',
+              quantity: 'quantity',
+              unitPrice: 'unitPrice',
+              lineTotal: 'lineTotal',
+              imageUrl: 'imageUrl',
+              image: 'image',
+            },
+            prepare(selection: any) {
+              const { title, quantity, unitPrice, lineTotal, imageUrl, image } = selection
+              return {
+                title: title || 'Item',
+                subtitle: `Qty: ${quantity || 1} | Unit: ${unitPrice || ''} | Total: ${lineTotal || ''}`,
+                media: image,
+              }
+            },
+          },
         },
       ],
     },

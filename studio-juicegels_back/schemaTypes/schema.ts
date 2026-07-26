@@ -119,14 +119,66 @@ export default {
       ],
       initialValue: [
         {
-          _key: 'initial-block-1',
+          _key: 'initial-block-header',
           _type: 'block',
           style: 'normal',
           children: [
             {
-              _key: 'initial-span-1',
+              _key: 'span-header',
               _type: 'span',
-              text: 'All Nail Sets Include: 1x mini nail file, 1x cuticle pusher, 1x mini buffer block, 1x Nail Glue',
+              text: 'All Nail Sets Include:',
+            },
+          ],
+        },
+        {
+          _key: 'initial-block-bullet-1',
+          _type: 'block',
+          style: 'normal',
+          listItem: 'bullet',
+          children: [
+            {
+              _key: 'span-bullet-1',
+              _type: 'span',
+              text: '1x mini nail file',
+            },
+          ],
+        },
+        {
+          _key: 'initial-block-bullet-2',
+          _type: 'block',
+          style: 'normal',
+          listItem: 'bullet',
+          children: [
+            {
+              _key: 'span-bullet-2',
+              _type: 'span',
+              text: '1x cuticle pusher',
+            },
+          ],
+        },
+        {
+          _key: 'initial-block-bullet-3',
+          _type: 'block',
+          style: 'normal',
+          listItem: 'bullet',
+          children: [
+            {
+              _key: 'span-bullet-3',
+              _type: 'span',
+              text: '1x mini buffer block',
+            },
+          ],
+        },
+        {
+          _key: 'initial-block-bullet-4',
+          _type: 'block',
+          style: 'normal',
+          listItem: 'bullet',
+          children: [
+            {
+              _key: 'span-bullet-4',
+              _type: 'span',
+              text: '1x Nail Glue',
             },
           ],
         },
