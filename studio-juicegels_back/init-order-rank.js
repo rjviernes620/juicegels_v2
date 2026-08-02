@@ -13,8 +13,8 @@ const client = createClient({
 
 async function migrate() {
   console.log("Fetching all products from Sanity...");
-  // Order by productId asc so the initial rank preserves the current sequence (newer/higher IDs at the end)
-  const products = await client.fetch('*[_type == "product" && !(_id in path("drafts.**"))] | order(productId asc)');
+  // Order by productId desc so the initial rank puts newer/higher IDs at the top of the drag & drop list
+  const products = await client.fetch('*[_type == "product" && !(_id in path("drafts.**"))] | order(productId desc)');
   console.log(`Found ${products.length} products.`);
 
   let rank = LexoRank.middle();

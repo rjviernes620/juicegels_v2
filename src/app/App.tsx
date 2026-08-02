@@ -172,7 +172,7 @@ export default function App() {
         .filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId)))
         .sort((a, b) => {
           if (a.orderRank && b.orderRank) {
-            return b.orderRank.localeCompare(a.orderRank);
+            return a.orderRank.localeCompare(b.orderRank);
           }
           if (a.orderRank) return -1;
           if (b.orderRank) return 1;
@@ -602,16 +602,8 @@ export default function App() {
   const hasNailSet = cart.some(item => item.product.id !== "JUICEGELS-0286");
   const sizeGuideItem = cart.find(item => item.product.id === "JUICEGELS-0286");
 
-  const isJuly2026SaleActive = () => {
-    const now = new Date();
-    const saleEnd = new Date("2026-08-01T00:00:00");
-    return now < saleEnd;
-  };
-  const isNailSetSaleApplied = !hasSizeGuide && hasNailSet && isJuly2026SaleActive() && !couponSummary;
-  const nailSetSaleDiscountAmount = isNailSetSaleApplied ? cartTotal * 0.20 : 0;
-
   const couponDiscount = couponSummary?.discountAmount ?? 0;
-  const discountTotal = couponDiscount + nailSetSaleDiscountAmount;
+  const discountTotal = couponDiscount;
   const orderTotal = Math.max(0, cartTotal - discountTotal);
   const hasCouponFeedback = isCouponLoading || !!couponError || !!couponSummary;
   const activePromoId = getStripeFreeShippingPromoId(stripePublishableKey);
@@ -1719,36 +1711,36 @@ export default function App() {
               flexDirection: isMobile ? "column" : "row",
               gap: isMobile ? 14 : 18,
             }}>
-              {/* Juicy July Sale Card */}
+              {/* Custom Orders Card */}
               <button
                 type="button"
-                onClick={() => navigate("/shop")}
+                onClick={() => navigate("/custom-orders")}
                 style={{
                   flex: 1,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+                  background: "linear-gradient(135deg, #f9d5e0 0%, #fbc2eb 100%)",
                   border: "none",
                   borderRadius: 16,
                   padding: isMobile ? "22px 20px" : "28px 26px",
                   cursor: "pointer",
-                  color: "#1e1b4b",
+                  color: "#5c4c54",
                   fontFamily: "inherit",
                   textAlign: "left",
                   position: "relative",
                   overflow: "hidden",
-                  boxShadow: "0 4px 20px rgba(167, 139, 250, 0.18)",
+                  boxShadow: "0 4px 20px rgba(251, 194, 235, 0.25)",
                   transition: "transform 0.25s ease, box-shadow 0.25s ease",
                   minHeight: isMobile ? 130 : 150,
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-3px)";
-                  e.currentTarget.style.boxShadow = "0 8px 30px rgba(167, 139, 250, 0.28)";
+                  e.currentTarget.style.boxShadow = "0 8px 30px rgba(251, 194, 235, 0.35)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 4px 20px rgba(167, 139, 250, 0.18)";
+                  e.currentTarget.style.boxShadow = "0 4px 20px rgba(251, 194, 235, 0.25)";
                 }}
               >
                 {/* Decorative circle */}
@@ -1759,7 +1751,7 @@ export default function App() {
                   width: 100,
                   height: 100,
                   borderRadius: "50%",
-                  background: "rgba(255,255,255,0.15)",
+                  background: "rgba(255,255,255,0.25)",
                   pointerEvents: "none",
                 }} />
                 <div style={{
@@ -1769,42 +1761,42 @@ export default function App() {
                   width: 70,
                   height: 70,
                   borderRadius: "50%",
-                  background: "rgba(255,255,255,0.10)",
+                  background: "rgba(255,255,255,0.18)",
                   pointerEvents: "none",
                 }} />
                 <p style={{
                   fontFamily: "'Lobster', serif",
                   fontSize: isMobile ? 28 : 33,
-                  color: "#fff9bd",
+                  color: "#c4597d",
                   margin: "0 0 6px",
                   lineHeight: 1.15,
-                  textShadow: "0 1px 6px rgba(0,0,0,0.08)",
+                  textShadow: "0 1px 6px rgba(0,0,0,0.04)",
                   position: "relative",
                   zIndex: 1,
-                }}>Its Juicy July! ☀️</p>
+                }}>Want custom nails? 💅</p>
                 <p style={{
-                  color: "#312e81",
+                  color: "#5c4c54",
                   margin: "0 0 10px",
                   fontSize: isMobile ? 12 : 13,
                   lineHeight: 1.5,
                   position: "relative",
                   zIndex: 1,
                 }}>
-                  Get <strong>20% off</strong> your basket when you buy ONLY nail sets! Ends July 31.
+                  Bring your dream nail concept to life! Tell us your design ideas, shape, and length.
                 </p>
                 <span style={{
                   display: "inline-block",
-                  background: "rgba(255,255,255,0.35)",
+                  background: "rgba(255,255,255,0.50)",
                   backdropFilter: "blur(6px)",
                   borderRadius: 20,
                   padding: "5px 14px",
                   fontSize: 11,
                   fontWeight: 700,
-                  color: "#4338ca",
+                  color: "#ab3a60",
                   position: "relative",
                   zIndex: 1,
                 }}>
-                  Discount Applied Automatically 🌸
+                  Request Your Custom Set Here 🌸
                 </span>
               </button>
 
@@ -2271,8 +2263,6 @@ export default function App() {
           orderTotal={orderTotal}
           hasSizeGuide={hasSizeGuide}
           hasNailSet={hasNailSet}
-          isNailSetSaleApplied={isNailSetSaleApplied}
-          nailSetSaleDiscountAmount={nailSetSaleDiscountAmount}
           couponInput={couponInput}
           setCouponInput={setCouponInput}
           couponError={couponError}
@@ -2314,8 +2304,6 @@ export default function App() {
           cart={cart}
           couponSummary={couponSummary}
           couponDiscount={couponDiscount}
-          isNailSetSaleApplied={isNailSetSaleApplied}
-          nailSetSaleDiscountAmount={nailSetSaleDiscountAmount}
           hasSizeGuide={hasSizeGuide}
           hasNailSet={hasNailSet}
           isSizeGuideDiscountApplied={isSizeGuideDiscountApplied}

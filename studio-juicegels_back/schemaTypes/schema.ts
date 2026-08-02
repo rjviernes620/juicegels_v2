@@ -1,4 +1,5 @@
 import { VariationsList } from '../components/VariationsList'
+import { ProductPreview } from '../components/ProductPreview'
 import {
   orderRankField,
   orderRankOrdering,
@@ -11,16 +12,16 @@ export default {
   orderings: [
     {
       title: 'Order Rank (Website Order)',
-      name: 'orderRankDesc',
-      by: [
-        { field: 'orderRank', direction: 'desc' }
-      ]
-    },
-    {
-      title: 'Order Rank (Drag & Drop Order)',
       name: 'orderRankAsc',
       by: [
         { field: 'orderRank', direction: 'asc' }
+      ]
+    },
+    {
+      title: 'Order Rank (Descending)',
+      name: 'orderRankDesc',
+      by: [
+        { field: 'orderRank', direction: 'desc' }
       ]
     }
   ],
@@ -77,25 +78,25 @@ export default {
         {
           type: 'block',
           styles: [
-            {title: 'Normal', value: 'normal'},
-            {title: 'Heading 1', value: 'h1'},
-            {title: 'Heading 2', value: 'h2'},
-            {title: 'Heading 3', value: 'h3'},
-            {title: 'Quote', value: 'blockquote'},
+            { title: 'Normal', value: 'normal' },
+            { title: 'Heading 1', value: 'h1' },
+            { title: 'Heading 2', value: 'h2' },
+            { title: 'Heading 3', value: 'h3' },
+            { title: 'Quote', value: 'blockquote' },
           ],
           lists: [
-            {title: 'Bullet', value: 'bullet'},
-            {title: 'Numbered', value: 'number'},
+            { title: 'Bullet', value: 'bullet' },
+            { title: 'Numbered', value: 'number' },
           ],
           marks: {
             decorators: [
-              {title: 'Strong', value: 'strong'},
-              {title: 'Emphasis', value: 'em'},
-              {title: 'Underline', value: 'underline'},
-              {title: 'Strike', value: 'strike-through'},
-              {title: 'Small Font', value: 'small'},
-              {title: 'Large Font', value: 'large'},
-              {title: 'Extra Large', value: 'xlarge'},
+              { title: 'Strong', value: 'strong' },
+              { title: 'Emphasis', value: 'em' },
+              { title: 'Underline', value: 'underline' },
+              { title: 'Strike', value: 'strike-through' },
+              { title: 'Small Font', value: 'small' },
+              { title: 'Large Font', value: 'large' },
+              { title: 'Extra Large', value: 'xlarge' },
             ],
             annotations: [
               {
@@ -247,8 +248,11 @@ export default {
       media: 'image',
       productId: 'productId',
     },
+    components: {
+      preview: ProductPreview,
+    },
     prepare(selection: any) {
-      const {title, price, media, productId} = selection
+      const { title, price, media, productId } = selection
       let idRange = ''
       if (typeof productId === 'number') {
         const isSingle = title?.toLowerCase() === 'nail sizing guide' || productId === 286
@@ -256,13 +260,15 @@ export default {
         if (isSingle) {
           idRange = startId
         } else {
-          const endId = `JUICEGELS-${(productId + 14).toString().padStart(4, '0')}`
-          idRange = `${startId} – ${endId}`
+          const endId = (productId + 14).toString().padStart(4, '0')
+          idRange = `${startId}–${endId}`
         }
       }
+      const priceStr = typeof price === 'number' ? `£${price.toFixed(2)}` : ''
+      const subtitleText = [idRange, priceStr].filter(Boolean).join(' • \n')
       return {
         title: title,
-        subtitle: typeof price === 'number' ? `£${price.toFixed(2)}` : '',
+        subtitle: subtitleText,
         description: idRange,
         media: media,
       }

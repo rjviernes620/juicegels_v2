@@ -199,9 +199,6 @@ class DynamicString:
     def __radd__(self, other):
         return other + str(self)
 
-def get_coupon_20():
-    return 'lGKkukJL'
-
 def get_coupon_size():
     return '60pCPsnH'
 
@@ -209,7 +206,6 @@ def get_free_shipping_promo_id():
     return 'promo_1ToCW2K4CROOpWXUXvpVGOFN'
 
 
-STRIPE_COUPON_20 = DynamicString(get_coupon_20)
 STRIPE_COUPON_SIZE = DynamicString(get_coupon_size)
 STRIPE_FREE_SHIPPING_PROMO_ID = DynamicString(get_free_shipping_promo_id)
 
@@ -3037,18 +3033,9 @@ def create_checkout_session():
     if is_first_time_buyer(customer_email):
       apply_size_guide_coupon = True
 
-  apply_20_percent_discount = False
-  if has_nail_set and not has_size_guide:
-    now = datetime.now(timezone.utc)
-    sale_end = datetime(2026, 8, 1, 0, 0, 0, tzinfo=timezone.utc)
-    if now < sale_end:
-      apply_20_percent_discount = True
-
   discounted_subtotal_pence = subtotal_pence
   if coupon_summary:
     discounted_subtotal_pence -= coupon_summary['discount_pence']
-  elif apply_20_percent_discount:
-    discounted_subtotal_pence -= round(subtotal_pence * 0.20)
   elif apply_size_guide_coupon:
     discounted_subtotal_pence -= size_guide_discount_pence
   discounted_subtotal_pence = max(0, discounted_subtotal_pence)
@@ -3096,7 +3083,7 @@ def create_checkout_session():
           'shipping_city': form.get('city', ''),
           'shipping_postcode': form.get('postcode', ''),
           'shipping_country': country,
-          'coupon_code': coupon_summary['code'] if coupon_summary else (str(STRIPE_COUPON_SIZE) if apply_size_guide_coupon else (str(STRIPE_COUPON_20) if apply_20_percent_discount else '')),
+          'coupon_code': coupon_summary['code'] if coupon_summary else (str(STRIPE_COUPON_SIZE) if apply_size_guide_coupon else ''),
           'shipping_option_id': shipping_option['id'],
           'shipping_method': shipping_option['label'],
           'shipping_amount_pence': str(shipping_option['amount_pence']),
@@ -3142,7 +3129,7 @@ def create_checkout_session():
           'shipping_city': form.get('city', ''),
           'shipping_postcode': form.get('postcode', ''),
           'shipping_country': country,
-          'coupon_code': coupon_summary['code'] if coupon_summary else (str(STRIPE_COUPON_SIZE) if apply_size_guide_coupon else (str(STRIPE_COUPON_20) if apply_20_percent_discount else '')),
+          'coupon_code': coupon_summary['code'] if coupon_summary else (str(STRIPE_COUPON_SIZE) if apply_size_guide_coupon else ''),
           'shipping_option_id': shipping_option['id'],
           'shipping_method': shipping_option['label'],
           'shipping_amount_pence': str(shipping_option['amount_pence']),
@@ -3156,10 +3143,6 @@ def create_checkout_session():
       # Embed details for redirect session discounts
       session_params['discounts'] = [{
         'promotion_code': coupon_summary['promotion_code_id'],
-      }]
-    elif apply_20_percent_discount and not is_embedded:
-      session_params['discounts'] = [{
-        'coupon': str(STRIPE_COUPON_20),
       }]
     elif apply_size_guide_coupon and not is_embedded:
       session_params['discounts'] = [{

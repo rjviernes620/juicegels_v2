@@ -58,55 +58,8 @@ export function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const timerRef = useRef<number | null>(null);
 
-  const isJuly2026Active = () => {
-    const now = new Date();
-    const saleEnd = new Date("2026-08-01T00:00:00");
-    return now < saleEnd;
-  };
-
   const slides = useMemo(() => {
     const list = [];
-
-    if (isJuly2026Active()) {
-      list.push({
-        id: "summer-sale",
-        content: (
-          <button
-            type="button"
-            onClick={() => {
-              const productsEl = document.getElementById("products-grid");
-              if (productsEl) {
-                productsEl.scrollIntoView({ behavior: "smooth" });
-              }
-            }}
-            style={{
-              display: "flex",
-              width: "100%",
-              background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
-              border: "none",
-              borderRadius: 14,
-              padding: "16px 18px",
-              alignItems: "center",
-              gap: 16,
-              textAlign: "left",
-              cursor: "pointer",
-              color: "#1e1b4b",
-              fontFamily: "inherit",
-              boxSizing: "border-box",
-              minHeight: 116,
-            }}
-          >
-            <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'Lobster', serif", color: "#fff9bd", margin: "0 0 4px", fontSize: 33 }}>Its Juicy July! ☀️</p>
-              <p style={{ color: "#312e81", margin: 0, fontSize: 13, lineHeight: 1.45 }}>
-                Get 20% off your basket when you buy ONLY nail sets! Ends July 31. <br />
-                <span style={{ color: "#4338ca", fontWeight: 700 }}>Discount Applied Automatically 🌸</span>
-              </p>
-            </div>
-          </button>
-        )
-      });
-    }
 
     list.push({
       id: "size-guide",
@@ -1369,8 +1322,6 @@ export interface BasketPageProps {
   orderTotal: number;
   hasSizeGuide: boolean;
   hasNailSet: boolean;
-  isNailSetSaleApplied: boolean;
-  nailSetSaleDiscountAmount: number;
   couponInput: string;
   setCouponInput: (val: string) => void;
   couponError: string | null;
@@ -1507,8 +1458,6 @@ export function BasketPage({
   orderTotal,
   hasSizeGuide,
   hasNailSet,
-  isNailSetSaleApplied,
-  nailSetSaleDiscountAmount,
   couponInput,
   setCouponInput,
   couponError,
@@ -1635,15 +1584,7 @@ export function BasketPage({
                 </div>
               )}
 
-              {isNailSetSaleApplied && (
-                <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 14, padding: "12px 14px", marginBottom: 14, display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 20 }}>✨</span>
-                  <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.4 }}>
-                    <strong>20% Off Juicy July Applied!</strong>
-                    <br />You've got 20% off your entire basket of nail sets!
-                  </div>
-                </div>
-              )}
+
 
               {!hasNailSet && hasSizeGuide && (
                 <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 14, padding: "12px 14px", marginBottom: 14, display: "flex", alignItems: "center", gap: 10 }}>
@@ -1738,12 +1679,7 @@ export function BasketPage({
                     <span style={{ color: "#ffd6e9" }}>-£{couponDiscount.toFixed(2)}</span>
                   </div>
                 )}
-                {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                    <span style={{ color: "#1f6f43", fontWeight: 500 }}>20% Off</span>
-                    <span style={{ color: "#1f6f43", fontWeight: 700 }}>-£{nailSetSaleDiscountAmount.toFixed(2)}</span>
-                  </div>
-                )}
+
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
                   <span style={{ color: "#4f444a" }}>Delivery</span>
                   <span style={{ color: "#4f444a" }}>Choose on next step</span>
@@ -1878,15 +1814,7 @@ export function BasketPage({
                   </div>
                 )}
 
-                {isNailSetSaleApplied && (
-                  <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 14, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 20 }}>✨</span>
-                    <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.4 }}>
-                      <strong>20% Off Summer Sale Applied!</strong>
-                      <br />You've got 20% off your entire basket of nail sets!
-                    </div>
-                  </div>
-                )}
+
 
                 {!hasNailSet && hasSizeGuide && (
                   <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 14, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
@@ -1981,12 +1909,7 @@ export function BasketPage({
                       <span style={{ color: "#ffd6e9" }}>-£{couponDiscount.toFixed(2)}</span>
                     </div>
                   )}
-                  {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 8 }}>
-                      <span style={{ color: "#1f6f43", fontWeight: 500 }}>20% Off</span>
-                      <span style={{ color: "#1f6f43", fontWeight: 700 }}>-£{nailSetSaleDiscountAmount.toFixed(2)}</span>
-                    </div>
-                  )}
+
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 10 }}>
                     <span style={{ color: "#4f444a" }}>Delivery</span>
                     <span style={{ color: "#4f444a" }}>Choose on next step</span>
@@ -2092,8 +2015,6 @@ export interface PreorderPageProps {
   cart: CartItem[];
   couponSummary: CouponSummary | null;
   couponDiscount: number;
-  isNailSetSaleApplied: boolean;
-  nailSetSaleDiscountAmount: number;
   hasSizeGuide: boolean;
   hasNailSet: boolean;
   isSizeGuideDiscountApplied: boolean;
@@ -2118,8 +2039,6 @@ export function PreorderPage({
   cart,
   couponSummary,
   couponDiscount,
-  isNailSetSaleApplied,
-  nailSetSaleDiscountAmount,
   hasSizeGuide,
   hasNailSet,
   isSizeGuideDiscountApplied,
@@ -2328,12 +2247,7 @@ export function PreorderPage({
                 <span>-{formatMoney(couponDiscount)}</span>
               </div>
             )}
-            {isNailSetSaleApplied && nailSetSaleDiscountAmount > 0 && (
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#1f6f43", fontWeight: 500 }}>
-                <span>20% Off</span>
-                <span>-{formatMoney(nailSetSaleDiscountAmount)}</span>
-              </div>
-            )}
+
             {hasSizeGuide && hasNailSet && (
               <div style={{ display: "flex", flexDirection: "column", marginTop: 4, padding: "8px 10px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0", fontSize: 11, color: "#166534", lineHeight: 1.35 }}>
                 <strong>🌸 Nail Size Guide Discount Eligible!</strong>

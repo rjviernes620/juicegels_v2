@@ -19,12 +19,10 @@ export default defineConfig({
           .items([
             orderableDocumentListDeskItem({
               type: 'product',
-              title: 'Sort Nail Sets (Drag & Drop)',
+              title: 'Nail Sets (Website Order)',
               S,
               context,
             }),
-            S.documentTypeListItem('product')
-              .title('Nail Sets (Website Order)'),
             S.divider(),
             S.listItem()
               .title('Trending Designs')
