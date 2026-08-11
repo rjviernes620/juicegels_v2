@@ -1,3 +1,4 @@
 node_modules/
 .env
 backend/test_email.py
+backend.env

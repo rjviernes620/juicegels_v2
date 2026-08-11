@@ -238,6 +238,44 @@ export function getCollectionStyle(collectionName: string) {
   }
 }
 
+export interface BasketTokenData {
+  products?: string;
+  coupon?: string;
+  cartOrigin?: string;
+}
+
+export function encodeBasketToken(payload: BasketTokenData): string {
+  try {
+    const jsonStr = JSON.stringify(payload);
+    const base64 = btoa(
+      encodeURIComponent(jsonStr).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+        String.fromCharCode(parseInt(p1, 16))
+      )
+    );
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  } catch {
+    return "";
+  }
+}
+
+export function decodeBasketToken(token: string): BasketTokenData | null {
+  try {
+    let base64 = token.replace(/-/g, "+").replace(/_/g, "/");
+    while (base64.length % 4) {
+      base64 += "=";
+    }
+    const binaryStr = atob(base64);
+    const jsonStr = decodeURIComponent(
+      Array.from(binaryStr)
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    return JSON.parse(jsonStr) as BasketTokenData;
+  } catch {
+    return null;
+  }
+}
+
 export function buildMetaBasketProductsParam(items: CartItem[]) {
   return items
     .map((item) => `${encodeURIComponent(item.product.id)}:${encodeURIComponent(String(item.quantity))}`)
@@ -250,19 +288,30 @@ export function buildBasketUrl(
 ) {
   if (items.length === 0) return "/basket";
 
-  const params = [
-    `products=${buildMetaBasketProductsParam(items)}`,
-  ];
+  const rawProducts = buildMetaBasketProductsParam(items);
+  const payload: BasketTokenData = {
+    products: rawProducts,
+    ...(options?.includeCoupon && options.coupon ? { coupon: options.coupon } : {}),
+    ...(options?.cartOrigin ? { cartOrigin: options.cartOrigin } : {}),
+  };
 
-  if (options?.includeCoupon) {
-    params.push(options.coupon ? `coupon=${encodeURIComponent(options.coupon)}` : "coupon");
-  }
+  const token = encodeBasketToken(payload);
+  return token ? `/basket?b=${token}` : "/basket";
+}
 
-  if (options?.cartOrigin) {
-    params.push(`cart_origin=${encodeURIComponent(options.cartOrigin)}`);
-  }
+export function parseTokenBasketParam(
+  token: string,
+  products: Product[]
+): { cartItems: CartItem[]; coupon?: string; cartOrigin?: string } {
+  const data = decodeBasketToken(token);
+  if (!data) return { cartItems: [] };
 
-  return `/basket?${params.join("&")}`;
+  const cartItems = data.products ? parseMetaBasketProductsParam(data.products, products) : [];
+  return {
+    cartItems,
+    coupon: data.coupon,
+    cartOrigin: data.cartOrigin,
+  };
 }
 
 export function parseMetaBasketProductsParam(productsParam: string, products: Product[]): CartItem[] {
@@ -309,3 +358,4 @@ export function parseBasketItemsParam(itemsParam: string, products: Product[]): 
     })
     .filter(Boolean) as CartItem[];
 }
+

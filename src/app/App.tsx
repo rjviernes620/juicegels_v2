@@ -47,6 +47,7 @@ import {
   buildBasketUrl,
   parseBasketItemsParam,
   parseMetaBasketProductsParam,
+  parseTokenBasketParam,
   isLocalDev,
   getStripeShippingRateIds,
   getStripeFreeShippingPromoId
@@ -450,14 +451,31 @@ export default function App() {
 
     if (effectivePath === "/basket") {
       const searchParams = new URLSearchParams(location.search);
+      const tokenParam = searchParams.get("b");
       const productsParam = searchParams.get("products");
       const itemsParam = searchParams.get("items");
 
-      if (productsParam !== null) {
+      let hasQueryParams = false;
+
+      if (tokenParam) {
+        hasQueryParams = true;
+        const { cartItems } = parseTokenBasketParam(tokenParam, products);
+        if (cartItems.length > 0) setCart(cartItems);
+      } else if (productsParam !== null) {
+        hasQueryParams = true;
         setCart(parseMetaBasketProductsParam(productsParam, products));
       } else if (itemsParam) {
+        hasQueryParams = true;
         const parsedItems = parseBasketItemsParam(itemsParam, products);
         if (parsedItems.length > 0) setCart(parsedItems);
+      }
+
+      // Clean up sensitive / exposed URL query details from browser address bar instantly
+      if (hasQueryParams || location.search) {
+        if (typeof window !== "undefined" && window.history && window.history.replaceState) {
+          const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.replaceState({ path: cleanUrl }, "", cleanUrl);
+        }
       }
 
       setPage("basket");
