@@ -85,7 +85,12 @@ load_dotenv()
 import collections.abc
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MAINTENANCE_FILE = os.path.join(BASE_DIR, 'maintenance.flag')
+# Google Cloud Run uses a read-only filesystem except for /tmp.
+# If running in Cloud Run (detected by K_SERVICE), store maintenance.flag in /tmp.
+if os.environ.get('K_SERVICE'):
+    MAINTENANCE_FILE = '/tmp/maintenance.flag'
+else:
+    MAINTENANCE_FILE = os.path.join(BASE_DIR, 'maintenance.flag')
 
 def is_maintenance_active():
     # Support toggling via Render environment variable (MAINTENANCE_MODE=true/1)
@@ -2165,13 +2170,25 @@ def admin_maintenance_toggle():
     return jsonify({'success': False, 'message': 'Invalid secret.'}), 403
 
   if action == 'on':
-    with open(MAINTENANCE_FILE, 'w') as f:
-      f.write('active')
-    return jsonify({'success': True, 'maintenance': True, 'message': 'Maintenance mode ENABLED.'})
+    try:
+      with open(MAINTENANCE_FILE, 'w') as f:
+        f.write('active')
+      message = 'Maintenance mode ENABLED.'
+      if os.environ.get('K_SERVICE'):
+        message += ' (Note: In Google Cloud Run, this only affects the current instance. For a global toggle across all instances, set the MAINTENANCE_MODE environment variable to "true" in Cloud Run settings).'
+      return jsonify({'success': True, 'maintenance': True, 'message': message})
+    except Exception as e:
+      return jsonify({'success': False, 'message': f'Failed to write maintenance flag: {str(e)}'}), 500
   else:
-    if os.path.isfile(MAINTENANCE_FILE):
-      os.remove(MAINTENANCE_FILE)
-    return jsonify({'success': True, 'maintenance': False, 'message': 'Maintenance mode DISABLED.'})
+    try:
+      if os.path.isfile(MAINTENANCE_FILE):
+        os.remove(MAINTENANCE_FILE)
+      message = 'Maintenance mode DISABLED.'
+      if os.environ.get('K_SERVICE'):
+        message += ' (Note: If you set MAINTENANCE_MODE=true in Cloud Run environment variables, you must remove or unset it to disable maintenance mode globally).'
+      return jsonify({'success': True, 'maintenance': False, 'message': message})
+    except Exception as e:
+      return jsonify({'success': False, 'message': f'Failed to remove maintenance flag: {str(e)}'}), 500
 
 
 @app.route('/api/meta-catalog', methods=['GET'])
@@ -3136,8 +3153,11 @@ def create_checkout_session():
         },
         'mode': 'payment',
         'success_url': f"{origin}/confirmation?checkout=success&session_id={{CHECKOUT_SESSION_ID}}&items={items_param}",
-        'cancel_url': f"{origin}/basket?items={items_param}{f'&coupon={quote(coupon_summary['code'], safe='')}' if coupon_summary else ''}",
+        'cancel_url': f"{origin}/basket?items={items_param}",
       }
+      if coupon_summary:
+        coupon_code = coupon_summary.get('code', '')
+        session_params['cancel_url'] += f"&coupon={quote(coupon_code, safe='')}"
 
     if coupon_summary and not is_embedded:
       # Embed details for redirect session discounts

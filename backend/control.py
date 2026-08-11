@@ -40,8 +40,10 @@ def set_maintenance(active):
             os.remove(MAINTENANCE_FILE)
         print(colorize("Maintenance mode: DISABLED (Website API requests are active).", COLOR_GREEN + COLOR_BOLD))
 
-# Hardcoded API base — always targets the live Render service
-RENDER_API_BASE = 'https://juicegels-v2.onrender.com'
+# API base URL: prioritized environment variable, then fallback.
+API_BASE = os.environ.get('JUICEGELS_API_BASE', '').strip()
+if not API_BASE:
+    API_BASE = 'https://juicegels-v2.onrender.com'
 
 def remote_set_maintenance(active):
     """Toggle maintenance mode on the live server via HTTP.
@@ -56,13 +58,13 @@ def remote_set_maintenance(active):
     if not secret:
         print(colorize(
             'Error: MAINTENANCE_2FA_SECRET is not set in the environment.\n'
-            'Make sure this Render service has the secret configured.',
+            'Make sure the server environment has the secret configured.',
             COLOR_RED
         ))
         return
 
     action = 'on' if active else 'off'
-    url = RENDER_API_BASE + '/api/admin/maintenance'
+    url = API_BASE + '/api/admin/maintenance'
     payload = _json.dumps({'action': action, 'secret': secret}).encode('utf-8')
     req = urllib.request.Request(
         url,
@@ -328,7 +330,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="JuiceGels Backend Control Tool",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
+        epilog=f"""
 Examples:
   python control.py status
   python control.py maintenance on
@@ -336,9 +338,9 @@ Examples:
   python control.py generate-2fa
   python control.py reset
 
-The 'maintenance' command always targets the live server at:
-  https://juicegels-v2.onrender.com
-You will be prompted for your 2FA code — nothing is passed on the command line.
+The 'maintenance' command targets the server at:
+  {API_BASE}
+You can override this URL by setting the JUICEGELS_API_BASE environment variable.
 """
     )
 

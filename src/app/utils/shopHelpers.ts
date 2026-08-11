@@ -11,7 +11,7 @@ import {
 export const LOCKED_VARIATION_PRODUCT_IDS = new Set(["JUICEGELS-0286"]);
 export const META_CART_ORIGIN = "meta_shops";
 export const CHECKOUT_API_BASE = import.meta.env.VITE_CHECKOUT_API_BASE ||
-  (import.meta.env.DEV ? "http://localhost:4000" : "https://juicegels-v2.onrender.com");
+  (import.meta.env.DEV ? "http://localhost:4000" : "https://juicegels-backend-41674538724.europe-west1.run.app");
 export const isLocalDev = () =>
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1";
