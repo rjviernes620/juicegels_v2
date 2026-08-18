@@ -1522,20 +1522,20 @@ export default function App() {
                 zIndex: 0,
                 pointerEvents: "none"
               }}
-              pixelDensity={0.5}
+              pixelDensity={1}
               fov={45}
             >
               <ShaderGradient
                 animate="on"
                 axesHelper="off"
-                brightness={1}
+                brightness={1.2}
                 cAzimuthAngle={180}
-                cDistance={2.9}
-                cPolarAngle={120}
+                cDistance={3.6}
+                cPolarAngle={90}
                 cameraZoom={1}
-                color1="#ff8fc7"
-                color2="#ffd1e8"
-                color3="#c9b0ff"
+                color1="#fc6587"
+                color2="#dbadd5"
+                color3="#e1d1e0"
                 destination="onCanvas"
                 embedMode="off"
                 envPreset="city"
@@ -1545,25 +1545,25 @@ export default function App() {
                 gizmoHelper="hide"
                 grain="off"
                 lightType="3d"
-                pixelDensity={0.5}
-                positionX={0}
-                positionY={1.8}
+                pixelDensity={1}
+                positionX={-1.4}
+                positionY={0}
                 positionZ={0}
                 range="disabled"
                 rangeEnd={40}
                 rangeStart={0}
                 reflection={0.1}
                 rotationX={0}
-                rotationY={0}
-                rotationZ={-90}
+                rotationY={10}
+                rotationZ={50}
                 shader="defaults"
                 type="plane"
-                uAmplitude={0}
-                uDensity={0.7}
+                uAmplitude={1}
+                uDensity={1.3}
                 uFrequency={5.5}
-                uSpeed={0.3}
-                uStrength={4.2}
-                uTime={0.2}
+                uSpeed={0.4}
+                uStrength={4}
+                uTime={0}
                 wireframe={false}
               />
             </ShaderGradientCanvas>
