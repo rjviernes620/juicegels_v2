@@ -172,12 +172,12 @@ export default function App() {
       products
         .filter((product, index, self) => index === self.findIndex((p) => normalizeGroupKey(p.groupId) === normalizeGroupKey(product.groupId)))
         .sort((a, b) => {
-          if (a.orderRank && b.orderRank) {
-            return a.orderRank.localeCompare(b.orderRank);
+          const numA = parseInt(a.id.replace(/\D/g, ""), 10) || 0;
+          const numB = parseInt(b.id.replace(/\D/g, ""), 10) || 0;
+          if (numA !== numB) {
+            return numB - numA;
           }
-          if (a.orderRank) return -1;
-          if (b.orderRank) return 1;
-          return b.id.localeCompare(a.id);
+          return b.id.localeCompare(a.id, undefined, { numeric: true });
         }),
     [products]
   );
@@ -199,7 +199,19 @@ export default function App() {
       list = list.filter((p) => p.collection === homeSelectedCollection);
     }
 
-    if (homeSortBy === "price-asc") {
+    if (homeSortBy === "id-desc") {
+      list.sort((a, b) => {
+        const numA = parseInt(a.id.replace(/\D/g, ""), 10) || 0;
+        const numB = parseInt(b.id.replace(/\D/g, ""), 10) || 0;
+        return numB !== numA ? numB - numA : b.id.localeCompare(a.id, undefined, { numeric: true });
+      });
+    } else if (homeSortBy === "id-asc") {
+      list.sort((a, b) => {
+        const numA = parseInt(a.id.replace(/\D/g, ""), 10) || 0;
+        const numB = parseInt(b.id.replace(/\D/g, ""), 10) || 0;
+        return numA !== numB ? numA - numB : a.id.localeCompare(b.id, undefined, { numeric: true });
+      });
+    } else if (homeSortBy === "price-asc") {
       list.sort((a, b) => a.price - b.price);
     } else if (homeSortBy === "price-desc") {
       list.sort((a, b) => b.price - a.price);
