@@ -17,9 +17,17 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
+            S.listItem()
+              .title('Nail Sets (Decreasing by Product ID)')
+              .id('product-id-desc')
+              .child(
+                S.documentTypeList('product')
+                  .title('Nail Sets (Decreasing by Product ID)')
+                  .defaultOrdering([{ field: 'productId', direction: 'desc' }])
+              ),
             orderableDocumentListDeskItem({
               type: 'product',
-              title: 'Nail Sets (Website Order)',
+              title: 'Nail Sets (Custom Drag Order)',
               S,
               context,
             }),
