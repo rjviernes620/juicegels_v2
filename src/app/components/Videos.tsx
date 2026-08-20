@@ -52,7 +52,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1202",
       name: "Starlit Tips Set",
       price: 12.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/6298dd5f72cfd4dffd80434806d494be3e9ccac2-1080x1080.jpg"
     }
   },
   {
@@ -65,7 +65,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1127",
       name: "Bow Crush Set",
       price: 18.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/c72f8e7096d790efc1069b2eb69cbfaae28c509a-1080x1080.jpg"
     }
   },
   {
@@ -78,7 +78,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0872",
       name: "Pop Tips Set",
       price: 17.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/5d5c58159f5888c6dd8b575f2c29dba6f9e88799-1080x1080.jpg"
     }
   },
   {
@@ -91,7 +91,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1142",
       name: "Mocha Blue Muse Set",
       price: 15.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/579b3ab12391cf3931d034432645c9f0a0c9ad3e-1080x1080.jpg"
     }
   },
   {
@@ -104,7 +104,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1187",
       name: "Evergreen Spark Set",
       price: 18.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/f43c31307b13c340e89e648439a312a717144918-1080x1080.jpg"
     }
   },
   {
@@ -117,7 +117,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1247",
       name: "Sparkle Scream Set",
       price: 15.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/fd3afa6fe8a10e2be34f3636aff89ec95c326836-1080x1080.jpg"
     }
   },
   {
@@ -130,7 +130,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1277",
       name: "Pink-o-ween Set",
       price: 15.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/169d1c8e77f2d05604878ba3bc4bd897150e9429-1080x1080.jpg"
     }
   },
   {
@@ -143,7 +143,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1292",
       name: "Cocoa Quilt Set",
       price: 18.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/ab7c37c4af48a653c8274da341b069a5a5444cb2-1080x1080.jpg"
     }
   },
   {
@@ -156,7 +156,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1352",
       name: "Burgundy Bling Set",
       price: 16.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/880eafd9b955662096949be1bb299cfcfe1a006c-1080x1080.jpg"
     }
   },
   {
@@ -169,7 +169,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1367",
       name: "Dolce Dot Set",
       price: 17.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/efa90e37092fdf08a29eccaccd037c509785521d-1080x1080.jpg"
     }
   },
   {
@@ -182,7 +182,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1382",
       name: "Velour Embrè Set",
       price: 19.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/f8465fc7f5ff493718b9a5acfa4b2aa081b8b2ca-1080x1080.jpg"
     }
   },
   {
@@ -195,7 +195,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0287",
       name: "Terra Flora Set",
       price: 17.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/335f160469f2190751aa510930dd372c4b78e544-1179x1168.jpg"
     }
   },
   {
@@ -208,7 +208,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1427",
       name: "Pink Eclipse Set",
       price: 18.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/97c583c34c68aaf0c805f770bb48bd12f7f320ce-1080x1080.jpg"
     }
   },
   {
@@ -221,7 +221,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0302",
       name: "Petal Pearl Set",
       price: 14.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/cf5e67ea8675b1637b7100e2d015b7c44c1c6dc7-1179x1171.jpg"
     }
   },
   {
@@ -234,7 +234,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0422",
       name: "Sunset Haze Set",
       price: 14.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/c04fceadefce8371ba94a0803d32d2ecfab88b13-1080x1080.jpg"
     }
   },
   {
@@ -247,7 +247,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0407",
       name: "Sundown Shine Set",
       price: 15.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/e840bf807ebebf9beb478ad8d8316fb5909777a3-1080x1080.jpg"
     }
   },
   {
@@ -260,7 +260,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0211",
       name: "Petal Flora Set",
       price: 17.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/de2ee63fe8267cf831c747221f3afbb835977cad-2104x2104.jpg"
     }
   },
   {
@@ -273,7 +273,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0241",
       name: "Pink Opulence Set",
       price: 20.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/e58740f144a6461d1b451a8067835f630d4ef0e2-2999x3000.jpg"
     }
   },
   {
@@ -286,7 +286,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1502",
       name: "Kitty Constellation Set",
       price: 17.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/ff8b0ef5d577c4093f97890b91d9129bc7d7831f-1080x1080.jpg"
     }
   },
   {
@@ -299,7 +299,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0662",
       name: "Tropical Blush Set",
       price: 13.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/b0d67b1b413f1e246863e5fce32146a583e20faa-1179x1178.jpg"
     }
   },
   {
@@ -312,7 +312,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-1532",
       name: "Ruby Bling Set",
       price: 17.50,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/ae2d162a47b73eebb25431ff58097e6fe9d81530-1080x1080.jpg"
     }
   },
   {
@@ -325,7 +325,7 @@ const STATIC_VIDEO_SETS = [
       id: "JUICEGELS-0542",
       name: "Gilded Geode Set",
       price: 19.00,
-      image: "images/nailsize.jpg"
+      image: "https://cdn.sanity.io/images/5co5ooqr/production/0314535dc4bc87ee38c90607cbbad25f6c214437-3000x3000.jpg"
     }
   }
 ];
@@ -398,14 +398,8 @@ function SingleVideoPlayer({ videoUrl, isActive, index, activeIndex, isPageActiv
     e.stopPropagation();
     if (!videoRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const width = rect.width;
-    const duration = videoRef.current.duration;
-    if (duration) {
-      const newTime = (clickX / width) * duration;
-      videoRef.current.currentTime = newTime;
-      setProgress((newTime / duration) * 100);
-    }
+    const pos = (e.clientX - rect.left) / rect.width;
+    videoRef.current.currentTime = pos * videoRef.current.duration;
   };
 
   return (
@@ -511,8 +505,19 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
   const resolvedSets = useMemo(() => {
     return STATIC_VIDEO_SETS.map(staticSet => {
       // Find matching representative variant in products list
-      // Note: we match using staticSet.productId which looks like 'JUICEGELS-1202'
-      const matchedProduct = products.find(p => p.id === staticSet.productId);
+      const staticNumId = parseInt(staticSet.productId.replace(/\D/g, ""), 10);
+      const pureTitle = staticSet.title.replace(/^Handcrafting\s+/i, "").toLowerCase().trim();
+
+      const matchedProduct = products.find(p => {
+        if (p.id === staticSet.productId) return true;
+        const pNum = parseInt(p.id.replace(/\D/g, ""), 10);
+        if (pNum > 0 && pNum === staticNumId) return true;
+        if (p.name) {
+          const pNameLower = p.name.toLowerCase().trim();
+          if (pNameLower === pureTitle || pNameLower.includes(pureTitle) || pureTitle.includes(pNameLower)) return true;
+        }
+        return false;
+      });
 
       if (matchedProduct) {
         return {
@@ -526,7 +531,7 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
             id: matchedProduct.id,
             name: matchedProduct.name,
             price: matchedProduct.price,
-            image: matchedProduct.image
+            image: matchedProduct.image || staticSet.defaultProduct.image
           }
         };
       } else {
