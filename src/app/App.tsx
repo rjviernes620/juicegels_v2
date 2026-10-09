@@ -16,6 +16,7 @@ import { PortableText } from "./components/PortableText";
 import { FAQ } from "./components/FAQ";
 import { PrivacyPolicy } from "./components/PrivacyPolicy";
 import { TermsOfService } from "./components/TermsOfService";
+import { HalloweenTeaser } from "./components/HalloweenTeaser";
 import { COUNTRIES } from "./utils/countries";
 import { useSEO } from "./utils/useSEO";
 import {
@@ -124,25 +125,7 @@ export default function App() {
   const [stripePublishableKey, setStripePublishableKey] = useState<string>("");
 
   const [wishlist, setWishlist] = useState<string[]>([]);
-  const [showHalloweenDate, setShowHalloweenDate] = useState(false);
-  const halloweenInfo = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    let target = new Date(year, 9, 31); // October 31
-    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    if (startOfToday.getTime() > target.getTime()) {
-      target = new Date(year + 1, 9, 31);
-    }
-    const diffTime = target.getTime() - startOfToday.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    const dayOfWeek = target.toLocaleDateString("en-GB", { weekday: "long" });
-
-    return {
-      dayOfWeek,
-      diffDays,
-      year: target.getFullYear(),
-    };
-  }, []);
+  const [showHalloweenTeaser, setShowHalloweenTeaser] = useState(true);
   const [homeSelectedCollection, setHomeSelectedCollection] = useState("All");
   const [homeSortBy, setHomeSortBy] = useState("featured");
   const [cookieConsent, setCookieConsent] = useState<"accepted" | "declined" | null>(() => {
@@ -1728,6 +1711,39 @@ export default function App() {
                   >
                     Shop Nail Sets 💅
                   </button>
+                  <motion.button
+                    type="button"
+                    onClick={() => setShowHalloweenTeaser((prev) => !prev)}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    style={{
+                      background: showHalloweenTeaser
+                        ? "linear-gradient(135deg, #180928 0%, #ff7828 100%)"
+                        : "linear-gradient(135deg, #ff7828 0%, #db2777 100%)",
+                      color: "#ffffff",
+                      border: "1.5px solid rgba(255, 120, 40, 0.4)",
+                      borderRadius: "30px",
+                      padding: "13px 26px",
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                      boxShadow: showHalloweenTeaser
+                        ? "0 0 22px rgba(255, 120, 40, 0.55)"
+                        : "0 6px 20px rgba(255, 120, 40, 0.35)",
+                      transition: "all 0.3s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <motion.span
+                      animate={{ rotate: [0, -10, 10, -10, 0] }}
+                      transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                      style={{ fontSize: "16px", display: "inline-block" }}
+                    >
+                      🎃
+                    </motion.span>
+                  </motion.button>
                   <button
                     onClick={() => navigate("/custom-orders")}
                     style={{
@@ -1752,148 +1768,16 @@ export default function App() {
                   >
                     Custom Request ✨
                   </button>
-                  <motion.button
-                    type="button"
-                    onClick={() => setShowHalloweenDate((prev) => !prev)}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.96 }}
-                    style={{
-                      background: showHalloweenDate
-                        ? "linear-gradient(135deg, #180928 0%, #ff7828 100%)"
-                        : "linear-gradient(135deg, #ff7828 0%, #db2777 100%)",
-                      color: "#ffffff",
-                      border: "1.5px solid rgba(255, 120, 40, 0.4)",
-                      borderRadius: "30px",
-                      padding: "13px 26px",
-                      fontSize: "14px",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                      boxShadow: showHalloweenDate
-                        ? "0 0 22px rgba(255, 120, 40, 0.55)"
-                        : "0 6px 20px rgba(255, 120, 40, 0.35)",
-                      transition: "all 0.3s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <motion.span
-                      animate={{ rotate: [0, -10, 10, -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-                      style={{ fontSize: "16px", display: "inline-block" }}
-                    >
-                      🎃
-                    </motion.span>
-                    <span>{showHalloweenDate ? "Hide" : ""}</span>
-                  </motion.button>
                 </div>
 
-                {/* Halloween Date Reveal Card */}
+                {/* Halloween Interactive Teaser */}
                 <AnimatePresence>
-                  {showHalloweenDate && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -12, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -12, scale: 0.95 }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      style={{
-                        marginTop: 20,
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 14,
-                        background: "linear-gradient(135deg, #180928 0%, #2f0c3f 50%, #ff7828 100%)",
-                        border: "1.5px solid rgba(255, 120, 40, 0.5)",
-                        borderRadius: "24px",
-                        padding: isMobile ? "14px 20px" : "16px 28px",
-                        boxShadow: "0 10px 30px rgba(255, 120, 40, 0.35)",
-                        color: "#ffffff",
-                        maxWidth: "92%",
-                        textAlign: "left",
-                        boxSizing: "border-box",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: "50%",
-                          background: "rgba(255, 255, 255, 0.12)",
-                          border: "1px solid rgba(255, 255, 255, 0.2)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 24,
-                          flexShrink: 0,
-                          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-                        }}
-                      >
-                        🎃
-                      </div>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 2 }}>
-                          <span
-                            style={{
-                              background: "#ff7828",
-                              color: "#180928",
-                              fontSize: "10px",
-                              fontWeight: 900,
-                              padding: "2px 8px",
-                              borderRadius: "12px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.06em",
-                            }}
-                          >
-                            Halloween {halloweenInfo.year}
-                          </span>
-                          <span style={{ fontSize: "11px", color: "#ffd3ea", fontWeight: 600 }}>
-                            {halloweenInfo.diffDays === 0
-                              ? "Today! 🎃"
-                              : halloweenInfo.diffDays === 1
-                                ? "Tomorrow! 🎃"
-                                : `${halloweenInfo.diffDays} days to go 🕷️`}
-                          </span>
-                        </div>
-                        <div
-                          style={{
-                            fontFamily: "'Lobster', serif",
-                            fontSize: isMobile ? "22px" : "26px",
-                            color: "#ffffff",
-                            letterSpacing: "0.03em",
-                            lineHeight: 1.2,
-                          }}
-                        >
-                          October 31st, {halloweenInfo.year} 👻
-                        </div>
-                        <div style={{ fontSize: "12px", color: "rgba(255, 255, 255, 0.9)", marginTop: 2 }}>
-                          {halloweenInfo.dayOfWeek}, 31 October • Spooky season is on its way! ✨
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowHalloweenDate(false)}
-                        aria-label="Close"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.15)",
-                          border: "none",
-                          borderRadius: "50%",
-                          width: 28,
-                          height: 28,
-                          color: "#ffffff",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          cursor: "pointer",
-                          marginLeft: 8,
-                          fontSize: 14,
-                          flexShrink: 0,
-                          transition: "background 0.2s",
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)"; }}
-                      >
-                        ✕
-                      </button>
-                    </motion.div>
+                  {showHalloweenTeaser && (
+                    <HalloweenTeaser
+                      isMobile={isMobile}
+                      onNavigateShop={() => navigate("/shop")}
+                      onClose={() => setShowHalloweenTeaser(false)}
+                    />
                   )}
                 </AnimatePresence>
               </motion.div>
