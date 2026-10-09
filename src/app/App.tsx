@@ -1673,7 +1673,18 @@ export default function App() {
                 transition={{ delay: 0.3, duration: 0.8 }}
               >
                 <p style={{ color: "#fc6587", margin: "0 0 8px", letterSpacing: "0.15em", fontSize: 12, fontWeight: 700, textTransform: "uppercase" }}>🌟 Handcrafted Press-on Nail Studio 🌟</p>
-                <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 40 : 56, color: "#fc6587", margin: "0 0 16px", lineHeight: 1.15 }}>Juice Gels</h2>
+                <h2 style={{
+                  fontFamily: "'Lobster', serif",
+                  fontSize: isMobile ? 40 : 56,
+                  color: "#fc6587",
+                  margin: "0 0 16px",
+                  lineHeight: 1.15,
+                  WebkitTextStroke: isMobile ? "1.5px #ffffff" : "2px #ffffff",
+                  paintOrder: "stroke fill",
+                  textShadow: isMobile
+                    ? "-1.5px -1.5px 0 #ffffff, 1.5px -1.5px 0 #ffffff, -1.5px 1.5px 0 #ffffff, 1.5px 1.5px 0 #ffffff, 0 3px 12px rgba(252, 101, 135, 0.25)"
+                    : "-2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff, 0 4px 16px rgba(252, 101, 135, 0.25)"
+                }}>Juice Gels</h2>
                 <p style={{
                   maxWidth: "600px",
                   margin: "0 auto 24px",
