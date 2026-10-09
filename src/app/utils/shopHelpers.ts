@@ -13,8 +13,9 @@ export const META_CART_ORIGIN = "meta_shops";
 export const CHECKOUT_API_BASE = import.meta.env.VITE_CHECKOUT_API_BASE ||
   (import.meta.env.DEV ? "http://localhost:4000" : "https://juicegels-backend-41674538724.europe-west1.run.app");
 export const isLocalDev = () =>
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1";
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+   window.location.hostname === "127.0.0.1");
 
 export const SHIPPING_FREE_THRESHOLD = 30;
 export const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {

@@ -42,7 +42,7 @@ interface SanityCrop {
   right: number;
 }
 
-function buildSanityImageUrl(
+export function buildSanityImageUrl(
   ref: string,
   hotspot?: SanityHotspot | null,
   crop?: SanityCrop | null,
@@ -128,7 +128,7 @@ function blocksToPlainText(blocks: any[]): string {
     .join('\n');
 }
 
-function parseSanityProducts(sanityProducts: any[]): Product[] {
+export function parseSanityProducts(sanityProducts: any[]): Product[] {
   const products: Product[] = [];
 
   for (const sp of sanityProducts) {
