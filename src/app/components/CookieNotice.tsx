@@ -21,12 +21,12 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
         transform: "translateX(-50%)",
         width: "calc(100% - 32px)",
         maxWidth: 398, // Fits perfectly inside the 430px mobile frame
-        background: "rgba(252, 101, 135, 0.98)", // Premium Juice Gels pink with high opacity
-        backdropFilter: "blur(8px)",
+        background: "rgba(24, 9, 40, 0.96)",
+        backdropFilter: "blur(10px)",
         color: "#ffffff",
         borderRadius: 16,
-        boxShadow: "0 10px 30px rgba(34, 18, 25, 0.22)",
-        border: "1px solid rgba(255, 255, 255, 0.25)",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.6)",
+        border: "1px solid rgba(255, 120, 40, 0.4)",
         padding: "16px 18px",
         zIndex: 1000,
         boxSizing: "border-box",
@@ -36,7 +36,8 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
         <div
           style={{
-            background: "rgba(255, 255, 255, 0.2)",
+            background: "rgba(255, 120, 40, 0.2)",
+            border: "1px solid rgba(255, 120, 40, 0.3)",
             borderRadius: "50%",
             padding: 8,
             display: "flex",
@@ -45,7 +46,7 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
             flexShrink: 0,
           }}
         >
-          <Cookie size={20} style={{ color: "#ffd6e9" }} />
+          <Cookie size={20} style={{ color: "#ff7828" }} />
         </div>
         <div style={{ flex: 1 }}>
           <h4
@@ -53,13 +54,13 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
               margin: "0 0 4px",
               fontFamily: "'Lobster', serif",
               fontSize: 18,
-              color: "#fff9fb",
+              color: "#ffd3ea",
               letterSpacing: "0.02em",
             }}
           >
             Shopping Storage Notice 🌸
           </h4>
-          <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: "#fff0f4" }}>
+          <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5, color: "#d8c8df" }}>
             We use browser storage to remember the items in your shopping basket so you don't lose them while browsing.
           </p>
         </div>
@@ -68,17 +69,17 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
       {showDetails && (
         <div
           style={{
-            background: "rgba(34, 18, 25, 0.15)",
+            background: "rgba(12, 3, 20, 0.6)",
             borderRadius: 10,
             padding: 12,
             marginBottom: 12,
             fontSize: 11,
             lineHeight: 1.45,
-            color: "#fff0f4",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
+            color: "#d8c8df",
+            border: "1px solid rgba(255, 112, 166, 0.2)",
           }}
         >
-          <p style={{ margin: "0 0 6px", fontWeight: 700, textTransform: "uppercase", fontSize: 10, letterSpacing: "0.05em", color: "#ffd6e9" }}>
+          <p style={{ margin: "0 0 6px", fontWeight: 700, textTransform: "uppercase", fontSize: 10, letterSpacing: "0.05em", color: "#ff7828" }}>
             What is stored:
           </p>
           <ul style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
@@ -89,7 +90,7 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
               <strong>juicegels_form (Convenience):</strong> Keeps your delivery details temporarily so you don't have to retype them during checkout.
             </li>
           </ul>
-          <p style={{ margin: "8px 0 0 0", fontSize: 10, fontStyle: "italic", color: "#ffd6e9" }}>
+          <p style={{ margin: "8px 0 0 0", fontSize: 10, fontStyle: "italic", color: "#ffd3ea" }}>
             * Note: Opting out will clear existing data and use memory-only temporary storage. Refreshes will reset your cart.
           </p>
         </div>
@@ -102,7 +103,7 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
           style={{
             background: "none",
             border: "none",
-            color: "#ffd6e9",
+            color: "#ffd3ea",
             fontSize: 12,
             fontWeight: 600,
             cursor: "pointer",
@@ -130,8 +131,8 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
             onClick={onDecline}
             style={{
               background: "transparent",
-              color: "#ffd6e9",
-              border: "1.5px solid #ffd6e9",
+              color: "#ffd3ea",
+              border: "1.5px solid rgba(255, 112, 166, 0.5)",
               borderRadius: 10,
               padding: "7px 14px",
               fontSize: 12,
@@ -144,7 +145,7 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255, 214, 233, 0.15)";
+              e.currentTarget.style.background = "rgba(255, 112, 166, 0.15)";
               e.currentTarget.style.transform = "scale(1.03)";
             }}
             onMouseLeave={(e) => {
@@ -159,27 +160,27 @@ export function CookieNotice({ consent, onAccept, onDecline }: CookieNoticeProps
             type="button"
             onClick={onAccept}
             style={{
-              background: "#ffd6e9",
-              color: "#c281a9",
+              background: "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)",
+              color: "#ffffff",
               border: "none",
               borderRadius: 10,
               padding: "8px 16px",
               fontSize: 12,
               fontWeight: 700,
               cursor: "pointer",
-              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.06)",
+              boxShadow: "0 4px 12px rgba(255, 120, 40, 0.3)",
               display: "flex",
               alignItems: "center",
               gap: 4,
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#ffffff";
               e.currentTarget.style.transform = "scale(1.03)";
+              e.currentTarget.style.boxShadow = "0 4px 18px rgba(255, 120, 40, 0.5)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#ffd6e9";
               e.currentTarget.style.transform = "none";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(255, 120, 40, 0.3)";
             }}
           >
             <Check size={14} /> Got it!

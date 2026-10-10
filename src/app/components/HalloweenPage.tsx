@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import confetti from "canvas-confetti";
 import { ArrowLeft, ShoppingBag, Sparkles, Check, Info, ExternalLink } from "lucide-react";
@@ -191,6 +191,71 @@ export const HALLOWEEN_SETS: SetDefinition[] = [
   }
 ];
 
+
+function NailShapeIcon({ shape, size = 15, color = "currentColor" }: { shape: string; size?: number; color?: string }) {
+  switch (shape) {
+    case "Almond":
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+          <path d="M12 2.5C7.5 7 6 15 7 21H17C18 15 16.5 7 12 2.5Z" stroke={color} strokeWidth="1.8" fill={`${color}22`} />
+        </svg>
+      );
+    case "Stiletto":
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+          <path d="M12 1.5C9 8.5 7.5 16 8 21.5H16C16.5 16 15 8.5 12 1.5Z" stroke={color} strokeWidth="1.8" fill={`${color}22`} />
+        </svg>
+      );
+    case "Coffin":
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+          <path d="M9 2.5H15L17.5 13L17 21H7L6.5 13L9 2.5Z" stroke={color} strokeWidth="1.8" fill={`${color}22`} />
+        </svg>
+      );
+    case "Square":
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+          <path d="M6.5 3H17.5V21H6.5V3Z" stroke={color} strokeWidth="1.8" fill={`${color}22`} />
+        </svg>
+      );
+    case "Oval":
+    default:
+      return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: "inline-block", verticalAlign: "middle" }}>
+          <path d="M12 2C8 2 6.5 10 6.5 18C6.5 20 8.5 21 12 21C15.5 21 17.5 20 17.5 18C17.5 10 16 2 12 2Z" stroke={color} strokeWidth="1.8" fill={`${color}22`} />
+        </svg>
+      );
+  }
+}
+
+const AMBIENT_EMBERS = [
+  { id: 1, left: "4%", size: 6, delay: 0, duration: 12, color: "#ff7828", icon: "•" },
+  { id: 2, left: "12%", size: 12, delay: 2.2, duration: 14, color: "#ff70a6", icon: "✨" },
+  { id: 3, left: "21%", size: 6, delay: 4.5, duration: 10, color: "#b026ff", icon: "•" },
+  { id: 4, left: "29%", size: 13, delay: 1.1, duration: 16, color: "#ffd3ea", icon: "👻" },
+  { id: 5, left: "39%", size: 7, delay: 5.8, duration: 11, color: "#ff7828", icon: "•" },
+  { id: 6, left: "48%", size: 11, delay: 3.4, duration: 13, color: "#39ff14", icon: "✨" },
+  { id: 7, left: "57%", size: 6, delay: 6.2, duration: 12, color: "#ff70a6", icon: "•" },
+  { id: 8, left: "66%", size: 13, delay: 2.7, duration: 17, color: "#ffd3ea", icon: "👻" },
+  { id: 9, left: "75%", size: 8, delay: 4.9, duration: 10, color: "#b026ff", icon: "•" },
+  { id: 10, left: "84%", size: 11, delay: 1.6, duration: 14, color: "#ff7828", icon: "✨" },
+  { id: 11, left: "93%", size: 6, delay: 3.9, duration: 11, color: "#ff70a6", icon: "•" },
+  { id: 12, left: "17%", size: 7, delay: 7.2, duration: 13, color: "#39ff14", icon: "•" },
+  { id: 13, left: "36%", size: 11, delay: 8.8, duration: 15, color: "#ffd3ea", icon: "✨" },
+  { id: 14, left: "63%", size: 7, delay: 9.3, duration: 12, color: "#ff7828", icon: "•" },
+  { id: 15, left: "81%", size: 13, delay: 6.9, duration: 16, color: "#b026ff", icon: "👻" },
+];
+
+interface FlyingParticle {
+  id: string;
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+  imageUrl: string;
+  name: string;
+}
+
 export function HalloweenPage({
   navigate,
   isMobile,
@@ -222,6 +287,19 @@ export function HalloweenPage({
   });
   const [addedSetIds, setAddedSetIds] = useState<string[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
+  const [flyingParticles, setFlyingParticles] = useState<FlyingParticle[]>([]);
+  const [isCauldronSplashing, setIsCauldronSplashing] = useState(false);
+  const cauldronDockRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isMobile) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [isMobile]);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   const initAudio = () => {
@@ -251,12 +329,84 @@ export function HalloweenPage({
     } catch {}
   };
 
+  const playCauldronBubble = () => {
+    if (!soundEnabled) return;
+    initAudio();
+    if (!audioCtxRef.current) return;
+    try {
+      const ctx = audioCtxRef.current;
+      [240, 320, 420, 540, 680].forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const startTime = ctx.currentTime + idx * 0.055;
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, startTime);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.35, startTime + 0.07);
+        gain.gain.setValueAtTime(0.06, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.07);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + 0.08);
+      });
+    } catch {}
+  };
+
+  const triggerCauldronSplash = () => {
+    setIsCauldronSplashing(true);
+    playCauldronBubble();
+    const cauldronEl = cauldronDockRef.current;
+    const cRect = cauldronEl ? cauldronEl.getBoundingClientRect() : null;
+    const originX = cRect ? (cRect.left + 24) / window.innerWidth : (window.innerWidth < 768 ? 0.15 : 0.25);
+    const originY = cRect ? (cRect.top + 10) / window.innerHeight : 0.92;
+
+    confetti({
+      particleCount: 26,
+      spread: 60,
+      origin: { x: originX, y: originY },
+      colors: ["#39ff14", "#ff7828", "#ff70a6", "#b026ff", "#ffd3ea"],
+      ticks: 100,
+      gravity: 1.1
+    });
+
+    setTimeout(() => setIsCauldronSplashing(false), 800);
+  };
+
   const filteredSets = HALLOWEEN_SETS.filter(
     (s) => activeCategory === "all" || s.category === activeCategory
   );
 
-  const handleAddSetToCart = (setDef: SetDefinition) => {
+  const handleAddSetToCart = (setDef: SetDefinition, e?: React.MouseEvent) => {
     playSpookyChime(580);
+
+    // Launch flying particle to cauldron
+    if (e && typeof window !== "undefined") {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const startX = rect.left + rect.width / 2;
+      const startY = rect.top + rect.height / 2;
+
+      let targetX = isMobile ? 36 : window.innerWidth / 2 - 180;
+      let targetY = window.innerHeight - 38;
+      if (cauldronDockRef.current) {
+        const dRect = cauldronDockRef.current.getBoundingClientRect();
+        targetX = dRect.left + 22;
+        targetY = dRect.top + 22;
+      }
+
+      const pId = `${setDef.id}-${Date.now()}`;
+      setFlyingParticles((prev) => [
+        ...prev,
+        {
+          id: pId,
+          startX,
+          startY,
+          targetX,
+          targetY,
+          imageUrl: setDef.imageUrl,
+          name: setDef.name,
+        },
+      ]);
+    }
     const chosenShape = selectedShapes[setDef.id] || setDef.defaultShape || "Almond";
     const chosenLength = selectedLengths[setDef.id] || "Medium";
 
@@ -334,7 +484,7 @@ export function HalloweenPage({
     setTimeout(() => {
       navigate(
         buildBasketUrl(cart, {
-          coupon: STRIPE_HALLOWEEN_COUPON_ID,
+          coupon: "halloween",
           includeCoupon: true,
           cartOrigin: META_CART_ORIGIN,
         })
@@ -366,6 +516,191 @@ export function HalloweenPage({
       overflowX: "hidden",
       paddingBottom: halloweenCartCount > 0 ? "110px" : "60px"
     }}>
+
+      {/* Embedded High-Performance CSS Animations */}
+      <style>{`
+        @keyframes floatSpookyEmber {
+          0% {
+            transform: translateY(105vh) translateX(0) scale(0.6);
+            opacity: 0;
+          }
+          15% {
+            opacity: 0.75;
+          }
+          50% {
+            transform: translateY(50vh) translateX(18px) scale(1);
+            opacity: 0.6;
+          }
+          85% {
+            opacity: 0.45;
+          }
+          100% {
+            transform: translateY(-8vh) translateX(-18px) scale(0.85);
+            opacity: 0;
+          }
+        }
+
+        @keyframes cauldronBubbleRise {
+          0% {
+            transform: translateY(0) scale(0.3);
+            opacity: 0;
+          }
+          30% {
+            opacity: 0.9;
+          }
+          70% {
+            opacity: 0.75;
+            transform: translateY(-22px) translateX(5px) scale(1);
+          }
+          100% {
+            transform: translateY(-36px) translateX(-4px) scale(1.2);
+            opacity: 0;
+          }
+        }
+
+        .spooky-ember-particle {
+          position: fixed;
+          bottom: 0;
+          pointer-events: none;
+          z-index: 1;
+          animation-name: floatSpookyEmber;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear;
+          user-select: none;
+        }
+
+        .halloween-set-card {
+          transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease !important;
+        }
+        .halloween-set-card:hover {
+          border-color: rgba(255, 120, 40, 0.55) !important;
+          box-shadow: 0 20px 42px rgba(0, 0, 0, 0.8), 0 0 26px rgba(255, 112, 166, 0.24), 0 0 14px rgba(255, 120, 40, 0.3) !important;
+        }
+
+        .halloween-card-media {
+          position: relative;
+          overflow: hidden;
+        }
+        .halloween-card-media .halloween-gel-sheen {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            115deg,
+            transparent 15%,
+            rgba(255, 255, 255, 0.05) 32%,
+            rgba(255, 255, 255, 0.4) 48%,
+            rgba(255, 112, 166, 0.5) 52%,
+            rgba(255, 120, 40, 0.35) 56%,
+            rgba(255, 255, 255, 0.08) 68%,
+            transparent 85%
+          );
+          transform: translateX(-160%) skewX(-20deg);
+          transition: transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1);
+          pointer-events: none;
+          mix-blend-mode: screen;
+          z-index: 3;
+        }
+        .halloween-set-card:hover .halloween-gel-sheen {
+          transform: translateX(180%) skewX(-20deg);
+        }
+        .halloween-set-card:hover .halloween-img-zoom {
+          transform: scale(1.05);
+        }
+
+        .cauldron-bubble-float {
+          position: absolute;
+          top: -2px;
+          pointer-events: none;
+          animation: cauldronBubbleRise 2.4s infinite ease-out;
+          font-size: 11px;
+          z-index: 5;
+        }
+      `}</style>
+
+      {/* Floating Ambient Embers & Spirits */}
+      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 1, overflow: "hidden" }}>
+        {AMBIENT_EMBERS.map((ember) => (
+          <div
+            key={ember.id}
+            className="spooky-ember-particle"
+            style={{
+              left: ember.left,
+              fontSize: `${ember.size}px`,
+              color: ember.color,
+              animationDelay: `${ember.delay}s`,
+              animationDuration: `${ember.duration}s`,
+              textShadow: `0 0 10px ${ember.color}`
+            }}
+          >
+            {ember.icon}
+          </div>
+        ))}
+      </div>
+
+      {/* Interactive Cursor Lantern Glow (Desktop) */}
+      {mousePos && !isMobile && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            pointerEvents: "none",
+            zIndex: 1,
+            background: `radial-gradient(circle 380px at ${mousePos.x}px ${mousePos.y}px, rgba(255, 120, 40, 0.08) 0%, rgba(176, 38, 255, 0.04) 40%, transparent 75%)`,
+            transition: "background 0.05s ease-out"
+          }}
+        />
+      )}
+
+      {/* Flying Item Particles to Cauldron */}
+      <AnimatePresence>
+        {flyingParticles.map((p) => (
+          <motion.div
+            key={p.id}
+            initial={{
+              position: "fixed",
+              left: p.startX,
+              top: p.startY,
+              x: "-50%",
+              y: "-50%",
+              scale: 1,
+              opacity: 1,
+              zIndex: 9999,
+              pointerEvents: "none",
+              filter: "drop-shadow(0 0 14px #ff7828)"
+            }}
+            animate={{
+              left: [p.startX, (p.startX + p.targetX) / 2 + (p.startX < p.targetX ? 40 : -40), p.targetX],
+              top: [p.startY, Math.min(p.startY, p.targetY) - 90, p.targetY],
+              scale: [1, 1.25, 0.25],
+              opacity: [1, 1, 0.1],
+              rotate: [0, 180, 360]
+            }}
+            transition={{
+              duration: 0.85,
+              ease: [0.25, 0.1, 0.25, 1]
+            }}
+            onAnimationComplete={() => {
+              setFlyingParticles((prev) => prev.filter((item) => item.id !== p.id));
+              triggerCauldronSplash();
+            }}
+          >
+            <div style={{
+              width: 52,
+              height: 52,
+              borderRadius: "50%",
+              overflow: "hidden",
+              border: "2px solid #ff70a6",
+              boxShadow: "0 0 18px rgba(255, 120, 40, 0.85)",
+              background: "#180928"
+            }}>
+              <img src={p.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
       {/* Atmospheric Fog Effect */}
       <div style={{
@@ -579,7 +914,8 @@ export function HalloweenPage({
           return (
             <motion.div
               key={set.id}
-              whileHover={{ y: -6 }}
+              className="halloween-set-card"
+              whileHover={{ y: -8, scale: 1.015 }}
               transition={{ duration: 0.25 }}
               style={{
                 background: "linear-gradient(170deg, rgba(28, 12, 44, 0.9) 0%, rgba(14, 5, 24, 0.95) 100%)",
@@ -594,6 +930,7 @@ export function HalloweenPage({
               {/* Card Image Display with Real Sanity Photography */}
               <div
                 onClick={() => navigate(`/product/${set.id}`)}
+                className="halloween-card-media"
                 style={{
                   position: "relative",
                   aspectRatio: "1/1",
@@ -606,14 +943,18 @@ export function HalloweenPage({
                 <ImageWithFallback
                   src={set.imageUrl}
                   alt={set.name}
+                  className="halloween-img-zoom"
                   style={{
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
                     display: "block",
-                    transition: "transform 0.4s ease"
+                    transition: "transform 0.45s ease"
                   }}
                 />
+
+                {/* Holographic Gel Sheen on Hover */}
+                <div className="halloween-gel-sheen" />
 
                 {/* Gradient vignette */}
                 <div style={{
@@ -660,10 +1001,6 @@ export function HalloweenPage({
                   position: "absolute",
                   bottom: 10,
                   left: 12,
-                  right: 12,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
                   zIndex: 4,
                   fontSize: "11px",
                   color: "rgba(255, 211, 234, 0.95)",
@@ -671,16 +1008,6 @@ export function HalloweenPage({
                   textShadow: "0 1px 4px rgba(0,0,0,0.8)"
                 }}>
                   <span>{set.previewIcons} {set.paletteText}</span>
-                  <span style={{
-                    background: "rgba(0,0,0,0.7)",
-                    border: "1px solid rgba(255, 112, 166, 0.35)",
-                    padding: "2px 8px",
-                    borderRadius: 10,
-                    fontSize: "10px",
-                    color: "#ffd3ea"
-                  }}>
-                    {chosenShape} • {chosenLength}
-                  </span>
                 </div>
               </div>
 
@@ -711,9 +1038,12 @@ export function HalloweenPage({
 
                   {/* Dedicated Shape Selector */}
                   <div style={{ marginBottom: 12 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", fontWeight: 700, color: "#ffd3ea", marginBottom: 6 }}>
-                      <span>Selected Shape:</span>
-                      <span style={{ color: "#ff70a6" }}>{chosenShape}</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", fontWeight: 700, color: "#ffd3ea", marginBottom: 6 }}>
+                      <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <NailShapeIcon shape={chosenShape} color="#ff70a6" size={14} />
+                        <span>Selected Shape:</span>
+                      </span>
+                      <span style={{ color: "#ff70a6", fontWeight: 800 }}>{chosenShape}</span>
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 4 }}>
                       {(set.shapes || DEFAULT_SHAPES).map((shape) => (
@@ -792,7 +1122,7 @@ export function HalloweenPage({
                   {/* Add to Basket Action */}
                   <motion.button
                     whileTap={{ scale: 0.96 }}
-                    onClick={() => handleAddSetToCart(set)}
+                    onClick={(e) => handleAddSetToCart(set, e)}
                     style={{
                       width: "100%",
                       background: isAdded
@@ -857,20 +1187,62 @@ export function HalloweenPage({
       </main>
 
       {/* Sizing Reassurance Card */}
-      <section style={{ maxWidth: 850, margin: "48px auto 0", padding: "0 16px" }}>
+      <section style={{ maxWidth: 850, margin: "48px auto 0", padding: "0 16px", position: "relative" }}>
         <div style={{
           background: "linear-gradient(135deg, #1b0a2c 0%, #290f42 100%)",
-          border: "1px solid rgba(255, 112, 166, 0.2)",
+          border: "1px solid rgba(255, 112, 166, 0.25)",
           borderRadius: 20,
           padding: "20px 24px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 16
+          gap: 16,
+          position: "relative"
         }}>
+          {/* Peekaboo cute ghost */}
+          <motion.div
+            initial={{ y: 0 }}
+            whileHover={{ y: -5, scale: 1.15 }}
+            onClick={() => {
+              playSpookyChime(880);
+              confetti({
+                particleCount: 18,
+                spread: 45,
+                origin: { y: 0.8 },
+                colors: ["#ffd3ea", "#39ff14", "#ff7828"]
+              });
+            }}
+            style={{
+              position: "absolute",
+              top: -16,
+              right: 20,
+              cursor: "pointer",
+              background: "rgba(28, 10, 44, 0.95)",
+              border: "1px solid rgba(255, 112, 166, 0.4)",
+              borderRadius: 20,
+              padding: "3px 10px",
+              fontSize: 11,
+              fontWeight: 800,
+              color: "#ffd3ea",
+              boxShadow: "0 0 12px rgba(255, 112, 166, 0.35)",
+              display: "flex",
+              alignItems: "center",
+              gap: 4
+            }}
+            title="Peekaboo! Click for spooky sparkle ✨"
+          >
+            <span>👻</span>
+            <span style={{ fontSize: 10, color: "#ff9f43" }}>Psst!</span>
+          </motion.div>
+
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <span style={{ fontSize: 32 }}>📏</span>
+            <motion.span
+              whileHover={{ rotate: [0, -15, 15, -10, 0], scale: 1.2 }}
+              style={{ fontSize: 32, display: "inline-block", cursor: "pointer" }}
+            >
+              📏
+            </motion.span>
             <div>
               <h4 style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 700, color: "#fff" }}>
                 Unsure about your nail sizing?
@@ -926,36 +1298,62 @@ export function HalloweenPage({
             gap: 12
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{
-                position: "relative",
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #180928, #ff7828)",
-                border: "1px solid #ffd3ea",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 22
-              }}>
-                🔮
-                <span style={{
-                  position: "absolute",
-                  top: -4,
-                  right: -4,
-                  background: "#ff70a6",
-                  color: "#ffffff",
-                  fontSize: 10,
-                  fontWeight: 900,
-                  width: 18,
-                  height: 18,
+              <div
+                ref={cauldronDockRef}
+                style={{
+                  position: "relative",
+                  width: 44,
+                  height: 44,
                   borderRadius: "50%",
+                  background: "linear-gradient(135deg, #180928, #ff7828)",
+                  border: `1.5px solid ${isCauldronSplashing ? "#39ff14" : "#ffd3ea"}`,
+                  boxShadow: isCauldronSplashing ? "0 0 20px rgba(57, 255, 20, 0.7), 0 0 10px rgba(255, 120, 40, 0.8)" : "0 0 10px rgba(255, 120, 40, 0.3)",
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center"
-                }}>
+                  justifyContent: "center",
+                  fontSize: 22,
+                  transition: "all 0.3s ease"
+                }}
+              >
+                {/* Floating Bubbles from Cauldron */}
+                <span className="cauldron-bubble-float" style={{ left: 6, animationDelay: "0s" }}>🫧</span>
+                <span className="cauldron-bubble-float" style={{ left: 22, animationDelay: "1.1s" }}>✨</span>
+                <span className="cauldron-bubble-float" style={{ left: 14, animationDelay: "1.8s" }}>🧪</span>
+
+                <motion.span
+                  animate={isCauldronSplashing ? {
+                    scale: [1, 1.45, 0.85, 1.2, 1],
+                    rotate: [0, -14, 14, -8, 0]
+                  } : { scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.65 }}
+                  style={{ display: "inline-block" }}
+                >
+                  🔮
+                </motion.span>
+                <motion.span
+                  key={halloweenCartCount}
+                  initial={{ scale: 1.6 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                  style={{
+                    position: "absolute",
+                    top: -4,
+                    right: -4,
+                    background: "#ff70a6",
+                    color: "#ffffff",
+                    fontSize: 10,
+                    fontWeight: 900,
+                    width: 18,
+                    height: 18,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow: "0 0 8px rgba(255, 112, 166, 0.8)"
+                  }}
+                >
                   {halloweenCartCount}
-                </span>
+                </motion.span>
               </div>
               <div>
                 <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 800, color: "#ffd3ea" }}>

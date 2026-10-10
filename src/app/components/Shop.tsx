@@ -29,14 +29,18 @@ import {
   formatMoney,
   isNailSizeGuideItem,
   getCartItemDetailText,
-  getOrderSummaryLabel
+  getOrderSummaryLabel,
+  isHalloweenProduct,
+  getHalloweenSalePrice,
+  isHalloweenCoupon,
+  getCouponDisplayName
 } from "../utils/shopHelpers";
 
 // ── Field Component ──
 function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      <label style={{ fontSize: 11, fontWeight: 600, color: "#fc6587", letterSpacing: "0.03em", textTransform: "uppercase" }}>{label}</label>
+      <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", letterSpacing: "0.03em", textTransform: "uppercase" }}>{label}</label>
       {children}
       {error && <span style={{ fontSize: 11, color: "#c0392b" }}>{error}</span>}
     </div>
@@ -267,7 +271,7 @@ export function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
                   height: 6,
                   borderRadius: "50%",
                   border: "none",
-                  background: activeIndex === idx ? "#ffd6e9" : "rgba(0,0,0,0.25)",
+                  background: activeIndex === idx ? "#ff7828" : "rgba(255,255,255,0.25)",
                   padding: 0,
                   cursor: "pointer",
                   transition: "background 0.3s",
@@ -446,9 +450,9 @@ export function ShopPage({
 
         {/* Content Wrapper */}
         <div style={{ position: "relative", zIndex: 1 }}>
-          <p style={{ color: "#4f444a", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>🌟 Press-on Nail Shop 🌟</p>
+          <p style={{ color: "#fff5f7", margin: "0 0 5px", letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase" }}>🌟 Press-on Nail Shop 🌟</p>
           <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: "0 0 8px", lineHeight: 1.2 }}>💅 Browse Our Sets 💅</h2>
-          <p style={{ color: "#4f444a", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Find your perfect design, custom-made for you</p>
+          <p style={{ color: "#fff5f7", margin: "0 0 4px", fontSize: 13, lineHeight: 1.6 }}>Find your perfect design, custom-made for you</p>
         </div>
       </div>
 
@@ -510,7 +514,7 @@ export function ShopPage({
                   background: homeSelectedCollection === "All"
                     ? "linear-gradient(135deg, #fc6587 0%, #db2777 100%)"
                     : "#fff9fb",
-                  color: homeSelectedCollection === "All" ? "#ffffff" : "#4f444a",
+                  color: homeSelectedCollection === "All" ? "#ffffff" : "#fff5f7",
                   border: homeSelectedCollection === "All" ? "none" : "1px solid rgba(212, 84, 122, 0.18)",
                   padding: "6px 12px",
                   borderRadius: "20px",
@@ -564,7 +568,7 @@ export function ShopPage({
                       background: isSelected
                         ? "linear-gradient(135deg, #fc6587 0%, #db2777 100%)"
                         : "#fff9fb",
-                      color: isSelected ? "#ffffff" : "#4f444a",
+                      color: isSelected ? "#ffffff" : "#fff5f7",
                       border: isSelected ? "none" : "1px solid rgba(212, 84, 122, 0.18)",
                       padding: "6px 12px",
                       borderRadius: "20px",
@@ -590,7 +594,7 @@ export function ShopPage({
             }}>
               <span style={{
                 fontSize: "12px",
-                color: "#4f444a",
+                color: "#fff5f7",
                 fontWeight: "500"
               }}>
                 {homeSelectedCollection === "All"
@@ -599,7 +603,7 @@ export function ShopPage({
               </span>
 
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ fontSize: "11px", color: "#4f444a", fontWeight: "600" }}>Sort:</span>
+                <span style={{ fontSize: "11px", color: "#fff5f7", fontWeight: "600" }}>Sort:</span>
                 <select
                   value={homeSortBy}
                   onChange={(e) => setHomeSortBy(e.target.value)}
@@ -609,12 +613,12 @@ export function ShopPage({
                     borderRadius: "10px",
                     padding: "5px 24px 5px 10px",
                     fontSize: "12px",
-                    color: "#4f444a",
+                    color: "#fff5f7",
                     fontWeight: "500",
                     cursor: "pointer",
                     outline: "none",
                     appearance: "none",
-                    backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%25234f444a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\")",
+                    backgroundImage: "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2523fff5f7%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E\")",
                     backgroundRepeat: "no-repeat",
                     backgroundPosition: "right 8px top 50%",
                     backgroundSize: "8px auto"
@@ -633,7 +637,7 @@ export function ShopPage({
           <div id="products-grid" style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 14px", display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : isTablet ? "1fr 1fr 1fr" : "1fr 1fr 1fr 1fr", gap: isMobile ? 12 : 16, width: "100%", boxSizing: "border-box" }}>
             {filteredAndSortedProducts.length === 0 ? (
               <div style={{ padding: "40px 20px", textAlign: "center", gridColumn: "1 / -1" }}>
-                <p style={{ color: "#4f444a", fontSize: 14 }}>No nail sets found in this collection.</p>
+                <p style={{ color: "#fff5f7", fontSize: 14 }}>No nail sets found in this collection.</p>
                 <button
                   onClick={() => setHomeSelectedCollection("All")}
                   style={{
@@ -652,42 +656,120 @@ export function ShopPage({
                 </button>
               </div>
             ) : (
-              filteredAndSortedProducts.map((p) => (
-                <button key={p.id} onClick={() => openProduct(p)} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, overflow: "hidden", textAlign: "left", cursor: "pointer", padding: 0, position: "relative", display: "block", width: "100%" }}>
-                  <button onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }} style={{ position: "absolute", top: 7, right: 7, background: "rgba(255,255,255,0.88)", border: "none", borderRadius: "50%", width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 2 }} aria-label="Wishlist">
-                    <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#4f444a"} />
-                  </button>
-                  <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "#b8395d" }} />
-                  {(() => {
-                    const style = p.collection ? getCollectionStyle(p.collection) : null;
-                    return (
-                      <div style={{
-                        padding: "8px 10px 10px",
-                        background: style ? style.cardGradient : "transparent"
-                      }}>
-                        {p.collection && style && (
-                          <div style={{ display: "flex", alignItems: "center", gap: 3, marginBottom: 4 }}>
+              filteredAndSortedProducts.map((p) => {
+                const isHalloween = isHalloweenProduct(p);
+                const style = p.collection
+                  ? getCollectionStyle(p.collection)
+                  : (isHalloween ? getCollectionStyle("Halloween Collection") : null);
+                const salePrice = isHalloween ? getHalloweenSalePrice(p.price) : p.price;
+
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => openProduct(p)}
+                    style={{
+                      background: style ? style.cardGradient : "#fc6587",
+                      border: `1px solid ${isHalloween ? "rgba(255, 120, 40, 0.45)" : "rgba(212, 84, 122, 0.18)"}`,
+                      borderRadius: 14,
+                      overflow: "hidden",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      padding: 0,
+                      position: "relative",
+                      display: "block",
+                      width: "100%",
+                      boxShadow: isHalloween ? "0 4px 14px rgba(255, 120, 40, 0.25)" : "none",
+                      transition: "transform 0.2s ease, box-shadow 0.2s ease"
+                    }}
+                  >
+                    {isHalloween && (
+                      <div style={{ position: "absolute", top: 7, left: 7, zIndex: 3 }}>
+                        <span style={{
+                          fontSize: 9,
+                          fontWeight: 900,
+                          background: "#ff7828",
+                          color: "#08030e",
+                          padding: "2px 6px",
+                          borderRadius: 6,
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.04em"
+                        }}>
+                          20% OFF
+                        </span>
+                      </div>
+                    )}
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }}
+                      style={{
+                        position: "absolute",
+                        top: 7,
+                        right: 7,
+                        background: "rgba(255,255,255,0.88)",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: 28,
+                        height: 28,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        zIndex: 2
+                      }}
+                      aria-label="Wishlist"
+                    >
+                      <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#fff5f7"} />
+                    </button>
+                    <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: isHalloween ? "#180928" : "#b8395d" }} />
+                    <div style={{
+                      padding: "8px 10px 10px",
+                      background: style ? style.cardGradient : "transparent"
+                    }}>
+                      {(p.collection || isHalloween) && style && (
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 3, marginBottom: 4 }}>
+                          <span style={{
+                            fontSize: 9,
+                            background: style.badgeBg,
+                            color: "#ffffff",
+                            padding: "1.5px 5px",
+                            borderRadius: 4,
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.03em"
+                          }}>
+                            {style.emoji} {(p.collection || "Halloween Collection").replace(" Collection", "")}
+                          </span>
+                          {isHalloween && (
                             <span style={{
                               fontSize: 9,
-                              background: style.badgeBg,
-                              color: "#ffffff",
-                              padding: "1.5px 5px",
+                              fontWeight: 800,
+                              background: "#ff7828",
+                              color: "#08030e",
+                              padding: "1px 5px",
                               borderRadius: 4,
-                              fontWeight: 700,
                               textTransform: "uppercase",
-                              letterSpacing: "0.03em"
+                              letterSpacing: "0.02em"
                             }}>
-                              {style.emoji} {p.collection.replace(" Collection", "")}
+                              SALE
                             </span>
-                          </div>
-                        )}
-                        <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3 }}>{p.name}</p>
+                          )}
+                        </div>
+                      )}
+                      <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {p.name}
+                      </p>
+                      {isHalloween ? (
+                        <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+                          <span style={{ color: "#ffffff", fontWeight: 800, fontSize: 14 }}>£{salePrice.toFixed(2)}</span>
+                          <span style={{ color: "rgba(255, 255, 255, 0.65)", textDecoration: "line-through", fontSize: 11, fontWeight: 500 }}>£{p.price.toFixed(2)}</span>
+                        </div>
+                      ) : (
                         <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
-                      </div>
-                    );
-                  })()}
-                </button>
-              ))
+                      )}
+                    </div>
+                  </button>
+                );
+              })
             )}
           </div>
         </>
@@ -740,7 +822,7 @@ function ProductGuides() {
   const innerStyle: React.CSSProperties = {
     padding: "0 14px 14px",
     fontSize: 12.5,
-    color: "#4f444a",
+    color: "#fff5f7",
     borderTop: "1px solid rgba(212, 84, 122, 0.08)",
     lineHeight: 1.5,
   };
@@ -909,19 +991,33 @@ export function ProductDetailPage({
             {selected.name}
           </h2>
 
-          <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 10px" }}>
+          <p style={{ fontSize: 12, color: "#fff5f7", margin: "0 0 10px" }}>
             Handmade · Made to order
           </p>
 
-          <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
-            £{selected.price.toFixed(2)}
-          </span>
+          {isHalloweenProduct(selected) ? (
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
+              <span style={{ fontSize: 24, fontWeight: 800, color: "#ff7828" }}>
+                £{getHalloweenSalePrice(selected.price).toFixed(2)}
+              </span>
+              <span style={{ fontSize: 15, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
+                £{selected.price.toFixed(2)}
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
+                20% OFF HALLOWEEN SALE
+              </span>
+            </div>
+          ) : (
+            <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
+              £{selected.price.toFixed(2)}
+            </span>
+          )}
 
           <div style={{ margin: "12px 0 18px" }}>
             {selected.descriptionBlocks ? (
               <PortableText value={selected.descriptionBlocks} />
             ) : (
-              <p style={{ color: "#4f444a", fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+              <p style={{ color: "#fff5f7", fontSize: 13, lineHeight: 1.7, margin: 0 }}>
                 {selected.description}
               </p>
             )}
@@ -944,10 +1040,10 @@ export function ProductDetailPage({
                 <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: style.textColor, marginBottom: 3 }}>
                   <span style={{ fontSize: 14 }}>{style.emoji}</span> {collectionDetails.name} Set
                 </div>
-                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#4f444a", fontStyle: "italic", lineHeight: 1.4 }}>
+                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#fff5f7", fontStyle: "italic", lineHeight: 1.4 }}>
                   {collectionDetails.tagline}
                 </p>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#4f444a", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#fff5f7", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
                   Complete the Collection:
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1067,7 +1163,7 @@ export function ProductDetailPage({
                 borderRadius: 10,
                 padding: "10px 14px",
                 fontSize: 12,
-                color: "#4f444a",
+                color: "#fff5f7",
                 lineHeight: 1.5
               }}
             >
@@ -1110,7 +1206,7 @@ export function ProductDetailPage({
             <Heart
               size={17}
               fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
-              stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#4f444a"}
+              stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#fff5f7"}
             />
           </button>
 
@@ -1120,7 +1216,7 @@ export function ProductDetailPage({
             style={{
               flex: 1,
               background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "#fce4ea",
-              color: selectedShape && selectedLength ? "#fff" : "#4f444a",
+              color: selectedShape && selectedLength ? "#fff" : "#fff5f7",
               border: "none",
               borderRadius: 12,
               height: 46,
@@ -1173,20 +1269,34 @@ export function ProductDetailPage({
             <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 6px", fontSize: 28, color: "#ae3c6f" }}>
               {selected.name}
             </h2>
-            <p style={{ fontSize: 13, color: "#4f444a", margin: 0 }}>
+            <p style={{ fontSize: 13, color: "#fff5f7", margin: 0 }}>
               Handmade · Made to order
             </p>
           </div>
 
-          <span style={{ fontSize: 26, fontWeight: 700, color: "#e988b5" }}>
-            £{selected.price.toFixed(2)}
-          </span>
+          {isHalloweenProduct(selected) ? (
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
+              <span style={{ fontSize: 26, fontWeight: 800, color: "#ff7828" }}>
+                £{getHalloweenSalePrice(selected.price).toFixed(2)}
+              </span>
+              <span style={{ fontSize: 16, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
+                £{selected.price.toFixed(2)}
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
+                20% OFF HALLOWEEN SALE
+              </span>
+            </div>
+          ) : (
+            <span style={{ fontSize: 26, fontWeight: 700, color: "#e988b5" }}>
+              £{selected.price.toFixed(2)}
+            </span>
+          )}
 
           <div style={{ margin: "4px 0" }}>
             {selected.descriptionBlocks ? (
               <PortableText value={selected.descriptionBlocks} />
             ) : (
-              <p style={{ color: "#4f444a", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+              <p style={{ color: "#fff5f7", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
                 {selected.description}
               </p>
             )}
@@ -1209,10 +1319,10 @@ export function ProductDetailPage({
                 <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: style.textColor, marginBottom: 3 }}>
                   <span style={{ fontSize: 14 }}>{style.emoji}</span> {collectionDetails.name} Set
                 </div>
-                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#4f444a", fontStyle: "italic", lineHeight: 1.4 }}>
+                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#fff5f7", fontStyle: "italic", lineHeight: 1.4 }}>
                   {collectionDetails.tagline}
                 </p>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#4f444a", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#fff5f7", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
                   Complete the Collection:
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -1334,7 +1444,7 @@ export function ProductDetailPage({
                 borderRadius: 10,
                 padding: "10px 14px",
                 fontSize: 12,
-                color: "#4f444a",
+                color: "#fff5f7",
                 lineHeight: 1.5,
                 margin: "4px 0"
               }}
@@ -1363,7 +1473,7 @@ export function ProductDetailPage({
               <Heart
                 size={18}
                 fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
-                stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#4f444a"}
+                stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#fff5f7"}
               />
             </button>
 
@@ -1373,7 +1483,7 @@ export function ProductDetailPage({
               style={{
                 flex: 1,
                 background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "#fce4ea",
-                color: selectedShape && selectedLength ? "#fff" : "#4f444a",
+                color: selectedShape && selectedLength ? "#fff" : "#fff5f7",
                 border: "none",
                 borderRadius: 12,
                 height: 48,
@@ -1599,19 +1709,19 @@ export function BasketPage({
     <>
       {isMobile ? (
         <main style={{ padding: "16px 16px 100px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fff9fb", margin: "0 0 14px" }}>Your Basket</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#ffffff", textShadow: "0 0 16px rgba(255, 120, 40, 0.4)", margin: "0 0 14px" }}>Your Basket</h2>
 
           {cart.length === 0 ? (
             <div style={{ textAlign: "center", padding: "48px 20px" }}>
-              <ShoppingBag size={40} style={{ color: "#4f444a", marginBottom: 12 }} />
-              <p style={{ color: "#4f444a", fontSize: 14 }}>Your basket is empty</p>
-              <button onClick={() => navigate("/")} style={{ marginTop: 16, background: "#ffd6e9", color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Browse Sets</button>
+              <ShoppingBag size={40} style={{ color: "#fff5f7", marginBottom: 12 }} />
+              <p style={{ color: "#fff5f7", fontSize: 14 }}>Your basket is empty</p>
+              <button onClick={() => navigate("/")} style={{ marginTop: 16, background: "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)", color: "#fff", border: "none", borderRadius: 10, padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Browse Sets</button>
             </div>
           ) : (
             <>
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
                 {cart.map((item, idx) => (
-                  <div key={`${item.product.id}-${item.shape}`} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, padding: "12px", display: "flex", gap: 12, alignItems: "center" }}>
+                  <div key={`${item.product.id}-${item.shape}`} style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 14, padding: "12px", display: "flex", gap: 12, alignItems: "center" }}>
                     <button
                       type="button"
                       onClick={() => openBasketItemProduct(item)}
@@ -1633,8 +1743,8 @@ export function BasketPage({
                         <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 500, color: "#fff9fb", lineHeight: 1.3 }}>{item.product.name}</p>
                         {!isNailSizeGuideItem(item) && (
                           <>
-                            <p style={{ margin: "0 0 6px", fontSize: 11, color: "#4f444a" }}>Shape: {item.shape}</p>
-                            <p style={{ margin: 0, fontSize: 11, color: "#4f444a" }}>Length: {item.length}</p>
+                            <p style={{ margin: "0 0 6px", fontSize: 11, color: "#fff5f7" }}>Shape: {item.shape}</p>
+                            <p style={{ margin: 0, fontSize: 11, color: "#fff5f7" }}>Length: {item.length}</p>
                           </>
                         )}
                       </div>
@@ -1642,11 +1752,11 @@ export function BasketPage({
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
                       <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#fce4ea", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
+                        <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
                         <span style={{ minWidth: 28, textAlign: "center", fontSize: 13, fontWeight: 600 }}>{item.quantity}</span>
-                        <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#fce4ea", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
+                        <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
                       </div>
-                      <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={15} style={{ color: "#4f444a" }} /></button>
+                      <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={15} style={{ color: "#ff70a6" }} /></button>
                     </div>
                   </div>
                 ))}
@@ -1673,7 +1783,7 @@ export function BasketPage({
                 </div>
               )}
 
-              <div style={{ background: "#e0a2b4", borderRadius: 14, padding: "14px 16px", marginBottom: 14 }}>
+              <div style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 14, padding: "14px 16px", marginBottom: 14 }}>
                 <div style={{ display: "flex", gap: 8, alignItems: "flex-end", marginBottom: 12 }}>
                   <div style={{ flex: 1 }}>
                     <Field label="Coupon code" error={couponError ?? undefined}>
@@ -1723,7 +1833,7 @@ export function BasketPage({
                       {isCouponLoading && (
                         <>
                           <strong style={{ display: "block", color: "#fff9fb", marginBottom: 2 }}>Checking coupon...</strong>
-                          <span style={{ color: "#4f444a" }}>Validating your discount before checkout.</span>
+                          <span style={{ color: "#fff5f7" }}>Validating your discount before checkout.</span>
                         </>
                       )}
                       {!isCouponLoading && couponError && (
@@ -1734,9 +1844,13 @@ export function BasketPage({
                       )}
                       {!isCouponLoading && couponSummary && !couponError && (
                         <>
-                          <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>{couponSummary.code} applied</strong>
+                          <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>
+                            {isHalloweenCoupon(couponSummary.code) ? "🎃 " : ""}{getCouponDisplayName(couponSummary.code)} applied
+                          </strong>
                           <span style={{ color: "#2f5d46" }}>
-                            {couponSummary.description} saved you £{couponDiscount.toFixed(2)} on this order.
+                            {isHalloweenCoupon(couponSummary.code)
+                              ? `Halloween 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
+                              : `${couponSummary.description} saved you £${couponDiscount.toFixed(2)} on this order.`}
                           </span>
                         </>
                       )}
@@ -1748,19 +1862,19 @@ export function BasketPage({
                 )}
 
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                  <span style={{ color: "#4f444a" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
+                  <span style={{ color: "#fff5f7" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
                   <span>£{cartTotal.toFixed(2)}</span>
                 </div>
                 {couponSummary && couponDiscount > 0 && (
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}>
-                    <span style={{ color: "#4f444a" }}>Discount ({couponSummary.code})</span>
+                    <span style={{ color: "#fff5f7" }}>Discount ({getCouponDisplayName(couponSummary.code)})</span>
                     <span style={{ color: "#ffd6e9" }}>-£{couponDiscount.toFixed(2)}</span>
                   </div>
                 )}
 
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
-                  <span style={{ color: "#4f444a" }}>Delivery</span>
-                  <span style={{ color: "#4f444a" }}>Choose on next step</span>
+                  <span style={{ color: "#fff5f7" }}>Delivery</span>
+                  <span style={{ color: "#fff5f7" }}>Choose on next step</span>
                 </div>
                 <div style={{ borderTop: "1px solid rgba(212, 84, 122, 0.18)", paddingTop: 8, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 15 }}>
                   <span>Items total</span>
@@ -1768,13 +1882,13 @@ export function BasketPage({
                 </div>
               </div>
 
-              <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#4f444a", lineHeight: 1.5, marginBottom: 14 }}>
+              <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#fff5f7", lineHeight: 1.5, marginBottom: 14 }}>
                 You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
               </div>
 
               <div style={{ display: "flex", alignItems: "center", margin: "20px 0 14px" }}>
                 <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
-                <span style={{ padding: "0 10px", fontSize: 11, fontWeight: 600, color: "#4f444a", letterSpacing: "1px" }}>OR</span>
+                <span style={{ padding: "0 10px", fontSize: 11, fontWeight: 600, color: "#fff5f7", letterSpacing: "1px" }}>OR</span>
                 <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
               </div>
 
@@ -1826,20 +1940,20 @@ export function BasketPage({
         </main>
       ) : (
         <main style={{ padding: "28px 24px", maxWidth: 1200, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#fc6587", margin: "0 0 20px" }}>Your Basket</h2>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#ffffff", textShadow: "0 0 16px rgba(255, 120, 40, 0.4)", margin: "0 0 20px" }}>Your Basket</h2>
 
           {cart.length === 0 ? (
             <div style={{ textAlign: "center", padding: "64px 20px" }}>
-              <ShoppingBag size={48} style={{ color: "#4f444a", marginBottom: 16 }} />
-              <p style={{ color: "#4f444a", fontSize: 16 }}>Your basket is empty</p>
-              <button onClick={() => navigate("/")} style={{ marginTop: 20, background: "#ffd6e9", color: "#fff", border: "none", borderRadius: 10, padding: "10px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Browse Sets</button>
+              <ShoppingBag size={48} style={{ color: "#fff5f7", marginBottom: 16 }} />
+              <p style={{ color: "#fff5f7", fontSize: 16 }}>Your basket is empty</p>
+              <button onClick={() => navigate("/")} style={{ marginTop: 20, background: "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)", color: "#fff", border: "none", borderRadius: 10, padding: "10px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>Browse Sets</button>
             </div>
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, alignItems: "start" }}>
               {/* Left Column: Basket Items */}
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {cart.map((item, idx) => (
-                  <div key={`${item.product.id}-${item.shape}`} style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 14, padding: "16px", display: "flex", gap: 16, alignItems: "center" }}>
+                  <div key={`${item.product.id}-${item.shape}`} style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 14, padding: "16px", display: "flex", gap: 16, alignItems: "center" }}>
                     <button
                       type="button"
                       onClick={() => openBasketItemProduct(item)}
@@ -1860,7 +1974,7 @@ export function BasketPage({
                       <div style={{ minWidth: 0 }}>
                         <p style={{ margin: "0 0 4px", fontSize: 15, fontWeight: 600, color: "#fff9fb", lineHeight: 1.3 }}>{item.product.name}</p>
                         {!isNailSizeGuideItem(item) && (
-                          <div style={{ display: "flex", gap: 12, color: "#4f444a", fontSize: 12 }}>
+                          <div style={{ display: "flex", gap: 12, color: "#fff5f7", fontSize: 12 }}>
                             <span>Shape: <strong>{item.shape}</strong></span>
                             <span>Length: <strong>{item.length}</strong></span>
                           </div>
@@ -1869,12 +1983,12 @@ export function BasketPage({
                     </button>
                     <div style={{ display: "flex", gap: 16, alignItems: "center", flexShrink: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#9b3e54", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
+                        <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
                         <span style={{ minWidth: 32, textAlign: "center", fontSize: 14, fontWeight: 600 }}>{item.quantity}</span>
-                        <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(212, 84, 122, 0.18)", background: "#9b3e54", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
+                        <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
                       </div>
                       <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16, minWidth: 60, textAlign: "right" }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
-                      <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={16} style={{ color: "#4f444a" }} /></button>
+                      <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={16} style={{ color: "#ff70a6" }} /></button>
                     </div>
                   </div>
                 ))}
@@ -1903,7 +2017,7 @@ export function BasketPage({
                   </div>
                 )}
 
-                <div style={{ background: "#e0a2b4", borderRadius: 14, padding: "16px 18px" }}>
+                <div style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 14, padding: "16px 18px" }}>
                   <div style={{ display: "flex", gap: 8, alignItems: "flex-end", marginBottom: 14 }}>
                     <div style={{ flex: 1 }}>
                       <Field label="Coupon code" error={couponError ?? undefined}>
@@ -1953,7 +2067,7 @@ export function BasketPage({
                         {isCouponLoading && (
                           <>
                             <strong style={{ display: "block", color: "#fff9fb", marginBottom: 2 }}>Checking coupon...</strong>
-                            <span style={{ color: "#4f444a" }}>Validating your discount before checkout.</span>
+                            <span style={{ color: "#fff5f7" }}>Validating your discount before checkout.</span>
                           </>
                         )}
                         {!isCouponLoading && couponError && (
@@ -1964,9 +2078,13 @@ export function BasketPage({
                         )}
                         {!isCouponLoading && couponSummary && !couponError && (
                           <>
-                            <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>{couponSummary.code} applied</strong>
+                            <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>
+                              {isHalloweenCoupon(couponSummary.code) ? "🎃 " : ""}{getCouponDisplayName(couponSummary.code)} applied
+                            </strong>
                             <span style={{ color: "#2f5d46" }}>
-                              {couponSummary.description} saved you £{couponDiscount.toFixed(2)} on this order.
+                              {isHalloweenCoupon(couponSummary.code)
+                                ? `Halloween 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
+                                : `${couponSummary.description} saved you £${couponDiscount.toFixed(2)} on this order.`}
                             </span>
                           </>
                         )}
@@ -1978,19 +2096,19 @@ export function BasketPage({
                   )}
 
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 8 }}>
-                    <span style={{ color: "#4f444a" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
+                    <span style={{ color: "#fff5f7" }}>Subtotal ({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
                     <span>£{cartTotal.toFixed(2)}</span>
                   </div>
                   {couponSummary && couponDiscount > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 8 }}>
-                      <span style={{ color: "#4f444a" }}>Discount ({couponSummary.code})</span>
+                      <span style={{ color: "#fff5f7" }}>Discount ({getCouponDisplayName(couponSummary.code)})</span>
                       <span style={{ color: "#ffd6e9" }}>-£{couponDiscount.toFixed(2)}</span>
                     </div>
                   )}
 
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 10 }}>
-                    <span style={{ color: "#4f444a" }}>Delivery</span>
-                    <span style={{ color: "#4f444a" }}>Choose on next step</span>
+                    <span style={{ color: "#fff5f7" }}>Delivery</span>
+                    <span style={{ color: "#fff5f7" }}>Choose on next step</span>
                   </div>
                   <div style={{ borderTop: "1px solid rgba(212, 84, 122, 0.18)", paddingTop: 10, display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 16 }}>
                     <span>Items total</span>
@@ -1998,7 +2116,7 @@ export function BasketPage({
                   </div>
                 </div>
 
-                <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#4f444a", lineHeight: 1.5 }}>
+                <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#fff5f7", lineHeight: 1.5 }}>
                   You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
                 </div>
 
@@ -2013,7 +2131,7 @@ export function BasketPage({
                 {/* Visual Separator */}
                 <div style={{ display: "flex", alignItems: "center", margin: "20px 0 14px" }}>
                   <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
-                  <span style={{ padding: "0 10px", fontSize: 11, fontWeight: 600, color: "#4f444a", letterSpacing: "1px" }}>OR</span>
+                  <span style={{ padding: "0 10px", fontSize: 11, fontWeight: 600, color: "#fff5f7", letterSpacing: "1px" }}>OR</span>
                   <div style={{ flex: 1, height: 1, background: "rgba(252, 101, 135, 0.2)" }} />
                 </div>
 
@@ -2167,7 +2285,7 @@ export function PreorderPage({
             <h3 style={{ margin: "0 0 8px", fontFamily: "'Lobster', serif", fontSize: 22, color: "#fff9fb" }}>
               Redirecting to Stripe
             </h3>
-            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "#4f444a" }}>
+            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "#fff5f7" }}>
               You&apos;ll be redirected to Stripe to complete your order. Please wait a moment while we prepare your secure checkout.
             </p>
           </div>
@@ -2280,8 +2398,8 @@ export function PreorderPage({
                           {option.isFree ? "Free" : formatMoney(option.amount)}
                         </span>
                       </div>
-                      <p style={{ margin: "0 0 3px", fontSize: 12, lineHeight: 1.5, color: "#4f444a" }}>{option.description}</p>
-                      <p style={{ margin: 0, fontSize: 11, lineHeight: 1.5, color: "#4f444a" }}>{option.estimate}</p>
+                      <p style={{ margin: "0 0 3px", fontSize: 12, lineHeight: 1.5, color: "#fff5f7" }}>{option.description}</p>
+                      <p style={{ margin: 0, fontSize: 11, lineHeight: 1.5, color: "#fff5f7" }}>{option.estimate}</p>
                     </div>
                   </label>
                 );
@@ -2299,7 +2417,7 @@ export function PreorderPage({
 
         {/* Right Column: Checkout Summary (Sticky) */}
         <div style={{ position: "sticky", top: 80, alignSelf: "start", display: "flex", flexDirection: "column", gap: 16, width: "100%" }}>
-          <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#4f444a", lineHeight: 1.5 }}>
+          <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#fff5f7", lineHeight: 1.5 }}>
             {form.contactMethod === "email" ? (
               <>
                 You will be contacted via Email at <strong>{form.email || "your email"}</strong> up to 24 hours after payment to confirm your nail sizes.
@@ -2311,17 +2429,17 @@ export function PreorderPage({
             )}
           </div>
 
-          <div style={{ background: "#e0a2b4", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "#fff9fb" }}>
+          <div style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "#ffffff" }}>
             <strong style={{ display: "block", marginBottom: 6 }}>Order Summary</strong>
             {cart.map((item, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#4f444a" }}>
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#fff5f7" }}>
                 <span>{getOrderSummaryLabel(item)}</span>
                 <span>£{(item.product.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
             {couponSummary && couponDiscount > 0 && (
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#4f444a" }}>
-                <span>Discount ({couponSummary.code})</span>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#fff5f7" }}>
+                <span>Discount ({getCouponDisplayName(couponSummary.code)})</span>
                 <span>-{formatMoney(couponDiscount)}</span>
               </div>
             )}
@@ -2337,7 +2455,7 @@ export function PreorderPage({
               </div>
             )}
             {selectedShippingOption && (
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#4f444a" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#fff5f7" }}>
                 <span>{selectedShippingOption.label}</span>
                 <span>{selectedShippingOption.isFree ? "Free" : formatMoney(selectedShippingOption.amount)}</span>
               </div>
@@ -2347,7 +2465,7 @@ export function PreorderPage({
             </div>
           </div>
 
-          <button type="submit" disabled={isSubmitting} style={{ background: isSubmitting ? "rgba(212, 84, 122, 0.18)" : "#c281a9", color: "#ffffff", border: "none", borderRadius: 12, height: 48, fontWeight: 600, fontSize: 14, cursor: isSubmitting ? "not-allowed" : "pointer", letterSpacing: "0.02em" }}>
+          <button type="submit" disabled={isSubmitting} style={{ background: isSubmitting ? "rgba(255, 255, 255, 0.1)" : "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)", color: "#ffffff", border: "none", borderRadius: 12, height: 48, fontWeight: 600, fontSize: 14, cursor: isSubmitting ? "not-allowed" : "pointer", letterSpacing: "0.02em", boxShadow: isSubmitting ? "none" : "0 4px 15px rgba(255, 120, 40, 0.3)" }}>
             {isSubmitting ? "Redirecting to Stripe..." : "Confirm Pre-order 🌸"}
           </button>
           {checkoutError && <p style={{ color: "#c0392b", fontSize: 12, marginTop: 10 }}>{checkoutError}</p>}
@@ -2408,11 +2526,11 @@ export function ConfirmationPage({
 
         <h2 style={{ fontFamily: "'Lobster', serif", fontSize: isMobile ? 24 : 32, color: "#fc6587", margin: "0 0 12px" }}>Order Placed!</h2>
 
-        <p style={{ color: "#4f444a", fontSize: isMobile ? 13 : 16, lineHeight: 1.7, margin: "0 0 10px" }}>
+        <p style={{ color: "#fff5f7", fontSize: isMobile ? 13 : 16, lineHeight: 1.7, margin: "0 0 10px" }}>
           Thank you, <strong>{form.firstName}</strong>! Your pre-order of {confirmationCount} item{confirmationCount !== 1 ? "s" : ""} is confirmed.
         </p>
 
-        <p style={{ color: "#4f444a", fontSize: isMobile ? 12 : 14, margin: "0 0 24px", lineHeight: 1.6 }}>
+        <p style={{ color: "#fff5f7", fontSize: isMobile ? 12 : 14, margin: "0 0 24px", lineHeight: 1.6 }}>
           A confirmation will be sent to <strong>{form.email}</strong>.<br />
           {form.contactMethod === "email" ? (
             <span>You will be contacted via Email at <strong>{form.email}</strong> within 24 hours to confirm your nail sizes.</span>
@@ -2439,7 +2557,7 @@ export function ConfirmationPage({
           boxSizing: "border-box"
         }}
       >
-        <div style={{ background: "#e0a2b4", borderRadius: 13, padding: "16px", textAlign: "left" }}>
+        <div style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 13, padding: "16px", textAlign: "left" }}>
           <p style={{ margin: "0 0 10px", fontWeight: 600, fontSize: 14, color: "#fff9fb" }}>Items ordered</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {confirmationItems.map((item, i) => (
@@ -2454,7 +2572,7 @@ export function ConfirmationPage({
           </div>
         </div>
 
-        <div style={{ background: "#fc6587", border: "1px solid rgba(212, 84, 122, 0.18)", borderRadius: 13, padding: "16px", textAlign: "left" }}>
+        <div style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 13, padding: "16px", textAlign: "left" }}>
           <p style={{ margin: "0 0 8px", fontWeight: 600, fontSize: 14, color: "#fff9fb" }}>Delivering to</p>
           <p style={{ margin: 0, fontSize: 13, color: "#ffffff", lineHeight: 1.6 }}>
             <strong>{form.firstName} {form.lastName}</strong><br />

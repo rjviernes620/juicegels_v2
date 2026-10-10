@@ -43,6 +43,14 @@ export function isHalloweenCoupon(couponCode?: string | null): boolean {
   );
 }
 
+export function getCouponDisplayName(couponCode?: string | null): string {
+  if (!couponCode) return "";
+  if (isHalloweenCoupon(couponCode)) {
+    return "Halloween Sale (20% OFF)";
+  }
+  return couponCode;
+}
+
 export function getStripeShippingRateIds(stripePublishableKey?: string): Record<ShippingOptionId, string> {
   const isTestMode = stripePublishableKey
     ? stripePublishableKey.startsWith("pk_test")
@@ -385,3 +393,23 @@ export function parseBasketItemsParam(itemsParam: string, products: Product[]): 
     .filter(Boolean) as CartItem[];
 }
 
+
+export function isHalloweenProduct(product?: { id?: string; name?: string; collection?: string; tags?: string[] } | null): boolean {
+  if (!product) return false;
+  if (product.collection === "Halloween Collection") return true;
+  if (product.tags?.includes("Halloween") || product.tags?.includes("halloweennails")) return true;
+  if (product.id) {
+    const num = parseInt(product.id.replace(/\D/g, ""), 10);
+    if ([2447, 2462, 2477, 2492, 1277, 1247, 196, 1262].includes(num)) return true;
+  }
+  if (product.name) {
+    const lower = product.name.trim().toLowerCase();
+    const names = ["booquette", "scream queen", "hello horror", "boo belle", "pink-o-ween", "sparkle scream", "pearl noir", "midnight muse"];
+    if (names.includes(lower)) return true;
+  }
+  return false;
+}
+
+export function getHalloweenSalePrice(originalPrice: number): number {
+  return Math.round(originalPrice * 0.8 * 100) / 100;
+}

@@ -9,6 +9,7 @@ import {
   STRIPE_HALLOWEEN_COUPON_ID,
   STRIPE_HALLOWEEN_COUPON_TITLE,
   isHalloweenCoupon,
+  getCouponDisplayName,
   type BasketTokenData,
 } from '../app/utils/shopHelpers';
 import { type Product } from '../app/utils/parseProducts';
@@ -191,6 +192,11 @@ describe('Basket & Token Serialization', () => {
       expect(isHalloweenCoupon('OTHER_COUPON')).toBe(false);
       expect(isHalloweenCoupon(null)).toBe(false);
       expect(isHalloweenCoupon(undefined)).toBe(false);
+
+      expect(getCouponDisplayName('eU3xxIba')).toBe('Halloween Sale (20% OFF)');
+      expect(getCouponDisplayName('EU3XXIBA')).toBe('Halloween Sale (20% OFF)');
+      expect(getCouponDisplayName('halloween')).toBe('Halloween Sale (20% OFF)');
+      expect(getCouponDisplayName('DEV_JUNJUN')).toBe('DEV_JUNJUN');
     });
 
     it('builds basket URL with Stripe Halloween coupon token', () => {

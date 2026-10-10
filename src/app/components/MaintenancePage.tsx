@@ -93,7 +93,7 @@ export function MaintenancePage({ onBypassSuccess }: MaintenancePageProps) {
       style={{
         fontFamily: "'DM Sans', sans-serif",
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #ffe5f1 0%, #ffd2e6 100%)",
+        background: "linear-gradient(135deg, #0c0314 0%, #1c0c2c 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -105,10 +105,10 @@ export function MaintenancePage({ onBypassSuccess }: MaintenancePageProps) {
         style={{
           width: "100%",
           maxWidth: "480px",
-          background: "rgba(255, 255, 255, 0.45)",
+          background: "rgba(28, 12, 44, 0.85)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
+          border: "1px solid rgba(255, 112, 166, 0.25)",
           borderRadius: "24px",
           padding: "40px 32px",
           boxShadow: "0 10px 30px rgba(212, 84, 122, 0.1)",
@@ -136,7 +136,7 @@ export function MaintenancePage({ onBypassSuccess }: MaintenancePageProps) {
             userSelect: "none",
           }}
         >
-          <Lock size={36} color="#d4547a" />
+          <Lock size={36} color="#ff7828" />
         </div>
 
         {/* Brand Name */}
@@ -146,7 +146,7 @@ export function MaintenancePage({ onBypassSuccess }: MaintenancePageProps) {
             fontWeight: 800,
             letterSpacing: "-0.5px",
             margin: 0,
-            background: "linear-gradient(45deg, #d4547a 0%, #832d47 100%)",
+            background: "linear-gradient(45deg, #ff7828 0%, #b026ff 100%)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}
@@ -301,7 +301,7 @@ export function MaintenancePage({ onBypassSuccess }: MaintenancePageProps) {
                   padding: "12px 20px",
                   borderRadius: "14px",
                   border: "none",
-                  background: "linear-gradient(45deg, #d4547a 0%, #832d47 100%)",
+                  background: "linear-gradient(45deg, #ff7828 0%, #b026ff 100%)",
                   color: "#ffffff",
                   fontSize: "14px",
                   fontWeight: 700,

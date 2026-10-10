@@ -12,16 +12,16 @@ export function PrivacyPolicy({
   navigate: (path: string) => void;
 }) {
   return (
-    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
       <div
         style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)",
+          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)",
           padding: isMobile ? "36px 16px 28px" : "48px 20px 36px",
           textAlign: "center",
-          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
+          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -52,9 +52,9 @@ export function PrivacyPolicy({
             cDistance={2.91}
             cPolarAngle={120}
             cameraZoom={isMobile ? 1.0 : (isTablet ? 1.5 : 2.5)}
-            color1="#ebedff"
-            color2="#f3f2f8"
-            color3="#dbf8ff"
+            color1="#ff7828"
+            color2="#9333ea"
+            color3="#ff70a6"
             destination="onCanvas"
             embedMode="off"
             envPreset="city"
@@ -103,11 +103,11 @@ export function PrivacyPolicy({
               width: 50,
               height: 50,
               borderRadius: "50%",
-              background: "rgba(252, 101, 135, 0.15)",
+              background: "rgba(255, 120, 40, 0.2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#fc6587",
+              color: "#ff7828",
               marginBottom: 4,
             }}
           >
@@ -118,7 +118,8 @@ export function PrivacyPolicy({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: isMobile ? 32 : 40,
-                color: "#fc6587",
+                color: "#ffffff",
+                textShadow: "0 0 16px rgba(255, 120, 40, 0.4)",
                 margin: "0 0 6px",
                 lineHeight: 1.2,
               }}
@@ -127,7 +128,7 @@ export function PrivacyPolicy({
             </h2>
             <p
               style={{
-                color: "#4f444a",
+                color: "#ffd3ea",
                 margin: 0,
                 fontSize: 13,
                 fontWeight: 500,
@@ -156,7 +157,7 @@ export function PrivacyPolicy({
           style={{
             background: "none",
             border: "none",
-            color: "#c4597d",
+            color: "#ff9f43",
             cursor: "pointer",
             fontWeight: 600,
             fontSize: 14,
@@ -173,24 +174,24 @@ export function PrivacyPolicy({
         {/* Glassmorphism content card */}
         <div
           style={{
-            background: "rgba(255, 255, 255, 0.45)",
+            background: "rgba(28, 12, 44, 0.85)",
             backdropFilter: "blur(12px)",
             borderRadius: 24,
             padding: isMobile ? "24px 20px" : "40px 36px",
-            border: "1px solid rgba(255, 255, 255, 0.4)",
+            border: "1px solid rgba(255, 112, 166, 0.22)",
             boxShadow: "0 8px 32px rgba(212, 84, 122, 0.06)",
-            color: "#4f444a",
+            color: "#d8c8df",
             lineHeight: 1.7,
             fontSize: 14,
           }}
         >
-          <p style={{ margin: "0 0 24px 0", fontSize: 15, fontWeight: 500, color: "#3a3035" }}>
+          <p style={{ margin: "0 0 24px 0", fontSize: 15, fontWeight: 500, color: "#ffffff" }}>
             At JuiceGels, the privacy of our visitors and customers is one of our main priorities.
             This Privacy Policy document outlines the types of information we collect, how we use it,
             and how we protect your personal data.
           </p>
 
-          <hr style={{ border: "none", borderTop: "1px solid rgba(212, 84, 122, 0.15)", margin: "24px 0" }} />
+          <hr style={{ border: "none", borderTop: "1px solid rgba(255, 112, 166, 0.2)", margin: "24px 0" }} />
 
           {/* Section 1 */}
           <div style={{ marginBottom: 32 }}>
@@ -198,7 +199,7 @@ export function PrivacyPolicy({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: 20,
-                color: "#fc6587",
+                color: "#ffffff",
                 margin: "0 0 12px 0",
                 display: "flex",
                 alignItems: "center",
@@ -233,7 +234,7 @@ export function PrivacyPolicy({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: 20,
-                color: "#fc6587",
+                color: "#ffffff",
                 margin: "0 0 12px 0",
                 display: "flex",
                 alignItems: "center",
@@ -267,7 +268,7 @@ export function PrivacyPolicy({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: 20,
-                color: "#fc6587",
+                color: "#ffffff",
                 margin: "0 0 12px 0",
                 display: "flex",
                 alignItems: "center",
@@ -292,7 +293,7 @@ export function PrivacyPolicy({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: 20,
-                color: "#fc6587",
+                color: "#ffffff",
                 margin: "0 0 12px 0",
                 display: "flex",
                 alignItems: "center",
@@ -320,7 +321,7 @@ export function PrivacyPolicy({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: 20,
-                color: "#fc6587",
+                color: "#ffffff",
                 margin: "0 0 12px 0",
                 display: "flex",
                 alignItems: "center",
@@ -345,7 +346,7 @@ export function PrivacyPolicy({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: 20,
-                color: "#fc6587",
+                color: "#ffffff",
                 margin: "0 0 12px 0",
                 display: "flex",
                 alignItems: "center",
@@ -370,10 +371,10 @@ export function PrivacyPolicy({
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <Mail size={16} style={{ color: "#fc6587" }} />
+                <Mail size={16} style={{ color: "#ffffff" }} />
                 <span>
                   Email:{" "}
-                  <a href="mailto:juicegels@gmail.com" style={{ color: "#c4597d", fontWeight: 600, textDecoration: "underline" }}>
+                  <a href="mailto:juicegels@gmail.com" style={{ color: "#ff9f43", fontWeight: 600, textDecoration: "underline" }}>
                     juicegels@gmail.com
                   </a>
                 </span>
@@ -386,7 +387,7 @@ export function PrivacyPolicy({
                     href="https://instagram.com/juicegels"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#c4597d", fontWeight: 600, textDecoration: "underline" }}
+                    style={{ color: "#ff9f43", fontWeight: 600, textDecoration: "underline" }}
                   >
                     @juicegels
                   </a>

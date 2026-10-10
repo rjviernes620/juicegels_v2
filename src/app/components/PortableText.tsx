@@ -18,7 +18,7 @@ export function PortableText({ value }: PortableTextProps) {
         let styleObj: React.CSSProperties = {
           margin: 0,
           lineHeight: '1.7',
-          color: '#4f444a',
+          color: '#fff5f7',
           whiteSpace: 'pre-line', // Preserves inline line breaks/new lines from Shift+Enter
         };
 

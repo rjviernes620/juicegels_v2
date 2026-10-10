@@ -476,7 +476,7 @@ function ComingSoonBox({ style }: { style?: React.CSSProperties }) {
       <h4 style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#a24e6a" }}>
         🎥 Coming Soon - Video tutorials🎥
       </h4>
-      <p style={{ margin: 0, fontSize: 11.5, color: "#4f444a", lineHeight: 1.45, fontWeight: 500 }}>
+      <p style={{ margin: 0, fontSize: 11.5, color: "#fff5f7", lineHeight: 1.45, fontWeight: 500 }}>
         We're currently creating step-by-step application and removal videos to make the process even easier. Check back soon!
       </p>
     </div>

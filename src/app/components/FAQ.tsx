@@ -314,7 +314,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
           <p style={{ margin: "0 0 10px 0", fontStyle: "italic", fontWeight: 500 }}>
             Never force or pull your press-on nails off, as this can damage your natural nails.
           </p>
-          <p style={{ margin: "12px 0 6px 0", fontWeight: 600, color: "#fff9fb" }}>Removing Nail Glue:</p>
+          <p style={{ margin: "12px 0 6px 0", fontWeight: 600, color: "#ffffff" }}>Removing Nail Glue:</p>
           <ol style={{ margin: "0 0 14px 0", paddingLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
             <li>Fill a bowl with warm, soapy water and add a small amount of oil (such as cuticle, olive or baby oil).</li>
             <li>Soak your nails for 10–15 minutes.</li>
@@ -322,7 +322,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             <li>If there's resistance, soak for a little longer.</li>
             <li>Remove any remaining glue with a nail buffer and wash your hands.</li>
           </ol>
-          <p style={{ margin: "0 0 6px 0", fontWeight: 600, color: "#fff9fb" }}>Removing Sticky Tabs:</p>
+          <p style={{ margin: "0 0 6px 0", fontWeight: 600, color: "#ffffff" }}>Removing Sticky Tabs:</p>
           <ol style={{ margin: 0, paddingLeft: 16, display: "flex", flexDirection: "column", gap: 6 }}>
             <li>Soak your hands in warm water for 5–10 minutes.</li>
             <li>Gently lift the sides of the press-on using the cuticle stick.</li>
@@ -359,16 +359,16 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
   });
 
   return (
-    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
       <div
         style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)",
+          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)",
           padding: "36px 20px 28px",
           textAlign: "center",
-          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
+          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -399,9 +399,9 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             cDistance={2.91}
             cPolarAngle={120}
             cameraZoom={isMobile ? 1.0 : (isTablet ? 1.5 : 2.5)}
-            color1="#ebedff"
-            color2="#f3f2f8"
-            color3="#dbf8ff"
+            color1="#ff7828"
+            color2="#9333ea"
+            color3="#ff70a6"
             destination="onCanvas"
             embedMode="off"
             envPreset="city"
@@ -442,7 +442,8 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: 32,
-                color: "#fc6587",
+                color: "#ffffff",
+                textShadow: "0 0 16px rgba(255, 120, 40, 0.4)",
                 margin: "0 0 6px",
                 lineHeight: 1.2,
               }}
@@ -451,7 +452,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             </h2>
             <p
               style={{
-                color: "#4f444a",
+                color: "#ffd3ea",
                 margin: 0,
                 fontSize: 13,
                 fontWeight: 500,
@@ -480,7 +481,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             style={{
               position: "absolute",
               left: 14,
-              color: "#4f444a",
+              color: "#d8c8df",
               opacity: 0.6,
             }}
           />
@@ -493,10 +494,10 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
               width: "100%",
               padding: "12px 40px 12px 42px",
               background: "#fff0f4",
-              border: "1.5px solid rgba(212, 84, 122, 0.18)",
+              border: "1.5px solid rgba(255, 112, 166, 0.25)",
               borderRadius: 14,
               fontSize: 14,
-              color: "#4f444a",
+              color: "#d8c8df",
               outline: "none",
               boxSizing: "border-box",
               transition: "border-color 0.2s ease",
@@ -512,7 +513,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                 right: 12,
                 background: "none",
                 border: "none",
-                color: "#4f444a",
+                color: "#d8c8df",
                 cursor: "pointer",
                 padding: 4,
                 display: "flex",
@@ -554,7 +555,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                   fontWeight: 600,
                   border: "1px solid rgba(212, 84, 122, 0.18)",
                   background: isActive ? "#fc6587" : "#ff8fc7",
-                  color: isActive ? "#fff9fb" : "#4f444a",
+                  color: isActive ? "#fff9fb" : "#fff5f7",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
                   transition: "all 0.2s ease",
@@ -603,7 +604,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 15,
                         fontWeight: 600,
-                        color: "#fff9fb",
+                        color: "#ffffff",
                         lineHeight: 1.4,
                       }}
                     >
@@ -612,7 +613,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                     <ChevronDown
                       size={18}
                       style={{
-                        color: "#fff9fb",
+                        color: "#ffffff",
                         transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
                         transition: "transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
                         flexShrink: 0,
@@ -631,7 +632,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                       style={{
                         padding: "0 18px 18px",
                         fontSize: 13.5,
-                        color: "#4f444a",
+                        color: "#d8c8df",
                         borderTop: "1px solid rgba(212, 84, 122, 0.08)",
                       }}
                     >
@@ -642,7 +643,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
               );
             })
           ) : (
-            <div style={{ textAlign: "center", padding: "40px 20px", color: "#4f444a" }}>
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "#d8c8df" }}>
               <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>🌸</span>
               <p style={{ margin: 0, fontWeight: 500 }}>No matching questions found.</p>
               <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.8 }}>Try searching for keywords like &quot;sizing&quot; or &quot;glue&quot;</p>
@@ -665,8 +666,8 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
         >
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <Clock size={16} style={{ color: "#ffd6e9", marginTop: 2, flexShrink: 0 }} />
-            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a" }}>
-              <strong style={{ color: "#fff9fb" }}>Response Times:</strong> We typically respond to Instagram DMs and Emails within 24 hours.
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df" }}>
+              <strong style={{ color: "#ffffff" }}>Response Times:</strong> We typically respond to Instagram DMs and Emails within 24 hours.
             </div>
           </div>
         </div>
@@ -681,7 +682,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             textAlign: "center",
           }}
         >
-          <p style={{ margin: 0, fontSize: 13, color: "#4f444a", fontWeight: 500 }}>
+          <p style={{ margin: 0, fontSize: 13, color: "#d8c8df", fontWeight: 500 }}>
             Still have questions? We are always happy to help! 💕
           </p>
           <div style={{ display: "flex", gap: 10 }}>
@@ -695,15 +696,15 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 6,
-                background: "#f24e77",
+                background: "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)",
                 color: "#fff",
+                boxShadow: "0 4px 14px rgba(255, 120, 40, 0.35)",
                 padding: "10px 14px",
                 borderRadius: 12,
                 fontSize: 13,
                 fontWeight: 600,
                 textDecoration: "none",
-                boxShadow: "0 4px 12px rgba(242, 78, 119, 0.15)",
-                transition: "transform 0.2s ease",
+                                transition: "transform 0.2s ease",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -722,8 +723,8 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                 justifyContent: "center",
                 gap: 6,
                 background: "#fc6587",
-                color: "#fff9fb",
-                border: "1.5px solid rgba(212, 84, 122, 0.18)",
+                color: "#ffffff",
+                border: "1.5px solid rgba(255, 112, 166, 0.25)",
                 padding: "8px 14px",
                 borderRadius: 12,
                 fontSize: 13,

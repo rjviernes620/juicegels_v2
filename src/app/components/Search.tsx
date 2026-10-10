@@ -74,13 +74,13 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
   };
 
   return (
-    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Title Header */}
       <div 
         style={{ 
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #eab2c4 0%, #fce4ea 60%, #fdf2f4 100%)", 
+          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)", 
           padding: "24px 20px", 
           textAlign: "center",
           borderBottom: "1px solid rgba(236, 179, 196, 0.18)"
@@ -147,10 +147,10 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
 
         {/* Content Wrapper */}
         <div style={{ position: "relative", zIndex: 1 }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#9e4056", margin: "0 0 6px" }}>
+          <h2 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#ffffff", textShadow: "0 0 16px rgba(255, 120, 40, 0.4)", margin: "0 0 6px" }}>
             Search Studio 🔍
           </h2>
-          <p style={{ color: "#4f444a", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
+          <p style={{ color: "#ffd3ea", margin: 0, fontSize: 12, lineHeight: 1.5 }}>
             Find your perfect press-on nail look by name, tags, description, or product ID.
           </p>
         </div>
@@ -161,7 +161,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
         
         {/* Search Bar Input */}
         <div style={{ position: "relative", width: "100%" }}>
-          <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#4f444a", display: "flex", alignItems: "center" }}>
+          <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#d8c8df", display: "flex", alignItems: "center" }}>
             <SearchIcon size={18} />
           </div>
           <input
@@ -174,7 +174,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
               boxSizing: "border-box",
               padding: "12px 40px 12px 40px",
               borderRadius: 24,
-              border: "1px solid rgba(212, 84, 122, 0.18)",
+              border: "1px solid rgba(255, 112, 166, 0.25)",
               background: "#fff",
               fontSize: 14,
               color: "#000000",
@@ -196,7 +196,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                color: "#4f444a",
+                color: "#d8c8df",
                 display: "flex",
                 alignItems: "center",
                 padding: 0
@@ -209,7 +209,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
 
         {/* Suggestion Chips */}
         <div>
-          <p style={{ margin: "0 0 10px 4px", fontSize: 12, fontWeight: 600, color: "#4f444a" }}>
+          <p style={{ margin: "0 0 10px 4px", fontSize: 12, fontWeight: 600, color: "#d8c8df" }}>
             Popular Searches
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -220,7 +220,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                 style={{
                   background: query === suggestion ? "#f24e77" : "#b65151",
                   color: query === suggestion ? "#d57171" : "#fff9fb",
-                  border: "1px solid rgba(212, 84, 122, 0.18)",
+                  border: "1px solid rgba(255, 112, 166, 0.25)",
                   borderRadius: 20,
                   padding: "6px 14px",
                   fontSize: 12,
@@ -258,7 +258,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                   {searchResults.length} {searchResults.length === 1 ? "set" : "sets"} found
                 </span>
                 {searchResults.length > 0 && (
-                  <span style={{ fontSize: 11, color: "#4f444a" }}>
+                  <span style={{ fontSize: 11, color: "#d8c8df" }}>
                     Tap a card to shop
                   </span>
                 )}
@@ -271,9 +271,9 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                       key={product.id}
                       onClick={() => onShopProduct(product.id)}
                       style={{
-                        background: "#834242",
+                        background: "rgba(28, 12, 44, 0.85)",
                         borderRadius: 14,
-                        border: "1px solid rgba(212, 84, 122, 0.18)",
+                        border: "1px solid rgba(255, 112, 166, 0.25)",
                         padding: 12,
                         display: "flex",
                         alignItems: "center",
@@ -304,19 +304,19 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                         <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "#fff9fb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                           {product.name}
                         </p>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#ffd6e9" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#ff9f43" }}>
                           £{product.price.toFixed(2)}
                         </span>
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
                           {product.tags.slice(0, 2).map((t) => (
-                            <span key={t} style={{ fontSize: 9, background: "#e0a2b4", color: "#4f444a", padding: "2px 6px", borderRadius: 4 }}>
+                            <span key={t} style={{ fontSize: 9, background: "#e0a2b4", color: "#d8c8df", padding: "2px 6px", borderRadius: 4 }}>
                               #{t}
                             </span>
                           ))}
                         </div>
                       </div>
                       {/* Navigation Arrow */}
-                      <div style={{ color: "#f24e77", padding: 4 }}>
+                      <div style={{ color: "#ff7828", padding: 4 }}>
                         <ArrowRight size={16} />
                       </div>
                     </div>
@@ -330,7 +330,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                     padding: "40px 20px", 
                     background: "#e0a2b4", 
                     borderRadius: 18, 
-                    border: "1px solid rgba(212, 84, 122, 0.18)",
+                    border: "1px solid rgba(255, 112, 166, 0.25)",
                     boxShadow: "0 4px 16px rgba(0,0,0,0.02)"
                   }}
                 >
@@ -338,7 +338,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                   <p style={{ margin: "0 0 6px", fontSize: 14, fontWeight: 700, color: "#fff9fb" }}>
                     No matching sets found
                   </p>
-                  <p style={{ margin: 0, fontSize: 12, color: "#4f444a", lineHeight: 1.5 }}>
+                  <p style={{ margin: 0, fontSize: 12, color: "#d8c8df", lineHeight: 1.5 }}>
                     Double-check spelling or try searching generic terms like "shine", "tips", or "bow".
                   </p>
                 </div>
@@ -347,7 +347,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
           ) : (
             <>
               {/* Popular / Recommended Sets */}
-              <p style={{ margin: "10px 0 10px 4px", fontSize: 12, fontWeight: 600, color: "#4f444a" }}>
+              <p style={{ margin: "10px 0 10px 4px", fontSize: 12, fontWeight: 600, color: "#d8c8df" }}>
                 🔥 Recommended Sets
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -358,7 +358,7 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                     style={{
                       background: "#e77171",
                       borderRadius: 14,
-                      border: "1px solid rgba(212, 84, 122, 0.18)",
+                      border: "1px solid rgba(255, 112, 166, 0.25)",
                       padding: 12,
                       display: "flex",
                       alignItems: "center",
@@ -387,19 +387,19 @@ export function Search({ products, onShopProduct, isMobile, isTablet }: SearchPr
                     {/* Text details */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 4, margin: "0 0 2px" }}>
-                        <span style={{ fontSize: 9, background: "linear-gradient(135deg, #fce4ea, #ffd6e9)", color: "#f24e77", padding: "1px 5px", borderRadius: 4, fontWeight: 700, display: "flex", alignItems: "center", gap: 2 }}>
+                        <span style={{ fontSize: 9, background: "linear-gradient(135deg, #fce4ea, #ffd6e9)", color: "#ff7828", padding: "1px 5px", borderRadius: 4, fontWeight: 700, display: "flex", alignItems: "center", gap: 2 }}>
                           <Sparkles size={8} /> Popular
                         </span>
                       </div>
                       <p style={{ margin: "0 0 4px", fontSize: 13, fontWeight: 700, color: "#fff9fb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {product.name}
                       </p>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#ffd6e9" }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#ff9f43" }}>
                         £{product.price.toFixed(2)}
                       </span>
                     </div>
                     {/* Navigation Arrow */}
-                    <div style={{ color: "#f24e77", padding: 4 }}>
+                    <div style={{ color: "#ff7828", padding: 4 }}>
                       <ArrowRight size={16} />
                     </div>
                   </div>

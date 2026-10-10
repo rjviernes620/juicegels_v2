@@ -161,16 +161,16 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
   };
 
   return (
-    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Section */}
       <div 
         style={{ 
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
+          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)", 
           padding: "36px 20px 28px", 
           textAlign: "center",
-          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
+          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -253,7 +253,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
             </h2>
             <p 
               style={{ 
-                color: "#4f444a", 
+                color: "#d8c8df", 
                 margin: 0, 
                 fontSize: 13, 
                 fontWeight: 500,
@@ -271,38 +271,38 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
         
         {/* Process Explanation */}
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 22, color: "#f86c85", margin: "0 0 4px" }}>
+          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 22, color: "#ffffff", margin: "0 0 4px" }}>
             How the Process Works
           </h3>
           
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#db3636", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>1</div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Submit Your Design: </strong>Fill out the custom order form below and tell us about your vision. Feel free to include colours, charms, themes, inspiration photos or any specific details you'd like us to incorporate. The more detail you provide, the better!
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ff7828", color: "#0c0314", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>1</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#d8c8df" }}>
+                <strong style={{ color: "#ff9f43" }}>Submit Your Design: </strong>Fill out the custom order form below and tell us about your vision. Feel free to include colours, charms, themes, inspiration photos or any specific details you'd like us to incorporate. The more detail you provide, the better!
               </div>
             </div>
             
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>2</div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Check Your Inbox: </strong>You'll receive an automated confirmation email straight away summarising your request. If you'd like to make any changes, simply contact @juicegels on Instagram or email (juicegels@gmail.com).
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ff7828", color: "#0c0314", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>2</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#d8c8df" }}>
+                <strong style={{ color: "#ff9f43" }}>Check Your Inbox: </strong>You'll receive an automated confirmation email straight away summarising your request. If you'd like to make any changes, simply contact @juicegels on Instagram or email (juicegels@gmail.com).
 
               </div>
             </div>
 
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>3</div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Instagram Consultation: </strong>Juice Gels will get in touch to discuss your design, nail shape and sizing. Once everything has been finalised, a digital design mock-up will be created for your approval. Any changes can be made before production begins.
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ff7828", color: "#0c0314", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>3</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#d8c8df" }}>
+                <strong style={{ color: "#ff9f43" }}>Instagram Consultation: </strong>Juice Gels will get in touch to discuss your design, nail shape and sizing. Once everything has been finalised, a digital design mock-up will be created for your approval. Any changes can be made before production begins.
 
               </div>
             </div>
 
             <div style={{ display: "flex", gap: 12 }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ffd6e9", color: "#d14d4d", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>4</div>
-              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#4f444a" }}>
-                <strong style={{ color: "#d14d4d" }}>Creation & Dispatch: </strong>Once you've approved your design, your custom set will be carefully handcrafted. Before dispatch, you'll receive a photo of your finished nails, followed by your tracking details once your order has been shipped. Then all that's left to do is enjoy your one-of-a-kind Juice Gels set! 💌
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#ff7828", color: "#0c0314", display: "flex", alignItems: "center", justifyContext: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>4</div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.5, color: "#d8c8df" }}>
+                <strong style={{ color: "#ff9f43" }}>Creation & Dispatch: </strong>Once you've approved your design, your custom set will be carefully handcrafted. Before dispatch, you'll receive a photo of your finished nails, followed by your tracking details once your order has been shipped. Then all that's left to do is enjoy your one-of-a-kind Juice Gels set! 💌
               </div>
             </div>
           </div>
@@ -324,7 +324,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
               <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 24, color: "#fff9fb", margin: "12px 0 8px" }}>
                 Request Submitted!
               </h3>
-              <p style={{ fontSize: 13.5, color: "#4f444a", lineHeight: 1.6, margin: "0 0 16px" }}>
+              <p style={{ fontSize: 13.5, color: "#d8c8df", lineHeight: 1.6, margin: "0 0 16px" }}>
                 An initial confirmation email has been sent to you. Alyssa will reach out to you <strong>on Instagram only</strong> to finalize your custom design.
               </p>
               <button 
@@ -345,13 +345,13 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 22, color: "#fff9fb", margin: "0 0 4px" }}>
+              <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 22, color: "#ffffff", margin: "0 0 4px" }}>
                 Custom Request Form
               </h3>
 
               {/* Name */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>Full Name</label>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", textTransform: "uppercase", letterSpacing: "0.03em" }}>Full Name</label>
                 <input 
                   type="text" 
                   placeholder="e.g. Sophie Wright" 
@@ -364,7 +364,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
 
               {/* Email */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>Email Address</label>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", textTransform: "uppercase", letterSpacing: "0.03em" }}>Email Address</label>
                 <input 
                   type="email" 
                   placeholder="e.g. sophie@example.com" 
@@ -377,7 +377,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
 
               {/* Instagram */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>Instagram Handle</label>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", textTransform: "uppercase", letterSpacing: "0.03em" }}>Instagram Handle</label>
                 <input 
                   type="text" 
                   placeholder="e.g. @sophiewright" 
@@ -386,17 +386,17 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
                   style={mkInput(!!errors.instagram)} 
                 />
                 {errors.instagram && <span style={{ fontSize: 11, color: "#c0392b" }}>{errors.instagram}</span>}
-                <span style={{ fontSize: 11, color: "#4f444a" }}>⚠️ Communication about your custom set will only be via Instagram.</span>
+                <span style={{ fontSize: 11, color: "#d8c8df" }}>⚠️ Communication about your custom set will only be via Instagram.</span>
               </div>
 
               {/* Shape */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>Nail Shape Preference</label>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", textTransform: "uppercase", letterSpacing: "0.03em" }}>Nail Shape Preference</label>
                 <select 
                   value={form.shape} 
                   onChange={(e) => handleInputChange("shape", e.target.value)} 
                   style={{
-                    background: "#fff0f4",
+                    background: "rgba(255, 255, 255, 0.08)",
                     border: "1.5px solid rgba(212, 84, 122, 0.18)",
                     borderRadius: 9,
                     padding: "10px 13px",
@@ -415,12 +415,12 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
 
               {/* Length */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>Nail Length Preference</label>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", textTransform: "uppercase", letterSpacing: "0.03em" }}>Nail Length Preference</label>
                 <select 
                   value={form.length} 
                   onChange={(e) => handleInputChange("length", e.target.value)} 
                   style={{
-                    background: "#fff0f4",
+                    background: "rgba(255, 255, 255, 0.08)",
                     border: "1.5px solid rgba(212, 84, 122, 0.18)",
                     borderRadius: 9,
                     padding: "10px 13px",
@@ -439,14 +439,14 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
 
               {/* Details */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>Design Details & Concept</label>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", textTransform: "uppercase", letterSpacing: "0.03em" }}>Design Details & Concept</label>
                 <textarea 
                   placeholder="Describe colors, reference ideas, themes, or custom charms you want Alyssa to incorporate..." 
                   value={form.details} 
                   onChange={(e) => handleInputChange("details", e.target.value)} 
                   rows={4}
                   style={{
-                    background: "#fff0f4",
+                    background: "rgba(255, 255, 255, 0.08)",
                     border: `1.5px solid ${errors.details ? "#c0392b" : "rgba(212, 84, 122, 0.18)"}`,
                     borderRadius: 9,
                     padding: "10px 13px",
@@ -463,7 +463,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
 
               {/* Attachments */}
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 11, fontWeight: 600, color: "#fff9fb", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                <label style={{ fontSize: 11, fontWeight: 600, color: "#ff9f43", textTransform: "uppercase", letterSpacing: "0.03em" }}>
                   Images / Reference Designs (Optional)
                 </label>
                 <input 
@@ -477,7 +477,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
                 <label 
                   htmlFor="custom-file-upload"
                   style={{
-                    background: "#fff0f4",
+                    background: "rgba(255, 255, 255, 0.08)",
                     border: "1.5px dashed rgba(212, 84, 122, 0.4)",
                     borderRadius: 9,
                     padding: "12px 14px",
@@ -502,12 +502,12 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
                       <div 
                         key={idx} 
                         style={{ 
-                          background: "#fff0f4", 
+                          background: "rgba(255, 255, 255, 0.08)", 
                           border: "1px solid rgba(212, 84, 122, 0.15)",
                           padding: "4px 8px", 
                           borderRadius: 6, 
                           fontSize: 12, 
-                          color: "#4f444a", 
+                          color: "#d8c8df", 
                           display: "flex", 
                           alignItems: "center", 
                           gap: 6 
@@ -574,7 +574,7 @@ export function CustomOrders({ isMobile, isTablet }: { isMobile?: boolean; isTab
 
 function mkInput(hasError: boolean): React.CSSProperties {
   return { 
-    background: "#fff0f4", 
+    background: "rgba(255, 255, 255, 0.08)", 
     border: `1.5px solid ${hasError ? "#c0392b" : "rgba(212, 84, 122, 0.18)"}`, 
     borderRadius: 9, 
     padding: "10px 13px", 

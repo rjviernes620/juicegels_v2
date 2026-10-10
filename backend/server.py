@@ -279,7 +279,7 @@ def get_data_list(response):
 
 def normalize_coupon_code(raw_code):
   val = str(raw_code or '').strip()
-  if val.lower() == 'eu3xxiba':
+  if val.lower() in ('eu3xxiba', 'halloween', 'halloween20', 'halloweensale', 'spooky', 'coven'):
     return 'eU3xxIba'
   return val.upper()
 

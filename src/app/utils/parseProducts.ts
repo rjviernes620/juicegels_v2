@@ -22,6 +22,29 @@ export type Product = {
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
 const DEFAULT_LENGTHS = ["Short", "Medium", "Long"] as const;
 
+export const HALLOWEEN_SET_IDS = new Set([2447, 2462, 2477, 2492, 1277, 1247, 196, 1262]);
+export const HALLOWEEN_SET_NAMES = new Set([
+  "booquette",
+  "scream queen",
+  "hello horror",
+  "boo belle",
+  "pink-o-ween",
+  "sparkle scream",
+  "pearl noir",
+  "midnight muse"
+]);
+
+export function isHalloweenSet(productIdOrId: number | string, title?: string): boolean {
+  if (typeof productIdOrId === "number") {
+    if (HALLOWEEN_SET_IDS.has(productIdOrId)) return true;
+  } else if (typeof productIdOrId === "string") {
+    const num = parseInt(productIdOrId.replace(/\D/g, ""), 10);
+    if (HALLOWEEN_SET_IDS.has(num)) return true;
+  }
+  if (title && HALLOWEEN_SET_NAMES.has(title.trim().toLowerCase())) return true;
+  return false;
+}
+
 declare const __SANITY_PROJECT_ID__: string;
 declare const __SANITY_DATASET__: string;
 
@@ -164,7 +187,10 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
     const image3Ref = sp.image3?.asset?._ref || "";
     const image3Url = image3Ref ? buildSanityImageUrl(image3Ref, sp.image3?.hotspot, sp.image3?.crop) : "";
 
-    const tags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
+    const rawTags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
+    const isHalloween = isHalloweenSet(productId, title);
+    const resolvedCollection = isHalloween ? "Halloween Collection" : (sp.collection || undefined);
+    const tags = isHalloween && !rawTags.includes("Halloween") ? [...rawTags, "Halloween"] : rawTags;
     const orderRank = sp.orderRank || "";
     const videoUrl = sp.videoUrl || "";
     const tiktokUrl = sp.tiktokUrl || "";
@@ -189,7 +215,7 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
         tags: tags,
         shape: "Square",
         length: "Short",
-        collection: sp.collection || undefined,
+        collection: resolvedCollection,
         orderRank: orderRank,
         videoUrl: videoUrl,
         tiktokUrl: tiktokUrl
@@ -221,7 +247,7 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
             tags: tags,
             shape: shape,
             length: length,
-            collection: sp.collection || undefined,
+            collection: resolvedCollection,
             orderRank: orderRank,
             videoUrl: videoUrl,
             tiktokUrl: tiktokUrl
