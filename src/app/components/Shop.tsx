@@ -62,6 +62,60 @@ export function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
     const list = [];
 
     list.push({
+      id: "halloween-drop",
+      content: (
+        <button
+          type="button"
+          onClick={() => navigate("/halloween")}
+          style={{
+            display: "flex",
+            width: "100%",
+            background: "linear-gradient(135deg, #180928 0%, #3a104f 45%, #ff7828 100%)",
+            border: "1.5px solid rgba(255, 112, 166, 0.4)",
+            borderRadius: 14,
+            padding: "16px 18px",
+            alignItems: "center",
+            gap: 16,
+            textAlign: "left",
+            cursor: "pointer",
+            color: "#ffffff",
+            fontFamily: "inherit",
+            boxSizing: "border-box",
+            minHeight: 116,
+            boxShadow: "0 6px 20px rgba(255, 120, 40, 0.25)"
+          }}
+        >
+          <div style={{
+            width: 84,
+            height: 84,
+            borderRadius: 12,
+            background: "rgba(0,0,0,0.45)",
+            border: "1px solid rgba(255, 112, 166, 0.4)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0
+          }}>
+            <span style={{ fontSize: "30px", filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.5))" }}>🔮</span>
+            <span style={{ fontSize: "10px", fontWeight: 900, color: "#ff7828", letterSpacing: "0.05em", marginTop: 2 }}>20% OFF</span>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+              <span style={{ fontSize: "10px", fontWeight: 800, background: "#ff7828", color: "#08030e", padding: "1px 6px", borderRadius: 4, textTransform: "uppercase" }}>Limited Drop</span>
+              <span style={{ fontSize: "11px", color: "#ffd3ea", fontWeight: 600 }}>8 Exclusive Sets</span>
+            </div>
+            <p style={{ fontFamily: "'Lobster', serif", color: "#ffd3ea", margin: "0 0 4px", fontSize: 24, lineHeight: 1.15 }}>The Halloween Coven Drop 🎃</p>
+            <p style={{ color: "rgba(255, 255, 255, 0.9)", margin: 0, fontSize: 13, lineHeight: 1.4 }}>
+              All 8 handmade sets discounted by 20% for spooky season! <br />
+              <span style={{ color: "#4ade80", fontWeight: 700 }}>Tap to Enter the Salon →</span>
+            </p>
+          </div>
+        </button>
+      )
+    });
+
+    list.push({
       id: "size-guide",
       content: (
         <button
@@ -469,6 +523,30 @@ export function ShopPage({
                 }}
               >
                 💅 All Sets
+              </button>
+
+              {/* "Halloween Drop" Chip */}
+              <button
+                onClick={() => navigate("/halloween")}
+                style={{
+                  flexShrink: 0,
+                  background: "linear-gradient(135deg, #180928 0%, #ff7828 100%)",
+                  color: "#ffffff",
+                  border: "1px solid rgba(255, 112, 166, 0.4)",
+                  padding: "6px 12px",
+                  borderRadius: "20px",
+                  fontSize: "11px",
+                  fontWeight: "700",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  boxShadow: "0 2px 10px rgba(255, 120, 40, 0.35)",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4
+                }}
+              >
+                <span>🎃 Halloween Drop (20% OFF)</span>
               </button>
 
               {/* Collection Chips */}
@@ -1604,7 +1682,7 @@ export function BasketPage({
                         placeholder="Enter coupon code"
                         value={couponInput}
                         onChange={(e) => {
-                          setCouponInput(e.target.value.toUpperCase());
+                          setCouponInput(e.target.value);
                           if (couponError) setCouponError(null);
                         }}
                         onKeyDown={(e) => {

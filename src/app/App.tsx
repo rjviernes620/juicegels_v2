@@ -16,7 +16,6 @@ import { PortableText } from "./components/PortableText";
 import { FAQ } from "./components/FAQ";
 import { PrivacyPolicy } from "./components/PrivacyPolicy";
 import { TermsOfService } from "./components/TermsOfService";
-import { HalloweenTeaser } from "./components/HalloweenTeaser";
 import { COUNTRIES } from "./utils/countries";
 import { useSEO } from "./utils/useSEO";
 import {
@@ -51,7 +50,10 @@ import {
   parseTokenBasketParam,
   isLocalDev,
   getStripeShippingRateIds,
-  getStripeFreeShippingPromoId
+  getStripeFreeShippingPromoId,
+  STRIPE_HALLOWEEN_COUPON_ID,
+  STRIPE_HALLOWEEN_COUPON_TITLE,
+  isHalloweenCoupon
 } from "./utils/shopHelpers";
 import {
   ShopPage,
@@ -60,6 +62,7 @@ import {
   PreorderPage,
   ConfirmationPage
 } from "./components/Shop";
+import { HalloweenPage } from "./components/HalloweenPage";
 import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
 
 
@@ -125,7 +128,6 @@ export default function App() {
   const [stripePublishableKey, setStripePublishableKey] = useState<string>("");
 
   const [wishlist, setWishlist] = useState<string[]>([]);
-  const [showHalloweenTeaser, setShowHalloweenTeaser] = useState(true);
   const [homeSelectedCollection, setHomeSelectedCollection] = useState("All");
   const [homeSortBy, setHomeSortBy] = useState("featured");
   const [cookieConsent, setCookieConsent] = useState<"accepted" | "declined" | null>(() => {
@@ -163,6 +165,7 @@ export default function App() {
   const [couponSummary, setCouponSummary] = useState<CouponSummary | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [isCouponLoading, setIsCouponLoading] = useState(false);
+  const [isCouponDismissed, setIsCouponDismissed] = useState(false);
   const [shippingOptionId, setShippingOptionId] = useState<ShippingOptionId>("tracked48");
   const [isSizeGuideDiscountApplied, setIsSizeGuideDiscountApplied] = useState(false);
   const [isSizeGuideLoading, setIsSizeGuideLoading] = useState(false);
@@ -239,12 +242,23 @@ export default function App() {
       .filter((p): p is Product => p != null);
   }, [uniqueProducts, trendingProductIds]);
 
-  const currentBasketUrl = (items: CartItem[]) =>
-    buildBasketUrl(items, {
-      coupon: searchParams.get("coupon"),
-      includeCoupon: searchParams.has("coupon") || items.length > 0,
+  const currentBasketUrl = (items: CartItem[]) => {
+    const hasHalloween = items.some(
+      (item) =>
+        item.product.tags?.includes("Halloween") ||
+        item.product.collection === "Halloween Collection"
+    );
+    const existingCoupon = searchParams.get("coupon");
+    const couponToUse =
+      existingCoupon ||
+      (!isCouponDismissed && hasHalloween ? STRIPE_HALLOWEEN_COUPON_ID : null);
+
+    return buildBasketUrl(items, {
+      coupon: couponToUse,
+      includeCoupon: Boolean(couponToUse) || items.length > 0,
       cartOrigin: searchParams.get("cart_origin") ?? META_CART_ORIGIN,
     });
+  };
 
 
   useEffect(() => {
@@ -541,6 +555,11 @@ export default function App() {
       return;
     }
 
+    if (effectivePath === "/halloween") {
+      setPage("halloween");
+      return;
+    }
+
     if (effectivePath === "/") {
       setPage("home");
       return;
@@ -777,7 +796,18 @@ export default function App() {
   }, [isSubmitting, page]);
 
   useEffect(() => {
-    const currentCoupon = searchParams.get("coupon")?.trim() ?? "";
+    let currentCoupon = searchParams.get("coupon")?.trim() ?? "";
+
+    const hasHalloween = cart.some(
+      (item) =>
+        item.product.tags?.includes("Halloween") ||
+        item.product.collection === "Halloween Collection"
+    );
+
+    if (!currentCoupon && hasHalloween && !isCouponDismissed) {
+      currentCoupon = STRIPE_HALLOWEEN_COUPON_ID;
+    }
+
     setCouponInput(currentCoupon);
 
     if (!currentCoupon) {
@@ -827,6 +857,19 @@ export default function App() {
       } catch (error) {
         if (controller.signal.aborted) return;
 
+        // Fallback for Halloween coupon if remote endpoint hasn't redeployed yet or on network error
+        if (isHalloweenCoupon(currentCoupon)) {
+          const discountAmount = Math.round(cartTotal * 0.2 * 100) / 100;
+          setCouponSummary({
+            code: STRIPE_HALLOWEEN_COUPON_ID,
+            promotionCodeId: "",
+            description: STRIPE_HALLOWEEN_COUPON_TITLE,
+            discountAmount,
+          });
+          setCouponError(null);
+          return;
+        }
+
         setCouponSummary(null);
         setCouponError(error instanceof Error ? error.message : "Coupon code could not be applied.");
       } finally {
@@ -839,7 +882,7 @@ export default function App() {
     validateCoupon();
 
     return () => controller.abort();
-  }, [cart.length, cartTotal, searchParams]);
+  }, [cart, cartTotal, searchParams, isCouponDismissed]);
 
   const toggleWishlist = (id: string) =>
     setWishlist((p) => (p.includes(id) ? p.filter((w) => w !== id) : [...p, id]));
@@ -990,8 +1033,12 @@ export default function App() {
   };
 
   const applyCoupon = () => {
-    const trimmedCode = couponInput.trim();
+    let trimmedCode = couponInput.trim();
+    if (isHalloweenCoupon(trimmedCode)) {
+      trimmedCode = STRIPE_HALLOWEEN_COUPON_ID;
+    }
 
+    setIsCouponDismissed(false);
     setCouponError(null);
 
     navigate(
@@ -1004,12 +1051,14 @@ export default function App() {
   };
 
   const removeCoupon = () => {
+    setIsCouponDismissed(true);
     setCouponInput("");
     setCouponSummary(null);
     setCouponError(null);
 
     navigate(
       buildBasketUrl(cart, {
+        coupon: null,
         includeCoupon: false,
         cartOrigin: searchParams.get("cart_origin") ?? META_CART_ORIGIN,
       })
@@ -1269,6 +1318,7 @@ export default function App() {
           {[
             { label: "Home", icon: "🌸", onClick: () => { navigate("/"); setMenuOpen(false); } },
             { label: "Shop Sets", icon: "✨", onClick: () => { navigate("/shop"); setMenuOpen(false); } },
+            { label: "Halloween Drop 🎃 (20% OFF)", icon: "🔮", onClick: () => { navigate("/halloween"); setMenuOpen(false); } },
             { label: "Search Sets", icon: "🔍", onClick: () => { navigate("/search"); setMenuOpen(false); } },
             { label: "Custom Orders", icon: "💅", onClick: () => { navigate("/custom-orders"); setMenuOpen(false); } },
             { label: "Nail Videos", icon: "🎬", onClick: () => { navigate("/videos"); setMenuOpen(false); } },
@@ -1364,7 +1414,7 @@ export default function App() {
       </div>
 
       {/* ── Header ── */}
-      <header style={{ background: "#fc6587", borderBottom: "1px solid rgba(212, 84, 122, 0.18)", position: "sticky", top: 0, zIndex: 50 }}>
+      <header style={{ background: "linear-gradient(135deg, #180928 0%, #3b104f 45%, #ff7828 100%)", borderBottom: "1px solid rgba(255, 112, 166, 0.25)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", maxWidth: 1200, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
           {isMobile ? (
             <>
@@ -1433,6 +1483,7 @@ export default function App() {
                   {[
                     { label: "Home", pageKey: "home", onClick: () => navigate("/") },
                     { label: "Shop", pageKey: "shop", onClick: () => navigate("/shop") },
+                    { label: "🎃 Halloween (20% OFF)", pageKey: "halloween", onClick: () => navigate("/halloween") },
                     { label: "Search Sets", pageKey: "search", onClick: () => navigate("/search") },
                     { label: "Custom Orders", pageKey: "custom-orders", onClick: () => navigate("/custom-orders") },
                     { label: "Nail Videos", pageKey: "videos", onClick: () => navigate("/videos") },
@@ -1682,7 +1733,52 @@ export default function App() {
                 </p>
 
                 {/* Call to Actions */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", alignItems: "center", marginTop: 28 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginTop: 28 }}>
+                  <motion.button
+                    onClick={() => navigate("/halloween")}
+                    animate={{
+                      boxShadow: [
+                        "0 0 14px rgba(255, 112, 166, 0.45)",
+                        "0 0 28px rgba(255, 120, 40, 0.7)",
+                        "0 0 14px rgba(255, 112, 166, 0.45)",
+                      ]
+                    }}
+                    transition={{
+                      boxShadow: { repeat: Infinity, duration: 2.2, ease: "easeInOut" }
+                    }}
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    style={{
+                      background: "linear-gradient(135deg, #180928 0%, #3b104f 45%, #ff7828 100%)",
+                      color: "#ffffff",
+                      border: "1.5px solid rgba(255, 112, 166, 0.6)",
+                      borderRadius: "30px",
+                      padding: "13px 26px",
+                      fontSize: "14px",
+                      fontWeight: "800",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <motion.span
+                      animate={{ y: [0, -3, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                      style={{ fontSize: "16px" }}
+                    >
+                      🎃
+                    </motion.span>
+                    <span>Halloween Drop (20% OFF)</span>
+                    <motion.span
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+                    >
+                      →
+                    </motion.span>
+                  </motion.button>
+
                   <button
                     onClick={() => navigate("/shop")}
                     style={{
@@ -1711,39 +1807,6 @@ export default function App() {
                   >
                     Shop Nail Sets 💅
                   </button>
-                  <motion.button
-                    type="button"
-                    onClick={() => setShowHalloweenTeaser((prev) => !prev)}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.96 }}
-                    style={{
-                      background: showHalloweenTeaser
-                        ? "linear-gradient(135deg, #180928 0%, #ff7828 100%)"
-                        : "linear-gradient(135deg, #ff7828 0%, #db2777 100%)",
-                      color: "#ffffff",
-                      border: "1.5px solid rgba(255, 120, 40, 0.4)",
-                      borderRadius: "30px",
-                      padding: "13px 26px",
-                      fontSize: "14px",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                      boxShadow: showHalloweenTeaser
-                        ? "0 0 22px rgba(255, 120, 40, 0.55)"
-                        : "0 6px 20px rgba(255, 120, 40, 0.35)",
-                      transition: "all 0.3s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <motion.span
-                      animate={{ rotate: [0, -10, 10, -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-                      style={{ fontSize: "16px", display: "inline-block" }}
-                    >
-                      🎃
-                    </motion.span>
-                  </motion.button>
                   <button
                     onClick={() => navigate("/custom-orders")}
                     style={{
@@ -1769,17 +1832,6 @@ export default function App() {
                     Custom Request ✨
                   </button>
                 </div>
-
-                {/* Halloween Interactive Teaser */}
-                <AnimatePresence>
-                  {showHalloweenTeaser && (
-                    <HalloweenTeaser
-                      isMobile={isMobile}
-                      onNavigateShop={() => navigate("/shop")}
-                      onClose={() => setShowHalloweenTeaser(false)}
-                    />
-                  )}
-                </AnimatePresence>
               </motion.div>
             </div>
           </div>
@@ -2271,6 +2323,17 @@ export default function App() {
           navigate={navigate}
           isMobile={isMobile}
           isTablet={isTablet}
+        />
+      )}
+
+      {!isProductsLoading && page === "halloween" && (
+        <HalloweenPage
+          navigate={navigate}
+          isMobile={isMobile}
+          isTablet={isTablet}
+          cart={cart}
+          setCart={setCart}
+          currentBasketUrl={currentBasketUrl}
         />
       )}
 

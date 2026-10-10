@@ -60,6 +60,7 @@ const router = createBrowserRouter([
   { path: "/videos", element: <App />, errorElement: <RouteErrorBoundary /> },
   { path: "/search", element: <App />, errorElement: <RouteErrorBoundary /> },
   { path: "/shop", element: <App />, errorElement: <RouteErrorBoundary /> },
+  { path: "/halloween", element: <App />, errorElement: <RouteErrorBoundary /> },
   { path: "/faq", element: <App />, errorElement: <RouteErrorBoundary /> },
   { path: "/product/:id", element: <App />, errorElement: <RouteErrorBoundary /> },
   { path: "/checkout-success", element: <App />, errorElement: <RouteErrorBoundary /> },

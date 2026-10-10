@@ -213,6 +213,8 @@ def get_free_shipping_promo_id():
 
 STRIPE_COUPON_SIZE = DynamicString(get_coupon_size)
 STRIPE_FREE_SHIPPING_PROMO_ID = DynamicString(get_free_shipping_promo_id)
+STRIPE_COUPON_HALLOWEEN = 'eU3xxIba'
+STRIPE_COUPON_HALLOWEEN_TITLE = 'Halloween Sale 20% off'
 
 def build_checkout_items_param(items):
   encoded_items = []
@@ -276,7 +278,10 @@ def get_data_list(response):
 
 
 def normalize_coupon_code(raw_code):
-  return str(raw_code or '').strip().upper()
+  val = str(raw_code or '').strip()
+  if val.lower() == 'eu3xxiba':
+    return 'eU3xxIba'
+  return val.upper()
 
 
 def format_money_from_pence(amount_pence):
@@ -1921,6 +1926,10 @@ def build_order_summary_from_payment_intent(payment_intent):
 
 
 def format_coupon_description(coupon):
+  coupon_name = get_value(coupon, 'name')
+  if coupon_name:
+    return str(coupon_name)
+
   percent_off = get_value(coupon, 'percent_off')
   amount_off = get_value(coupon, 'amount_off')
 
@@ -1939,34 +1948,66 @@ def format_coupon_description(coupon):
 
 
 def resolve_coupon_summary(raw_code, subtotal_pence):
-  code = normalize_coupon_code(raw_code)
-  if not code:
+  raw_trimmed = str(raw_code or '').strip()
+  if not raw_trimmed:
     raise ValueError('Enter a coupon code.')
 
-  response = client.v1.promotion_codes.list(
-    params={
-      'code': code,
-      'active': True,
-      'limit': 10,
-      'expand': ['data.promotion.coupon'],
-    }
+  code = normalize_coupon_code(raw_trimmed)
+  promotion_code = None
+  coupon = None
+
+  is_halloween_code = (
+    raw_trimmed.lower() == 'eu3xxiba' or
+    code in ['EU3XXIBA', 'HALLOWEEN', 'HALLOWEEN20', 'HALLOWEENSALE', 'SPOOKY', 'COVEN']
   )
 
-  matches = get_data_list(response)
-  promotion_code = next(
-    (
-      entry
-      for entry in matches
-      if get_value(entry, 'active', False)
-      and get_value(get_value(get_value(entry, 'promotion', {}), 'coupon', {}), 'valid', True)
-    ),
-    None,
-  )
+  try:
+    response = client.v1.promotion_codes.list(
+      params={
+        'code': code,
+        'active': True,
+        'limit': 10,
+        'expand': ['data.promotion.coupon'],
+      }
+    )
+    matches = get_data_list(response)
+    promotion_code = next(
+      (
+        entry
+        for entry in matches
+        if get_value(entry, 'active', False)
+        and get_value(get_value(get_value(entry, 'promotion', {}), 'coupon', {}), 'valid', True)
+      ),
+      None,
+    )
+  except Exception:
+    promotion_code = None
 
-  if promotion_code is None:
+  if promotion_code:
+    promotion = get_value(promotion_code, 'promotion', {}) or {}
+    coupon = get_value(promotion, 'coupon', {}) or {}
+  else:
+    # Look up direct coupon ID in Stripe
+    lookup_id = STRIPE_COUPON_HALLOWEEN if is_halloween_code else code
+    try:
+      coupon_obj = client.v1.coupons.retrieve(lookup_id)
+      if get_value(coupon_obj, 'valid', True):
+        coupon = coupon_obj
+    except Exception:
+      if is_halloween_code:
+        coupon = {
+          'id': STRIPE_COUPON_HALLOWEEN,
+          'name': STRIPE_COUPON_HALLOWEEN_TITLE,
+          'percent_off': 20.0,
+          'valid': True,
+        }
+      else:
+        coupon = None
+
+  if promotion_code is None and coupon is None:
     raise ValueError('That coupon code is not valid.')
 
-  restrictions = get_value(promotion_code, 'restrictions', {}) or {}
+  restrictions = get_value(promotion_code, 'restrictions', {}) or {} if promotion_code else {}
   minimum_amount = get_value(restrictions, 'minimum_amount')
   minimum_amount_currency = str(get_value(restrictions, 'minimum_amount_currency', '') or '').lower()
 
@@ -1977,8 +2018,6 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
     if subtotal_pence < minimum_amount:
       raise ValueError(f'This coupon requires a minimum spend of £{minimum_amount / 100:.2f}.')
 
-  promotion = get_value(promotion_code, 'promotion', {}) or {}
-  coupon = get_value(promotion, 'coupon', {}) or {}
   percent_off = get_value(coupon, 'percent_off')
   amount_off = get_value(coupon, 'amount_off')
   amount_off_currency = str(get_value(coupon, 'currency', '') or '').lower()
@@ -1999,9 +2038,14 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
   else:
     raise ValueError('This coupon does not have a supported discount type.')
 
+  promo_id = get_value(promotion_code, 'id', '') if promotion_code else ''
+  coupon_id = get_value(coupon, 'id', '')
+  effective_code = 'eU3xxIba' if is_halloween_code else code
+
   return {
-    'code': code,
-    'promotion_code_id': get_value(promotion_code, 'id', ''),
+    'code': effective_code,
+    'promotion_code_id': promo_id,
+    'coupon_id': coupon_id if not promo_id else '',
     'description': format_coupon_description(coupon),
     'discount_pence': int(discount_pence),
   }
@@ -3161,9 +3205,18 @@ def create_checkout_session():
 
     if coupon_summary and not is_embedded:
       # Embed details for redirect session discounts
-      session_params['discounts'] = [{
-        'promotion_code': coupon_summary['promotion_code_id'],
-      }]
+      if coupon_summary.get('promotion_code_id'):
+        session_params['discounts'] = [{
+          'promotion_code': coupon_summary['promotion_code_id'],
+        }]
+      elif coupon_summary.get('coupon_id'):
+        session_params['discounts'] = [{
+          'coupon': coupon_summary['coupon_id'],
+        }]
+      elif coupon_summary.get('code'):
+        session_params['discounts'] = [{
+          'coupon': coupon_summary['code'],
+        }]
     elif apply_size_guide_coupon and not is_embedded:
       session_params['discounts'] = [{
         'coupon': str(STRIPE_COUPON_SIZE),

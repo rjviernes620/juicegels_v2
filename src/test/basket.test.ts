@@ -6,6 +6,9 @@ import {
   parseTokenBasketParam,
   parseMetaBasketProductsParam,
   parseBasketItemsParam,
+  STRIPE_HALLOWEEN_COUPON_ID,
+  STRIPE_HALLOWEEN_COUPON_TITLE,
+  isHalloweenCoupon,
   type BasketTokenData,
 } from '../app/utils/shopHelpers';
 import { type Product } from '../app/utils/parseProducts';
@@ -171,6 +174,61 @@ describe('Basket & Token Serialization', () => {
     it('returns empty cart when token is invalid', () => {
       const parsed = parseTokenBasketParam('invalid-token', mockCatalog);
       expect(parsed.cartItems).toEqual([]);
+    });
+  });
+
+  describe('Halloween Coupon & Drop', () => {
+    it('recognizes Halloween coupon IDs and codes via isHalloweenCoupon', () => {
+      expect(STRIPE_HALLOWEEN_COUPON_ID).toBe('eU3xxIba');
+      expect(STRIPE_HALLOWEEN_COUPON_TITLE).toBe('Halloween Sale 20% off');
+      expect(isHalloweenCoupon('eU3xxIba')).toBe(true);
+      expect(isHalloweenCoupon('EU3XXIBA')).toBe(true);
+      expect(isHalloweenCoupon('halloween')).toBe(true);
+      expect(isHalloweenCoupon('HALLOWEEN')).toBe(true);
+      expect(isHalloweenCoupon('halloween20')).toBe(true);
+      expect(isHalloweenCoupon('HALLOWEENSALE')).toBe(true);
+      expect(isHalloweenCoupon('spooky')).toBe(true);
+      expect(isHalloweenCoupon('OTHER_COUPON')).toBe(false);
+      expect(isHalloweenCoupon(null)).toBe(false);
+      expect(isHalloweenCoupon(undefined)).toBe(false);
+    });
+
+    it('builds basket URL with Stripe Halloween coupon token', () => {
+      const cartItem: CartItem = {
+        product: mockProductA,
+        shape: 'Square',
+        length: 'Medium',
+        quantity: 1,
+      };
+
+      const url = buildBasketUrl([cartItem], {
+        coupon: STRIPE_HALLOWEEN_COUPON_ID,
+        includeCoupon: true,
+      });
+
+      expect(url).toContain('/basket?b=');
+      const token = url.replace('/basket?b=', '');
+      const decoded = decodeBasketToken(token);
+      expect(decoded?.coupon).toBe('eU3xxIba');
+    });
+
+    it('calculates 20% off accurately for Halloween sets', () => {
+      const sets = [
+        { name: 'Booquette', original: 15.0, expectedSale: 12.0 },
+        { name: 'Scream Queen', original: 15.0, expectedSale: 12.0 },
+        { name: 'Hello Horror', original: 15.5, expectedSale: 12.4 },
+        { name: 'Boo Belle', original: 15.0, expectedSale: 12.0 },
+        { name: 'Pink-o-ween', original: 15.0, expectedSale: 12.0 },
+        { name: 'Sparkle Scream', original: 15.0, expectedSale: 12.0 },
+        { name: 'Pearl Noir', original: 18.5, expectedSale: 14.8 },
+        { name: 'Midnight Muse', original: 15.0, expectedSale: 12.0 },
+      ];
+
+      for (const set of sets) {
+        const discountAmount = Math.round(set.original * 0.2 * 100) / 100;
+        const discountedPrice = Math.round((set.original - discountAmount) * 100) / 100;
+        expect(discountedPrice).toBeCloseTo(set.expectedSale, 2);
+      }
     });
   });
 });

@@ -28,6 +28,21 @@ export const STRIPE_FREE_SHIPPING_PROMO_ID = isLocalDev()
   ? (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID || "promo_1ToCW2K4CROOpWXUXvpVGOFN")
   : (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID_LIVE || "");
 
+export const STRIPE_HALLOWEEN_COUPON_ID = "eU3xxIba";
+export const STRIPE_HALLOWEEN_COUPON_TITLE = "Halloween Sale 20% off";
+
+export function isHalloweenCoupon(couponCode?: string | null): boolean {
+  if (!couponCode) return false;
+  const normalized = couponCode.trim().toLowerCase();
+  return (
+    normalized === STRIPE_HALLOWEEN_COUPON_ID.toLowerCase() ||
+    normalized === "halloween" ||
+    normalized === "halloween20" ||
+    normalized === "halloweensale" ||
+    normalized === "spooky"
+  );
+}
+
 export function getStripeShippingRateIds(stripePublishableKey?: string): Record<ShippingOptionId, string> {
   const isTestMode = stripePublishableKey
     ? stripePublishableKey.startsWith("pk_test")
@@ -158,7 +173,8 @@ export function getCollectionDetails(product: Product, allProducts: Product[]): 
     "Stargirl Collection": "inspired by celestial beauty ✨🌌",
     "Bloom Collection": "bringing the freshness of spring flowers 🌸🌼",
     "Stardust Collection": "star-studded Sanrio inspired designs 🎀✨",
-    "Sweet Mystery Collection": "surprise nail sets full of sweet picks 🍬🎲"
+    "Sweet Mystery Collection": "surprise nail sets full of sweet picks 🍬🎲",
+    "Halloween Collection": "8 bewitching sets with 20% off for spooky season 🎃✨"
   };
 
   // Find all unique products in the same collection
@@ -226,6 +242,15 @@ export function getCollectionStyle(collectionName: string) {
         textColor: "#0d9488",
         badgeBg: "rgba(255, 255, 255, 0.20)",
         emoji: "🍬"
+      };
+    case "Halloween Collection":
+      return {
+        cardGradient: "linear-gradient(135deg, #180928 0%, #ff7828 100%)",
+        bannerBg: "linear-gradient(135deg, rgba(24, 9, 40, 0.18) 0%, rgba(255, 120, 40, 0.18) 100%)",
+        border: "rgba(255, 120, 40, 0.4)",
+        textColor: "#ff7828",
+        badgeBg: "rgba(255, 255, 255, 0.20)",
+        emoji: "🎃"
       };
     default:
       return {
