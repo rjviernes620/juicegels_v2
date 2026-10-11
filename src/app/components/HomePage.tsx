@@ -8,9 +8,11 @@ import {
   getHalloweenSalePrice,
   getCollectionStyle
 } from "../utils/shopHelpers";
+import { lazyRetry } from "../utils/lazyRetry";
 
-const HeroShaderBackground = lazy(() =>
-  import("./HeroShaderBackground").then((m) => ({ default: m.HeroShaderBackground }))
+const HeroShaderBackground = lazyRetry(
+  () => import("./HeroShaderBackground"),
+  "HeroShaderBackground"
 );
 
 export interface HomePageProps {

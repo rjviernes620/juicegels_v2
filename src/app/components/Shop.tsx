@@ -3,8 +3,9 @@ import { motion } from "motion/react";
 import { ShoppingBag, Heart, Check, Trash2, Plus, Minus, X, Instagram, ChevronDown } from "lucide-react";
 import { AmbientGradient } from "./ui/AmbientGradient";
 import { Turnstile } from "./ui/Turnstile";
+import { lazyRetry } from "../utils/lazyRetry";
 
-const HeroShaderBackground = lazy(() => import("./HeroShaderBackground"));
+const HeroShaderBackground = lazyRetry(() => import("./HeroShaderBackground"), "HeroShaderBackground");
 
 import { StripeExpressCheckout } from "./StripeExpressCheckout";
 import { LocalErrorBoundary } from "./ErrorBoundary";

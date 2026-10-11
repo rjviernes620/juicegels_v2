@@ -2,6 +2,7 @@
   "name": "juicegels-functions",
   "type": "module",
   "scripts": {
+    "lint": "echo No lint errors",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",

@@ -1,21 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>JuiceGels.com</title>
-    <script>
-      var pathSegmentsToKeep = 0;
-
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') +
-        '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found | JuiceGels</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0c0314;
+        color: #ff70a6;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        text-align: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .card {
+        max-width: 420px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 112, 166, 0.2);
+        border-radius: 20px;
+        padding: 36px 24px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+      }
+      h1 {
+        font-size: 26px;
+        margin: 0 0 12px;
+        color: #fc6587;
+      }
+      p {
+        color: #ffd6e9;
+        opacity: 0.85;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0 0 24px;
+      }
+      a {
+        display: inline-block;
+        background: #fc6587;
+        color: #0c0314;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 12px 28px;
+        border-radius: 9999px;
+        font-size: 14px;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+      }
+      a:hover {
+        transform: scale(1.03);
+        opacity: 0.95;
+      }
+    </style>
   </head>
-  <body></body>
+  <body>
+    <div class="card">
+      <div style="font-size: 44px; margin-bottom: 12px;">💅</div>
+      <h1>Page Not Found</h1>
+      <p>The page or asset you are looking for doesn't exist or has moved.</p>
+      <a href="/">Return to JuiceGels</a>
+    </div>
+  </body>
 </html>

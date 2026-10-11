@@ -51,22 +51,23 @@ import {
   getHalloweenSalePrice,
   getCouponDisplayName
 } from "./utils/shopHelpers";
+import { lazyRetry } from "./utils/lazyRetry";
 
-const About = lazy(() => import("./components/About").then((m) => ({ default: m.About })));
-const Videos = lazy(() => import("./components/Videos").then((m) => ({ default: m.Videos })));
-const Search = lazy(() => import("./components/Search").then((m) => ({ default: m.Search })));
-const Contact = lazy(() => import("./components/Contact").then((m) => ({ default: m.Contact })));
-const CustomOrders = lazy(() => import("./components/CustomOrders").then((m) => ({ default: m.CustomOrders })));
-const FAQ = lazy(() => import("./components/FAQ").then((m) => ({ default: m.FAQ })));
-const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy").then((m) => ({ default: m.PrivacyPolicy })));
-const TermsOfService = lazy(() => import("./components/TermsOfService").then((m) => ({ default: m.TermsOfService })));
-const ShopPage = lazy(() => import("./components/Shop").then((m) => ({ default: m.ShopPage })));
-const ProductDetailPage = lazy(() => import("./components/Shop").then((m) => ({ default: m.ProductDetailPage })));
-const BasketPage = lazy(() => import("./components/Shop").then((m) => ({ default: m.BasketPage })));
-const PreorderPage = lazy(() => import("./components/Shop").then((m) => ({ default: m.PreorderPage })));
-const ConfirmationPage = lazy(() => import("./components/Shop").then((m) => ({ default: m.ConfirmationPage })));
-const HalloweenPage = lazy(() => import("./components/HalloweenPage").then((m) => ({ default: m.HalloweenPage })));
-const HomePage = lazy(() => import("./components/HomePage").then((m) => ({ default: m.HomePage })));
+const About = lazyRetry(() => import("./components/About"), "About");
+const Videos = lazyRetry(() => import("./components/Videos"), "Videos");
+const Search = lazyRetry(() => import("./components/Search"), "Search");
+const Contact = lazyRetry(() => import("./components/Contact"), "Contact");
+const CustomOrders = lazyRetry(() => import("./components/CustomOrders"), "CustomOrders");
+const FAQ = lazyRetry(() => import("./components/FAQ"), "FAQ");
+const PrivacyPolicy = lazyRetry(() => import("./components/PrivacyPolicy"), "PrivacyPolicy");
+const TermsOfService = lazyRetry(() => import("./components/TermsOfService"), "TermsOfService");
+const ShopPage = lazyRetry(() => import("./components/Shop"), "ShopPage");
+const ProductDetailPage = lazyRetry(() => import("./components/Shop"), "ProductDetailPage");
+const BasketPage = lazyRetry(() => import("./components/Shop"), "BasketPage");
+const PreorderPage = lazyRetry(() => import("./components/Shop"), "PreorderPage");
+const ConfirmationPage = lazyRetry(() => import("./components/Shop"), "ConfirmationPage");
+const HalloweenPage = lazyRetry(() => import("./components/HalloweenPage"), "HalloweenPage");
+const HomePage = lazyRetry(() => import("./components/HomePage"), "HomePage");
 
 function PageLoadingFallback() {
   return (

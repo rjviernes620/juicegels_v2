@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "juicegels-bf9ca"
-  }
+  },
+  "targets": {
+    "juicegels-bf9ca": {
+      "hosting": {
+        "store": [
+          "juicegels-bf9ca"
+        ],
+        "studio": [
+          "juicegels-productalpha"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

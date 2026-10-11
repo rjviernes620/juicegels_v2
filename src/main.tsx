@@ -4,18 +4,36 @@ import App from "./app/App.tsx";
 import { RouteErrorBoundary, GlobalErrorBoundary, ErrorPage } from "./app/components/ErrorBoundary.tsx";
 import "./styles/index.css";
 
-function normalizeRedirectedRoute() {
-  if (typeof window === "undefined") return;
+// Auto-recover if a new deployment changed chunk hashes while the user has an open tab
+if (typeof window !== "undefined") {
+  window.addEventListener("vite:preloadError", (event) => {
+    event.preventDefault();
+    const lockKey = "jg_chunk_reload_lock";
+    const now = Date.now();
+    const last = Number(sessionStorage.getItem(lockKey) || 0);
+    if (now - last > 10000) {
+      sessionStorage.setItem(lockKey, String(now));
+      window.location.reload();
+    }
+  });
 
-  const { location, history } = window;
-
-  if (!location.search.startsWith("?/") ) return;
-
-  const decodedSearch = location.search.slice(1).replace(/~and~/g, "&");
-  const [routePath, ...queryParts] = decodedSearch.split("&");
-  const nextUrl = `${routePath}${queryParts.length > 0 ? `?${queryParts.join("&")}` : ""}${location.hash}`;
-
-  history.replaceState(null, "", nextUrl);
+  window.addEventListener("error", (event) => {
+    const msg = (event?.message || (event?.error && event.error.message) || "").toLowerCase();
+    if (
+      msg.includes("importing a module script failed") ||
+      msg.includes("failed to fetch dynamically imported module") ||
+      msg.includes("error loading dynamically imported module") ||
+      msg.includes("failed to load module script")
+    ) {
+      const lockKey = "jg_chunk_reload_lock";
+      const now = Date.now();
+      const last = Number(sessionStorage.getItem(lockKey) || 0);
+      if (now - last > 10000) {
+        sessionStorage.setItem(lockKey, String(now));
+        window.location.reload();
+      }
+    }
+  });
 }
 
 // Intercept global fetch to inject X-Maintenance-Bypass header if the token is available
@@ -49,8 +67,6 @@ function normalizeRedirectedRoute() {
     return originalFetch(input, init);
   };
 })();
-
-normalizeRedirectedRoute();
 
 const router = createBrowserRouter([
   { path: "/", element: <App />, errorElement: <RouteErrorBoundary /> },

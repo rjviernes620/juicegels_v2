@@ -1,73 +1,137 @@
 {
-  "hosting": {
-    "public": "prod",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "/api/**",
-        "function": "api"
-      },
-      {
-        "source": "/create-checkout-session",
-        "function": "api"
-      },
-      {
-        "source": "/validate-coupon",
-        "function": "api"
-      },
-      {
-        "source": "/check-eligibility",
-        "function": "api"
-      },
-      {
-        "source": "/create-custom-order",
-        "function": "api"
-      },
-      {
-        "source": "/stripe-webhook",
-        "function": "api"
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ],
-    "headers": [
-      {
-        "source": "/assets/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=31536000, immutable"
+  "hosting": [
+    {
+      "target": "store",
+      "public": "prod",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "/api/**",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
           }
-        ]
-      },
-      {
-        "source": "/index.html",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "source": "/create-checkout-session",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
           }
-        ]
-      }
-    ]
-  },
-  "functions": {
-    "source": "functions",
-    "codebase": "default",
-    "ignore": [
-      "node_modules",
-      ".git",
-      "firebase-debug.log",
-      "firebase-debug.*.log"
-    ]
-  },
+        },
+        {
+          "source": "/validate-coupon",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
+          "source": "/check-eligibility",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
+          "source": "/create-custom-order",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
+          "source": "/stripe-webhook",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "/assets/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "studio",
+      "public": "studio-juicegels_back/dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "/static/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix functions run build"
+      ]
+    }
+  ],
   "firestore": {
+    "database": "(default)",
+    "location": "eur3",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   }

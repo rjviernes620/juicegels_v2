@@ -80,23 +80,50 @@
     }
   </style>
   <script>
-    (function (l) {
-      if (l.search[1] === '/') {
-        var decodedSearch = l.search
-          .slice(1)
-          .replace(/~and~/g, '&');
+    (function () {
+      function reloadOnChunkFailure() {
+        var lockKey = 'jg_chunk_reload_lock';
+        var now = Date.now();
+        var last = Number(sessionStorage.getItem(lockKey) || 0);
+        if (now - last > 10000) {
+          sessionStorage.setItem(lockKey, String(now));
+          window.location.reload();
+        }
+      }
 
-        var routeAndQuery = decodedSearch.split('&');
-        var route = routeAndQuery.shift() || '';
-        var decoded = route + (routeAndQuery.length ? '?' + routeAndQuery.join('&') : '');
-
-        window.history.replaceState(
-          null,
-          null,
-          l.pathname.slice(0, -1) + decoded + l.hash
+      function isChunkLoadError(msg) {
+        if (!msg) return false;
+        var lower = String(msg).toLowerCase();
+        return (
+          lower.indexOf('importing a module script failed') !== -1 ||
+          lower.indexOf('failed to fetch dynamically imported module') !== -1 ||
+          lower.indexOf('error loading dynamically imported module') !== -1 ||
+          lower.indexOf('failed to load module script') !== -1
         );
       }
-    })(window.location);
+
+      window.addEventListener('vite:preloadError', function (event) {
+        if (event && event.preventDefault) event.preventDefault();
+        reloadOnChunkFailure();
+      });
+
+      window.addEventListener('error', function (event) {
+        var msg = (event && (event.message || (event.error && event.error.message))) || '';
+        if (isChunkLoadError(msg)) {
+          if (event && event.preventDefault) event.preventDefault();
+          reloadOnChunkFailure();
+        }
+      });
+
+      window.addEventListener('unhandledrejection', function (event) {
+        var reason = event && event.reason;
+        var msg = (reason && (reason.message || String(reason))) || '';
+        if (isChunkLoadError(msg)) {
+          if (event && event.preventDefault) event.preventDefault();
+          reloadOnChunkFailure();
+        }
+      });
+    })();
   </script>
   <script>
     if (typeof global === 'undefined') {
@@ -106,10 +133,7 @@
       window.process = { env: {} };
     }
   </script>
-  <script type="module" crossorigin src="/assets/index-cjgFecbi.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-Cfg9lLHE.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-icons-BjdEqNti.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-motion-BibXtMk1.js">
+  <script type="module" crossorigin src="/assets/index-DB9Bi6Qk.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-Dm-QEfRv.css">
 </head>
 

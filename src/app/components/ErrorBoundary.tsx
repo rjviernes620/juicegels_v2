@@ -58,15 +58,40 @@ interface ErrorPageProps {
   errorTitle?: string;
   errorMessage?: string;
   errorEmoji?: string;
+  buttonText?: string;
+  onAction?: () => void;
+}
+
+export function isChunkLoadError(error: any): boolean {
+  const msg = (
+    error instanceof Error
+      ? error.message
+      : typeof error === "string"
+        ? error
+        : error?.message || ""
+  ).toLowerCase();
+
+  return (
+    msg.includes("importing a module script failed") ||
+    msg.includes("failed to fetch dynamically imported module") ||
+    msg.includes("error loading dynamically imported module") ||
+    msg.includes("failed to load module script")
+  );
 }
 
 export function ErrorPage({
   errorTitle = "Something went wrong",
   errorMessage = "An unexpected error occurred.",
-  errorEmoji = "💅"
+  errorEmoji = "💅",
+  buttonText = "Return to Shop Home",
+  onAction
 }: ErrorPageProps) {
-  const handleReload = () => {
-    window.location.href = "/";
+  const handleAction = () => {
+    if (onAction) {
+      onAction();
+    } else {
+      window.location.href = "/";
+    }
   };
 
   return (
@@ -111,11 +136,13 @@ export function ErrorPage({
           opacity: 0.9,
           margin: "0 0 24px"
         }}>
-          We encountered an unexpected error. Don&apos;t worry, your cart details are safe! Let&apos;s get you back to browsing.
+          {errorMessage.includes("JuiceGels was just updated")
+            ? "We just deployed the newest designs and fixes. Tap below to reload the latest styles!"
+            : "We encountered an unexpected error. Don't worry, your cart details are safe! Let's get you back to browsing."}
         </p>
 
         <button
-          onClick={handleReload}
+          onClick={handleAction}
           style={{
             background: "#fc6587",
             color: "#fff9fb",
@@ -138,7 +165,7 @@ export function ErrorPage({
             e.currentTarget.style.transform = "none";
           }}
         >
-          Return to Shop Home
+          {buttonText}
         </button>
 
         <details style={{
@@ -186,13 +213,35 @@ export function RouteErrorBoundary() {
   const error = useRouteError() as any;
   console.error("RouteErrorBoundary caught a routing/render error:", error);
 
+  const isChunk = isChunkLoadError(error);
+  if (isChunk && typeof window !== "undefined") {
+    const lockKey = "jg_boundary_reload_lock";
+    const now = Date.now();
+    const last = Number(sessionStorage.getItem(lockKey) || 0);
+    if (now - last > 10000) {
+      sessionStorage.setItem(lockKey, String(now));
+      window.location.reload();
+      return null;
+    }
+  }
+
   const errorMessage = error instanceof Error
     ? error.message
     : typeof error === "string"
       ? error
       : error?.statusText || error?.message || "An unknown error occurred.";
 
-  return <ErrorPage errorMessage={errorMessage} />;
+  return (
+    <ErrorPage
+      errorTitle={isChunk ? "New Version Available" : "Something went wrong"}
+      errorMessage={isChunk ? "JuiceGels was just updated! Tap below to load the latest version." : errorMessage}
+      errorEmoji={isChunk ? "✨" : "💅"}
+      buttonText={isChunk ? "Refresh App" : "Return to Shop Home"}
+      onAction={() => {
+        window.location.reload();
+      }}
+    />
+  );
 }
 
 // ── Top-Level Class Error Boundary ──
@@ -217,14 +266,35 @@ export class GlobalErrorBoundary extends Component<GlobalProps, GlobalState> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("GlobalErrorBoundary caught an error:", error, errorInfo);
+    if (isChunkLoadError(error) && typeof window !== "undefined") {
+      const lockKey = "jg_boundary_reload_lock";
+      const now = Date.now();
+      const last = Number(sessionStorage.getItem(lockKey) || 0);
+      if (now - last > 10000) {
+        sessionStorage.setItem(lockKey, String(now));
+        window.location.reload();
+      }
+    }
   }
 
   render() {
     if (this.state.hasError) {
+      const isChunk = isChunkLoadError(this.state.error);
       const errorMessage = this.state.error?.message || "An unexpected error occurred.";
-      return <ErrorPage errorMessage={errorMessage} />;
+      return (
+        <ErrorPage
+          errorTitle={isChunk ? "New Version Available" : "Something went wrong"}
+          errorMessage={isChunk ? "JuiceGels was just updated! Tap below to load the latest version." : errorMessage}
+          errorEmoji={isChunk ? "✨" : "💅"}
+          buttonText={isChunk ? "Refresh App" : "Return to Shop Home"}
+          onAction={() => {
+            window.location.reload();
+          }}
+        />
+      );
     }
 
     return this.props.children;
   }
 }
+

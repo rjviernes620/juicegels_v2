@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
+    "build:studio": "npm --prefix studio-juicegels_back run build -- -y",
+    "deploy:store": "npm run build && firebase deploy --only hosting:store",
+    "deploy:studio": "npm run build:studio && firebase deploy --only hosting:studio",
     "dev": "vite",
     "test": "vitest run",
     "test:watch": "vitest"

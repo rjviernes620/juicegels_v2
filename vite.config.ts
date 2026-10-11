@@ -54,6 +54,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'prod',
+      modulePreload: false,
       cssCodeSplit: true,
       rollupOptions: {
         output: {
