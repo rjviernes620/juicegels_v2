@@ -17,130 +17,130 @@ function buildCheckoutItemsParam(items) {
     return parts.join(",");
 }
 checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"], async (req, res) => {
-    const payload = req.body || {};
-    const turnstileToken = payload.turnstileToken;
-    const isExpressCheckout = turnstileToken === "Bypassed_For_Express_Checkout";
-    if (!isExpressCheckout) {
-        const remoteIp = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
-        const isValid = await verifyTurnstile(turnstileToken, remoteIp);
-        if (!isValid) {
-            res.status(400).json({ error: "Security check failed. Please complete the security check." });
-            return;
-        }
-    }
-    const items = payload.items || [];
-    const form = payload.form || {};
-    const rawCouponCode = payload.coupon || "";
-    let shippingOptionId = payload.shippingOptionId || "";
-    const origin = req.headers.origin || "https://juicegels.com";
-    const itemsParam = buildCheckoutItemsParam(items);
-    const maintenanceActive = await isMaintenanceActive();
-    const stripe = getStripeClient(maintenanceActive);
-    let subtotalPence = 0;
-    const lineItems = [];
-    for (const item of items) {
-        const product = item.product || {};
-        const shape = item.shape || "";
-        const length = item.length || "";
-        const quantity = parseInt(item.quantity, 10) || 1;
-        const name = product.name || "Product";
-        const price = parseFloat(product.price) || 0;
-        const imageUrl = product.image || "";
-        const unitAmount = Math.round(price * 100);
-        subtotalPence += unitAmount * quantity;
-        const isSizeGuide = product.id === CONFIG.NAIL_SIZE_GUIDE_PRODUCT_ID || name.toLowerCase().includes("nail sizing guide");
-        const displayName = isSizeGuide ? name : `${name} - ${shape} - ${length}`.replace(/^ - | - $/g, "");
-        let resolvedImg = imageUrl;
-        if (resolvedImg && resolvedImg.startsWith("/")) {
-            resolvedImg = `${origin}${resolvedImg}`;
-        }
-        const metadata = {
-            productid: product.id || ""
-        };
-        if (!isSizeGuide) {
-            metadata.shape = shape;
-            metadata.length = length;
-        }
-        const productData = {
-            name: displayName,
-            metadata
-        };
-        if (resolvedImg) {
-            productData.images = [resolvedImg];
-        }
-        lineItems.push({
-            price_data: {
-                currency: "gbp",
-                unit_amount: unitAmount,
-                product_data: productData
-            },
-            quantity
-        });
-    }
-    let couponSummary = null;
-    if (rawCouponCode) {
-        try {
-            couponSummary = await resolveCouponSummary(stripe, rawCouponCode, subtotalPence);
-        }
-        catch (err) {
-            res.status(400).json({ error: err.message || "Invalid coupon" });
-            return;
-        }
-    }
-    const customerEmail = (form.email || "").trim();
-    let hasSizeGuide = false;
-    let hasNailSet = false;
-    let sizeGuideDiscountPence = 0;
-    for (const item of items) {
-        const product = item.product || {};
-        const isSizeGuide = product.id === CONFIG.NAIL_SIZE_GUIDE_PRODUCT_ID || (product.name || "").toLowerCase().includes("nail sizing guide");
-        if (isSizeGuide) {
-            hasSizeGuide = true;
-            const price = parseFloat(product.price) || 0;
-            sizeGuideDiscountPence = Math.round(price * 100);
-        }
-        else {
-            hasNailSet = true;
-        }
-    }
-    let applySizeGuideCoupon = false;
-    if (hasSizeGuide && hasNailSet && customerEmail) {
-        if (await isFirstTimeBuyer(stripe, customerEmail)) {
-            applySizeGuideCoupon = true;
-        }
-    }
-    let discountedSubtotalPence = subtotalPence;
-    if (couponSummary) {
-        discountedSubtotalPence -= couponSummary.discount_pence;
-    }
-    else if (applySizeGuideCoupon) {
-        discountedSubtotalPence -= sizeGuideDiscountPence;
-    }
-    discountedSubtotalPence = Math.max(0, discountedSubtotalPence);
-    const country = String(form.country || "GB").trim();
-    const isEmbedded = Boolean(payload.embedded);
-    if (isEmbedded && !shippingOptionId) {
-        shippingOptionId = "tracked48";
-    }
-    const shippingOption = resolveShippingOption(shippingOptionId, discountedSubtotalPence, country, maintenanceActive);
-    const metadata = {
-        first_name: form.firstName || "",
-        last_name: form.lastName || "",
-        phone: form.phone || "",
-        instagram: form.instagram || "",
-        contact_preference: form.contactMethod || "instagram",
-        notes: form.notes || "",
-        shipping_address: form.address || "",
-        shipping_city: form.city || "",
-        shipping_postcode: form.postcode || "",
-        shipping_country: country,
-        coupon_code: couponSummary ? couponSummary.code : applySizeGuideCoupon ? "SIZEGUIDEFREE" : "",
-        shipping_option_id: shippingOption.id,
-        shipping_method: shippingOption.label,
-        shipping_amount_pence: String(shippingOption.amount_pence),
-        items: itemsParam
-    };
     try {
+        const payload = req.body || {};
+        const turnstileToken = payload.turnstileToken;
+        const isExpressCheckout = turnstileToken === "Bypassed_For_Express_Checkout";
+        if (!isExpressCheckout) {
+            const remoteIp = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "").split(",")[0].trim();
+            const isValid = await verifyTurnstile(turnstileToken, remoteIp);
+            if (!isValid) {
+                res.status(400).json({ error: "Security check failed. Please complete the security check." });
+                return;
+            }
+        }
+        const items = payload.items || [];
+        const form = payload.form || {};
+        const rawCouponCode = payload.coupon || "";
+        let shippingOptionId = payload.shippingOptionId || "";
+        const origin = req.headers.origin || "https://juicegels.com";
+        const itemsParam = buildCheckoutItemsParam(items);
+        const maintenanceActive = await isMaintenanceActive();
+        const stripe = getStripeClient(maintenanceActive);
+        let subtotalPence = 0;
+        const lineItems = [];
+        for (const item of items) {
+            const product = item.product || {};
+            const shape = item.shape || "";
+            const length = item.length || "";
+            const quantity = parseInt(item.quantity, 10) || 1;
+            const name = product.name || "Product";
+            const price = parseFloat(product.price) || 0;
+            const imageUrl = product.image || "";
+            const unitAmount = Math.round(price * 100);
+            subtotalPence += unitAmount * quantity;
+            const isSizeGuide = product.id === CONFIG.NAIL_SIZE_GUIDE_PRODUCT_ID || name.toLowerCase().includes("nail sizing guide");
+            const displayName = isSizeGuide ? name : `${name} - ${shape} - ${length}`.replace(/^ - | - $/g, "");
+            let resolvedImg = imageUrl;
+            if (resolvedImg && resolvedImg.startsWith("/")) {
+                resolvedImg = `${origin}${resolvedImg}`;
+            }
+            const metadata = {
+                productid: product.id || ""
+            };
+            if (!isSizeGuide) {
+                metadata.shape = shape;
+                metadata.length = length;
+            }
+            const productData = {
+                name: displayName,
+                metadata
+            };
+            if (resolvedImg) {
+                productData.images = [resolvedImg];
+            }
+            lineItems.push({
+                price_data: {
+                    currency: "gbp",
+                    unit_amount: unitAmount,
+                    product_data: productData
+                },
+                quantity
+            });
+        }
+        let couponSummary = null;
+        if (rawCouponCode) {
+            try {
+                couponSummary = await resolveCouponSummary(stripe, rawCouponCode, subtotalPence);
+            }
+            catch (err) {
+                res.status(400).json({ error: err.message || "Invalid coupon" });
+                return;
+            }
+        }
+        const customerEmail = (form.email || "").trim();
+        let hasSizeGuide = false;
+        let hasNailSet = false;
+        let sizeGuideDiscountPence = 0;
+        for (const item of items) {
+            const product = item.product || {};
+            const isSizeGuide = product.id === CONFIG.NAIL_SIZE_GUIDE_PRODUCT_ID || (product.name || "").toLowerCase().includes("nail sizing guide");
+            if (isSizeGuide) {
+                hasSizeGuide = true;
+                const price = parseFloat(product.price) || 0;
+                sizeGuideDiscountPence = Math.round(price * 100);
+            }
+            else {
+                hasNailSet = true;
+            }
+        }
+        let applySizeGuideCoupon = false;
+        if (hasSizeGuide && hasNailSet && customerEmail) {
+            if (await isFirstTimeBuyer(stripe, customerEmail)) {
+                applySizeGuideCoupon = true;
+            }
+        }
+        let discountedSubtotalPence = subtotalPence;
+        if (couponSummary) {
+            discountedSubtotalPence -= couponSummary.discount_pence;
+        }
+        else if (applySizeGuideCoupon) {
+            discountedSubtotalPence -= sizeGuideDiscountPence;
+        }
+        discountedSubtotalPence = Math.max(0, discountedSubtotalPence);
+        const country = String(form.country || "GB").trim();
+        const isEmbedded = Boolean(payload.embedded);
+        if (isEmbedded && !shippingOptionId) {
+            shippingOptionId = "tracked48";
+        }
+        const shippingOption = resolveShippingOption(shippingOptionId, discountedSubtotalPence, country, maintenanceActive);
+        const metadata = {
+            first_name: form.firstName || "",
+            last_name: form.lastName || "",
+            phone: form.phone || "",
+            instagram: form.instagram || "",
+            contact_preference: form.contactMethod || "instagram",
+            notes: form.notes || "",
+            shipping_address: form.address || "",
+            shipping_city: form.city || "",
+            shipping_postcode: form.postcode || "",
+            shipping_country: country,
+            coupon_code: couponSummary ? couponSummary.code : applySizeGuideCoupon ? "SIZEGUIDEFREE" : "",
+            shipping_option_id: shippingOption.id,
+            shipping_method: shippingOption.label,
+            shipping_amount_pence: String(shippingOption.amount_pence),
+            items: itemsParam
+        };
         if (isEmbedded) {
             const intentParams = {
                 amount: discountedSubtotalPence + shippingOption.amount_pence,
@@ -193,15 +193,15 @@ checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"]
     }
 });
 checkoutRouter.post(["/validate-coupon", "/api/validate-coupon"], async (req, res) => {
-    const code = (req.body?.coupon || req.body?.code || "").trim();
-    const subtotalPence = parseInt(req.body?.subtotalPence, 10) || 0;
-    if (!code) {
-        res.status(400).json({ error: "Coupon code is required" });
-        return;
-    }
-    const maintenanceActive = await isMaintenanceActive();
-    const stripe = getStripeClient(maintenanceActive);
     try {
+        const code = (req.body?.coupon || req.body?.code || "").trim();
+        const subtotalPence = parseInt(req.body?.subtotalPence, 10) || 0;
+        if (!code) {
+            res.status(400).json({ error: "Coupon code is required" });
+            return;
+        }
+        const maintenanceActive = await isMaintenanceActive();
+        const stripe = getStripeClient(maintenanceActive);
         const summary = await resolveCouponSummary(stripe, code, subtotalPence);
         res.json({
             valid: true,
@@ -216,39 +216,47 @@ checkoutRouter.post(["/validate-coupon", "/api/validate-coupon"], async (req, re
     }
 });
 checkoutRouter.post(["/check-eligibility", "/api/check-eligibility"], async (req, res) => {
-    const email = (req.body?.email || "").trim();
-    if (!email) {
-        res.status(400).json({ eligible: false, message: "Email required" });
-        return;
+    try {
+        const email = (req.body?.email || "").trim();
+        if (!email) {
+            res.status(400).json({ eligible: false, message: "Email required" });
+            return;
+        }
+        const maintenanceActive = await isMaintenanceActive();
+        const stripe = getStripeClient(maintenanceActive);
+        const eligible = await isFirstTimeBuyer(stripe, email);
+        res.json({ eligible });
     }
-    const maintenanceActive = await isMaintenanceActive();
-    const stripe = getStripeClient(maintenanceActive);
-    const eligible = await isFirstTimeBuyer(stripe, email);
-    res.json({ eligible });
+    catch (err) {
+        console.error("Error checking eligibility:", err);
+        res.status(500).json({ eligible: false, error: err.message });
+    }
 });
 checkoutRouter.get("/api/checkout-session/:sessionId", async (req, res) => {
-    const sessionId = Array.isArray(req.params.sessionId) ? req.params.sessionId[0] : req.params.sessionId;
-    const maintenanceActive = await isMaintenanceActive();
-    const stripe = getStripeClient(maintenanceActive);
     try {
+        const sessionId = Array.isArray(req.params.sessionId) ? req.params.sessionId[0] : req.params.sessionId;
+        const maintenanceActive = await isMaintenanceActive();
+        const stripe = getStripeClient(maintenanceActive);
         const session = await stripe.checkout.sessions.retrieve(sessionId, {
             expand: ["customer_details", "line_items"]
         });
         res.json(session);
     }
     catch (err) {
+        console.error("Error retrieving checkout session:", err);
         res.status(500).json({ error: err.message || "Failed to retrieve session" });
     }
 });
 checkoutRouter.get("/api/payment-intent/:intentId", async (req, res) => {
-    const intentId = Array.isArray(req.params.intentId) ? req.params.intentId[0] : req.params.intentId;
-    const maintenanceActive = await isMaintenanceActive();
-    const stripe = getStripeClient(maintenanceActive);
     try {
+        const intentId = Array.isArray(req.params.intentId) ? req.params.intentId[0] : req.params.intentId;
+        const maintenanceActive = await isMaintenanceActive();
+        const stripe = getStripeClient(maintenanceActive);
         const intent = await stripe.paymentIntents.retrieve(intentId);
         res.json(intent);
     }
     catch (err) {
+        console.error("Error retrieving payment intent:", err);
         res.status(500).json({ error: err.message || "Failed to retrieve payment intent" });
     }
 });

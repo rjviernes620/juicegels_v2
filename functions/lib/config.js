@@ -53,13 +53,16 @@ export const CONFIG = {
         return readSecret("sanity_write_token", "SANITY_WRITE_TOKEN");
     },
     get STRIPE_SECRET_KEY() {
-        return readSecret("stripe_secret_key", "STRIPE_SECRET_KEY");
+        return (readSecret("stripe_live_v1", "STRIPE_SECRET_KEY") ||
+            readSecret("stripe_secret_key", "STRIPE_LIVE_SECRET_KEY"));
     },
     get STRIPE_TEST_SECRET_KEY() {
-        return readSecret("stripe_test_secret_key", "STRIPE_TEST_SECRET_KEY");
+        return (readSecret("stripe_test_v1", "STRIPE_TEST_SECRET_KEY") ||
+            readSecret("stripe_test_secret_key") ||
+            "sk_test_51TgWqGK9S4gHGvxwFNa7SNCtpDCF22j3ViHQ9cQXgOSaNICLk4tRK9HjOFmLxv0FhHHg08X0LUtckmEK1aybXgt700mi1zYqlx");
     },
     get STRIPE_WEBHOOK_SECRET() {
-        return readSecret("stripe_webhook_live", "STRIPE_WEBHOOK_SECRET");
+        return readSecret("stripe_webhook_live", "STRIPE_WEBHOOK_SECRET") || readSecret("stripe_webhook");
     },
     get STRIPE_TEST_WEBHOOK_SECRET() {
         return readSecret("stripe_webhook", "STRIPE_TEST_WEBHOOK_SECRET");

@@ -1195,7 +1195,13 @@ export default function App() {
         }),
       });
 
-      const data = await response.json();
+      const text = await response.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(text ? `Server error (${response.status}): ${text.slice(0, 80)}` : "Failed to create checkout session.");
+      }
 
       if (!response.ok || !data.url) {
         throw new Error(data.error || "Failed to create checkout session.");
