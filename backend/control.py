@@ -43,7 +43,7 @@ def set_maintenance(active):
 # API base URL: prioritized environment variable, then fallback.
 API_BASE = os.environ.get('JUICEGELS_API_BASE', '').strip()
 if not API_BASE:
-    API_BASE = 'https://juicegels-v2.onrender.com'
+    API_BASE = 'https://juicegels.com'
 
 def remote_set_maintenance(active):
     """Toggle maintenance mode on the live server via HTTP.

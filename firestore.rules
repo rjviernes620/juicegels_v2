@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // System configuration (e.g. maintenance flag) is publicly readable
+    match /system/{document} {
+      allow read: if true;
+      allow write: if false; // Server Admin SDK only
+    }
+
+    // Orders and counters are private, handled entirely by Cloud Functions Admin SDK
+    match /orders/{orderId} {
+      allow read, write: if false;
+    }
+
+    match /counters/{counterId} {
+      allow read, write: if false;
+    }
+  }
+}
