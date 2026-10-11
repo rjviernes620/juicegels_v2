@@ -328,6 +328,29 @@ export default function App() {
         if (!isCancelled) {
           setProducts(loadedProducts);
           setTrendingProductIds(loadedTrendingIds);
+
+          // Sync existing cart items with fresh Sanity product prices
+          setCart((prevCart) => {
+            if (prevCart.length === 0) return prevCart;
+            let changed = false;
+            const updated = prevCart.map((item) => {
+              const matched =
+                loadedProducts.find((p) => p.id === item.product.id) ||
+                loadedProducts.find((p) => p.groupId.toLowerCase() === item.product.groupId.toLowerCase());
+              if (matched && matched.price !== item.product.price) {
+                changed = true;
+                return {
+                  ...item,
+                  product: {
+                    ...item.product,
+                    price: matched.price,
+                  },
+                };
+              }
+              return item;
+            });
+            return changed ? updated : prevCart;
+          });
         }
       } catch (error) {
         if (!isCancelled) {
@@ -1675,6 +1698,7 @@ export default function App() {
 
         {!isProductsLoading && page === "halloween" && (
           <HalloweenPage
+            products={products}
             navigate={navigate}
             isMobile={isMobile}
             isTablet={isTablet}

@@ -16,6 +16,7 @@ import {
 } from '../app/utils/shopHelpers';
 import { type Product } from '../app/utils/parseProducts';
 import { type CartItem } from '../app/types';
+import { resolveHalloweenSetsWithSanity, HALLOWEEN_SETS } from '../app/components/HalloweenPage';
 
 const mockProductA: Product = {
   id: 'JUICEGELS-0001',
@@ -231,7 +232,7 @@ describe('Basket & Token Serialization', () => {
         { name: 'Boo Belle', original: 15.0, expectedSale: 12.0 },
         { name: 'Pink-o-ween', original: 15.0, expectedSale: 12.0 },
         { name: 'Sparkle Scream', original: 15.0, expectedSale: 12.0 },
-        { name: 'Pearl Noir', original: 18.5, expectedSale: 14.8 },
+        { name: 'Pearl Noir', original: 15.0, expectedSale: 12.0 },
         { name: 'Midnight Muse', original: 15.0, expectedSale: 12.0 },
       ];
 
@@ -240,6 +241,59 @@ describe('Basket & Token Serialization', () => {
         const discountedPrice = Math.round((set.original - discountAmount) * 100) / 100;
         expect(discountedPrice).toBeCloseTo(set.expectedSale, 2);
       }
+    });
+
+    it('dynamically pulls prices from Sanity and calculates proper sale prices for all sets', () => {
+      // Mock Sanity products where Pearl Noir is £15 and Booquette is £16.50
+      const mockSanityProducts: Product[] = [
+        {
+          id: 'JUICEGELS-0196',
+          groupId: 'juicegels_pearlnoirset',
+          name: 'Pearl Noir',
+          price: 15.0,
+          description: 'High-luxe obsidian black gel',
+          image: 'https://cdn.sanity.io/pearl.jpg',
+          extraImages: [],
+          shapes: ['Almond'],
+          tags: ['Halloween'],
+          shape: 'Almond',
+          length: 'Medium',
+          collection: 'Juice Ghouls Collection'
+        },
+        {
+          id: 'JUICEGELS-2447',
+          groupId: 'juicegels_booquetteset',
+          name: 'Booquette',
+          price: 16.50,
+          description: 'Cute ghost floral bouquet art',
+          image: 'https://cdn.sanity.io/booquette.jpg',
+          extraImages: [],
+          shapes: ['Almond'],
+          tags: ['Halloween'],
+          shape: 'Almond',
+          length: 'Medium',
+          collection: 'Juice Ghouls Collection'
+        }
+      ];
+
+      const resolved = resolveHalloweenSetsWithSanity(mockSanityProducts);
+
+      // Pearl Noir must be pulled from Sanity at £15.00 with £12.00 sale price (20% off)
+      const pearlNoir = resolved.find((s) => s.name === 'Pearl Noir');
+      expect(pearlNoir).toBeDefined();
+      expect(pearlNoir?.originalPrice).toBe(15.0);
+      expect(pearlNoir?.discountedPrice).toBe(12.0);
+
+      // Booquette must dynamically reflect the updated Sanity price (£16.50 -> 20% off = £13.20)
+      const booquette = resolved.find((s) => s.name === 'Booquette');
+      expect(booquette).toBeDefined();
+      expect(booquette?.originalPrice).toBe(16.50);
+      expect(booquette?.discountedPrice).toBe(13.20);
+
+      // Other sets without custom mocks retain their catalog defaults
+      const helloHorror = resolved.find((s) => s.name === 'Hello Horror');
+      expect(helloHorror?.originalPrice).toBe(15.5);
+      expect(helloHorror?.discountedPrice).toBe(12.4);
     });
 
     it('accurately identifies Halloween variants and calculates per-product discount rather than whole basket', () => {

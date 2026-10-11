@@ -1,16 +1,19 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import confetti from "canvas-confetti";
 import { ArrowLeft, ShoppingBag, Sparkles, Check, Info, ExternalLink } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { type Product, type NailLength } from "../utils/parseProducts";
+import { type Product, type NailLength, loadProducts } from "../utils/parseProducts";
 import { type CartItem } from "../types";
 import {
   formatMoney,
   SHIPPING_FREE_THRESHOLD,
   STRIPE_HALLOWEEN_COUPON_ID,
   buildBasketUrl,
-  META_CART_ORIGIN
+  META_CART_ORIGIN,
+  getHalloweenSalePrice,
+  calculateHalloweenDiscount,
+  isHalloweenProduct
 } from "../utils/shopHelpers";
 
 export interface HalloweenPageProps {
@@ -20,9 +23,10 @@ export interface HalloweenPageProps {
   cart: CartItem[];
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
   currentBasketUrl: (items: CartItem[]) => string;
+  products?: Product[];
 }
 
-interface SetDefinition {
+export interface SetDefinition {
   id: string;
   numericProductId: number;
   groupId: string;
@@ -158,8 +162,8 @@ export const HALLOWEEN_SETS: SetDefinition[] = [
     numericProductId: 196,
     groupId: "juicegels_pearlnoirset",
     name: "Pearl Noir",
-    originalPrice: 18.5,
-    discountedPrice: 14.8,
+    originalPrice: 15.0,
+    discountedPrice: 12.0,
     category: "dark-glam",
     badge: "🖤 Gothic Chic",
     previewIcons: "🖤 🦪",
@@ -190,6 +194,38 @@ export const HALLOWEEN_SETS: SetDefinition[] = [
     accentColor: "#b026ff"
   }
 ];
+
+/**
+ * Dynamically resolves Halloween set prices directly from Sanity product catalogue.
+ * Guarantees accurate original prices and exact 20% sale price calculations.
+ */
+export function resolveHalloweenSetsWithSanity(sanityProducts?: Product[]): SetDefinition[] {
+  if (!sanityProducts || sanityProducts.length === 0) {
+    return HALLOWEEN_SETS;
+  }
+
+  return HALLOWEEN_SETS.map((setDef) => {
+    const matched = sanityProducts.find((p) => {
+      const idNum = parseInt(String(p.id).replace(/\D/g, ""), 10);
+      const matchesId = !isNaN(idNum) && idNum >= setDef.numericProductId && idNum < setDef.numericProductId + 15;
+      const matchesGroup = p.groupId && p.groupId.toLowerCase() === setDef.groupId.toLowerCase();
+      const matchesName = p.name && p.name.trim().toLowerCase() === setDef.name.trim().toLowerCase();
+      return matchesId || matchesGroup || matchesName;
+    });
+
+    if (matched && typeof matched.price === "number" && matched.price > 0) {
+      const originalPrice = matched.price;
+      const discountedPrice = getHalloweenSalePrice(originalPrice);
+      return {
+        ...setDef,
+        originalPrice,
+        discountedPrice,
+      };
+    }
+
+    return setDef;
+  });
+}
 
 
 function NailShapeIcon({ shape, size = 15, color = "currentColor" }: { shape: string; size?: number; color?: string }) {
@@ -262,8 +298,36 @@ export function HalloweenPage({
   isTablet,
   cart,
   setCart,
-  currentBasketUrl
+  currentBasketUrl,
+  products = []
 }: HalloweenPageProps) {
+  const [sanityProducts, setSanityProducts] = useState<Product[]>(products || []);
+
+  useEffect(() => {
+    if (products && products.length > 0) {
+      setSanityProducts(products);
+    } else {
+      let isMounted = true;
+      loadProducts()
+        .then((loaded) => {
+          if (isMounted && loaded && loaded.length > 0) {
+            setSanityProducts(loaded);
+          }
+        })
+        .catch((err) => {
+          console.warn("Could not load products in HalloweenPage:", err);
+        });
+      return () => {
+        isMounted = false;
+      };
+    }
+  }, [products]);
+
+  const resolvedSets = useMemo(
+    () => resolveHalloweenSetsWithSanity(sanityProducts),
+    [sanityProducts]
+  );
+
   const [activeCategory, setActiveCategory] = useState<"all" | "spooky-cute" | "dark-glam">("all");
   const [selectedShapes, setSelectedShapes] = useState<Record<string, string>>({
     "JUICEGELS-2447": "Almond",
@@ -372,7 +436,7 @@ export function HalloweenPage({
     setTimeout(() => setIsCauldronSplashing(false), 800);
   };
 
-  const filteredSets = HALLOWEEN_SETS.filter(
+  const filteredSets = resolvedSets.filter(
     (s) => activeCategory === "all" || s.category === activeCategory
   );
 
@@ -417,15 +481,19 @@ export function HalloweenPage({
     const idNum = setDef.numericProductId + offset;
     const variantId = `JUICEGELS-${idNum.toString().padStart(4, "0")}`;
 
+    // Look up matching variant from sanityProducts for accuracy
+    const matchedVariant = sanityProducts.find((p) => p.id === variantId);
+    const itemPrice = matchedVariant?.price ?? setDef.originalPrice;
+
     // Create valid Product entity
     const productItem: Product = {
       id: variantId,
       groupId: setDef.groupId,
       name: `${setDef.name} (Halloween Edition)`,
-      price: setDef.originalPrice,
+      price: itemPrice,
       description: setDef.description,
       image: setDef.imageUrl,
-      extraImages: [],
+      extraImages: matchedVariant?.extraImages || [],
       shapes: [chosenShape],
       shape: chosenShape,
       length: chosenLength,
@@ -443,6 +511,10 @@ export function HalloweenPage({
         nextCart = [...prev];
         nextCart[existingIndex] = {
           ...nextCart[existingIndex],
+          product: {
+            ...nextCart[existingIndex].product,
+            price: itemPrice,
+          },
           quantity: nextCart[existingIndex].quantity + 1,
         };
       } else {
@@ -492,11 +564,12 @@ export function HalloweenPage({
     }, 400);
   };
 
-  const halloweenSetIds = new Set(HALLOWEEN_SETS.map((s) => s.id));
-  const halloweenGroupIds = new Set(HALLOWEEN_SETS.map((s) => s.groupId));
+  const halloweenSetIds = new Set(resolvedSets.map((s) => s.id));
+  const halloweenGroupIds = new Set(resolvedSets.map((s) => s.groupId));
 
   const halloweenItemsInCart = cart.filter(
     (item) =>
+      isHalloweenProduct(item.product) ||
       item.product.tags?.includes("Halloween") ||
       item.product.collection === "Juice Ghouls Collection" ||
       item.product.collection === "Halloween Collection" ||
@@ -505,7 +578,8 @@ export function HalloweenPage({
   );
   const halloweenCartCount = halloweenItemsInCart.reduce((acc, item) => acc + item.quantity, 0);
   const halloweenCartOriginalTotal = halloweenItemsInCart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-  const halloweenCartDiscountedTotal = halloweenCartOriginalTotal * 0.8;
+  const halloweenDiscount = calculateHalloweenDiscount(halloweenItemsInCart);
+  const halloweenCartDiscountedTotal = Math.max(0, halloweenCartOriginalTotal - halloweenDiscount);
   const totalCartValue = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
   return (
