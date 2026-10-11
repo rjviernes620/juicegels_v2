@@ -209,7 +209,7 @@ export function HomePage({
                 >
                   🎃
                 </motion.span>
-                <span>Halloween Drop</span>
+                <span>Juice Ghouls Drop</span>
                 <span
                   style={{
                     background: "#ff7828",
@@ -509,35 +509,6 @@ export function HomePage({
           </button>
         </div>
 
-        {/* Disclaimer */}
-        <div
-          style={{
-            maxWidth: 900,
-            margin: "14px auto 0",
-            background: "rgba(255, 120, 40, 0.1)",
-            border: "1px solid rgba(255, 120, 40, 0.25)",
-            borderRadius: 10,
-            padding: "10px 18px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-          }}
-        >
-          <span style={{ fontSize: 16 }}>⚠️</span>
-          <p
-            style={{
-              margin: 0,
-              fontSize: 11,
-              fontWeight: 600,
-              color: "#ffaa5a",
-              textAlign: "center",
-              lineHeight: 1.45,
-            }}
-          >
-            Please note: Only one discount can be applied per order.
-          </p>
-        </div>
       </div>
 
       {/* How It Works Guide Section */}
@@ -748,8 +719,8 @@ export function HomePage({
               const style = p.collection
                 ? getCollectionStyle(p.collection)
                 : isHalloween
-                ? getCollectionStyle("Halloween Collection")
-                : null;
+                  ? getCollectionStyle("Juice Ghouls Collection")
+                  : null;
               const salePrice = isHalloween ? getHalloweenSalePrice(p.price) : p.price;
               return (
                 <button
@@ -829,7 +800,7 @@ export function HomePage({
                             letterSpacing: "0.03em"
                           }}
                         >
-                          {style.emoji} {(p.collection || "Halloween Collection").replace(" Collection", "")}
+                          {style.emoji} {(p.collection || "Juice Ghouls Collection").replace(" Collection", "")}
                         </span>
                         {isHalloween && (
                           <span

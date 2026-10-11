@@ -110,7 +110,7 @@ export function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
               <span style={{ fontSize: "10px", fontWeight: 800, background: "#ff7828", color: "#08030e", padding: "1px 6px", borderRadius: 4, textTransform: "uppercase" }}>Limited Drop</span>
               <span style={{ fontSize: "11px", color: "#ffd3ea", fontWeight: 600 }}>8 Exclusive Sets</span>
             </div>
-            <p style={{ fontFamily: "'Lobster', serif", color: "#ffd3ea", margin: "0 0 4px", fontSize: 24, lineHeight: 1.15 }}>The Halloween Coven Drop 🎃</p>
+            <p style={{ fontFamily: "'Lobster', serif", color: "#ffd3ea", margin: "0 0 4px", fontSize: 24, lineHeight: 1.15 }}>The Juice Ghouls Drop 🎃</p>
             <p style={{ color: "rgba(255, 255, 255, 0.9)", margin: 0, fontSize: 13, lineHeight: 1.4 }}>
               All 8 handmade sets discounted by 20% for spooky season! <br />
               <span style={{ color: "#4ade80", fontWeight: 700 }}>Tap to Enter the Salon →</span>
@@ -461,7 +461,7 @@ export function ShopPage({
                   flexShrink: 0,
                   background: homeSelectedCollection === "All"
                     ? "linear-gradient(135deg, #fc6587 0%, #db2777 100%)"
-                    : "#fff9fb",
+                    : "#bc768dff",
                   color: homeSelectedCollection === "All" ? "#ffffff" : "#fff5f7",
                   border: homeSelectedCollection === "All" ? "none" : "1px solid rgba(212, 84, 122, 0.18)",
                   padding: "6px 12px",
@@ -498,7 +498,7 @@ export function ShopPage({
                   gap: 4
                 }}
               >
-                <span>🎃 Halloween Drop (20% OFF)</span>
+                <span>🎃 Juice Ghouls (20% OFF)</span>
               </button>
 
               {/* Collection Chips */}
@@ -515,7 +515,7 @@ export function ShopPage({
                       flexShrink: 0,
                       background: isSelected
                         ? "linear-gradient(135deg, #fc6587 0%, #db2777 100%)"
-                        : "#fff9fb",
+                        : "#bc768dff",
                       color: isSelected ? "#ffffff" : "#fff5f7",
                       border: isSelected ? "none" : "1px solid rgba(212, 84, 122, 0.18)",
                       padding: "6px 12px",
@@ -551,12 +551,12 @@ export function ShopPage({
               </span>
 
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ fontSize: "11px", color: "#fff5f7", fontWeight: "600" }}>Sort:</span>
+                <span style={{ fontSize: "11px", color: "#bc768dff", fontWeight: "600" }}>Sort:</span>
                 <select
                   value={homeSortBy}
                   onChange={(e) => setHomeSortBy(e.target.value)}
                   style={{
-                    background: "#ffffff",
+                    background: "#bc768dff",
                     border: "1px solid rgba(212, 84, 122, 0.18)",
                     borderRadius: "10px",
                     padding: "5px 24px 5px 10px",
@@ -608,7 +608,7 @@ export function ShopPage({
                 const isHalloween = isHalloweenProduct(p);
                 const style = p.collection
                   ? getCollectionStyle(p.collection)
-                  : (isHalloween ? getCollectionStyle("Halloween Collection") : null);
+                  : (isHalloween ? getCollectionStyle("Juice Ghouls Collection") : null);
                 const salePrice = isHalloween ? getHalloweenSalePrice(p.price) : p.price;
 
                 return (
@@ -685,7 +685,7 @@ export function ShopPage({
                             textTransform: "uppercase",
                             letterSpacing: "0.03em"
                           }}>
-                            {style.emoji} {(p.collection || "Halloween Collection").replace(" Collection", "")}
+                            {style.emoji} {(p.collection || "Juice Ghouls Collection").replace(" Collection", "")}
                           </span>
                           {isHalloween && (
                             <span style={{
@@ -952,7 +952,7 @@ export function ProductDetailPage({
                 £{selected.price.toFixed(2)}
               </span>
               <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
-                20% OFF HALLOWEEN SALE
+                20% OFF JUICE GHOULS SALE
               </span>
             </div>
           ) : (
@@ -1231,7 +1231,7 @@ export function ProductDetailPage({
                 £{selected.price.toFixed(2)}
               </span>
               <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
-                20% OFF HALLOWEEN SALE
+                20% OFF JUICE GHOULS SALE
               </span>
             </div>
           ) : (
@@ -1797,7 +1797,7 @@ export function BasketPage({
                           </strong>
                           <span style={{ color: "#2f5d46" }}>
                             {isHalloweenCoupon(couponSummary.code)
-                              ? `Halloween 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
+                              ? `Juice Ghouls 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
                               : `${couponSummary.description} saved you £${couponDiscount.toFixed(2)} on this order.`}
                           </span>
                         </>
@@ -2031,7 +2031,7 @@ export function BasketPage({
                             </strong>
                             <span style={{ color: "#2f5d46" }}>
                               {isHalloweenCoupon(couponSummary.code)
-                                ? `Halloween 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
+                                ? `Juice Ghouls 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
                                 : `${couponSummary.description} saved you £${couponDiscount.toFixed(2)} on this order.`}
                             </span>
                           </>

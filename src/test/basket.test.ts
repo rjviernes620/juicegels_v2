@@ -178,8 +178,8 @@ describe('Basket & Token Serialization', () => {
     });
   });
 
-  describe('Halloween Coupon & Drop', () => {
-    it('recognizes Halloween coupon IDs and codes via isHalloweenCoupon', () => {
+  describe('Halloween / Juice Ghouls Coupon & Drop', () => {
+    it('recognizes Halloween & Juice Ghouls coupon IDs and codes via isHalloweenCoupon', () => {
       expect(STRIPE_HALLOWEEN_COUPON_ID).toBe('eU3xxIba');
       expect(STRIPE_HALLOWEEN_COUPON_TITLE).toBe('Halloween Sale 20% off');
       expect(isHalloweenCoupon('eU3xxIba')).toBe(true);
@@ -189,13 +189,16 @@ describe('Basket & Token Serialization', () => {
       expect(isHalloweenCoupon('halloween20')).toBe(true);
       expect(isHalloweenCoupon('HALLOWEENSALE')).toBe(true);
       expect(isHalloweenCoupon('spooky')).toBe(true);
+      expect(isHalloweenCoupon('juiceghouls')).toBe(true);
+      expect(isHalloweenCoupon('JUICE GHOULS')).toBe(true);
       expect(isHalloweenCoupon('OTHER_COUPON')).toBe(false);
       expect(isHalloweenCoupon(null)).toBe(false);
       expect(isHalloweenCoupon(undefined)).toBe(false);
 
-      expect(getCouponDisplayName('eU3xxIba')).toBe('Halloween Sale (20% OFF)');
-      expect(getCouponDisplayName('EU3XXIBA')).toBe('Halloween Sale (20% OFF)');
-      expect(getCouponDisplayName('halloween')).toBe('Halloween Sale (20% OFF)');
+      expect(getCouponDisplayName('eU3xxIba')).toBe('Juice Ghouls (20% OFF)');
+      expect(getCouponDisplayName('EU3XXIBA')).toBe('Juice Ghouls (20% OFF)');
+      expect(getCouponDisplayName('halloween')).toBe('Juice Ghouls (20% OFF)');
+      expect(getCouponDisplayName('juiceghouls')).toBe('Juice Ghouls (20% OFF)');
       expect(getCouponDisplayName('DEV_JUNJUN')).toBe('DEV_JUNJUN');
     });
 

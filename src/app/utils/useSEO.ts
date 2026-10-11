@@ -31,9 +31,9 @@ const PAGE_SEO: Record<string, SEOConfig> = {
     path: "/shop",
   },
   halloween: {
-    title: "Halloween Sale (20% OFF) | JuiceGels – Limited Edition Spooky Nails",
+    title: "Juice Ghouls (20% OFF) | JuiceGels – Limited Edition Spooky Nails",
     description:
-      "Shop the limited edition JuiceGels Halloween Collection. 8 handcrafted spooky-cute and gothic press-on gel sets, all 20% off. Free UK shipping over £30.",
+      "Shop the limited edition Juice Ghouls collection from JuiceGels. 8 handcrafted spooky-cute and gothic press-on gel sets, all 20% off. Free UK shipping over £30.",
     path: "/halloween",
   },
   about: {

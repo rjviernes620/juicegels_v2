@@ -39,14 +39,17 @@ export function isHalloweenCoupon(couponCode?: string | null): boolean {
     normalized === "halloween" ||
     normalized === "halloween20" ||
     normalized === "halloweensale" ||
-    normalized === "spooky"
+    normalized === "spooky" ||
+    normalized === "juiceghouls" ||
+    normalized === "juice ghouls" ||
+    normalized === "juice-ghouls"
   );
 }
 
 export function getCouponDisplayName(couponCode?: string | null): string {
   if (!couponCode) return "";
   if (isHalloweenCoupon(couponCode)) {
-    return "Halloween Sale (20% OFF)";
+    return "Juice Ghouls (20% OFF)";
   }
   return couponCode;
 }
@@ -182,6 +185,8 @@ export function getCollectionDetails(product: Product, allProducts: Product[]): 
     "Bloom Collection": "bringing the freshness of spring flowers 🌸🌼",
     "Stardust Collection": "star-studded Sanrio inspired designs 🎀✨",
     "Sweet Mystery Collection": "surprise nail sets full of sweet picks 🍬🎲",
+    "Juice Ghouls Collection": "8 bewitching sets with 20% off for spooky season 🎃✨",
+    "Juice Ghouls": "8 bewitching sets with 20% off for spooky season 🎃✨",
     "Halloween Collection": "8 bewitching sets with 20% off for spooky season 🎃✨"
   };
 
@@ -251,6 +256,8 @@ export function getCollectionStyle(collectionName: string) {
         badgeBg: "rgba(255, 255, 255, 0.20)",
         emoji: "🍬"
       };
+    case "Juice Ghouls Collection":
+    case "Juice Ghouls":
     case "Halloween Collection":
       return {
         cardGradient: "linear-gradient(135deg, #180928 0%, #ff7828 100%)",
@@ -396,8 +403,16 @@ export function parseBasketItemsParam(itemsParam: string, products: Product[]): 
 
 export function isHalloweenProduct(product?: { id?: string; name?: string; collection?: string; tags?: string[] } | null): boolean {
   if (!product) return false;
-  if (product.collection === "Halloween Collection") return true;
-  if (product.tags?.includes("Halloween") || product.tags?.includes("halloweennails")) return true;
+  if (
+    product.collection === "Juice Ghouls Collection" ||
+    product.collection === "Juice Ghouls" ||
+    product.collection === "Halloween Collection"
+  ) return true;
+  if (
+    product.tags?.includes("Halloween") ||
+    product.tags?.includes("halloweennails") ||
+    product.tags?.includes("Juice Ghouls")
+  ) return true;
   if (product.id) {
     const num = parseInt(product.id.replace(/\D/g, ""), 10);
     if ([2447, 2462, 2477, 2492, 1277, 1247, 196, 1262].includes(num)) return true;

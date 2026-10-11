@@ -186,7 +186,11 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
 
     const rawTags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
     const isHalloween = isHalloweenSet(productId, title);
-    const resolvedCollection = isHalloween ? "Halloween Collection" : (sp.collection || undefined);
+    const resolvedCollection = isHalloween
+      ? "Juice Ghouls Collection"
+      : sp.collection === "Halloween Collection"
+        ? "Juice Ghouls Collection"
+        : (sp.collection || undefined);
     const tags = isHalloween && !rawTags.includes("Halloween") ? [...rawTags, "Halloween"] : rawTags;
     const orderRank = sp.orderRank || "";
     const videoUrl = sp.videoUrl || "";

@@ -289,7 +289,9 @@ export default function App() {
   const currentBasketUrl = (items: CartItem[]) => {
     const hasHalloween = items.some(
       (item) =>
+        isHalloweenProduct(item.product) ||
         item.product.tags?.includes("Halloween") ||
+        item.product.collection === "Juice Ghouls Collection" ||
         item.product.collection === "Halloween Collection"
     );
     const existingCoupon = searchParams.get("coupon");
@@ -844,7 +846,9 @@ export default function App() {
 
     const hasHalloween = cart.some(
       (item) =>
+        isHalloweenProduct(item.product) ||
         item.product.tags?.includes("Halloween") ||
+        item.product.collection === "Juice Ghouls Collection" ||
         item.product.collection === "Halloween Collection"
     );
 

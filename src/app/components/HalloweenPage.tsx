@@ -326,7 +326,7 @@ export function HalloweenPage({
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + 0.2);
-    } catch {}
+    } catch { }
   };
 
   const playCauldronBubble = () => {
@@ -349,7 +349,7 @@ export function HalloweenPage({
         osc.start(startTime);
         osc.stop(startTime + 0.08);
       });
-    } catch {}
+    } catch { }
   };
 
   const triggerCauldronSplash = () => {
@@ -430,7 +430,7 @@ export function HalloweenPage({
       shape: chosenShape,
       length: chosenLength,
       tags: ["Halloween", "20% OFF", "Limited Edition"],
-      collection: "Halloween Collection"
+      collection: "Juice Ghouls Collection"
     };
 
     setCart((prev) => {
@@ -498,6 +498,7 @@ export function HalloweenPage({
   const halloweenItemsInCart = cart.filter(
     (item) =>
       item.product.tags?.includes("Halloween") ||
+      item.product.collection === "Juice Ghouls Collection" ||
       item.product.collection === "Halloween Collection" ||
       halloweenSetIds.has(item.product.id) ||
       halloweenGroupIds.has(item.product.groupId)
@@ -800,7 +801,7 @@ export function HalloweenPage({
             boxShadow: "0 0 20px rgba(255, 120, 40, 0.2)"
           }}
         >
-          <span>🔮 LIMITED HALLOWEEN DROP</span>
+          <span>🔮 LIMITED JUICE GHOULS DROP</span>
           <span>•</span>
           <span style={{ color: "#ffd3ea" }}>ALL 8 SETS 20% OFF</span>
         </motion.div>
@@ -814,7 +815,7 @@ export function HalloweenPage({
           WebkitTextFillColor: "transparent",
           lineHeight: 1.15
         }}>
-          The Coven Collection 🎃
+          Juice Ghouls 🎃
         </h1>
 
         <p style={{
@@ -824,8 +825,13 @@ export function HalloweenPage({
           margin: "0 auto 24px",
           lineHeight: 1.6
         }}>
-          8 bewitching handmade gel sets designed to enchant. Every set in this drop is discounted by <strong>20%</strong> for spooky season and includes our full application prep kit!
-        </p>
+          The ghouls are back, and they’ve brought some new faces with them. 👻💗
+
+          The Halloween 2026 collection featuring 8 hauntingly cute handmade gel press-on nail sets. From returning favourites to brand-new spooky creations, there’s a little something for every kind of ghoul.
+
+          No tricks, just treats: enjoy 20% off all 8 sets until 31 October. 🎃
+
+          Every set comes with our full application prep kit, so you’re ready to get spooky straight out of the box!        </p>
 
         {/* Free Shipping & Cutoff Callout */}
         <div style={{
@@ -850,50 +856,7 @@ export function HalloweenPage({
         </div>
       </header>
 
-      {/* Category Filter Pills */}
-      <section style={{
-        position: "relative",
-        zIndex: 10,
-        maxWidth: 1100,
-        margin: "0 auto 32px",
-        padding: "0 16px"
-      }}>
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 10,
-          flexWrap: "wrap"
-        }}>
-          {[
-            { id: "all", label: "All 8 Sets 🎃" },
-            { id: "spooky-cute", label: "Spooky Cute 👻" },
-            { id: "dark-glam", label: "Dark Glam 🩸" }
-          ].map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => {
-                playSpookyChime(420);
-                setActiveCategory(cat.id as any);
-              }}
-              style={{
-                background: activeCategory === cat.id ? "linear-gradient(135deg, #ff70a6, #ff7828)" : "rgba(24, 9, 36, 0.8)",
-                color: activeCategory === cat.id ? "#08030e" : "#ffd3ea",
-                border: `1px solid ${activeCategory === cat.id ? "#ff7828" : "rgba(255, 112, 166, 0.25)"}`,
-                borderRadius: 14,
-                padding: "8px 20px",
-                fontSize: "13px",
-                fontWeight: 800,
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-                boxShadow: activeCategory === cat.id ? "0 4px 18px rgba(255, 120, 40, 0.35)" : "none"
-              }}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-      </section>
+
 
       {/* 8 Sets Grid */}
       <main style={{
@@ -1357,7 +1320,7 @@ export function HalloweenPage({
               </div>
               <div>
                 <p style={{ margin: "0 0 2px", fontSize: 13, fontWeight: 800, color: "#ffd3ea" }}>
-                  20% Halloween Discount Applied
+                  20% Juice Ghouls Discount Applied
                 </p>
                 <p style={{ margin: 0, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>
                   Total: <span style={{ color: "#ffd3ea", fontSize: 15 }}>{formatMoney(halloweenCartDiscountedTotal)}</span>
