@@ -36,7 +36,72 @@ if (typeof window !== "undefined") {
   });
 }
 
-// Intercept global fetch to inject X-Maintenance-Bypass header if the token is available
+import { initAppCheck, getAppCheckToken } from "./firebase";
+
+// Initialize Firebase App Check on load
+initAppCheck();
+
+function setFetchHeader(headers: HeadersInit, name: string, value: string) {
+  if (headers instanceof Headers) {
+    headers.set(name, value);
+  } else if (Array.isArray(headers)) {
+    const index = headers.findIndex(([k]) => k.toLowerCase() === name.toLowerCase());
+    if (index !== -1) {
+      headers[index] = [name, value];
+    } else {
+      headers.push([name, value]);
+    }
+  } else {
+    (headers as Record<string, string>)[name] = value;
+  }
+}
+
+function isInternalApiRequest(input: RequestInfo | URL): boolean {
+  try {
+    const urlStr =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+        ? input.href
+        : (input as Request).url;
+
+    if (!urlStr) return false;
+
+    // Relative URLs targeting backend endpoints
+    if (urlStr.startsWith("/") && !urlStr.startsWith("//")) {
+      return (
+        urlStr.startsWith("/api") ||
+        urlStr.startsWith("/create-checkout-session") ||
+        urlStr.startsWith("/validate-coupon") ||
+        urlStr.startsWith("/check-eligibility") ||
+        urlStr.startsWith("/create-custom-order")
+      );
+    }
+
+    // Absolute URLs pointing to our backend
+    const parsed = new URL(urlStr, window.location.origin);
+    const isOurBackend =
+      parsed.origin === window.location.origin ||
+      (parsed.hostname === "localhost" && parsed.port === "4000") ||
+      (parsed.hostname === "127.0.0.1" && parsed.port === "4000");
+
+    if (isOurBackend) {
+      const p = parsed.pathname;
+      return (
+        p.startsWith("/api") ||
+        p.startsWith("/create-checkout-session") ||
+        p.startsWith("/validate-coupon") ||
+        p.startsWith("/check-eligibility") ||
+        p.startsWith("/create-custom-order")
+      );
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+// Intercept global fetch to inject X-Maintenance-Bypass and X-Firebase-AppCheck headers
 (() => {
   // Clear any existing maintenance token from localStorage on fresh page load to force re-authentication
   try {
@@ -46,24 +111,27 @@ if (typeof window !== "undefined") {
   }
 
   const originalFetch = window.fetch;
-  window.fetch = function (input, init) {
+  window.fetch = async function (input, init) {
+    init = init || {};
+    init.headers = init.headers || {};
+
     const token = (window as any).maintenance_bypass_token || localStorage.getItem("maintenance_bypass_token");
     if (token) {
-      init = init || {};
-      init.headers = init.headers || {};
-      if (init.headers instanceof Headers) {
-        init.headers.set("X-Maintenance-Bypass", token);
-      } else if (Array.isArray(init.headers)) {
-        const index = init.headers.findIndex(([k]) => k.toLowerCase() === "x-maintenance-bypass");
-        if (index !== -1) {
-          init.headers[index] = ["X-Maintenance-Bypass", token];
-        } else {
-          init.headers.push(["X-Maintenance-Bypass", token]);
+      setFetchHeader(init.headers, "X-Maintenance-Bypass", token);
+    }
+
+    // Attach Firebase App Check token to internal API requests
+    if (isInternalApiRequest(input)) {
+      try {
+        const appCheckToken = await getAppCheckToken();
+        if (appCheckToken) {
+          setFetchHeader(init.headers, "X-Firebase-AppCheck", appCheckToken);
         }
-      } else {
-        init.headers["X-Maintenance-Bypass"] = token;
+      } catch (err) {
+        // Gracefully proceed if App Check is temporarily unreachable
       }
     }
+
     return originalFetch(input, init);
   };
 })();

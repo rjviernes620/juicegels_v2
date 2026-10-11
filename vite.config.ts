@@ -78,6 +78,9 @@ export default defineConfig(({ mode }) => {
               if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
                 return 'vendor-react';
               }
+              if (id.includes('firebase')) {
+                return 'vendor-firebase';
+              }
             }
           },
         },

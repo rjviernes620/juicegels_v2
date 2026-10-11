@@ -6,6 +6,8 @@ import { stripeWebhookRouter } from "./routes/stripeWebhook.js";
 import { shippingWebhookRouter } from "./routes/shippingWebhook.js";
 import { metaCatalogRouter } from "./routes/metaCatalog.js";
 
+import { verifyAppCheck } from "./middleware/appCheck.js";
+
 export function createApp() {
   const app = express();
 
@@ -16,6 +18,15 @@ export function createApp() {
       credentials: true
     })
   );
+
+  // Root health check
+  app.get("/", (_req, res) => {
+    res.json({
+      status: "ok",
+      service: "juicegels-api",
+      timestamp: new Date().toISOString()
+    });
+  });
 
   // Preserve rawBody for Stripe Webhook signature verification
   app.use(
@@ -28,21 +39,17 @@ export function createApp() {
 
   app.use(express.urlencoded({ extended: true }));
 
-  // Mount all routes
-  app.use(maintenanceRouter);
-  app.use(checkoutRouter);
+  // External webhooks and feeds (called by third-party servers, exempt from App Check)
   app.use(stripeWebhookRouter);
   app.use(shippingWebhookRouter);
   app.use(metaCatalogRouter);
 
-  // Root health check
-  app.get("/", (_req, res) => {
-    res.json({
-      status: "ok",
-      service: "juicegels-api",
-      timestamp: new Date().toISOString()
-    });
-  });
+  // App Check verification for storefront requests
+  app.use(verifyAppCheck);
+
+  // Storefront endpoints
+  app.use(maintenanceRouter);
+  app.use(checkoutRouter);
 
   return app;
 }

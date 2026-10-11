@@ -1851,7 +1851,21 @@ export function BasketPage({
                       </div>
                     </button>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
-                      <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
+                      {isHalloweenProduct(item.product) ? (
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                          <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>
+                            £{(getHalloweenSalePrice(item.product.price) * item.quantity).toFixed(2)}
+                          </span>
+                          <span style={{ color: "#a8a29e", textDecoration: "line-through", fontSize: 10 }}>
+                            £{(item.product.price * item.quantity).toFixed(2)}
+                          </span>
+                          <span style={{ color: "#ff7828", fontSize: 9, fontWeight: 700, background: "rgba(255, 120, 40, 0.18)", padding: "1px 5px", borderRadius: 4, marginTop: 2 }}>
+                            🎃 20% OFF
+                          </span>
+                        </div>
+                      ) : (
+                        <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
+                      )}
                       <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
                         <span style={{ minWidth: 28, textAlign: "center", fontSize: 13, fontWeight: 600 }}>{item.quantity}</span>
@@ -2088,7 +2102,21 @@ export function BasketPage({
                         <span style={{ minWidth: 32, textAlign: "center", fontSize: 14, fontWeight: 600 }}>{item.quantity}</span>
                         <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
                       </div>
-                      <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16, minWidth: 60, textAlign: "right" }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
+                      {isHalloweenProduct(item.product) ? (
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", minWidth: 60 }}>
+                          <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16 }}>
+                            £{(getHalloweenSalePrice(item.product.price) * item.quantity).toFixed(2)}
+                          </span>
+                          <span style={{ color: "#a8a29e", textDecoration: "line-through", fontSize: 11 }}>
+                            £{(item.product.price * item.quantity).toFixed(2)}
+                          </span>
+                          <span style={{ color: "#ff7828", fontSize: 10, fontWeight: 700, background: "rgba(255, 120, 40, 0.18)", padding: "1px 6px", borderRadius: 4, marginTop: 2 }}>
+                            🎃 20% OFF
+                          </span>
+                        </div>
+                      ) : (
+                        <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16, minWidth: 60, textAlign: "right" }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
+                      )}
                       <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={16} style={{ color: "#ff70a6" }} /></button>
                     </div>
                   </div>
@@ -2532,12 +2560,18 @@ export function PreorderPage({
 
           <div style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "#ffffff" }}>
             <strong style={{ display: "block", marginBottom: 6 }}>Order Summary</strong>
-            {cart.map((item, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#fff5f7" }}>
-                <span>{getOrderSummaryLabel(item)}</span>
-                <span>£{(item.product.price * item.quantity).toFixed(2)}</span>
-              </div>
-            ))}
+            {cart.map((item, i) => {
+              const isHalloween = isHalloweenProduct(item.product);
+              const linePrice = isHalloween
+                ? getHalloweenSalePrice(item.product.price) * item.quantity
+                : item.product.price * item.quantity;
+              return (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#fff5f7" }}>
+                  <span>{getOrderSummaryLabel(item)}{isHalloween ? " (🎃 20% OFF)" : ""}</span>
+                  <span>£{linePrice.toFixed(2)}</span>
+                </div>
+              );
+            })}
             {couponSummary && couponDiscount > 0 && (
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#fff5f7" }}>
                 <span>Discount ({getCouponDisplayName(couponSummary.code)})</span>

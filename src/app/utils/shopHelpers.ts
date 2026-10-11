@@ -401,30 +401,64 @@ export function parseBasketItemsParam(itemsParam: string, products: Product[]): 
 }
 
 
-export function isHalloweenProduct(product?: { id?: string; name?: string; collection?: string; tags?: string[] } | null): boolean {
+export const HALLOWEEN_SET_BASE_IDS = [2447, 2462, 2477, 2492, 1277, 1247, 196, 1262];
+export const HALLOWEEN_SET_NAMES = [
+  "booquette",
+  "scream queen",
+  "hello horror",
+  "boo belle",
+  "pink-o-ween",
+  "sparkle scream",
+  "pearl noir",
+  "midnight muse"
+];
+
+export function isHalloweenProduct(product?: { id?: string; name?: string; collection?: string; tags?: string[]; groupId?: string } | null): boolean {
   if (!product) return false;
-  if (
-    product.collection === "Juice Ghouls Collection" ||
-    product.collection === "Juice Ghouls" ||
-    product.collection === "Halloween Collection"
-  ) return true;
-  if (
-    product.tags?.includes("Halloween") ||
-    product.tags?.includes("halloweennails") ||
-    product.tags?.includes("Juice Ghouls")
-  ) return true;
-  if (product.id) {
-    const num = parseInt(product.id.replace(/\D/g, ""), 10);
-    if ([2447, 2462, 2477, 2492, 1277, 1247, 196, 1262].includes(num)) return true;
+
+  const col = (product.collection || "").toLowerCase();
+  if (col.includes("halloween") || col.includes("juice ghouls")) return true;
+
+  if (product.tags?.some((t) => /halloween|juice ghouls/i.test(t))) return true;
+
+  if (product.groupId) {
+    const g = product.groupId.toLowerCase();
+    if (HALLOWEEN_SET_NAMES.some((n) => g.includes(n.replace(/\s+/g, "")))) return true;
   }
+
+  if (product.id) {
+    const num = parseInt(String(product.id).replace(/\D/g, ""), 10);
+    if (!isNaN(num)) {
+      for (const base of HALLOWEEN_SET_BASE_IDS) {
+        if (num >= base && num < base + 15) return true;
+      }
+    }
+  }
+
   if (product.name) {
     const lower = product.name.trim().toLowerCase();
-    const names = ["booquette", "scream queen", "hello horror", "boo belle", "pink-o-ween", "sparkle scream", "pearl noir", "midnight muse"];
-    if (names.includes(lower)) return true;
+    if (lower.includes("halloween") || lower.includes("juice ghouls")) return true;
+    if (HALLOWEEN_SET_NAMES.some((n) => lower.includes(n))) return true;
   }
+
   return false;
 }
 
 export function getHalloweenSalePrice(originalPrice: number): number {
   return Math.round(originalPrice * 0.8 * 100) / 100;
 }
+
+/**
+ * Calculates total 20% discount amount applied specifically to Halloween collection items in the cart.
+ */
+export function calculateHalloweenDiscount(items: CartItem[]): number {
+  const discountPounds = items.reduce((total, item) => {
+    if (isHalloweenProduct(item.product)) {
+      const unitDiscount = Math.round(item.product.price * 0.2 * 100) / 100;
+      return total + unitDiscount * item.quantity;
+    }
+    return total;
+  }, 0);
+  return Math.round(discountPounds * 100) / 100;
+}
+

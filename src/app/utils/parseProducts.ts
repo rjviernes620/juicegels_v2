@@ -36,13 +36,23 @@ export const HALLOWEEN_SET_NAMES = new Set([
 ]);
 
 export function isHalloweenSet(productIdOrId: number | string, title?: string): boolean {
-  if (typeof productIdOrId === "number") {
-    if (HALLOWEEN_SET_IDS.has(productIdOrId)) return true;
-  } else if (typeof productIdOrId === "string") {
-    const num = parseInt(productIdOrId.replace(/\D/g, ""), 10);
-    if (HALLOWEEN_SET_IDS.has(num)) return true;
+  const num = typeof productIdOrId === "number"
+    ? productIdOrId
+    : parseInt(String(productIdOrId || "").replace(/\D/g, ""), 10);
+
+  if (!isNaN(num)) {
+    for (const base of HALLOWEEN_SET_IDS) {
+      if (num >= base && num < base + 15) return true;
+    }
   }
-  if (title && HALLOWEEN_SET_NAMES.has(title.trim().toLowerCase())) return true;
+
+  if (title) {
+    const lower = title.trim().toLowerCase();
+    if (lower.includes("halloween") || lower.includes("juice ghouls")) return true;
+    for (const name of HALLOWEEN_SET_NAMES) {
+      if (lower.includes(name)) return true;
+    }
+  }
   return false;
 }
 

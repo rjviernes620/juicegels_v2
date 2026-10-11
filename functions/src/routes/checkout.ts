@@ -6,7 +6,9 @@ import {
   getStripeClient,
   resolveCouponSummary,
   isFirstTimeBuyer,
-  resolveShippingOption
+  resolveShippingOption,
+  isHalloweenProduct,
+  isHalloweenCoupon
 } from "../utils/stripeHelpers.js";
 
 export const checkoutRouter = Router();
@@ -49,7 +51,12 @@ checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"]
     const maintenanceActive = await isMaintenanceActive();
     const stripe = getStripeClient(maintenanceActive);
 
+    // Detect if Halloween products exist or Halloween sale code is provided
+    const hasHalloweenItems = items.some((item: any) => isHalloweenProduct(item.product));
+    const isHalloweenSaleActive = hasHalloweenItems || isHalloweenCoupon(rawCouponCode);
+
     let subtotalPence = 0;
+    let halloweenDiscountPence = 0;
     const lineItems: any[] = [];
 
     for (const item of items) {
@@ -60,11 +67,24 @@ checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"]
       const name = product.name || "Product";
       const price = parseFloat(product.price) || 0;
       const imageUrl = product.image || "";
-      const unitAmount = Math.round(price * 100);
+      const baseUnitAmount = Math.round(price * 100);
+
+      // Apply 20% discount per eligible Halloween product
+      const isHalloween = isHalloweenSaleActive && isHalloweenProduct(product);
+      let unitAmount = baseUnitAmount;
+      if (isHalloween) {
+        const itemDiscount = Math.round(baseUnitAmount * 0.2);
+        unitAmount = baseUnitAmount - itemDiscount;
+        halloweenDiscountPence += itemDiscount * quantity;
+      }
+
       subtotalPence += unitAmount * quantity;
 
       const isSizeGuide = product.id === CONFIG.NAIL_SIZE_GUIDE_PRODUCT_ID || name.toLowerCase().includes("nail sizing guide");
-      const displayName = isSizeGuide ? name : `${name} - ${shape} - ${length}`.replace(/^ - | - $/g, "");
+      let displayName = isSizeGuide ? name : `${name} - ${shape} - ${length}`.replace(/^ - | - $/g, "");
+      if (isHalloween) {
+        displayName += " (🎃 20% OFF)";
+      }
 
       let resolvedImg = imageUrl;
       if (resolvedImg && resolvedImg.startsWith("/")) {
@@ -98,13 +118,19 @@ checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"]
     }
 
     let couponSummary: any = null;
-    if (rawCouponCode) {
+    if (rawCouponCode && !isHalloweenCoupon(rawCouponCode)) {
       try {
-        couponSummary = await resolveCouponSummary(stripe, rawCouponCode, subtotalPence);
+        couponSummary = await resolveCouponSummary(stripe, rawCouponCode, subtotalPence, items);
       } catch (err: any) {
         res.status(400).json({ error: err.message || "Invalid coupon" });
         return;
       }
+    } else if (isHalloweenSaleActive) {
+      couponSummary = {
+        code: "Juice Ghouls (20% OFF)",
+        discount_pence: halloweenDiscountPence,
+        percent_off: 20
+      };
     }
 
     const customerEmail = (form.email || "").trim();
@@ -132,7 +158,7 @@ checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"]
     }
 
     let discountedSubtotalPence = subtotalPence;
-    if (couponSummary) {
+    if (couponSummary && !isHalloweenCoupon(couponSummary.code) && couponSummary.code !== "Juice Ghouls (20% OFF)") {
       discountedSubtotalPence -= couponSummary.discount_pence;
     } else if (applySizeGuideCoupon) {
       discountedSubtotalPence -= sizeGuideDiscountPence;
@@ -207,7 +233,7 @@ checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"]
       cancel_url: `${origin}/basket?items=${itemsParam}`
     };
 
-    if (couponSummary) {
+    if (couponSummary && !isHalloweenCoupon(couponSummary.code) && couponSummary.code !== "Juice Ghouls (20% OFF)") {
       if (couponSummary.promotion_code_id) {
         sessionParams.discounts = [{ promotion_code: couponSummary.promotion_code_id }];
       } else if (couponSummary.coupon_id) {
@@ -226,7 +252,12 @@ checkoutRouter.post(["/create-checkout-session", "/api/create-checkout-session"]
 checkoutRouter.post(["/validate-coupon", "/api/validate-coupon"], async (req: Request, res: Response): Promise<void> => {
   try {
     const code = (req.body?.coupon || req.body?.code || "").trim();
-    const subtotalPence = parseInt(req.body?.subtotalPence, 10) || 0;
+    const items = req.body?.items || [];
+    let subtotalPence = parseInt(req.body?.subtotalPence, 10);
+    if (isNaN(subtotalPence) || subtotalPence <= 0) {
+      const subtotalPounds = parseFloat(req.body?.subtotal) || 0;
+      subtotalPence = Math.round(subtotalPounds * 100);
+    }
 
     if (!code) {
       res.status(400).json({ error: "Coupon code is required" });
@@ -236,10 +267,15 @@ checkoutRouter.post(["/validate-coupon", "/api/validate-coupon"], async (req: Re
     const maintenanceActive = await isMaintenanceActive();
     const stripe = getStripeClient(maintenanceActive);
 
-    const summary = await resolveCouponSummary(stripe, code, subtotalPence);
+    const summary = await resolveCouponSummary(stripe, code, subtotalPence, items);
+    const discountAmount = Math.round(summary.discount_pence) / 100;
+
     res.json({
       valid: true,
       code: summary.code,
+      promotionCodeId: summary.promotion_code_id || "",
+      description: isHalloweenCoupon(code) ? "Halloween Sale 20% off" : summary.code,
+      discountAmount,
       discount_pence: summary.discount_pence,
       percent_off: summary.percent_off,
       amount_off_pence: summary.amount_off_pence

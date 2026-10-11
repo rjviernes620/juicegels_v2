@@ -10,6 +10,8 @@ import {
   STRIPE_HALLOWEEN_COUPON_TITLE,
   isHalloweenCoupon,
   getCouponDisplayName,
+  isHalloweenProduct,
+  calculateHalloweenDiscount,
   type BasketTokenData,
 } from '../app/utils/shopHelpers';
 import { type Product } from '../app/utils/parseProducts';
@@ -238,6 +240,44 @@ describe('Basket & Token Serialization', () => {
         const discountedPrice = Math.round((set.original - discountAmount) * 100) / 100;
         expect(discountedPrice).toBeCloseTo(set.expectedSale, 2);
       }
+    });
+
+    it('accurately identifies Halloween variants and calculates per-product discount rather than whole basket', () => {
+      const halloweenItem: CartItem = {
+        product: {
+          id: 'JUICEGELS-2452',
+          groupId: 'juicegels_booquetteset',
+          name: 'Booquette (Halloween Edition)',
+          price: 15.0,
+          description: '',
+          image: '',
+          extraImages: [],
+          shapes: ['Almond'],
+          shape: 'Almond',
+          length: 'Medium',
+          tags: ['Halloween', '20% OFF'],
+          collection: 'Juice Ghouls Collection'
+        },
+        shape: 'Almond',
+        length: 'Medium',
+        quantity: 2
+      };
+
+      const regularItem: CartItem = {
+        product: mockProductA, // £24.99
+        shape: 'Square',
+        length: 'Medium',
+        quantity: 1
+      };
+
+      expect(isHalloweenProduct(halloweenItem.product)).toBe(true);
+      expect(isHalloweenProduct(regularItem.product)).toBe(false);
+
+      // Total discount should be applied ONLY per Halloween product:
+      // 20% of £15.00 = £3.00 * 2 = £6.00 discount.
+      // Regular item (£24.99) should NOT be discounted!
+      const discount = calculateHalloweenDiscount([halloweenItem, regularItem]);
+      expect(discount).toBe(6.0);
     });
   });
 });

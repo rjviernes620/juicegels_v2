@@ -49,6 +49,7 @@ import {
   isHalloweenCoupon,
   isHalloweenProduct,
   getHalloweenSalePrice,
+  calculateHalloweenDiscount,
   getCouponDisplayName
 } from "./utils/shopHelpers";
 import { lazyRetry } from "./utils/lazyRetry";
@@ -849,29 +850,35 @@ export default function App() {
   useEffect(() => {
     let currentCoupon = searchParams.get("coupon")?.trim() ?? "";
 
-    const hasHalloween = cart.some(
-      (item) =>
-        isHalloweenProduct(item.product) ||
-        item.product.tags?.includes("Halloween") ||
-        item.product.collection === "Juice Ghouls Collection" ||
-        item.product.collection === "Halloween Collection"
-    );
+    const halloweenDiscount = calculateHalloweenDiscount(cart);
+    const hasHalloween = halloweenDiscount > 0;
 
-    if (!currentCoupon && hasHalloween && !isCouponDismissed) {
-      currentCoupon = STRIPE_HALLOWEEN_COUPON_ID;
+    // The Halloween sale is automatically activated if the user buys products from the collection in question
+    if (hasHalloween) {
+      if (!currentCoupon || isHalloweenCoupon(currentCoupon)) {
+        currentCoupon = STRIPE_HALLOWEEN_COUPON_ID;
+      }
+    } else if (isHalloweenCoupon(currentCoupon)) {
+      currentCoupon = "";
     }
 
     setCouponInput(isHalloweenCoupon(currentCoupon) ? "" : currentCoupon);
 
-    if (!currentCoupon) {
+    if (!currentCoupon || cart.length === 0) {
       setCouponSummary(null);
       setCouponError(null);
       setIsCouponLoading(false);
       return;
     }
 
-    if (cart.length === 0) {
-      setCouponSummary(null);
+    // If Halloween sale is active, apply the exact per-product Halloween discount directly
+    if (isHalloweenCoupon(currentCoupon)) {
+      setCouponSummary({
+        code: STRIPE_HALLOWEEN_COUPON_ID,
+        promotionCodeId: "",
+        description: STRIPE_HALLOWEEN_COUPON_TITLE,
+        discountAmount: halloweenDiscount,
+      });
       setCouponError(null);
       setIsCouponLoading(false);
       return;
@@ -883,17 +890,27 @@ export default function App() {
       setCouponError(null);
 
       try {
-        const couponToSend = isHalloweenCoupon(currentCoupon)
-          ? STRIPE_HALLOWEEN_COUPON_ID
-          : currentCoupon;
-
         const response = await fetch(`${CHECKOUT_API_BASE}/validate-coupon`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            coupon: couponToSend,
+            coupon: currentCoupon,
+            items: cart.map((item) => ({
+              product: {
+                id: item.product.id,
+                name: item.product.name,
+                price: item.product.price,
+                collection: item.product.collection,
+                tags: item.product.tags,
+                groupId: item.product.groupId,
+              },
+              shape: item.shape,
+              length: item.length,
+              quantity: item.quantity,
+            })),
+            subtotalPence: Math.round(cartTotal * 100),
             subtotal: cartTotal,
           }),
           signal: controller.signal,
@@ -905,28 +922,21 @@ export default function App() {
           throw new Error(data.error || "Coupon code could not be applied.");
         }
 
+        const resolvedDiscountAmount =
+          typeof data.discountAmount === "number"
+            ? data.discountAmount
+            : typeof data.discount_pence === "number"
+            ? Math.round(data.discount_pence) / 100
+            : 0;
+
         setCouponSummary({
-          code: data.code,
-          promotionCodeId: data.promotionCodeId,
-          description: data.description,
-          discountAmount: data.discountAmount,
+          code: data.code || currentCoupon,
+          promotionCodeId: data.promotionCodeId || "",
+          description: data.description || data.code || currentCoupon,
+          discountAmount: resolvedDiscountAmount,
         });
       } catch (error) {
         if (controller.signal.aborted) return;
-
-        // Fallback for Halloween coupon if remote endpoint hasn't redeployed yet or on network error
-        if (isHalloweenCoupon(currentCoupon)) {
-          const discountAmount = Math.round(cartTotal * 0.2 * 100) / 100;
-          setCouponSummary({
-            code: STRIPE_HALLOWEEN_COUPON_ID,
-            promotionCodeId: "",
-            description: STRIPE_HALLOWEEN_COUPON_TITLE,
-            discountAmount,
-          });
-          setCouponError(null);
-          return;
-        }
-
         setCouponSummary(null);
         setCouponError(error instanceof Error ? error.message : "Coupon code could not be applied.");
       } finally {
@@ -939,7 +949,7 @@ export default function App() {
     validateCoupon();
 
     return () => controller.abort();
-  }, [cart, cartTotal, searchParams, isCouponDismissed]);
+  }, [cart, cartTotal, searchParams]);
 
   const toggleWishlist = (id: string) =>
     setWishlist((p) => (p.includes(id) ? p.filter((w) => w !== id) : [...p, id]));
@@ -1180,6 +1190,9 @@ export default function App() {
               price: item.product.price,
               description: item.product.description,
               image: item.product.image,
+              collection: item.product.collection,
+              tags: item.product.tags,
+              groupId: item.product.groupId,
             },
             shape: item.shape,
             length: item.length,
