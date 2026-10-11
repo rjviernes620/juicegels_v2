@@ -1,26 +1,12 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { Instagram } from "lucide-react";
-import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
+import { AmbientGradient } from "./ui/AmbientGradient";
+const HeroShaderBackground = lazy(() => import("./HeroShaderBackground"));
 
 
-export function TiktokIcon({ size = 16, ...props }: React.SVGProps<SVGSVGElement> & { size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
-    </svg>
-  );
-}
+import { TiktokIcon } from "./ui/TiktokIcon";
+export { TiktokIcon };
 
 export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boolean }) {
   return (
@@ -40,64 +26,10 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
           gap: 16
         }}
       >
-        {/* ShaderGradient Background */}
-        <ShaderGradientCanvas
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 0,
-            pointerEvents: "none"
-          }}
-          pixelDensity={1}
-          fov={45}
-        >
-          <ShaderGradient
-            animate="on"
-            axesHelper="off"
-            bgColor1="#000000"
-            bgColor2="#000000"
-            brightness={1.2}
-            cAzimuthAngle={180}
-            cDistance={2.91}
-            cPolarAngle={120}
-            cameraZoom={isMobile ? 1.0 : (isTablet ? 1.5 : 2.5)}
-            color1="#ebedff"
-            color2="#f3f2f8"
-            color3="#dbf8ff"
-            destination="onCanvas"
-            embedMode="off"
-            envPreset="city"
-            format="gif"
-            fov={45}
-            frameRate={10}
-            gizmoHelper="hide"
-            grain="off"
-            lightType="3d"
-            pixelDensity={1}
-            positionX={isMobile ? 0 : (isTablet ? 0.5 : 0)}
-            positionY={1.8}
-            positionZ={0}
-            range="disabled"
-            rangeEnd={40}
-            rangeStart={0}
-            reflection={0.1}
-            rotationX={0}
-            rotationY={0}
-            rotationZ={-90}
-            shader="defaults"
-            type="waterPlane"
-            uAmplitude={0}
-            uDensity={1}
-            uFrequency={5.5}
-            uSpeed={0.3}
-            uStrength={3}
-            uTime={0.2}
-            wireframe={false}
-          />
-        </ShaderGradientCanvas>
+        <AmbientGradient variant="brand" />
+        <Suspense fallback={null}>
+          <HeroShaderBackground />
+        </Suspense>
 
         {/* Content Wrapper */}
         <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>

@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, lazy, Suspense } from "react";
+const HeroShaderBackground = lazy(() => import("./HeroShaderBackground"));
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import {
   ShoppingBag,
@@ -10,8 +11,8 @@ import {
   Volume2,
   VolumeX
 } from "lucide-react";
-import { ShaderGradient, ShaderGradientCanvas } from "@shadergradient/react";
-import { TiktokIcon } from "./About";
+import { AmbientGradient } from "./ui/AmbientGradient";
+import { TiktokIcon } from "./ui/TiktokIcon";
 import "../../styles/Videos.css";
 
 type Product = {
@@ -490,16 +491,30 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
 
   const isDesktop = !isMobile && !isTablet;
 
-  // Re-trigger TikTok embed parsing on mount/active index change (for backward-compatible slides)
+  // Lazy-load TikTok embed script only when Videos component is active
   useEffect(() => {
-    try {
-      if ((window as any).tiktok && typeof (window as any).tiktok.embed === "function") {
-        (window as any).tiktok.embed();
+    if (!isPageActive || typeof window === "undefined") return;
+
+    const initEmbed = () => {
+      try {
+        if ((window as any).tiktok && typeof (window as any).tiktok.embed === "function") {
+          (window as any).tiktok.embed();
+        }
+      } catch (e) {
+        console.error("TikTok embed trigger error:", e);
       }
-    } catch (e) {
-      console.error("TikTok embed trigger error:", e);
+    };
+
+    if (!document.querySelector('script[src="https://www.tiktok.com/embed.js"]')) {
+      const script = document.createElement("script");
+      script.src = "https://www.tiktok.com/embed.js";
+      script.async = true;
+      script.onload = initEmbed;
+      document.body.appendChild(script);
+    } else {
+      initEmbed();
     }
-  }, [activeIndex]);
+  }, [activeIndex, isPageActive]);
 
   // Combine static configuration and loaded products dynamically
   const resolvedSets = useMemo(() => {
@@ -585,63 +600,10 @@ export function Videos({ products, onShopProduct, isMobile, isTablet, isPageActi
     <div className="videos-page-container">
       {/* Title Section */}
       <div className="videos-header">
-        <ShaderGradientCanvas
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 0,
-            pointerEvents: "none"
-          }}
-          pixelDensity={1}
-          fov={45}
-        >
-          <ShaderGradient
-            animate="off"
-            axesHelper="off"
-            bgColor1="#000000"
-            bgColor2="#000000"
-            brightness={1.2}
-            cAzimuthAngle={180}
-            cDistance={2.91}
-            cPolarAngle={120}
-            cameraZoom={isMobile ? 1.0 : (isTablet ? 1.5 : 2.5)}
-            color1="#ebedff"
-            color2="#f3f2f8"
-            color3="#dbf8ff"
-            destination="onCanvas"
-            embedMode="off"
-            envPreset="city"
-            format="gif"
-            fov={45}
-            frameRate={10}
-            gizmoHelper="hide"
-            grain="off"
-            lightType="3d"
-            pixelDensity={1}
-            positionX={isMobile ? 0 : (isTablet ? 0.5 : 0)}
-            positionY={1.8}
-            positionZ={0}
-            range="disabled"
-            rangeEnd={40}
-            rangeStart={0}
-            reflection={0.1}
-            rotationX={0}
-            rotationY={0}
-            rotationZ={-90}
-            shader="defaults"
-            type="waterPlane"
-            uAmplitude={0}
-            uDensity={1}
-            uFrequency={5.5}
-            uSpeed={0.3}
-            uStrength={3}
-            uTime={0.2}
-            wireframe={false}
-          />
-        </ShaderGradientCanvas>
+        <AmbientGradient variant="brand" />
+        <Suspense fallback={null}>
+          <HeroShaderBackground />
+        </Suspense>
 
         <div className="videos-header-content">
           <h2 className="videos-title">Juice Gels Studio 🎬</h2>

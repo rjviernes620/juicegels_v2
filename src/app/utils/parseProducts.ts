@@ -81,12 +81,15 @@ export function buildSanityImageUrl(
 
   const baseUrl = `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/${SANITY_DATASET}/${id}-${dims}.${ext}`;
 
-  // If we have a hotspot or crop, apply Sanity's image transformation parameters
-  if ((hotspot || crop) && targetW && targetH) {
-    const [imgW, imgH] = dims.split("x").map(Number);
-    if (!imgW || !imgH) return baseUrl;
+  if (!targetW && !targetH && !hotspot && !crop) {
+    return baseUrl;
+  }
 
-    // Apply crop first (crop values are fractional 0–1)
+  const [imgW, imgH] = dims.split("x").map(Number);
+  const params = new URLSearchParams();
+
+  // If image dimensions are known and crop/hotspot is provided
+  if (imgW && imgH && (crop || hotspot)) {
     const cropLeft = crop ? Math.round(crop.left * imgW) : 0;
     const cropTop = crop ? Math.round(crop.top * imgH) : 0;
     const cropRight = crop ? Math.round(crop.right * imgW) : 0;
@@ -95,15 +98,11 @@ export function buildSanityImageUrl(
     const croppedW = imgW - cropLeft - cropRight;
     const croppedH = imgH - cropTop - cropBottom;
 
-    const params = new URLSearchParams();
-
     if (crop) {
       params.set("rect", `${cropLeft},${cropTop},${croppedW},${croppedH}`);
     }
 
     if (hotspot) {
-      // Focal point coordinates are relative to the original image
-      // After applying crop, re-map to the cropped coordinate space
       const fpX = crop
         ? (hotspot.x * imgW - cropLeft) / croppedW
         : hotspot.x;
@@ -113,18 +112,16 @@ export function buildSanityImageUrl(
 
       params.set("fp-x", fpX.toFixed(4));
       params.set("fp-y", fpY.toFixed(4));
+      params.set("crop", "focalpoint");
     }
-
-    params.set("fit", "crop");
-    params.set("crop", "focalpoint");
-    params.set("w", String(targetW));
-    params.set("h", String(targetH));
-    params.set("auto", "format");
-
-    return `${baseUrl}?${params.toString()}`;
   }
 
-  return baseUrl;
+  if (targetW) params.set("w", String(targetW));
+  if (targetH) params.set("h", String(targetH));
+  params.set("fit", "crop");
+  params.set("auto", "format");
+
+  return `${baseUrl}?${params.toString()}`;
 }
 
 function intValue(val: any): number {
@@ -178,14 +175,14 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
     const imageRef = sp.image?.asset?._ref || "";
     const imageHotspot = sp.image?.hotspot || null;
     const imageCrop = sp.image?.crop || null;
-    // Card thumbnail: 400×320 (2× for HiDPI) – Sanity CDN crops around the focal point
+    // Card thumbnail: 400×320 (2× for HiDPI) – Sanity CDN crops around the focal point with WebP auto-format
     const imageUrl = buildSanityImageUrl(imageRef, imageHotspot, imageCrop, 400, 320);
 
     const image2Ref = sp.image2?.asset?._ref || "";
-    const image2Url = image2Ref ? buildSanityImageUrl(image2Ref, sp.image2?.hotspot, sp.image2?.crop) : "";
+    const image2Url = image2Ref ? buildSanityImageUrl(image2Ref, sp.image2?.hotspot, sp.image2?.crop, 800, 800) : "";
 
     const image3Ref = sp.image3?.asset?._ref || "";
-    const image3Url = image3Ref ? buildSanityImageUrl(image3Ref, sp.image3?.hotspot, sp.image3?.crop) : "";
+    const image3Url = image3Ref ? buildSanityImageUrl(image3Ref, sp.image3?.hotspot, sp.image3?.crop, 800, 800) : "";
 
     const rawTags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
     const isHalloween = isHalloweenSet(productId, title);
@@ -260,16 +257,32 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
   return products;
 }
 
-export async function loadProducts(): Promise<Product[]> {
+const PRODUCTS_CACHE_KEY = "juicegels_cached_products_v2";
+const TRENDING_CACHE_KEY = "juicegels_cached_trending_v2";
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+export async function loadProducts(forceRefresh = false): Promise<Product[]> {
+  if (!forceRefresh && typeof window !== "undefined" && window.sessionStorage) {
+    try {
+      const cached = window.sessionStorage.getItem(PRODUCTS_CACHE_KEY);
+      if (cached) {
+        const { timestamp, data } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_TTL_MS && Array.isArray(data) && data.length > 0) {
+          return data;
+        }
+      }
+    } catch {
+      // Ignore cache parse failure
+    }
+  }
+
   try {
     const query = encodeURIComponent(
       '*[_type == "product" && !(_id in path("drafts.**"))] { ..., "videoUrl": video.asset->url, image { asset, hotspot, crop }, image2 { asset, hotspot, crop }, image3 { asset, hotspot, crop } }'
     );
     const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
 
-    const response = await fetch(url, {
-      cache: "no-store",
-    });
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Sanity API returned status ${response.status}`);
@@ -280,7 +293,17 @@ export async function loadProducts(): Promise<Product[]> {
     if (sanityProducts.length === 0) {
       throw new Error("No products found in Sanity database.");
     }
-    return parseSanityProducts(sanityProducts);
+    const products = parseSanityProducts(sanityProducts);
+
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      try {
+        window.sessionStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: products }));
+      } catch {
+        // Ignore cache storage failure
+      }
+    }
+
+    return products;
   } catch (error) {
     console.error("Sanity load failed:", error);
     throw new Error(
@@ -289,14 +312,28 @@ export async function loadProducts(): Promise<Product[]> {
   }
 }
 
-export async function loadTrendingProductIds(): Promise<number[]> {
+export async function loadTrendingProductIds(forceRefresh = false): Promise<number[]> {
+  if (!forceRefresh && typeof window !== "undefined" && window.sessionStorage) {
+    try {
+      const cached = window.sessionStorage.getItem(TRENDING_CACHE_KEY);
+      if (cached) {
+        const { timestamp, data } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_TTL_MS && Array.isArray(data)) {
+          return data;
+        }
+      }
+    } catch {
+      // Ignore cache parse failure
+    }
+  }
+
   try {
     const query = encodeURIComponent(
       '*[_type == "trendingDesigns" && _id == "trendingDesigns"][0]{ "items": products[]->{ productId } }'
     );
     const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
 
-    const response = await fetch(url, { cache: "no-store" });
+    const response = await fetch(url);
 
     if (!response.ok) {
       console.warn(`Trending designs fetch returned status ${response.status}`);
@@ -310,9 +347,19 @@ export async function loadTrendingProductIds(): Promise<number[]> {
       return [];
     }
 
-    return items
+    const trendingIds = items
       .map((item: any) => (typeof item?.productId === "number" ? item.productId : null))
       .filter((id: number | null): id is number => id !== null);
+
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      try {
+        window.sessionStorage.setItem(TRENDING_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data: trendingIds }));
+      } catch {
+        // Ignore cache storage failure
+      }
+    }
+
+    return trendingIds;
   } catch (error) {
     console.warn("Failed to load trending designs:", error);
     return [];

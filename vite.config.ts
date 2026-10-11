@@ -54,6 +54,33 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'prod',
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('three') || id.includes('@react-three') || id.includes('@shadergradient')) {
+                return 'vendor-three';
+              }
+              if (id.includes('@stripe')) {
+                return 'vendor-stripe';
+              }
+              if (id.includes('motion')) {
+                return 'vendor-motion';
+              }
+              if (id.includes('lucide-react')) {
+                return 'vendor-icons';
+              }
+              if (id.includes('@radix-ui')) {
+                return 'vendor-radix';
+              }
+              if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+                return 'vendor-react';
+              }
+            }
+          },
+        },
+      },
     },
     plugins: [
       figmaAssetResolver(),
