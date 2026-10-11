@@ -29,9 +29,48 @@ describe('Sanity Product Parser', () => {
       expect(url).toContain('fit=crop');
       expect(url).toContain('rect=');
     });
+
+    it('preserves full aspect ratio and does not crop when fit="max" is passed', () => {
+      const ref = 'image-guide-1024x1536-jpg';
+      const url = buildSanityImageUrl(ref, null, null, 1600, 2400, 'max');
+
+      expect(url).toContain('w=1600');
+      expect(url).toContain('h=2400');
+      expect(url).toContain('fit=max');
+      expect(url).not.toContain('fit=crop');
+      expect(url).not.toContain('rect=');
+      expect(url).not.toContain('crop=focalpoint');
+    });
   });
 
   describe('parseSanityProducts', () => {
+    it('sets high-resolution detailImage and uncropped extraImages for guide pictures', () => {
+      const rawSanity = [
+        {
+          _id: 'prod-guide-test',
+          title: 'Pink Dream',
+          productId: 101,
+          price: '28.00',
+          image: { asset: { _ref: 'image-pink-2000x2000-jpg' } },
+          image2: { asset: { _ref: 'image-guide1-1024x1536-jpg' } },
+          image3: { asset: { _ref: 'image-guide2-1024x1536-jpg' } },
+        },
+      ];
+
+      const parsed = parseSanityProducts(rawSanity);
+      expect(parsed[0].detailImage).toBeDefined();
+      expect(parsed[0].detailImage).toContain('fit=max');
+      expect(parsed[0].detailImage).toContain('w=1600');
+
+      // Picture 2 & 3 (extraImages) must be uncropped (fit=max) and high resolution
+      expect(parsed[0].extraImages).toHaveLength(2);
+      expect(parsed[0].extraImages[0]).toContain('fit=max');
+      expect(parsed[0].extraImages[0]).not.toContain('fit=crop');
+      expect(parsed[0].extraImages[0]).toContain('w=1600');
+      expect(parsed[0].extraImages[1]).toContain('fit=max');
+      expect(parsed[0].extraImages[1]).not.toContain('fit=crop');
+      expect(parsed[0].extraImages[1]).toContain('w=1600');
+    });
     it('parses standard nail set and automatically expands 15 variants (5 shapes × 3 lengths)', () => {
       const rawSanity = [
         {

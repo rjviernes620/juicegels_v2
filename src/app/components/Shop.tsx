@@ -502,8 +502,10 @@ export function ShopPage({
               </button>
 
               {/* Collection Chips */}
-              {uniqueCollections.map((col) => {
-                const isSelected = homeSelectedCollection === col;
+              {uniqueCollections
+                .filter((col) => !col.toLowerCase().includes("juice ghouls") && !col.toLowerCase().includes("halloween"))
+                .map((col) => {
+                  const isSelected = homeSelectedCollection === col;
                 const styleConfig = getCollectionStyle(col);
                 const emoji = styleConfig ? styleConfig.emoji : "✨";
                 const cleanName = col.replace(" Collection", "");
@@ -903,424 +905,262 @@ export function ProductDetailPage({
   addToBasket,
   isMobile
 }: ProductDetailPageProps) {
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
+
+  const productImages = useMemo(() => {
+    const mainImg = selected.detailImage || selected.image;
+    return [mainImg, ...selected.extraImages];
+  }, [selected]);
+
+  const activeSrc = productImages[activeImg] || productImages[0];
+
+  useEffect(() => {
+    if (!isZoomOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsZoomOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isZoomOpen]);
+
   return (
-    isMobile ? (
-      <main>
-        <ImageWithFallback
-          src={[selected.image, ...selected.extraImages][activeImg]}
-          alt={selected.name}
-          style={{ width: "100%", height: 320, objectFit: "contain", display: "block", background: "transparent" }}
-        />
-
-        {selected.extraImages.length > 0 && (
-          <div style={{ display: "flex", gap: 8, padding: "10px 16px 0", overflowX: "auto" }}>
-            {[selected.image, ...selected.extraImages].map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveImg(i)}
-                style={{
-                  flexShrink: 0,
-                  border: `2px solid ${activeImg === i ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                  borderRadius: 8,
-                  overflow: "hidden",
-                  padding: 0,
-                  cursor: "pointer",
-                  background: "none"
-                }}
-              >
-                <ImageWithFallback src={img} alt="" style={{ width: 52, height: 52, objectFit: "contain", display: "block", background: "transparent" }} />
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div style={{ padding: "16px 20px 130px" }}>
-          <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "#ae3c6f" }}>
-            {selected.name}
-          </h2>
-
-          <p style={{ fontSize: 12, color: "#fff5f7", margin: "0 0 10px" }}>
-            Handmade · Made to order
-          </p>
-
-          {isHalloweenProduct(selected) ? (
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: 24, fontWeight: 800, color: "#ff7828" }}>
-                £{getHalloweenSalePrice(selected.price).toFixed(2)}
-              </span>
-              <span style={{ fontSize: 15, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
-                £{selected.price.toFixed(2)}
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
-                20% OFF JUICE GHOULS SALE
-              </span>
-            </div>
-          ) : (
-            <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
-              £{selected.price.toFixed(2)}
-            </span>
-          )}
-
-          <div style={{ margin: "12px 0 18px" }}>
-            {selected.descriptionBlocks ? (
-              <PortableText value={selected.descriptionBlocks} />
-            ) : (
-              <p style={{ color: "#fff5f7", fontSize: 13, lineHeight: 1.7, margin: 0 }}>
-                {selected.description}
-              </p>
-            )}
-          </div>
-
-          <ProductGuides />
-
-          {collectionDetails && (() => {
-            const style = getCollectionStyle(collectionDetails.name);
-            return (
-              <div style={{
-                background: style.bannerBg,
-                border: `1px solid ${style.border}`,
-                borderRadius: 14,
-                padding: "14px 16px",
-                margin: "18px 0",
-                color: "#3d1a24",
-                boxShadow: `0 2px 8px rgba(0, 0, 0, 0.02)`
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: style.textColor, marginBottom: 3 }}>
-                  <span style={{ fontSize: 14 }}>{style.emoji}</span> {collectionDetails.name} Set
-                </div>
-                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#fff5f7", fontStyle: "italic", lineHeight: 1.4 }}>
-                  {collectionDetails.tagline}
-                </p>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#fff5f7", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
-                  Complete the Collection:
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {collectionDetails.otherProducts.map(otherProd => (
-                    <button
-                      key={otherProd.id}
-                      onClick={() => openProduct(otherProd)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        background: "#ffffff",
-                        border: `1px solid ${style.border}`,
-                        borderRadius: 10,
-                        padding: "6px 8px",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        width: "100%",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                        transition: "all 0.15s"
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = style.textColor; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = style.border; }}
-                    >
-                      <img src={otherProd.image} alt={otherProd.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#3d1a24", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {otherProd.name}
-                        </div>
-                        <div style={{ fontSize: 11, color: "#e988b5", fontWeight: 700 }}>
-                          £{otherProd.price.toFixed(2)}
-                        </div>
-                      </div>
-                      <span style={{ fontSize: 11, color: style.textColor, fontWeight: 700, paddingRight: 4, display: "flex", alignItems: "center", gap: 2 }}>
-                        Shop Set ➔
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-
-          {!isVariationLocked(selected) ? (
-            <>
-              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
-                Nail Shape
-              </p>
-
-              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
-                {selected.shapes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => {
-                      const next = findVariant(selected.groupId, s, selectedLength);
-                      if (next) {
-                        setSelected(next);
-                        setSelectedShape(s);
-                        setSelectedLength(next.length);
-                      }
-                    }}
-                    style={{
-                      border: `1.5px solid ${selectedShape === s ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                      background: selectedShape === s ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
-                      color: selectedShape === s ? "#ffffff" : "#fff9fb",
-                      borderRadius: 8,
-                      padding: "6px 14px",
-                      fontSize: 12,
-                      cursor: "pointer",
-                      transition: "all 0.15s"
-                    }}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-
-              <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
-                Nail Length
-              </p>
-
-              <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
-                {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
-                  <button
-                    key={length}
-                    onClick={() => {
-                      const next = findVariant(selected.groupId, selectedShape, length);
-                      if (next) {
-                        setSelected(next);
-                        setSelectedLength(length);
-                        setSelectedShape(next.shape);
-                      }
-                    }}
-                    style={{
-                      border: `1.5px solid ${selectedLength === length ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                      background: selectedLength === length ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
-                      color: selectedLength === length ? "#ffffff" : "#fff9fb",
-                      borderRadius: 8,
-                      padding: "6px 14px",
-                      fontSize: 12,
-                      cursor: "pointer",
-                      transition: "all 0.15s",
-                      textTransform: "capitalize"
-                    }}
-                  >
-                    {length}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : null}
-
-          {!isVariationLocked(selected) ? (
-            <div
-              style={{
-                background: "#fce4ea",
-                borderRadius: 10,
-                padding: "10px 14px",
-                fontSize: 12,
-                color: "#fff5f7",
-                lineHeight: 1.5
-              }}
-            >
-              You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
-            </div>
-          ) : null}
-        </div>
-
+    <>
+      {isZoomOpen && (
         <div
+          onClick={() => setIsZoomOpen(false)}
           style={{
             position: "fixed",
-            bottom: 0,
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "100%",
-            maxWidth: 430,
-            padding: "14px 18px",
-            background: "#fc6587",
-            borderTop: "1px solid rgba(212, 84, 122, 0.18)",
+            inset: 0,
+            zIndex: 9999,
+            background: "rgba(10, 4, 15, 0.92)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
             display: "flex",
-            gap: 10,
-            boxSizing: "border-box"
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            cursor: "zoom-out"
           }}
         >
-          <button
-            onClick={() => toggleWishlist(selected.id)}
+          <div
+            onClick={(e) => e.stopPropagation()}
             style={{
-              border: "1.5px solid rgba(212, 84, 122, 0.18)",
-              background: "#fc6587",
-              borderRadius: 12,
-              width: 46,
-              height: 46,
+              position: "relative",
+              maxWidth: "92vw",
+              maxHeight: "92vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <button
+              onClick={() => setIsZoomOpen(false)}
+              style={{
+                position: "absolute",
+                top: 12,
+                right: 12,
+                width: 38,
+                height: 38,
+                borderRadius: "50%",
+                background: "rgba(35, 12, 28, 0.9)",
+                border: "1px solid rgba(255, 214, 233, 0.4)",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                zIndex: 10,
+                boxShadow: "0 4px 14px rgba(0,0,0,0.6)"
+              }}
+              aria-label="Close fullscreen preview"
+            >
+              <X size={20} />
+            </button>
+            <ImageWithFallback
+              src={activeSrc}
+              alt={selected.name}
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "88vh",
+                width: "auto",
+                height: "auto",
+                objectFit: "contain",
+                borderRadius: 14,
+                boxShadow: "0 20px 50px rgba(0,0,0,0.7)"
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {isMobile ? (
+        <main>
+          <div
+            onClick={() => setIsZoomOpen(true)}
+            title="Click to view full size"
+            style={{
+              position: "relative",
+              width: "100%",
+              height: 380,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              cursor: "pointer",
-              flexShrink: 0
+              background: "rgba(35, 12, 28, 0.35)",
+              borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
+              overflow: "hidden",
+              cursor: "zoom-in"
             }}
           >
-            <Heart
-              size={17}
-              fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
-              stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#fff5f7"}
+            <ImageWithFallback
+              src={activeSrc}
+              alt={selected.name}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                width: "auto",
+                height: "auto",
+                objectFit: "contain",
+                display: "block"
+              }}
             />
-          </button>
-
-          <button
-            onClick={addToBasket}
-            disabled={!selectedShape || !selectedLength}
-            style={{
-              flex: 1,
-              background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "#fce4ea",
-              color: selectedShape && selectedLength ? "#fff" : "#fff5f7",
-              border: "none",
-              borderRadius: 12,
-              height: 46,
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: selectedShape && selectedLength ? "pointer" : "not-allowed",
-              transition: "all 0.15s"
-            }}
-          >
-            {selectedShape && selectedLength ? "Add to Basket" : "Select shape and length"}
-          </button>
-        </div>
-      </main>
-    ) : (
-      <main style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, padding: "28px 24px", maxWidth: 1200, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
-        {/* Left Column - Product Images */}
-        <div style={{ position: "sticky", top: 80, alignSelf: "start" }}>
-          <ImageWithFallback
-            src={[selected.image, ...selected.extraImages][activeImg]}
-            alt={selected.name}
-            style={{ width: "100%", height: 420, objectFit: "contain", display: "block", background: "transparent", borderRadius: 18, border: "1px solid rgba(212, 84, 122, 0.12)" }}
-          />
+          </div>
 
           {selected.extraImages.length > 0 && (
-            <div style={{ display: "flex", gap: 8, padding: "12px 0 0", overflowX: "auto" }}>
-              {[selected.image, ...selected.extraImages].map((img, i) => (
+            <div style={{ display: "flex", gap: 10, padding: "12px 16px 0", overflowX: "auto" }}>
+              {productImages.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveImg(i)}
                   style={{
                     flexShrink: 0,
+                    width: 58,
+                    height: 58,
                     border: `2px solid ${activeImg === i ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
-                    borderRadius: 8,
+                    borderRadius: 10,
                     overflow: "hidden",
-                    padding: 0,
+                    padding: 3,
                     cursor: "pointer",
-                    background: "none"
+                    background: activeImg === i ? "rgba(255, 214, 233, 0.12)" : "rgba(35, 12, 28, 0.45)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.15s ease"
                   }}
                 >
-                  <ImageWithFallback src={img} alt="" style={{ width: 56, height: 56, objectFit: "contain", display: "block", background: "transparent" }} />
+                  <ImageWithFallback src={img} alt="" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
                 </button>
               ))}
             </div>
           )}
-        </div>
 
-        {/* Right Column - Details and Actions */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div>
-            <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 6px", fontSize: 28, color: "#ae3c6f" }}>
+          <div style={{ padding: "16px 20px 130px" }}>
+            <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 4px", fontSize: 22, color: "#ae3c6f" }}>
               {selected.name}
             </h2>
-            <p style={{ fontSize: 13, color: "#fff5f7", margin: 0 }}>
+
+            <p style={{ fontSize: 12, color: "#fff5f7", margin: "0 0 10px" }}>
               Handmade · Made to order
             </p>
-          </div>
 
-          {isHalloweenProduct(selected) ? (
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: 26, fontWeight: 800, color: "#ff7828" }}>
-                £{getHalloweenSalePrice(selected.price).toFixed(2)}
-              </span>
-              <span style={{ fontSize: 16, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
+            {isHalloweenProduct(selected) ? (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
+                <span style={{ fontSize: 24, fontWeight: 800, color: "#ff7828" }}>
+                  £{getHalloweenSalePrice(selected.price).toFixed(2)}
+                </span>
+                <span style={{ fontSize: 15, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
+                  £{selected.price.toFixed(2)}
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
+                  20% OFF JUICE GHOULS SALE
+                </span>
+              </div>
+            ) : (
+              <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
                 £{selected.price.toFixed(2)}
               </span>
-              <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
-                20% OFF JUICE GHOULS SALE
-              </span>
-            </div>
-          ) : (
-            <span style={{ fontSize: 26, fontWeight: 700, color: "#e988b5" }}>
-              £{selected.price.toFixed(2)}
-            </span>
-          )}
-
-          <div style={{ margin: "4px 0" }}>
-            {selected.descriptionBlocks ? (
-              <PortableText value={selected.descriptionBlocks} />
-            ) : (
-              <p style={{ color: "#fff5f7", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
-                {selected.description}
-              </p>
             )}
-          </div>
 
-          <ProductGuides />
-
-          {collectionDetails && (() => {
-            const style = getCollectionStyle(collectionDetails.name);
-            return (
-              <div style={{
-                background: style.bannerBg,
-                border: `1px solid ${style.border}`,
-                borderRadius: 14,
-                padding: "14px 16px",
-                margin: "4px 0",
-                color: "#3d1a24",
-                boxShadow: `0 2px 8px rgba(0, 0, 0, 0.02)`
-              }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: style.textColor, marginBottom: 3 }}>
-                  <span style={{ fontSize: 14 }}>{style.emoji}</span> {collectionDetails.name} Set
-                </div>
-                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#fff5f7", fontStyle: "italic", lineHeight: 1.4 }}>
-                  {collectionDetails.tagline}
+            <div style={{ margin: "12px 0 18px" }}>
+              {selected.descriptionBlocks ? (
+                <PortableText value={selected.descriptionBlocks} />
+              ) : (
+                <p style={{ color: "#fff5f7", fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+                  {selected.description}
                 </p>
-                <div style={{ fontSize: 11, fontWeight: 600, color: "#fff5f7", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
-                  Complete the Collection:
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {collectionDetails.otherProducts.map(otherProd => (
-                    <button
-                      key={otherProd.id}
-                      onClick={() => openProduct(otherProd)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        background: "#ffffff",
-                        border: `1px solid ${style.border}`,
-                        borderRadius: 10,
-                        padding: "6px 8px",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        width: "100%",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
-                        transition: "all 0.15s"
-                      }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = style.textColor; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = style.border; }}
-                    >
-                      <img src={otherProd.image} alt={otherProd.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#3d1a24", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                          {otherProd.name}
-                        </div>
-                        <div style={{ fontSize: 11, color: "#e988b5", fontWeight: 700 }}>
-                          £{otherProd.price.toFixed(2)}
-                        </div>
-                      </div>
-                      <span style={{ fontSize: 11, color: style.textColor, fontWeight: 700, paddingRight: 4, display: "flex", alignItems: "center", gap: 2 }}>
-                        Shop Set ➔
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
+              )}
+            </div>
 
-          {!isVariationLocked(selected) ? (
-            <>
-              <div>
-                <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#ae3c6f" }}>
+            <ProductGuides />
+
+            {collectionDetails && (() => {
+              const style = getCollectionStyle(collectionDetails.name);
+              return (
+                <div style={{
+                  background: style.bannerBg,
+                  border: `1px solid ${style.border}`,
+                  borderRadius: 14,
+                  padding: "14px 16px",
+                  margin: "18px 0",
+                  color: "#3d1a24",
+                  boxShadow: `0 2px 8px rgba(0, 0, 0, 0.02)`
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: style.textColor, marginBottom: 3 }}>
+                    <span style={{ fontSize: 14 }}>{style.emoji}</span> {collectionDetails.name} Set
+                  </div>
+                  <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#fff5f7", fontStyle: "italic", lineHeight: 1.4 }}>
+                    {collectionDetails.tagline}
+                  </p>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#fff5f7", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
+                    Complete the Collection:
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {collectionDetails.otherProducts.map(otherProd => (
+                      <button
+                        key={otherProd.id}
+                        onClick={() => openProduct(otherProd)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          background: "#ffffff",
+                          border: `1px solid ${style.border}`,
+                          borderRadius: 10,
+                          padding: "6px 8px",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          width: "100%",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                          transition: "all 0.15s"
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = style.textColor; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = style.border; }}
+                      >
+                        <img src={otherProd.image} alt={otherProd.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#3d1a24", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {otherProd.name}
+                          </div>
+                          <div style={{ fontSize: 11, color: "#e988b5", fontWeight: 700 }}>
+                            £{otherProd.price.toFixed(2)}
+                          </div>
+                        </div>
+                        <span style={{ fontSize: 11, color: style.textColor, fontWeight: 700, paddingRight: 4, display: "flex", alignItems: "center", gap: 2 }}>
+                          Shop Set ➔
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {!isVariationLocked(selected) ? (
+              <>
+                <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
                   Nail Shape
                 </p>
-                <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
                   {selected.shapes.map((s) => (
                     <button
                       key={s}
@@ -1347,13 +1187,12 @@ export function ProductDetailPage({
                     </button>
                   ))}
                 </div>
-              </div>
 
-              <div>
-                <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#ae3c6f" }}>
+                <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#fff9fb" }}>
                   Nail Length
                 </p>
-                <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+
+                <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 20 }}>
                   {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
                     <button
                       key={length}
@@ -1381,36 +1220,49 @@ export function ProductDetailPage({
                     </button>
                   ))}
                 </div>
+              </>
+            ) : null}
+
+            {!isVariationLocked(selected) ? (
+              <div
+                style={{
+                  background: "#6b3a46ff",
+                  borderRadius: 10,
+                  padding: "10px 14px",
+                  fontSize: 12,
+                  color: "#fff5f7",
+                  lineHeight: 1.5
+                }}
+              >
+                You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
               </div>
-            </>
-          ) : null}
+            ) : null}
+          </div>
 
-          {!isVariationLocked(selected) ? (
-            <div
-              style={{
-                background: "#fce4ea",
-                borderRadius: 10,
-                padding: "10px 14px",
-                fontSize: 12,
-                color: "#fff5f7",
-                lineHeight: 1.5,
-                margin: "4px 0"
-              }}
-            >
-              You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
-            </div>
-          ) : null}
-
-          {/* Inline Action Buttons */}
-          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+          <div
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "100%",
+              maxWidth: 430,
+              padding: "14px 18px",
+              background: "#fc6587",
+              borderTop: "1px solid rgba(212, 84, 122, 0.18)",
+              display: "flex",
+              gap: 10,
+              boxSizing: "border-box"
+            }}
+          >
             <button
               onClick={() => toggleWishlist(selected.id)}
               style={{
                 border: "1.5px solid rgba(212, 84, 122, 0.18)",
                 background: "#fc6587",
                 borderRadius: 12,
-                width: 48,
-                height: 48,
+                width: 46,
+                height: 46,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -1419,7 +1271,7 @@ export function ProductDetailPage({
               }}
             >
               <Heart
-                size={18}
+                size={17}
                 fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
                 stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#fff5f7"}
               />
@@ -1434,7 +1286,7 @@ export function ProductDetailPage({
                 color: selectedShape && selectedLength ? "#fff" : "#fff5f7",
                 border: "none",
                 borderRadius: 12,
-                height: 48,
+                height: 46,
                 fontWeight: 600,
                 fontSize: 14,
                 cursor: selectedShape && selectedLength ? "pointer" : "not-allowed",
@@ -1444,9 +1296,309 @@ export function ProductDetailPage({
               {selectedShape && selectedLength ? "Add to Basket" : "Select shape and length"}
             </button>
           </div>
-        </div>
-      </main>
-    )
+        </main>
+      ) : (
+        <main style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, padding: "28px 24px", maxWidth: 1200, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
+          {/* Left Column - Product Images */}
+          <div style={{ position: "sticky", top: 80, alignSelf: "start" }}>
+            <div
+              onClick={() => setIsZoomOpen(true)}
+              title="Click to view full size"
+              style={{
+                position: "relative",
+                width: "100%",
+                height: 520,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(35, 12, 28, 0.35)",
+                borderRadius: 18,
+                border: "1px solid rgba(212, 84, 122, 0.15)",
+                overflow: "hidden",
+                boxShadow: "0 14px 38px -10px rgba(0, 0, 0, 0.45)",
+                cursor: "zoom-in"
+              }}
+            >
+              <ImageWithFallback
+                src={activeSrc}
+                alt={selected.name}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  width: "auto",
+                  height: "auto",
+                  objectFit: "contain",
+                  display: "block"
+                }}
+              />
+            </div>
+
+            {selected.extraImages.length > 0 && (
+              <div style={{ display: "flex", gap: 10, padding: "14px 0 0", overflowX: "auto" }}>
+                {productImages.map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveImg(i)}
+                    style={{
+                      flexShrink: 0,
+                      width: 62,
+                      height: 62,
+                      border: `2px solid ${activeImg === i ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                      borderRadius: 10,
+                      overflow: "hidden",
+                      padding: 4,
+                      cursor: "pointer",
+                      background: activeImg === i ? "rgba(255, 214, 233, 0.12)" : "rgba(35, 12, 28, 0.45)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <ImageWithFallback src={img} alt="" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - Details and Actions */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div>
+              <h2 style={{ fontFamily: "'Lobster', serif", margin: "0 0 6px", fontSize: 28, color: "#ae3c6f" }}>
+                {selected.name}
+              </h2>
+              <p style={{ fontSize: 13, color: "#fff5f7", margin: 0 }}>
+                Handmade · Made to order
+              </p>
+            </div>
+
+            {isHalloweenProduct(selected) ? (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
+                <span style={{ fontSize: 26, fontWeight: 800, color: "#ff7828" }}>
+                  £{getHalloweenSalePrice(selected.price).toFixed(2)}
+                </span>
+                <span style={{ fontSize: 16, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
+                  £{selected.price.toFixed(2)}
+                </span>
+                <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
+                  20% OFF JUICE GHOULS SALE
+                </span>
+              </div>
+            ) : (
+              <span style={{ fontSize: 26, fontWeight: 700, color: "#e988b5" }}>
+                £{selected.price.toFixed(2)}
+              </span>
+            )}
+
+            <div style={{ margin: "4px 0" }}>
+              {selected.descriptionBlocks ? (
+                <PortableText value={selected.descriptionBlocks} />
+              ) : (
+                <p style={{ color: "#fff5f7", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+                  {selected.description}
+                </p>
+              )}
+            </div>
+
+            <ProductGuides />
+
+            {collectionDetails && (() => {
+              const style = getCollectionStyle(collectionDetails.name);
+              return (
+                <div style={{
+                  background: style.bannerBg,
+                  border: `1px solid ${style.border}`,
+                  borderRadius: 14,
+                  padding: "14px 16px",
+                  margin: "4px 0",
+                  color: "#3d1a24",
+                  boxShadow: `0 2px 8px rgba(0, 0, 0, 0.02)`
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13, color: style.textColor, marginBottom: 3 }}>
+                    <span style={{ fontSize: 14 }}>{style.emoji}</span> {collectionDetails.name} Set
+                  </div>
+                  <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#fff5f7", fontStyle: "italic", lineHeight: 1.4 }}>
+                    {collectionDetails.tagline}
+                  </p>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#fff5f7", textTransform: "uppercase", letterSpacing: "0.03em", marginBottom: 8 }}>
+                    Complete the Collection:
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {collectionDetails.otherProducts.map(otherProd => (
+                      <button
+                        key={otherProd.id}
+                        onClick={() => openProduct(otherProd)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          background: "#ffffff",
+                          border: `1px solid ${style.border}`,
+                          borderRadius: 10,
+                          padding: "6px 8px",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          width: "100%",
+                          boxShadow: "0 1px 3px rgba(0,0,0,0.03)",
+                          transition: "all 0.15s"
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = style.textColor; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = style.border; }}
+                      >
+                        <img src={otherProd.image} alt={otherProd.name} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: "#3d1a24", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {otherProd.name}
+                          </div>
+                          <div style={{ fontSize: 11, color: "#e988b5", fontWeight: 700 }}>
+                            £{otherProd.price.toFixed(2)}
+                          </div>
+                        </div>
+                        <span style={{ fontSize: 11, color: style.textColor, fontWeight: 700, paddingRight: 4, display: "flex", alignItems: "center", gap: 2 }}>
+                          Shop Set ➔
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {!isVariationLocked(selected) ? (
+              <>
+                <div>
+                  <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#ae3c6f" }}>
+                    Nail Shape
+                  </p>
+                  <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                    {selected.shapes.map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => {
+                          const next = findVariant(selected.groupId, s, selectedLength);
+                          if (next) {
+                            setSelected(next);
+                            setSelectedShape(s);
+                            setSelectedLength(next.length);
+                          }
+                        }}
+                        style={{
+                          border: `1.5px solid ${selectedShape === s ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                          background: selectedShape === s ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
+                          color: selectedShape === s ? "#ffffff" : "#fff9fb",
+                          borderRadius: 8,
+                          padding: "6px 14px",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          transition: "all 0.15s"
+                        }}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#ae3c6f" }}>
+                    Nail Length
+                  </p>
+                  <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
+                    {(["Short", "Medium", "Long"] as NailLength[]).map((length) => (
+                      <button
+                        key={length}
+                        onClick={() => {
+                          const next = findVariant(selected.groupId, selectedShape, length);
+                          if (next) {
+                            setSelected(next);
+                            setSelectedLength(length);
+                            setSelectedShape(next.shape);
+                          }
+                        }}
+                        style={{
+                          border: `1.5px solid ${selectedLength === length ? "#ffd6e9" : "rgba(212, 84, 122, 0.18)"}`,
+                          background: selectedLength === length ? "rgba(226, 121, 156, 0.64)" : "#fc6587",
+                          color: selectedLength === length ? "#ffffff" : "#fff9fb",
+                          borderRadius: 8,
+                          padding: "6px 14px",
+                          fontSize: 12,
+                          cursor: "pointer",
+                          transition: "all 0.15s",
+                          textTransform: "capitalize"
+                        }}
+                      >
+                        {length}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+
+            {!isVariationLocked(selected) ? (
+              <div
+                style={{
+                  background: "#aa3b56ff",
+                  borderRadius: 10,
+                  padding: "10px 14px",
+                  fontSize: 12,
+                  color: "#fff5f7",
+                  lineHeight: 1.5,
+                  margin: "4px 0"
+                }}
+              >
+                You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
+              </div>
+            ) : null}
+
+            {/* Inline Action Buttons */}
+            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+              <button
+                onClick={() => toggleWishlist(selected.id)}
+                style={{
+                  border: "1.5px solid rgba(212, 84, 122, 0.18)",
+                  background: "#fc6587",
+                  borderRadius: 12,
+                  width: 48,
+                  height: 48,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  flexShrink: 0
+                }}
+              >
+                <Heart
+                  size={18}
+                  fill={wishlist.includes(selected.id) ? "#ffd6e9" : "none"}
+                  stroke={wishlist.includes(selected.id) ? "#ffd6e9" : "#fff5f7"}
+                />
+              </button>
+
+              <button
+                onClick={addToBasket}
+                disabled={!selectedShape || !selectedLength}
+                style={{
+                  flex: 1,
+                  background: selectedShape && selectedLength ? "rgba(195, 18, 77, 0.64)" : "#fce4ea",
+                  color: selectedShape && selectedLength ? "#fff" : "#fff5f7",
+                  border: "none",
+                  borderRadius: 12,
+                  height: 48,
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: selectedShape && selectedLength ? "pointer" : "not-allowed",
+                  transition: "all 0.15s"
+                }}
+              >
+                {selectedShape && selectedLength ? "Add to Basket" : "Select shape and length"}
+              </button>
+            </div>
+          </div>
+        </main>
+      )}
+    </>
   );
 }
 
@@ -1830,7 +1982,7 @@ export function BasketPage({
                 </div>
               </div>
 
-              <div style={{ background: "#fce4ea", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#fff5f7", lineHeight: 1.5, marginBottom: 14 }}>
+              <div style={{ background: "#9b6c77ff", borderRadius: 10, padding: "10px 14px", fontSize: 12, color: "#9a646fff", lineHeight: 1.5, marginBottom: 14 }}>
                 You will be contacted via Instagram or Email up to 24 hours after payment to confirm your nail sizes.
               </div>
 

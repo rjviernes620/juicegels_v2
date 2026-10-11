@@ -8,6 +8,7 @@ export type Product = {
   description: string;
   descriptionBlocks?: any[];
   image: string;
+  detailImage?: string;
   extraImages: string[];
   shapes: string[];
   tags: string[];
@@ -70,7 +71,8 @@ export function buildSanityImageUrl(
   hotspot?: SanityHotspot | null,
   crop?: SanityCrop | null,
   targetW?: number,
-  targetH?: number
+  targetH?: number,
+  fit: "crop" | "max" | "clip" | "fill" | "fillmax" | "min" | "scale" = "crop"
 ): string {
   if (!ref) return "";
   const parts = ref.split("-");
@@ -81,7 +83,7 @@ export function buildSanityImageUrl(
 
   const baseUrl = `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/${SANITY_DATASET}/${id}-${dims}.${ext}`;
 
-  if (!targetW && !targetH && !hotspot && !crop) {
+  if (!targetW && !targetH && !hotspot && !crop && fit === "crop") {
     return baseUrl;
   }
 
@@ -89,7 +91,7 @@ export function buildSanityImageUrl(
   const params = new URLSearchParams();
 
   // If image dimensions are known and crop/hotspot is provided
-  if (imgW && imgH && (crop || hotspot)) {
+  if (imgW && imgH && (crop || hotspot) && fit === "crop") {
     const cropLeft = crop ? Math.round(crop.left * imgW) : 0;
     const cropTop = crop ? Math.round(crop.top * imgH) : 0;
     const cropRight = crop ? Math.round(crop.right * imgW) : 0;
@@ -118,7 +120,7 @@ export function buildSanityImageUrl(
 
   if (targetW) params.set("w", String(targetW));
   if (targetH) params.set("h", String(targetH));
-  params.set("fit", "crop");
+  params.set("fit", fit);
   params.set("auto", "format");
 
   return `${baseUrl}?${params.toString()}`;
@@ -175,14 +177,17 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
     const imageRef = sp.image?.asset?._ref || "";
     const imageHotspot = sp.image?.hotspot || null;
     const imageCrop = sp.image?.crop || null;
-    // Card thumbnail: 400×320 (2× for HiDPI) – Sanity CDN crops around the focal point with WebP auto-format
-    const imageUrl = buildSanityImageUrl(imageRef, imageHotspot, imageCrop, 400, 320);
+    // Card thumbnail: 600×480 (sharp on retina) – Sanity CDN crops around focal point with WebP auto-format
+    const imageUrl = buildSanityImageUrl(imageRef, imageHotspot, imageCrop, 600, 480);
+    // High-resolution image for individual product detail page (up to 1600px, uncropped)
+    const detailImageUrl = imageRef ? buildSanityImageUrl(imageRef, null, null, 1600, 1600, "max") : "";
 
+    // Guide pictures (Picture 2 and 3 across all listings): high-resolution and uncropped (fit=max)
     const image2Ref = sp.image2?.asset?._ref || "";
-    const image2Url = image2Ref ? buildSanityImageUrl(image2Ref, sp.image2?.hotspot, sp.image2?.crop, 800, 800) : "";
+    const image2Url = image2Ref ? buildSanityImageUrl(image2Ref, null, null, 1600, 2400, "max") : "";
 
     const image3Ref = sp.image3?.asset?._ref || "";
-    const image3Url = image3Ref ? buildSanityImageUrl(image3Ref, sp.image3?.hotspot, sp.image3?.crop, 800, 800) : "";
+    const image3Url = image3Ref ? buildSanityImageUrl(image3Ref, null, null, 1600, 2400, "max") : "";
 
     const rawTags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
     const isHalloween = isHalloweenSet(productId, title);
@@ -202,6 +207,9 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
       const extraImages: string[] = [];
       if (image2Url) extraImages.push(image2Url);
       if (image3Url) extraImages.push(image3Url);
+      if (extraImages.length === 0) {
+        extraImages.push("images/Nail 2.jpeg", "images/coin 2.jpeg");
+      }
 
       products.push({
         id: `JUICEGELS-${productId.toString().padStart(4, '0')}`,
@@ -211,6 +219,7 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
         description: description,
         descriptionBlocks: descriptionBlocks,
         image: imageUrl,
+        detailImage: detailImageUrl,
         extraImages: extraImages,
         shapes: ["Square"],
         tags: tags,
@@ -243,6 +252,7 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
             description: description,
             descriptionBlocks: descriptionBlocks,
             image: imageUrl,
+            detailImage: detailImageUrl,
             extraImages: extraImages,
             shapes: DEFAULT_SHAPES,
             tags: tags,
@@ -261,7 +271,7 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
   return products;
 }
 
-const PRODUCTS_CACHE_KEY = "juicegels_cached_products_v2";
+const PRODUCTS_CACHE_KEY = "juicegels_cached_products_v3";
 const TRENDING_CACHE_KEY = "juicegels_cached_trending_v2";
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 

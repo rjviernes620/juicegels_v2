@@ -815,7 +815,7 @@ export function HalloweenPage({
           WebkitTextFillColor: "transparent",
           lineHeight: 1.15
         }}>
-          Juice Ghouls 🎃
+          🎃 Juice Ghouls 🎃
         </h1>
 
         <p style={{

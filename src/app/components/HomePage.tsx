@@ -139,7 +139,7 @@ export function HomePage({
             <h2
               style={{
                 fontFamily: "'Lobster', serif",
-                fontSize: isMobile ? 40 : 56,
+                fontSize: isMobile ? 64 : 72,
                 color: "#ffffff",
                 margin: "0 0 16px",
                 lineHeight: 1.15,

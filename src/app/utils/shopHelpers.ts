@@ -15,7 +15,7 @@ export const CHECKOUT_API_BASE = import.meta.env.VITE_CHECKOUT_API_BASE ||
 export const isLocalDev = () =>
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" ||
-   window.location.hostname === "127.0.0.1");
+    window.location.hostname === "127.0.0.1");
 
 export const SHIPPING_FREE_THRESHOLD = 30;
 export const SHIPPING_RATE_IDS: Record<ShippingOptionId, string> = {

@@ -234,7 +234,11 @@ export default function App() {
   const uniqueCollections = useMemo(() => {
     const set = new Set<string>();
     products.forEach((p) => {
-      if (p.collection) {
+      if (
+        p.collection &&
+        !p.collection.toLowerCase().includes("juice ghouls") &&
+        !p.collection.toLowerCase().includes("halloween")
+      ) {
         set.add(p.collection);
       }
     });
@@ -681,7 +685,7 @@ export default function App() {
         ? `Shop ${selected.name} handmade press-on gel nails from JuiceGels. Available in ${selected.shape} shape, ${selected.length} length.`
         : undefined,
     productImage:
-      page === "product" && selected ? selected.image : undefined,
+      page === "product" && selected ? (selected.detailImage || selected.image) : undefined,
     productPrice:
       page === "product" && selected ? selected.price : undefined,
     productPath:
