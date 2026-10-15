@@ -5,6 +5,7 @@ import { checkoutRouter } from "./routes/checkout.js";
 import { stripeWebhookRouter } from "./routes/stripeWebhook.js";
 import { shippingWebhookRouter } from "./routes/shippingWebhook.js";
 import { metaCatalogRouter } from "./routes/metaCatalog.js";
+import { googleMerchantRouter } from "./routes/googleMerchant.js";
 
 import { verifyAppCheck } from "./middleware/appCheck.js";
 
@@ -43,6 +44,7 @@ export function createApp() {
   app.use(stripeWebhookRouter);
   app.use(shippingWebhookRouter);
   app.use(metaCatalogRouter);
+  app.use(googleMerchantRouter);
 
   // App Check verification for storefront requests
   app.use(verifyAppCheck);

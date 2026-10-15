@@ -10,6 +10,34 @@
       ],
       "rewrites": [
         {
+          "source": "/google-merchant-feed.xml",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
+          "source": "/google-merchant-feed.tsv",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
+          "source": "/google-merchant-feed.txt",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
+          "source": "/google-merchant-feed",
+          "function": {
+            "functionId": "api",
+            "region": "europe-west2"
+          }
+        },
+        {
           "source": "/api/**",
           "function": {
             "functionId": "api",
