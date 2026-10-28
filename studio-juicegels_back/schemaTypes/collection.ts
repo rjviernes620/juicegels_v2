@@ -1,4 +1,5 @@
 import {defineType, defineField} from 'sanity'
+import {CollectionProductsInput} from '../components/CollectionProductsInput'
 
 export default defineType({
   name: 'collection',
@@ -37,13 +38,16 @@ export default defineType({
       type: 'array',
       title: 'Nail Sets in this Collection',
       description:
-        'Select the nail sets that belong to this collection. Click "Add item" to search and pick nail sets directly within this folder, or drag to reorder.',
+        'Select the nail sets that belong to this collection. Click "Add item" to search and pick nail sets directly within this folder, or drag to reorder. Any nail sets assigned via the Nail Sets editor will also automatically synchronize here.',
       of: [
         {
           type: 'reference',
           to: [{type: 'product'}],
         },
       ],
+      components: {
+        input: CollectionProductsInput,
+      },
       validation: (Rule) => Rule.unique(),
     }),
   ],

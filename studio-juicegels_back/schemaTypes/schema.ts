@@ -1,4 +1,5 @@
 import { VariationsList } from '../components/VariationsList'
+import { ProductCollectionInput } from '../components/ProductCollectionInput'
 import { ProductPreview } from '../components/ProductPreview'
 import {
   orderRankField,
@@ -71,6 +72,9 @@ export default {
       title: 'Collection',
       description:
         'Select a collection from the dropdown. If your desired collection is not there, you can create a new collection document directly here.',
+      components: {
+        input: ProductCollectionInput,
+      },
     },
     {
       name: 'description',
