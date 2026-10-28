@@ -142,7 +142,7 @@ export async function fetchCatalogProducts(): Promise<any[]> {
     "image2Url": image2.asset->url,
     "image3Url": image3.asset->url,
     tags,
-    collection
+    "collection": coalesce(collection->title, *[_type == "collection" && references(^._id) && !(_id in path("drafts.**"))][0].title, collection)
   }`;
   try {
     return await client.fetch(query);

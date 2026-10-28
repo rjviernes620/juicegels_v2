@@ -296,6 +296,36 @@ describe('Basket & Token Serialization', () => {
       expect(helloHorror?.discountedPrice).toBe(12.4);
     });
 
+    it('dynamically includes newly added sets with Juice Ghouls Collection on Halloween page at 20% off', () => {
+      const mockSanityProducts: Product[] = [
+        {
+          id: 'JUICEGELS-9900',
+          groupId: 'juicegels_spookyphantomset',
+          name: 'Spooky Phantom',
+          price: 20.00,
+          description: 'Ethereal ghostly nails with glowing aura art',
+          image: 'https://cdn.sanity.io/phantom.jpg',
+          extraImages: [],
+          shapes: ['Almond'],
+          tags: ['Halloween'],
+          shape: 'Almond',
+          length: 'Medium',
+          collection: 'Juice Ghouls Collection'
+        }
+      ];
+
+      const resolved = resolveHalloweenSetsWithSanity(mockSanityProducts);
+
+      expect(resolved.length).toBe(HALLOWEEN_SETS.length + 1);
+
+      const phantom = resolved.find((s) => s.name === 'Spooky Phantom');
+      expect(phantom).toBeDefined();
+      expect(phantom?.originalPrice).toBe(20.00);
+      expect(phantom?.discountedPrice).toBe(16.00); // 20% off £20.00 = £16.00
+      expect(phantom?.category).toBe('spooky-cute');
+      expect(phantom?.imageUrl).toBe('https://cdn.sanity.io/phantom.jpg');
+    });
+
     it('accurately identifies Halloween variants and calculates per-product discount rather than whole basket', () => {
       const halloweenItem: CartItem = {
         product: {

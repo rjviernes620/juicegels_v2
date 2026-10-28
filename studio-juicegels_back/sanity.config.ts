@@ -33,6 +33,14 @@ export default defineConfig({
             }),
             S.divider(),
             S.listItem()
+              .title('Collections')
+              .id('collections')
+              .child(
+                S.documentTypeList('collection')
+                  .title('Collections')
+              ),
+            S.divider(),
+            S.listItem()
               .title('Trending Designs')
               .id('trendingDesigns')
               .child(

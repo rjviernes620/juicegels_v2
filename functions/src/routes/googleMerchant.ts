@@ -178,7 +178,11 @@ async function handleGoogleMerchantTsv(_req: Request, res: Response): Promise<vo
       "custom_label_0",
       "custom_label_1",
       "custom_label_2",
-      "shipping"
+      "min_handling_time",
+      "max_handling_time",
+      "min_transit_time",
+      "max_transit_time",
+      "shipping(country:service:price)"
     ];
 
     const rows: string[] = [headers.join("\t")];
@@ -225,6 +229,10 @@ async function handleGoogleMerchantTsv(_req: Request, res: Response): Promise<vo
           "Square",
           "Short",
           "",
+          "2",
+          "5",
+          "2",
+          "3",
           "GB:Royal Mail Tracked 48:3.00 GBP"
         ].map(escapeTsvField);
 
@@ -260,6 +268,10 @@ async function handleGoogleMerchantTsv(_req: Request, res: Response): Promise<vo
               shape,
               length,
               p.collection || "",
+              "2",
+              "5",
+              "2",
+              "3",
               "GB:Royal Mail Tracked 48:3.00 GBP"
             ].map(escapeTsvField);
 

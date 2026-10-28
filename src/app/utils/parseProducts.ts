@@ -200,7 +200,10 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
     const image3Url = image3Ref ? buildSanityImageUrl(image3Ref, null, null, 1600, 2400, "max") : "";
 
     const rawTags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
-    const isHalloween = isHalloweenSet(productId, title);
+    const isHalloween = isHalloweenSet(productId, title) ||
+      sp.collection === "Juice Ghouls Collection" ||
+      sp.collection === "Halloween Collection" ||
+      (typeof sp.collection === "string" && (sp.collection.toLowerCase().includes("juice ghouls") || sp.collection.toLowerCase().includes("halloween")));
     const resolvedCollection = isHalloween
       ? "Juice Ghouls Collection"
       : sp.collection === "Halloween Collection"
@@ -302,7 +305,7 @@ export async function loadProducts(forceRefresh = false): Promise<Product[]> {
 
   try {
     const query = encodeURIComponent(
-      '*[_type == "product" && !(_id in path("drafts.**"))] { ..., "videoUrl": video.asset->url, image { asset, hotspot, crop }, image2 { asset, hotspot, crop }, image3 { asset, hotspot, crop } }'
+      '*[_type == "product" && !(_id in path("drafts.**"))] { ..., "collection": coalesce(collection->title, *[_type == "collection" && references(^._id) && !(_id in path("drafts.**"))][0].title, collection), "videoUrl": video.asset->url, image { asset, hotspot, crop }, image2 { asset, hotspot, crop }, image3 { asset, hotspot, crop } }'
     );
     const url = `https://${SANITY_PROJECT_ID}.api.sanity.io/v2021-10-21/data/query/${SANITY_DATASET}?query=${query}`;
 

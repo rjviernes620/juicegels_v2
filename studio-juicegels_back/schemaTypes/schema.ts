@@ -66,9 +66,11 @@ export default {
     },
     {
       name: 'collection',
-      type: 'string',
+      type: 'reference',
+      to: [{type: 'collection'}],
       title: 'Collection',
-      description: 'The name of the collection this set belongs to (leave blank if none)',
+      description:
+        'Select a collection from the dropdown. If your desired collection is not there, you can create a new collection document directly here.',
     },
     {
       name: 'description',

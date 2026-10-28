@@ -204,7 +204,15 @@ export function resolveHalloweenSetsWithSanity(sanityProducts?: Product[]): SetD
     return HALLOWEEN_SETS;
   }
 
-  return HALLOWEEN_SETS.map((setDef) => {
+  const knownGroupIds = new Set<string>();
+  const knownNames = new Set<string>();
+  const knownNumericIds = new Set<number>();
+
+  const baseSets = HALLOWEEN_SETS.map((setDef) => {
+    knownGroupIds.add(setDef.groupId.toLowerCase());
+    knownNames.add(setDef.name.trim().toLowerCase());
+    knownNumericIds.add(setDef.numericProductId);
+
     const matched = sanityProducts.find((p) => {
       const idNum = parseInt(String(p.id).replace(/\D/g, ""), 10);
       const matchesId = !isNaN(idNum) && idNum >= setDef.numericProductId && idNum < setDef.numericProductId + 15;
@@ -225,6 +233,77 @@ export function resolveHalloweenSetsWithSanity(sanityProducts?: Product[]): SetD
 
     return setDef;
   });
+
+  // Find any new products in Sanity that belong to Juice Ghouls / Halloween not already in baseSets
+  const extraHalloweenProducts = sanityProducts.filter((p) => {
+    if (isHalloweenProduct(p)) {
+      const groupLower = (p.groupId || "").toLowerCase();
+      const nameLower = (p.name || "").trim().toLowerCase();
+      const idNum = parseInt(String(p.id).replace(/\D/g, ""), 10);
+
+      if (knownGroupIds.has(groupLower) || knownNames.has(nameLower)) return false;
+      for (const knownId of knownNumericIds) {
+        if (!isNaN(idNum) && idNum >= knownId && idNum < knownId + 15) return false;
+      }
+      return true;
+    }
+    return false;
+  });
+
+  if (extraHalloweenProducts.length === 0) {
+    return baseSets;
+  }
+
+  // Group extra variants by product group (or title)
+  const groupedExtra = new Map<string, Product[]>();
+  for (const p of extraHalloweenProducts) {
+    const key = p.groupId || p.name;
+    if (!groupedExtra.has(key)) {
+      groupedExtra.set(key, []);
+    }
+    groupedExtra.get(key)!.push(p);
+  }
+
+  const extraSets: SetDefinition[] = [];
+  for (const [, variants] of groupedExtra.entries()) {
+    // Sort to find base variant (lowest numeric ID)
+    const sorted = [...variants].sort((a, b) => {
+      const aNum = parseInt(String(a.id).replace(/\D/g, ""), 10) || 0;
+      const bNum = parseInt(String(b.id).replace(/\D/g, ""), 10) || 0;
+      return aNum - bNum;
+    });
+    const base = sorted[0];
+    const idNum = parseInt(String(base.id).replace(/\D/g, ""), 10) || 0;
+    const originalPrice = base.price;
+    const discountedPrice = getHalloweenSalePrice(originalPrice);
+
+    const isDarkGlam =
+      base.tags?.some((t) => /dark|glam|goth|black|noir|blood|vamp|horror/i.test(t)) ||
+      /dark|glam|goth|black|noir|blood|vamp|horror/i.test(base.name);
+
+    extraSets.push({
+      id: base.id,
+      numericProductId: idNum,
+      groupId: base.groupId,
+      name: base.name,
+      originalPrice,
+      discountedPrice,
+      category: isDarkGlam ? "dark-glam" : "spooky-cute",
+      badge: isDarkGlam ? "🖤 Dark Glam" : "🎃 Spooky Cute",
+      previewIcons: isDarkGlam ? "🖤 🔮" : "🎃 ✨",
+      paletteText: base.description ? base.description.slice(0, 45) : "Limited Drop • Spooky Season",
+      description: base.description || "Limited edition Juice Ghouls handcrafted press-on nails.",
+      imageUrl: base.image,
+      defaultShape: base.shape || "Almond",
+      shapes: base.shapes && base.shapes.length > 0 ? base.shapes : ["Almond", "Stiletto", "Coffin", "Square", "Oval"],
+      gradientStyle: isDarkGlam
+        ? "from-[#1e1b4b] via-[#312e81] to-[#0f011d]"
+        : "from-[#f97316] via-[#c2410c] to-[#431407]",
+      accentColor: isDarkGlam ? "#a855f7" : "#ff7828",
+    });
+  }
+
+  return [...baseSets, ...extraSets];
 }
 
 
@@ -482,12 +561,16 @@ export function HalloweenPage({
     const variantId = `JUICEGELS-${idNum.toString().padStart(4, "0")}`;
 
     // Look up matching variant from sanityProducts for accuracy
-    const matchedVariant = sanityProducts.find((p) => p.id === variantId);
+    const matchedVariant =
+      sanityProducts.find((p) => p.id === variantId) ||
+      sanityProducts.find((p) => p.groupId === setDef.groupId && p.shape === chosenShape && p.length === chosenLength) ||
+      sanityProducts.find((p) => p.groupId === setDef.groupId);
     const itemPrice = matchedVariant?.price ?? setDef.originalPrice;
+    const finalVariantId = matchedVariant?.id || variantId;
 
     // Create valid Product entity
     const productItem: Product = {
-      id: variantId,
+      id: finalVariantId,
       groupId: setDef.groupId,
       name: `${setDef.name} (Halloween Edition)`,
       price: itemPrice,
@@ -877,7 +960,7 @@ export function HalloweenPage({
         >
           <span>🔮 LIMITED JUICE GHOULS DROP</span>
           <span>•</span>
-          <span style={{ color: "#ffd3ea" }}>ALL 8 SETS 20% OFF</span>
+          <span style={{ color: "#ffd3ea" }}>ALL {resolvedSets.length} SETS 20% OFF</span>
         </motion.div>
 
         <h1 style={{
@@ -901,9 +984,9 @@ export function HalloweenPage({
         }}>
           The ghouls are back, and they’ve brought some new faces with them. 👻💗
 
-          The Halloween 2026 collection featuring 8 hauntingly cute handmade gel press-on nail sets. From returning favourites to brand-new spooky creations, there’s a little something for every kind of ghoul.
+          The Halloween collection featuring {resolvedSets.length} hauntingly cute handmade gel press-on nail sets. From returning favourites to brand-new spooky creations, there’s a little something for every kind of ghoul.
 
-          No tricks, just treats: enjoy 20% off all 8 sets until 31 October. 🎃
+          No tricks, just treats: enjoy 20% off all {resolvedSets.length} sets until 31 October. 🎃
 
           Every set comes with our full application prep kit, so you’re ready to get spooky straight out of the box!        </p>
 
