@@ -28,29 +28,8 @@ export const STRIPE_FREE_SHIPPING_PROMO_ID = isLocalDev()
   ? (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID || "promo_1ToCW2K4CROOpWXUXvpVGOFN")
   : (import.meta.env.VITE_STRIPE_FREE_SHIPPING_PROMO_ID_LIVE || "");
 
-export const STRIPE_HALLOWEEN_COUPON_ID = "eU3xxIba";
-export const STRIPE_HALLOWEEN_COUPON_TITLE = "Halloween Sale 20% off";
-
-export function isHalloweenCoupon(couponCode?: string | null): boolean {
-  if (!couponCode) return false;
-  const normalized = couponCode.trim().toLowerCase();
-  return (
-    normalized === STRIPE_HALLOWEEN_COUPON_ID.toLowerCase() ||
-    normalized === "halloween" ||
-    normalized === "halloween20" ||
-    normalized === "halloweensale" ||
-    normalized === "spooky" ||
-    normalized === "juiceghouls" ||
-    normalized === "juice ghouls" ||
-    normalized === "juice-ghouls"
-  );
-}
-
 export function getCouponDisplayName(couponCode?: string | null): string {
   if (!couponCode) return "";
-  if (isHalloweenCoupon(couponCode)) {
-    return "Juice Ghouls (20% OFF)";
-  }
   return couponCode;
 }
 
@@ -184,10 +163,7 @@ export function getCollectionDetails(product: Product, allProducts: Product[]): 
     "Stargirl Collection": "inspired by celestial beauty ✨🌌",
     "Bloom Collection": "bringing the freshness of spring flowers 🌸🌼",
     "Stardust Collection": "star-studded Sanrio inspired designs 🎀✨",
-    "Sweet Mystery Collection": "surprise nail sets full of sweet picks 🍬🎲",
-    "Juice Ghouls Collection": "8 bewitching sets with 20% off for spooky season 🎃✨",
-    "Juice Ghouls": "8 bewitching sets with 20% off for spooky season 🎃✨",
-    "Halloween Collection": "8 bewitching sets with 20% off for spooky season 🎃✨"
+    "Sweet Mystery Collection": "surprise nail sets full of sweet picks 🍬🎲"
   };
 
   // Find all unique products in the same collection
@@ -255,17 +231,6 @@ export function getCollectionStyle(collectionName: string) {
         textColor: "#0d9488",
         badgeBg: "rgba(255, 255, 255, 0.20)",
         emoji: "🍬"
-      };
-    case "Juice Ghouls Collection":
-    case "Juice Ghouls":
-    case "Halloween Collection":
-      return {
-        cardGradient: "linear-gradient(135deg, #180928 0%, #ff7828 100%)",
-        bannerBg: "linear-gradient(135deg, rgba(24, 9, 40, 0.18) 0%, rgba(255, 120, 40, 0.18) 100%)",
-        border: "rgba(255, 120, 40, 0.4)",
-        textColor: "#ff7828",
-        badgeBg: "rgba(255, 255, 255, 0.20)",
-        emoji: "🎃"
       };
     default:
       return {
@@ -400,65 +365,4 @@ export function parseBasketItemsParam(itemsParam: string, products: Product[]): 
     .filter(Boolean) as CartItem[];
 }
 
-
-export const HALLOWEEN_SET_BASE_IDS = [2447, 2462, 2477, 2492, 1277, 1247, 196, 1262];
-export const HALLOWEEN_SET_NAMES = [
-  "booquette",
-  "scream queen",
-  "hello horror",
-  "boo belle",
-  "pink-o-ween",
-  "sparkle scream",
-  "pearl noir",
-  "midnight muse"
-];
-
-export function isHalloweenProduct(product?: { id?: string; name?: string; collection?: string; tags?: string[]; groupId?: string } | null): boolean {
-  if (!product) return false;
-
-  const col = (product.collection || "").toLowerCase();
-  if (col.includes("halloween") || col.includes("juice ghouls")) return true;
-
-  if (product.tags?.some((t) => /halloween|juice ghouls/i.test(t))) return true;
-
-  if (product.groupId) {
-    const g = product.groupId.toLowerCase();
-    if (HALLOWEEN_SET_NAMES.some((n) => g.includes(n.replace(/\s+/g, "")))) return true;
-  }
-
-  if (product.id) {
-    const num = parseInt(String(product.id).replace(/\D/g, ""), 10);
-    if (!isNaN(num)) {
-      for (const base of HALLOWEEN_SET_BASE_IDS) {
-        if (num >= base && num < base + 15) return true;
-      }
-    }
-  }
-
-  if (product.name) {
-    const lower = product.name.trim().toLowerCase();
-    if (lower.includes("halloween") || lower.includes("juice ghouls")) return true;
-    if (HALLOWEEN_SET_NAMES.some((n) => lower.includes(n))) return true;
-  }
-
-  return false;
-}
-
-export function getHalloweenSalePrice(originalPrice: number): number {
-  return Math.round(originalPrice * 0.8 * 100) / 100;
-}
-
-/**
- * Calculates total 20% discount amount applied specifically to Halloween collection items in the cart.
- */
-export function calculateHalloweenDiscount(items: CartItem[]): number {
-  const discountPounds = items.reduce((total, item) => {
-    if (isHalloweenProduct(item.product)) {
-      const unitDiscount = Math.round(item.product.price * 0.2 * 100) / 100;
-      return total + unitDiscount * item.quantity;
-    }
-    return total;
-  }, 0);
-  return Math.round(discountPounds * 100) / 100;
-}
 

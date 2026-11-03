@@ -4,8 +4,6 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { AmbientGradient } from "./ui/AmbientGradient";
 import { type Product } from "../utils/parseProducts";
 import {
-  isHalloweenProduct,
-  getHalloweenSalePrice,
   getCollectionStyle
 } from "../utils/shopHelpers";
 import { lazyRetry } from "../utils/lazyRetry";
@@ -175,64 +173,6 @@ export function HomePage({
                 marginTop: 28
               }}
             >
-              <motion.button
-                onClick={() => navigate("/halloween")}
-                animate={{
-                  boxShadow: [
-                    "0 0 14px rgba(255, 112, 166, 0.45)",
-                    "0 0 28px rgba(255, 120, 40, 0.7)",
-                    "0 0 14px rgba(255, 112, 166, 0.45)",
-                  ]
-                }}
-                transition={{
-                  boxShadow: { repeat: Infinity, duration: 2.2, ease: "easeInOut" }
-                }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                style={{
-                  background: "linear-gradient(135deg, #180928 0%, #3b104f 45%, #ff7828 100%)",
-                  color: "#ffffff",
-                  border: "1.5px solid rgba(255, 112, 166, 0.6)",
-                  borderRadius: "30px",
-                  padding: "13px 26px",
-                  fontSize: "14px",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  transition: "all 0.3s ease",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                }}
-              >
-                <motion.span
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
-                  style={{ fontSize: 16 }}
-                >
-                  🎃
-                </motion.span>
-                <span>Juice Ghouls Drop</span>
-                <span
-                  style={{
-                    background: "#ff7828",
-                    color: "#08030e",
-                    fontSize: 10,
-                    fontWeight: 900,
-                    padding: "2px 7px",
-                    borderRadius: "10px",
-                    letterSpacing: "0.04em",
-                  }}
-                >
-                  20% OFF
-                </span>
-                <motion.span
-                  animate={{ x: [0, 3, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.4, ease: "easeInOut" }}
-                >
-                  →
-                </motion.span>
-              </motion.button>
-
               <button
                 onClick={() => navigate("/shop")}
                 style={{
@@ -717,20 +657,14 @@ export function HomePage({
             }}
           >
             {trendingProducts.map((p) => {
-              const isHalloween = isHalloweenProduct(p);
-              const style = p.collection
-                ? getCollectionStyle(p.collection)
-                : isHalloween
-                  ? getCollectionStyle("Juice Ghouls Collection")
-                  : null;
-              const salePrice = isHalloween ? getHalloweenSalePrice(p.price) : p.price;
+              const style = p.collection ? getCollectionStyle(p.collection) : null;
               return (
                 <button
                   key={p.id}
                   onClick={() => openProduct(p)}
                   style={{
                     background: style ? style.cardGradient : "linear-gradient(135deg, #180928 0%, #300c42 100%)",
-                    border: `1px solid ${isHalloween ? "rgba(255, 120, 40, 0.45)" : "rgba(255, 112, 166, 0.25)"}`,
+                    border: "1px solid rgba(255, 112, 166, 0.25)",
                     borderRadius: 14,
                     overflow: "hidden",
                     textAlign: "left",
@@ -750,25 +684,6 @@ export function HomePage({
                     e.currentTarget.style.boxShadow = "none";
                   }}
                 >
-                  {isHalloween && (
-                    <div style={{ position: "absolute", top: 8, left: 8, zIndex: 2 }}>
-                      <span
-                        style={{
-                          fontSize: 9,
-                          fontWeight: 900,
-                          background: "#ff7828",
-                          color: "#08030e",
-                          padding: "2px 6px",
-                          borderRadius: 6,
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.04em"
-                        }}
-                      >
-                        20% OFF
-                      </span>
-                    </div>
-                  )}
                   <ImageWithFallback
                     src={p.image}
                     alt={p.name}
@@ -780,7 +695,7 @@ export function HomePage({
                       background: style ? style.cardGradient : "linear-gradient(135deg, #180928 0%, #300c42 100%)"
                     }}
                   >
-                    {(p.collection || isHalloween) && style && (
+                    {p.collection && style && (
                       <div
                         style={{
                           display: "flex",
@@ -802,24 +717,8 @@ export function HomePage({
                             letterSpacing: "0.03em"
                           }}
                         >
-                          {style.emoji} {(p.collection || "Juice Ghouls Collection").replace(" Collection", "")}
+                          {style.emoji} {p.collection.replace(" Collection", "")}
                         </span>
-                        {isHalloween && (
-                          <span
-                            style={{
-                              fontSize: 9,
-                              fontWeight: 800,
-                              background: "#ff7828",
-                              color: "#08030e",
-                              padding: "1px 5px",
-                              borderRadius: 4,
-                              textTransform: "uppercase",
-                              letterSpacing: "0.02em"
-                            }}
-                          >
-                            SALE
-                          </span>
-                        )}
                       </div>
                     )}
                     <p
@@ -835,20 +734,9 @@ export function HomePage({
                     >
                       {p.name}
                     </p>
-                    {isHalloween ? (
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
-                        <span style={{ color: "#ffffff", fontWeight: 800, fontSize: 14 }}>
-                          £{salePrice.toFixed(2)}
-                        </span>
-                        <span style={{ color: "rgba(255, 255, 255, 0.65)", textDecoration: "line-through", fontSize: 11, fontWeight: 500 }}>
-                          £{p.price.toFixed(2)}
-                        </span>
-                      </div>
-                    ) : (
-                      <span style={{ color: p.collection ? "#ffd3ea" : "#ff7828", fontWeight: 700, fontSize: 14 }}>
-                        £{p.price.toFixed(2)}
-                      </span>
-                    )}
+                    <span style={{ color: p.collection ? "#ffd3ea" : "#ff7828", fontWeight: 700, fontSize: 14 }}>
+                      £{p.price.toFixed(2)}
+                    </span>
                   </div>
                 </button>
               );

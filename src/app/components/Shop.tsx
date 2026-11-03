@@ -32,9 +32,6 @@ import {
   isNailSizeGuideItem,
   getCartItemDetailText,
   getOrderSummaryLabel,
-  isHalloweenProduct,
-  getHalloweenSalePrice,
-  isHalloweenCoupon,
   getCouponDisplayName
 } from "../utils/shopHelpers";
 
@@ -66,60 +63,6 @@ export function HomeCarousel({ navigate, isMobile }: HomeCarouselProps) {
 
   const slides = useMemo(() => {
     const list = [];
-
-    list.push({
-      id: "halloween-drop",
-      content: (
-        <button
-          type="button"
-          onClick={() => navigate("/halloween")}
-          style={{
-            display: "flex",
-            width: "100%",
-            background: "linear-gradient(135deg, #180928 0%, #3a104f 45%, #ff7828 100%)",
-            border: "1.5px solid rgba(255, 112, 166, 0.4)",
-            borderRadius: 14,
-            padding: "16px 18px",
-            alignItems: "center",
-            gap: 16,
-            textAlign: "left",
-            cursor: "pointer",
-            color: "#ffffff",
-            fontFamily: "inherit",
-            boxSizing: "border-box",
-            minHeight: 116,
-            boxShadow: "0 6px 20px rgba(255, 120, 40, 0.25)"
-          }}
-        >
-          <div style={{
-            width: 84,
-            height: 84,
-            borderRadius: 12,
-            background: "rgba(0,0,0,0.45)",
-            border: "1px solid rgba(255, 112, 166, 0.4)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0
-          }}>
-            <span style={{ fontSize: "30px", filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.5))" }}>🔮</span>
-            <span style={{ fontSize: "10px", fontWeight: 900, color: "#ff7828", letterSpacing: "0.05em", marginTop: 2 }}>20% OFF</span>
-          </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-              <span style={{ fontSize: "10px", fontWeight: 800, background: "#ff7828", color: "#08030e", padding: "1px 6px", borderRadius: 4, textTransform: "uppercase" }}>Limited Drop</span>
-              <span style={{ fontSize: "11px", color: "#ffd3ea", fontWeight: 600 }}>8 Exclusive Sets</span>
-            </div>
-            <p style={{ fontFamily: "'Lobster', serif", color: "#ffd3ea", margin: "0 0 4px", fontSize: 24, lineHeight: 1.15 }}>The Juice Ghouls Drop 🎃</p>
-            <p style={{ color: "rgba(255, 255, 255, 0.9)", margin: 0, fontSize: 13, lineHeight: 1.4 }}>
-              All 8 handmade sets discounted by 20% for spooky season! <br />
-              <span style={{ color: "#4ade80", fontWeight: 700 }}>Tap to Enter the Salon →</span>
-            </p>
-          </div>
-        </button>
-      )
-    });
 
     list.push({
       id: "size-guide",
@@ -477,34 +420,8 @@ export function ShopPage({
               >
                 💅 All Sets
               </button>
-
-              {/* "Halloween Drop" Chip */}
-              <button
-                onClick={() => navigate("/halloween")}
-                style={{
-                  flexShrink: 0,
-                  background: "linear-gradient(135deg, #180928 0%, #ff7828 100%)",
-                  color: "#ffffff",
-                  border: "1px solid rgba(255, 112, 166, 0.4)",
-                  padding: "6px 12px",
-                  borderRadius: "20px",
-                  fontSize: "11px",
-                  fontWeight: "700",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                  boxShadow: "0 2px 10px rgba(255, 120, 40, 0.35)",
-                  transition: "all 0.2s ease",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4
-                }}
-              >
-                <span>🎃 Juice Ghouls (20% OFF)</span>
-              </button>
-
               {/* Collection Chips */}
               {uniqueCollections
-                .filter((col) => !col.toLowerCase().includes("juice ghouls") && !col.toLowerCase().includes("halloween"))
                 .map((col) => {
                   const isSelected = homeSelectedCollection === col;
                 const styleConfig = getCollectionStyle(col);
@@ -608,11 +525,7 @@ export function ShopPage({
               </div>
             ) : (
               filteredAndSortedProducts.map((p) => {
-                const isHalloween = isHalloweenProduct(p);
-                const style = p.collection
-                  ? getCollectionStyle(p.collection)
-                  : (isHalloween ? getCollectionStyle("Juice Ghouls Collection") : null);
-                const salePrice = isHalloween ? getHalloweenSalePrice(p.price) : p.price;
+                const style = p.collection ? getCollectionStyle(p.collection) : null;
 
                 return (
                   <button
@@ -620,7 +533,7 @@ export function ShopPage({
                     onClick={() => openProduct(p)}
                     style={{
                       background: style ? style.cardGradient : "#fc6587",
-                      border: `1px solid ${isHalloween ? "rgba(255, 120, 40, 0.45)" : "rgba(212, 84, 122, 0.18)"}`,
+                      border: "1px solid rgba(212, 84, 122, 0.18)",
                       borderRadius: 14,
                       overflow: "hidden",
                       textAlign: "left",
@@ -629,27 +542,10 @@ export function ShopPage({
                       position: "relative",
                       display: "block",
                       width: "100%",
-                      boxShadow: isHalloween ? "0 4px 14px rgba(255, 120, 40, 0.25)" : "none",
+                      boxShadow: "none",
                       transition: "transform 0.2s ease, box-shadow 0.2s ease"
                     }}
                   >
-                    {isHalloween && (
-                      <div style={{ position: "absolute", top: 7, left: 7, zIndex: 3 }}>
-                        <span style={{
-                          fontSize: 9,
-                          fontWeight: 900,
-                          background: "#ff7828",
-                          color: "#08030e",
-                          padding: "2px 6px",
-                          borderRadius: 6,
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.04em"
-                        }}>
-                          20% OFF
-                        </span>
-                      </div>
-                    )}
                     <button
                       onClick={(e) => { e.stopPropagation(); toggleWishlist(p.id); }}
                       style={{
@@ -671,12 +567,12 @@ export function ShopPage({
                     >
                       <Heart size={13} fill={wishlist.includes(p.id) ? "#ffd6e9" : "none"} stroke={wishlist.includes(p.id) ? "#ffd6e9" : "#fff5f7"} />
                     </button>
-                    <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: isHalloween ? "#180928" : "#b8395d" }} />
+                    <ImageWithFallback src={p.image} alt={p.name} style={{ width: "100%", height: 160, objectFit: "cover", display: "block", background: "#b8395d" }} />
                     <div style={{
                       padding: "8px 10px 10px",
                       background: style ? style.cardGradient : "transparent"
                     }}>
-                      {(p.collection || isHalloween) && style && (
+                      {p.collection && style && (
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 3, marginBottom: 4 }}>
                           <span style={{
                             fontSize: 9,
@@ -688,35 +584,14 @@ export function ShopPage({
                             textTransform: "uppercase",
                             letterSpacing: "0.03em"
                           }}>
-                            {style.emoji} {(p.collection || "Juice Ghouls Collection").replace(" Collection", "")}
+                            {style.emoji} {p.collection.replace(" Collection", "")}
                           </span>
-                          {isHalloween && (
-                            <span style={{
-                              fontSize: 9,
-                              fontWeight: 800,
-                              background: "#ff7828",
-                              color: "#08030e",
-                              padding: "1px 5px",
-                              borderRadius: 4,
-                              textTransform: "uppercase",
-                              letterSpacing: "0.02em"
-                            }}>
-                              SALE
-                            </span>
-                          )}
                         </div>
                       )}
                       <p style={{ margin: "0 0 5px", fontSize: 12, color: "#fff9fb", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {p.name}
                       </p>
-                      {isHalloween ? (
-                        <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
-                          <span style={{ color: "#ffffff", fontWeight: 800, fontSize: 14 }}>£{salePrice.toFixed(2)}</span>
-                          <span style={{ color: "rgba(255, 255, 255, 0.65)", textDecoration: "line-through", fontSize: 11, fontWeight: 500 }}>£{p.price.toFixed(2)}</span>
-                        </div>
-                      ) : (
-                        <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
-                      )}
+                      <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 600, fontSize: 14 }}>£{p.price.toFixed(2)}</span>
                     </div>
                   </button>
                 );
@@ -1063,23 +938,9 @@ export function ProductDetailPage({
               Handmade · Made to order
             </p>
 
-            {isHalloweenProduct(selected) ? (
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
-                <span style={{ fontSize: 24, fontWeight: 800, color: "#ff7828" }}>
-                  £{getHalloweenSalePrice(selected.price).toFixed(2)}
-                </span>
-                <span style={{ fontSize: 15, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
-                  £{selected.price.toFixed(2)}
-                </span>
-                <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
-                  20% OFF JUICE GHOULS SALE
-                </span>
-              </div>
-            ) : (
-              <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5" }}>
+            <span style={{ fontSize: 24, fontWeight: 700, color: "#e988b5", display: "inline-block", margin: "0 0 10px" }}>
                 £{selected.price.toFixed(2)}
               </span>
-            )}
 
             <div style={{ margin: "12px 0 18px" }}>
               {selected.descriptionBlocks ? (
@@ -1374,23 +1235,9 @@ export function ProductDetailPage({
               </p>
             </div>
 
-            {isHalloweenProduct(selected) ? (
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 10px", flexWrap: "wrap" }}>
-                <span style={{ fontSize: 26, fontWeight: 800, color: "#ff7828" }}>
-                  £{getHalloweenSalePrice(selected.price).toFixed(2)}
-                </span>
-                <span style={{ fontSize: 16, color: "#9ca3af", textDecoration: "line-through", fontWeight: 500 }}>
-                  £{selected.price.toFixed(2)}
-                </span>
-                <span style={{ fontSize: 11, fontWeight: 800, color: "#4ade80", background: "rgba(74, 222, 128, 0.15)", padding: "2px 8px", borderRadius: 6 }}>
-                  20% OFF JUICE GHOULS SALE
-                </span>
-              </div>
-            ) : (
-              <span style={{ fontSize: 26, fontWeight: 700, color: "#e988b5" }}>
+            <span style={{ fontSize: 26, fontWeight: 700, color: "#e988b5", display: "inline-block", margin: "0 0 10px" }}>
                 £{selected.price.toFixed(2)}
               </span>
-            )}
 
             <div style={{ margin: "4px 0" }}>
               {selected.descriptionBlocks ? (
@@ -1851,21 +1698,7 @@ export function BasketPage({
                       </div>
                     </button>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8, flexShrink: 0 }}>
-                      {isHalloweenProduct(item.product) ? (
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                          <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>
-                            £{(getHalloweenSalePrice(item.product.price) * item.quantity).toFixed(2)}
-                          </span>
-                          <span style={{ color: "#a8a29e", textDecoration: "line-through", fontSize: 10 }}>
-                            £{(item.product.price * item.quantity).toFixed(2)}
-                          </span>
-                          <span style={{ color: "#ff7828", fontSize: 9, fontWeight: 700, background: "rgba(255, 120, 40, 0.18)", padding: "1px 5px", borderRadius: 4, marginTop: 2 }}>
-                            🎃 20% OFF
-                          </span>
-                        </div>
-                      ) : (
-                        <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
-                      )}
+                      <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 14 }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
                       <div style={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <button type="button" onClick={() => updateQty(idx, -1)} style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Minus size={12} /></button>
                         <span style={{ minWidth: 28, textAlign: "center", fontSize: 13, fontWeight: 600 }}>{item.quantity}</span>
@@ -1960,12 +1793,10 @@ export function BasketPage({
                       {!isCouponLoading && couponSummary && !couponError && (
                         <>
                           <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>
-                            {isHalloweenCoupon(couponSummary.code) ? "🎃 " : ""}{getCouponDisplayName(couponSummary.code)} applied
+                            {getCouponDisplayName(couponSummary.code)} applied
                           </strong>
                           <span style={{ color: "#2f5d46" }}>
-                            {isHalloweenCoupon(couponSummary.code)
-                              ? `Juice Ghouls 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
-                              : `${couponSummary.description} saved you £${couponDiscount.toFixed(2)} on this order.`}
+                            {couponSummary.description} saved you £{couponDiscount.toFixed(2)} on this order.
                           </span>
                         </>
                       )}
@@ -2102,21 +1933,7 @@ export function BasketPage({
                         <span style={{ minWidth: 32, textAlign: "center", fontSize: 14, fontWeight: 600 }}>{item.quantity}</span>
                         <button type="button" onClick={() => updateQty(idx, 1)} style={{ width: 28, height: 28, borderRadius: 6, border: "1px solid rgba(255, 112, 166, 0.25)", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Plus size={12} /></button>
                       </div>
-                      {isHalloweenProduct(item.product) ? (
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", minWidth: 60 }}>
-                          <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16 }}>
-                            £{(getHalloweenSalePrice(item.product.price) * item.quantity).toFixed(2)}
-                          </span>
-                          <span style={{ color: "#a8a29e", textDecoration: "line-through", fontSize: 11 }}>
-                            £{(item.product.price * item.quantity).toFixed(2)}
-                          </span>
-                          <span style={{ color: "#ff7828", fontSize: 10, fontWeight: 700, background: "rgba(255, 120, 40, 0.18)", padding: "1px 6px", borderRadius: 4, marginTop: 2 }}>
-                            🎃 20% OFF
-                          </span>
-                        </div>
-                      ) : (
-                        <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16, minWidth: 60, textAlign: "right" }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
-                      )}
+                      <span style={{ color: "#ffd6e9", fontWeight: 700, fontSize: 16, minWidth: 60, textAlign: "right" }}>£{(item.product.price * item.quantity).toFixed(2)}</span>
                       <button type="button" onClick={() => removeItem(idx)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, flexShrink: 0 }}><Trash2 size={16} style={{ color: "#ff70a6" }} /></button>
                     </div>
                   </div>
@@ -2208,12 +2025,10 @@ export function BasketPage({
                         {!isCouponLoading && couponSummary && !couponError && (
                           <>
                             <strong style={{ display: "block", color: "#1f6f43", marginBottom: 2 }}>
-                              {isHalloweenCoupon(couponSummary.code) ? "🎃 " : ""}{getCouponDisplayName(couponSummary.code)} applied
+                              {getCouponDisplayName(couponSummary.code)} applied
                             </strong>
                             <span style={{ color: "#2f5d46" }}>
-                              {isHalloweenCoupon(couponSummary.code)
-                                ? `Juice Ghouls 20% discount saved you £${couponDiscount.toFixed(2)} on this order.`
-                                : `${couponSummary.description} saved you £${couponDiscount.toFixed(2)} on this order.`}
+                              {couponSummary.description} saved you £{couponDiscount.toFixed(2)} on this order.
                             </span>
                           </>
                         )}
@@ -2561,13 +2376,10 @@ export function PreorderPage({
           <div style={{ background: "rgba(28, 12, 44, 0.85)", border: "1px solid rgba(255, 112, 166, 0.22)", borderRadius: 13, padding: "13px 15px", fontSize: 13, lineHeight: 1.7, color: "#ffffff" }}>
             <strong style={{ display: "block", marginBottom: 6 }}>Order Summary</strong>
             {cart.map((item, i) => {
-              const isHalloween = isHalloweenProduct(item.product);
-              const linePrice = isHalloween
-                ? getHalloweenSalePrice(item.product.price) * item.quantity
-                : item.product.price * item.quantity;
+              const linePrice = item.product.price * item.quantity;
               return (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#fff5f7" }}>
-                  <span>{getOrderSummaryLabel(item)}{isHalloween ? " (🎃 20% OFF)" : ""}</span>
+                  <span>{getOrderSummaryLabel(item)}</span>
                   <span>£{linePrice.toFixed(2)}</span>
                 </div>
               );

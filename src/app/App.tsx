@@ -44,12 +44,6 @@ import {
   isLocalDev,
   getStripeShippingRateIds,
   getStripeFreeShippingPromoId,
-  STRIPE_HALLOWEEN_COUPON_ID,
-  STRIPE_HALLOWEEN_COUPON_TITLE,
-  isHalloweenCoupon,
-  isHalloweenProduct,
-  getHalloweenSalePrice,
-  calculateHalloweenDiscount,
   getCouponDisplayName
 } from "./utils/shopHelpers";
 import { lazyRetry } from "./utils/lazyRetry";
@@ -67,7 +61,6 @@ const ProductDetailPage = lazyRetry(() => import("./components/Shop"), "ProductD
 const BasketPage = lazyRetry(() => import("./components/Shop"), "BasketPage");
 const PreorderPage = lazyRetry(() => import("./components/Shop"), "PreorderPage");
 const ConfirmationPage = lazyRetry(() => import("./components/Shop"), "ConfirmationPage");
-const HalloweenPage = lazyRetry(() => import("./components/HalloweenPage"), "HalloweenPage");
 const HomePage = lazyRetry(() => import("./components/HomePage"), "HomePage");
 
 function PageLoadingFallback() {
@@ -236,11 +229,7 @@ export default function App() {
   const uniqueCollections = useMemo(() => {
     const set = new Set<string>();
     products.forEach((p) => {
-      if (
-        p.collection &&
-        !p.collection.toLowerCase().includes("juice ghouls") &&
-        !p.collection.toLowerCase().includes("halloween")
-      ) {
+      if (p.collection) {
         set.add(p.collection);
       }
     });
@@ -293,21 +282,11 @@ export default function App() {
   }, [uniqueProducts, trendingProductIds]);
 
   const currentBasketUrl = (items: CartItem[]) => {
-    const hasHalloween = items.some(
-      (item) =>
-        isHalloweenProduct(item.product) ||
-        item.product.tags?.includes("Halloween") ||
-        item.product.collection === "Juice Ghouls Collection" ||
-        item.product.collection === "Halloween Collection"
-    );
     const existingCoupon = searchParams.get("coupon");
-    const couponToUse =
-      (isHalloweenCoupon(existingCoupon) ? "halloween" : existingCoupon) ||
-      (!isCouponDismissed && hasHalloween ? "halloween" : null);
 
     return buildBasketUrl(items, {
-      coupon: couponToUse,
-      includeCoupon: Boolean(couponToUse) || items.length > 0,
+      coupon: existingCoupon,
+      includeCoupon: Boolean(existingCoupon) || items.length > 0,
       cartOrigin: searchParams.get("cart_origin") ?? META_CART_ORIGIN,
     });
   };
@@ -630,11 +609,6 @@ export default function App() {
       return;
     }
 
-    if (effectivePath === "/halloween") {
-      setPage("halloween");
-      return;
-    }
-
     if (effectivePath === "/") {
       setPage("home");
       return;
@@ -871,37 +845,12 @@ export default function App() {
   }, [isSubmitting, page]);
 
   useEffect(() => {
-    let currentCoupon = searchParams.get("coupon")?.trim() ?? "";
+    const currentCoupon = searchParams.get("coupon")?.trim() ?? "";
 
-    const halloweenDiscount = calculateHalloweenDiscount(cart);
-    const hasHalloween = halloweenDiscount > 0;
-
-    // The Halloween sale is automatically activated if the user buys products from the collection in question
-    if (hasHalloween) {
-      if (!currentCoupon || isHalloweenCoupon(currentCoupon)) {
-        currentCoupon = STRIPE_HALLOWEEN_COUPON_ID;
-      }
-    } else if (isHalloweenCoupon(currentCoupon)) {
-      currentCoupon = "";
-    }
-
-    setCouponInput(isHalloweenCoupon(currentCoupon) ? "" : currentCoupon);
+    setCouponInput(currentCoupon);
 
     if (!currentCoupon || cart.length === 0) {
       setCouponSummary(null);
-      setCouponError(null);
-      setIsCouponLoading(false);
-      return;
-    }
-
-    // If Halloween sale is active, apply the exact per-product Halloween discount directly
-    if (isHalloweenCoupon(currentCoupon)) {
-      setCouponSummary({
-        code: STRIPE_HALLOWEEN_COUPON_ID,
-        promotionCodeId: "",
-        description: STRIPE_HALLOWEEN_COUPON_TITLE,
-        discountAmount: halloweenDiscount,
-      });
       setCouponError(null);
       setIsCouponLoading(false);
       return;
@@ -1123,17 +1072,14 @@ export default function App() {
   };
 
   const applyCoupon = () => {
-    let trimmedCode = couponInput.trim();
-    if (isHalloweenCoupon(trimmedCode)) {
-      trimmedCode = STRIPE_HALLOWEEN_COUPON_ID;
-    }
+    const trimmedCode = couponInput.trim();
 
     setIsCouponDismissed(false);
     setCouponError(null);
 
     navigate(
       buildBasketUrl(cart, {
-        coupon: isHalloweenCoupon(trimmedCode) ? "halloween" : (trimmedCode || null),
+        coupon: trimmedCode || null,
         includeCoupon: Boolean(trimmedCode),
         cartOrigin: searchParams.get("cart_origin") ?? META_CART_ORIGIN,
       })
@@ -1693,18 +1639,6 @@ export default function App() {
             navigate={navigate}
             isMobile={isMobile}
             isTablet={isTablet}
-          />
-        )}
-
-        {!isProductsLoading && page === "halloween" && (
-          <HalloweenPage
-            products={products}
-            navigate={navigate}
-            isMobile={isMobile}
-            isTablet={isTablet}
-            cart={cart}
-            setCart={setCart}
-            currentBasketUrl={currentBasketUrl}
           />
         )}
 

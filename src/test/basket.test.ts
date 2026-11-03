@@ -6,17 +6,11 @@ import {
   parseTokenBasketParam,
   parseMetaBasketProductsParam,
   parseBasketItemsParam,
-  STRIPE_HALLOWEEN_COUPON_ID,
-  STRIPE_HALLOWEEN_COUPON_TITLE,
-  isHalloweenCoupon,
   getCouponDisplayName,
-  isHalloweenProduct,
-  calculateHalloweenDiscount,
   type BasketTokenData,
 } from '../app/utils/shopHelpers';
 import { type Product } from '../app/utils/parseProducts';
 import { type CartItem } from '../app/types';
-import { resolveHalloweenSetsWithSanity, HALLOWEEN_SETS } from '../app/components/HalloweenPage';
 
 const mockProductA: Product = {
   id: 'JUICEGELS-0001',
@@ -181,187 +175,13 @@ describe('Basket & Token Serialization', () => {
     });
   });
 
-  describe('Halloween / Juice Ghouls Coupon & Drop', () => {
-    it('recognizes Halloween & Juice Ghouls coupon IDs and codes via isHalloweenCoupon', () => {
-      expect(STRIPE_HALLOWEEN_COUPON_ID).toBe('eU3xxIba');
-      expect(STRIPE_HALLOWEEN_COUPON_TITLE).toBe('Halloween Sale 20% off');
-      expect(isHalloweenCoupon('eU3xxIba')).toBe(true);
-      expect(isHalloweenCoupon('EU3XXIBA')).toBe(true);
-      expect(isHalloweenCoupon('halloween')).toBe(true);
-      expect(isHalloweenCoupon('HALLOWEEN')).toBe(true);
-      expect(isHalloweenCoupon('halloween20')).toBe(true);
-      expect(isHalloweenCoupon('HALLOWEENSALE')).toBe(true);
-      expect(isHalloweenCoupon('spooky')).toBe(true);
-      expect(isHalloweenCoupon('juiceghouls')).toBe(true);
-      expect(isHalloweenCoupon('JUICE GHOULS')).toBe(true);
-      expect(isHalloweenCoupon('OTHER_COUPON')).toBe(false);
-      expect(isHalloweenCoupon(null)).toBe(false);
-      expect(isHalloweenCoupon(undefined)).toBe(false);
-
-      expect(getCouponDisplayName('eU3xxIba')).toBe('Juice Ghouls (20% OFF)');
-      expect(getCouponDisplayName('EU3XXIBA')).toBe('Juice Ghouls (20% OFF)');
-      expect(getCouponDisplayName('halloween')).toBe('Juice Ghouls (20% OFF)');
-      expect(getCouponDisplayName('juiceghouls')).toBe('Juice Ghouls (20% OFF)');
+  describe('getCouponDisplayName', () => {
+    it('returns coupon code as display name', () => {
       expect(getCouponDisplayName('DEV_JUNJUN')).toBe('DEV_JUNJUN');
-    });
-
-    it('builds basket URL with Stripe Halloween coupon token', () => {
-      const cartItem: CartItem = {
-        product: mockProductA,
-        shape: 'Square',
-        length: 'Medium',
-        quantity: 1,
-      };
-
-      const url = buildBasketUrl([cartItem], {
-        coupon: STRIPE_HALLOWEEN_COUPON_ID,
-        includeCoupon: true,
-      });
-
-      expect(url).toContain('/basket?b=');
-      const token = url.replace('/basket?b=', '');
-      const decoded = decodeBasketToken(token);
-      expect(decoded?.coupon).toBe('eU3xxIba');
-    });
-
-    it('calculates 20% off accurately for Halloween sets', () => {
-      const sets = [
-        { name: 'Booquette', original: 15.0, expectedSale: 12.0 },
-        { name: 'Scream Queen', original: 15.0, expectedSale: 12.0 },
-        { name: 'Hello Horror', original: 15.5, expectedSale: 12.4 },
-        { name: 'Boo Belle', original: 15.0, expectedSale: 12.0 },
-        { name: 'Pink-o-ween', original: 15.0, expectedSale: 12.0 },
-        { name: 'Sparkle Scream', original: 15.0, expectedSale: 12.0 },
-        { name: 'Pearl Noir', original: 15.0, expectedSale: 12.0 },
-        { name: 'Midnight Muse', original: 15.0, expectedSale: 12.0 },
-      ];
-
-      for (const set of sets) {
-        const discountAmount = Math.round(set.original * 0.2 * 100) / 100;
-        const discountedPrice = Math.round((set.original - discountAmount) * 100) / 100;
-        expect(discountedPrice).toBeCloseTo(set.expectedSale, 2);
-      }
-    });
-
-    it('dynamically pulls prices from Sanity and calculates proper sale prices for all sets', () => {
-      // Mock Sanity products where Pearl Noir is £15 and Booquette is £16.50
-      const mockSanityProducts: Product[] = [
-        {
-          id: 'JUICEGELS-0196',
-          groupId: 'juicegels_pearlnoirset',
-          name: 'Pearl Noir',
-          price: 15.0,
-          description: 'High-luxe obsidian black gel',
-          image: 'https://cdn.sanity.io/pearl.jpg',
-          extraImages: [],
-          shapes: ['Almond'],
-          tags: ['Halloween'],
-          shape: 'Almond',
-          length: 'Medium',
-          collection: 'Juice Ghouls Collection'
-        },
-        {
-          id: 'JUICEGELS-2447',
-          groupId: 'juicegels_booquetteset',
-          name: 'Booquette',
-          price: 16.50,
-          description: 'Cute ghost floral bouquet art',
-          image: 'https://cdn.sanity.io/booquette.jpg',
-          extraImages: [],
-          shapes: ['Almond'],
-          tags: ['Halloween'],
-          shape: 'Almond',
-          length: 'Medium',
-          collection: 'Juice Ghouls Collection'
-        }
-      ];
-
-      const resolved = resolveHalloweenSetsWithSanity(mockSanityProducts);
-
-      // Pearl Noir must be pulled from Sanity at £15.00 with £12.00 sale price (20% off)
-      const pearlNoir = resolved.find((s) => s.name === 'Pearl Noir');
-      expect(pearlNoir).toBeDefined();
-      expect(pearlNoir?.originalPrice).toBe(15.0);
-      expect(pearlNoir?.discountedPrice).toBe(12.0);
-
-      // Booquette must dynamically reflect the updated Sanity price (£16.50 -> 20% off = £13.20)
-      const booquette = resolved.find((s) => s.name === 'Booquette');
-      expect(booquette).toBeDefined();
-      expect(booquette?.originalPrice).toBe(16.50);
-      expect(booquette?.discountedPrice).toBe(13.20);
-
-      // Other sets without custom mocks retain their catalog defaults
-      const helloHorror = resolved.find((s) => s.name === 'Hello Horror');
-      expect(helloHorror?.originalPrice).toBe(15.5);
-      expect(helloHorror?.discountedPrice).toBe(12.4);
-    });
-
-    it('dynamically includes newly added sets with Juice Ghouls Collection on Halloween page at 20% off', () => {
-      const mockSanityProducts: Product[] = [
-        {
-          id: 'JUICEGELS-9900',
-          groupId: 'juicegels_spookyphantomset',
-          name: 'Spooky Phantom',
-          price: 20.00,
-          description: 'Ethereal ghostly nails with glowing aura art',
-          image: 'https://cdn.sanity.io/phantom.jpg',
-          extraImages: [],
-          shapes: ['Almond'],
-          tags: ['Halloween'],
-          shape: 'Almond',
-          length: 'Medium',
-          collection: 'Juice Ghouls Collection'
-        }
-      ];
-
-      const resolved = resolveHalloweenSetsWithSanity(mockSanityProducts);
-
-      expect(resolved.length).toBe(HALLOWEEN_SETS.length + 1);
-
-      const phantom = resolved.find((s) => s.name === 'Spooky Phantom');
-      expect(phantom).toBeDefined();
-      expect(phantom?.originalPrice).toBe(20.00);
-      expect(phantom?.discountedPrice).toBe(16.00); // 20% off £20.00 = £16.00
-      expect(phantom?.category).toBe('spooky-cute');
-      expect(phantom?.imageUrl).toBe('https://cdn.sanity.io/phantom.jpg');
-    });
-
-    it('accurately identifies Halloween variants and calculates per-product discount rather than whole basket', () => {
-      const halloweenItem: CartItem = {
-        product: {
-          id: 'JUICEGELS-2452',
-          groupId: 'juicegels_booquetteset',
-          name: 'Booquette (Halloween Edition)',
-          price: 15.0,
-          description: '',
-          image: '',
-          extraImages: [],
-          shapes: ['Almond'],
-          shape: 'Almond',
-          length: 'Medium',
-          tags: ['Halloween', '20% OFF'],
-          collection: 'Juice Ghouls Collection'
-        },
-        shape: 'Almond',
-        length: 'Medium',
-        quantity: 2
-      };
-
-      const regularItem: CartItem = {
-        product: mockProductA, // £24.99
-        shape: 'Square',
-        length: 'Medium',
-        quantity: 1
-      };
-
-      expect(isHalloweenProduct(halloweenItem.product)).toBe(true);
-      expect(isHalloweenProduct(regularItem.product)).toBe(false);
-
-      // Total discount should be applied ONLY per Halloween product:
-      // 20% of £15.00 = £3.00 * 2 = £6.00 discount.
-      // Regular item (£24.99) should NOT be discounted!
-      const discount = calculateHalloweenDiscount([halloweenItem, regularItem]);
-      expect(discount).toBe(6.0);
+      expect(getCouponDisplayName('SUMMER10')).toBe('SUMMER10');
+      expect(getCouponDisplayName('')).toBe('');
+      expect(getCouponDisplayName(null)).toBe('');
+      expect(getCouponDisplayName(undefined)).toBe('');
     });
   });
 });

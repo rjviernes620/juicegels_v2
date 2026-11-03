@@ -23,38 +23,6 @@ export type Product = {
 const DEFAULT_SHAPES = ["Square", "Oval", "Stiletto", "Coffin", "Almond"];
 const DEFAULT_LENGTHS = ["Short", "Medium", "Long"] as const;
 
-export const HALLOWEEN_SET_IDS = new Set([2447, 2462, 2477, 2492, 1277, 1247, 196, 1262]);
-export const HALLOWEEN_SET_NAMES = new Set([
-  "booquette",
-  "scream queen",
-  "hello horror",
-  "boo belle",
-  "pink-o-ween",
-  "sparkle scream",
-  "pearl noir",
-  "midnight muse"
-]);
-
-export function isHalloweenSet(productIdOrId: number | string, title?: string): boolean {
-  const num = typeof productIdOrId === "number"
-    ? productIdOrId
-    : parseInt(String(productIdOrId || "").replace(/\D/g, ""), 10);
-
-  if (!isNaN(num)) {
-    for (const base of HALLOWEEN_SET_IDS) {
-      if (num >= base && num < base + 15) return true;
-    }
-  }
-
-  if (title) {
-    const lower = title.trim().toLowerCase();
-    if (lower.includes("halloween") || lower.includes("juice ghouls")) return true;
-    for (const name of HALLOWEEN_SET_NAMES) {
-      if (lower.includes(name)) return true;
-    }
-  }
-  return false;
-}
 
 declare const __SANITY_PROJECT_ID__: string;
 declare const __SANITY_DATASET__: string;
@@ -199,17 +167,8 @@ export function parseSanityProducts(sanityProducts: any[]): Product[] {
     const image3Ref = sp.image3?.asset?._ref || "";
     const image3Url = image3Ref ? buildSanityImageUrl(image3Ref, null, null, 1600, 2400, "max") : "";
 
-    const rawTags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
-    const isHalloween = isHalloweenSet(productId, title) ||
-      sp.collection === "Juice Ghouls Collection" ||
-      sp.collection === "Halloween Collection" ||
-      (typeof sp.collection === "string" && (sp.collection.toLowerCase().includes("juice ghouls") || sp.collection.toLowerCase().includes("halloween")));
-    const resolvedCollection = isHalloween
-      ? "Juice Ghouls Collection"
-      : sp.collection === "Halloween Collection"
-        ? "Juice Ghouls Collection"
-        : (sp.collection || undefined);
-    const tags = isHalloween && !rawTags.includes("Halloween") ? [...rawTags, "Halloween"] : rawTags;
+    const tags = Array.isArray(sp.tags) ? sp.tags.filter(Boolean) : [];
+    const resolvedCollection = sp.collection || undefined;
     const orderRank = sp.orderRank || "";
     const videoUrl = sp.videoUrl || "";
     const tiktokUrl = sp.tiktokUrl || "";

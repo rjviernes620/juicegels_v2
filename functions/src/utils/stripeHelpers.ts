@@ -25,63 +25,6 @@ export function normalizeCouponCode(code: string): string {
   return (code || "").trim().toUpperCase();
 }
 
-export const HALLOWEEN_SET_BASE_IDS = [2447, 2462, 2477, 2492, 1277, 1247, 196, 1262];
-export const HALLOWEEN_SET_NAMES = [
-  "booquette",
-  "scream queen",
-  "hello horror",
-  "boo belle",
-  "pink-o-ween",
-  "sparkle scream",
-  "pearl noir",
-  "midnight muse"
-];
-
-export function isHalloweenProduct(product?: { id?: string; name?: string; collection?: string; tags?: string[]; groupId?: string } | null): boolean {
-  if (!product) return false;
-
-  const col = (product.collection || "").toLowerCase();
-  if (col.includes("halloween") || col.includes("juice ghouls")) return true;
-
-  if (product.tags?.some((t: string) => /halloween|juice ghouls/i.test(t))) return true;
-
-  if (product.groupId) {
-    const g = product.groupId.toLowerCase();
-    if (HALLOWEEN_SET_NAMES.some((n) => g.includes(n.replace(/\s+/g, "")))) return true;
-  }
-
-  if (product.id) {
-    const num = parseInt(String(product.id).replace(/\D/g, ""), 10);
-    if (!isNaN(num)) {
-      for (const base of HALLOWEEN_SET_BASE_IDS) {
-        if (num >= base && num < base + 15) return true;
-      }
-    }
-  }
-
-  if (product.name) {
-    const lower = product.name.trim().toLowerCase();
-    if (lower.includes("halloween") || lower.includes("juice ghouls")) return true;
-    if (HALLOWEEN_SET_NAMES.some((n) => lower.includes(n))) return true;
-  }
-
-  return false;
-}
-
-export function isHalloweenCoupon(code: string): boolean {
-  const norm = (code || "").trim().toLowerCase();
-  return (
-    norm === "eu3xxiba" ||
-    norm === "halloween" ||
-    norm === "halloween20" ||
-    norm === "halloweensale" ||
-    norm === "spooky" ||
-    norm === "juiceghouls" ||
-    norm === "juice ghouls" ||
-    norm === "coven"
-  );
-}
-
 export async function resolveCouponSummary(
   stripe: Stripe,
   rawCode: string,
@@ -96,32 +39,6 @@ export async function resolveCouponSummary(
   const normalized = normalizeCouponCode(trimmed);
   let promotionCode: Stripe.PromotionCode | null = null;
   let coupon: Stripe.Coupon | null = null;
-
-  // Handle Halloween special promo: discount is calculated PER HALLOWEEN PRODUCT rather than whole basket
-  if (isHalloweenCoupon(trimmed)) {
-    let halloweenSubtotalPence = 0;
-    if (items && items.length > 0) {
-      for (const item of items) {
-        const prod = item.product || {};
-        if (isHalloweenProduct(prod)) {
-          const pricePence = Math.round((parseFloat(prod.price) || 0) * 100);
-          const qty = parseInt(item.quantity, 10) || 1;
-          halloweenSubtotalPence += pricePence * qty;
-        }
-      }
-    } else {
-      halloweenSubtotalPence = subtotalPence;
-    }
-
-    const discountPence = Math.round(halloweenSubtotalPence * 0.2);
-
-    return {
-      code: "Juice Ghouls (20% OFF)",
-      discount_pence: discountPence,
-      percent_off: 20,
-      coupon_id: "eU3xxIba"
-    };
-  }
 
   if (!coupon) {
     try {

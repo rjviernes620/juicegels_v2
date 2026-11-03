@@ -213,8 +213,6 @@ def get_free_shipping_promo_id():
 
 STRIPE_COUPON_SIZE = DynamicString(get_coupon_size)
 STRIPE_FREE_SHIPPING_PROMO_ID = DynamicString(get_free_shipping_promo_id)
-STRIPE_COUPON_HALLOWEEN = 'eU3xxIba'
-STRIPE_COUPON_HALLOWEEN_TITLE = 'Halloween Sale 20% off'
 
 def build_checkout_items_param(items):
   encoded_items = []
@@ -279,8 +277,6 @@ def get_data_list(response):
 
 def normalize_coupon_code(raw_code):
   val = str(raw_code or '').strip()
-  if val.lower() in ('eu3xxiba', 'halloween', 'halloween20', 'halloweensale', 'spooky', 'coven'):
-    return 'eU3xxIba'
   return val.upper()
 
 
@@ -1956,10 +1952,7 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
   promotion_code = None
   coupon = None
 
-  is_halloween_code = (
-    raw_trimmed.lower() == 'eu3xxiba' or
-    code in ['EU3XXIBA', 'HALLOWEEN', 'HALLOWEEN20', 'HALLOWEENSALE', 'SPOOKY', 'COVEN']
-  )
+  
 
   try:
     response = client.v1.promotion_codes.list(
@@ -1988,21 +1981,12 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
     coupon = get_value(promotion, 'coupon', {}) or {}
   else:
     # Look up direct coupon ID in Stripe
-    lookup_id = STRIPE_COUPON_HALLOWEEN if is_halloween_code else code
     try:
-      coupon_obj = client.v1.coupons.retrieve(lookup_id)
+      coupon_obj = client.v1.coupons.retrieve(code)
       if get_value(coupon_obj, 'valid', True):
         coupon = coupon_obj
     except Exception:
-      if is_halloween_code:
-        coupon = {
-          'id': STRIPE_COUPON_HALLOWEEN,
-          'name': STRIPE_COUPON_HALLOWEEN_TITLE,
-          'percent_off': 20.0,
-          'valid': True,
-        }
-      else:
-        coupon = None
+      coupon = None
 
   if promotion_code is None and coupon is None:
     raise ValueError('That coupon code is not valid.')
@@ -2040,7 +2024,7 @@ def resolve_coupon_summary(raw_code, subtotal_pence):
 
   promo_id = get_value(promotion_code, 'id', '') if promotion_code else ''
   coupon_id = get_value(coupon, 'id', '')
-  effective_code = 'eU3xxIba' if is_halloween_code else code
+  effective_code = code
 
   return {
     'code': effective_code,

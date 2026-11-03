@@ -30,12 +30,6 @@ const PAGE_SEO: Record<string, SEOConfig> = {
       "Browse our full collection of handmade press-on gel nails. Choose from a variety of styles, shapes, and lengths. Free UK shipping available.",
     path: "/shop",
   },
-  halloween: {
-    title: "Juice Ghouls (20% OFF) | JuiceGels – Limited Edition Spooky Nails",
-    description:
-      "Shop the limited edition Juice Ghouls collection from JuiceGels. 8 handcrafted spooky-cute and gothic press-on gel sets, all 20% off. Free UK shipping over £30.",
-    path: "/halloween",
-  },
   about: {
     title: "About Us | JuiceGels – Our Story",
     description:
