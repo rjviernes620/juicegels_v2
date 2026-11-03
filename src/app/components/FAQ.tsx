@@ -360,16 +360,16 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
   });
 
   return (
-    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
       <div
         style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)",
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)",
           padding: "36px 20px 28px",
           textAlign: "center",
-          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
+          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -399,7 +399,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             </h2>
             <p
               style={{
-                color: "#ffd3ea",
+                color: "#ffd6e9",
                 margin: 0,
                 fontSize: 13,
                 fontWeight: 500,
@@ -428,7 +428,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             style={{
               position: "absolute",
               left: 14,
-              color: "#d8c8df",
+              color: "#4f444a",
               opacity: 0.6,
             }}
           />
@@ -441,10 +441,10 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
               width: "100%",
               padding: "12px 40px 12px 42px",
               background: "#fff0f4",
-              border: "1.5px solid rgba(255, 112, 166, 0.25)",
+              border: "1.5px solid rgba(212, 84, 122, 0.18)",
               borderRadius: 14,
               fontSize: 14,
-              color: "#d8c8df",
+              color: "#4f444a",
               outline: "none",
               boxSizing: "border-box",
               transition: "border-color 0.2s ease",
@@ -460,7 +460,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                 right: 12,
                 background: "none",
                 border: "none",
-                color: "#d8c8df",
+                color: "#4f444a",
                 cursor: "pointer",
                 padding: 4,
                 display: "flex",
@@ -579,7 +579,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                       style={{
                         padding: "0 18px 18px",
                         fontSize: 13.5,
-                        color: "#d8c8df",
+                        color: "#4f444a",
                         borderTop: "1px solid rgba(212, 84, 122, 0.08)",
                       }}
                     >
@@ -590,7 +590,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
               );
             })
           ) : (
-            <div style={{ textAlign: "center", padding: "40px 20px", color: "#d8c8df" }}>
+            <div style={{ textAlign: "center", padding: "40px 20px", color: "#4f444a" }}>
               <span style={{ fontSize: 24, display: "block", marginBottom: 8 }}>🌸</span>
               <p style={{ margin: 0, fontWeight: 500 }}>No matching questions found.</p>
               <p style={{ margin: "4px 0 0", fontSize: 12, opacity: 0.8 }}>Try searching for keywords like &quot;sizing&quot; or &quot;glue&quot;</p>
@@ -613,7 +613,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
         >
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <Clock size={16} style={{ color: "#ffd6e9", marginTop: 2, flexShrink: 0 }} />
-            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df" }}>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a" }}>
               <strong style={{ color: "#ffffff" }}>Response Times:</strong> We typically respond to Instagram DMs and Emails within 24 hours.
             </div>
           </div>
@@ -629,7 +629,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
             textAlign: "center",
           }}
         >
-          <p style={{ margin: 0, fontSize: 13, color: "#d8c8df", fontWeight: 500 }}>
+          <p style={{ margin: 0, fontSize: 13, color: "#4f444a", fontWeight: 500 }}>
             Still have questions? We are always happy to help! 💕
           </p>
           <div style={{ display: "flex", gap: 10 }}>
@@ -643,7 +643,7 @@ export function FAQ({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boo
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 6,
-                background: "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)",
+                background: "#f24e77",
                 color: "#fff",
                 boxShadow: "0 4px 14px rgba(255, 120, 40, 0.35)",
                 padding: "10px 14px",

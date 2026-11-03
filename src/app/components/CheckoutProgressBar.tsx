@@ -29,10 +29,10 @@ export function CheckoutProgressBar({ page, setPage }: CheckoutProgressBarProps)
     <div 
       style={{
         width: "100%",
-        background: "rgba(24, 9, 40, 0.95)",
+        background: "rgba(255, 240, 244, 0.85)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
-        borderBottom: "1px solid rgba(255, 112, 166, 0.25)",
+        borderBottom: "1px solid rgba(252, 101, 135, 0.15)",
         padding: "16px 20px",
         display: "flex",
         justifyContent: "center",
@@ -89,22 +89,22 @@ export function CheckoutProgressBar({ page, setPage }: CheckoutProgressBarProps)
                     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     cursor: isClickable ? "pointer" : "default",
                     border: isActive 
-                      ? "2px solid #ff7828" 
+                      ? "2px solid #ffd6e9" 
                       : isCompleted 
-                      ? "2px solid rgba(176, 38, 255, 0.4)" 
-                      : "2px solid rgba(255, 255, 255, 0.15)",
+                      ? "2px solid rgba(252, 101, 135, 0.15)"
+                      : "2px solid rgba(252, 101, 135, 0.1)",
                     background: isActive 
-                      ? "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)" 
+                      ? "#fc6587" 
                       : isCompleted 
-                      ? "#3b104f" 
-                      : "rgba(255, 255, 255, 0.06)",
+                      ? "#ffd6e9" 
+                      : "#fff9fb",
                     color: isActive 
                       ? "#ffffff" 
                       : isCompleted 
-                      ? "#ff70a6" 
-                      : "rgba(255, 255, 255, 0.4)",
+                      ? "#fc6587" 
+                      : "#8e7a82",
                     boxShadow: isActive 
-                      ? "0 0 14px rgba(255, 120, 40, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3)" 
+                      ? "0 0 12px rgba(252, 101, 135, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.2)" 
                       : "none",
                     outline: "none",
                     padding: 0,
@@ -113,7 +113,7 @@ export function CheckoutProgressBar({ page, setPage }: CheckoutProgressBarProps)
                   onMouseEnter={(e) => {
                     if (isClickable) {
                       e.currentTarget.style.transform = "scale(1.08)";
-                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(255, 120, 40, 0.35)";
+                      e.currentTarget.style.boxShadow = "0 4px 10px rgba(252, 101, 135, 0.2)";
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -152,24 +152,24 @@ export function CheckoutProgressBar({ page, setPage }: CheckoutProgressBarProps)
                     fontWeight: isActive ? 700 : 500,
                     transition: "all 0.3s ease",
                     cursor: isClickable ? "pointer" : "default",
-                    textDecoration: isClickable ? "underline underline-offset-4 decoration-[#ff7828]/40" : "none",
+                    textDecoration: isClickable ? "underline underline-offset-4 decoration-[#fc6587]/30" : "none",
                     color: isActive 
-                      ? "#ff7828" 
+                      ? "#fc6587" 
                       : isCompleted 
-                      ? "#ffd3ea" 
-                      : "rgba(255, 255, 255, 0.5)",
+                      ? "#4f444a" 
+                      : "#8e7a82",
                     textAlign: "center",
                   }}
                   onMouseEnter={(e) => {
                     if (isClickable) {
-                      e.currentTarget.style.color = "#ff7828";
-                      e.currentTarget.style.textDecorationColor = "#ff7828";
+                      e.currentTarget.style.color = "#fc6587";
+                      e.currentTarget.style.textDecorationColor = "#fc6587";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (isClickable) {
-                      e.currentTarget.style.color = "#ffd3ea";
-                      e.currentTarget.style.textDecorationColor = "rgba(255, 120, 40, 0.3)";
+                      e.currentTarget.style.color = "#4f444a";
+                      e.currentTarget.style.textDecorationColor = "rgba(252, 101, 135, 0.3)";
                     }
                   }}
                 >

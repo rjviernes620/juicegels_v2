@@ -33,7 +33,7 @@ export function HomePage({
       {/* Hero Section */}
       <div
         style={{
-          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)",
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 50%, #fdf2f4 100%)",
           padding: isMobile ? "40px 10px 48px" : "60px 20px 64px",
           textAlign: "center",
           position: "relative",
@@ -54,7 +54,7 @@ export function HomePage({
               width: "300px",
               height: "300px",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,120,40,0.08) 0%, rgba(255,120,40,0) 70%)",
+              background: "radial-gradient(circle, rgba(252,101,135,0.06) 0%, rgba(252,101,135,0) 70%)",
               top: "-50px",
               right: "-100px",
               pointerEvents: "none"
@@ -66,7 +66,7 @@ export function HomePage({
               width: "400px",
               height: "400px",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(176,38,255,0.08) 0%, rgba(176,38,255,0) 70%)",
+              background: "radial-gradient(circle, rgba(212,84,122,0.05) 0%, rgba(212,84,122,0) 70%)",
               bottom: "-150px",
               left: "-150px",
               pointerEvents: "none"
@@ -112,7 +112,7 @@ export function HomePage({
                   height: "100%",
                   objectFit: "contain",
                   display: "block",
-                  filter: "drop-shadow(0 15px 35px rgba(255, 120, 40, 0.35))"
+                  filter: "drop-shadow(0 15px 35px rgba(252, 101, 135, 0.3))"
                 }}
               />
             </motion.div>
@@ -126,7 +126,7 @@ export function HomePage({
           >
             <p
               style={{
-                color: "#ff7828",
+                color: "#fc6587",
                 margin: "0 0 8px",
                 letterSpacing: "0.15em",
                 fontSize: 12,
@@ -139,11 +139,10 @@ export function HomePage({
             <h2
               style={{
                 fontFamily: "'Lobster', serif",
-                fontSize: isMobile ? 64 : 72,
-                color: "#ffffff",
+                fontSize: isMobile ? 40 : 56,
+                color: "#fc6587",
                 margin: "0 0 16px",
-                lineHeight: 1.15,
-                textShadow: "0 0 24px rgba(255, 120, 40, 0.6), 0 0 48px rgba(176, 38, 255, 0.35)"
+                lineHeight: 1.15
               }}
             >
               Juice Gels
@@ -153,7 +152,7 @@ export function HomePage({
                 maxWidth: "600px",
                 margin: "0 auto 24px",
                 fontSize: isMobile ? 15 : 18,
-                color: "#e2d4e8",
+                color: "#4f444a",
                 lineHeight: 1.6,
                 fontWeight: 400
               }}
@@ -176,15 +175,15 @@ export function HomePage({
               <button
                 onClick={() => navigate("/shop")}
                 style={{
-                  background: "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)",
+                  background: "linear-gradient(135deg, #fc6587 0%, #db2777 100%)",
                   color: "#ffffff",
-                  border: "1px solid rgba(255, 112, 166, 0.3)",
+                  border: "none",
                   borderRadius: "30px",
                   padding: "14px 32px",
                   fontSize: "14px",
                   fontWeight: "700",
                   cursor: "pointer",
-                  boxShadow: "0 6px 20px rgba(255, 120, 40, 0.35)",
+                  boxShadow: "0 6px 20px rgba(219, 39, 119, 0.3)",
                   transition: "all 0.3s ease",
                   display: "flex",
                   alignItems: "center",
@@ -192,11 +191,11 @@ export function HomePage({
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(255, 120, 40, 0.5)";
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(219, 39, 119, 0.4)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 6px 20px rgba(255, 120, 40, 0.35)";
+                  e.currentTarget.style.boxShadow = "0 6px 20px rgba(219, 39, 119, 0.3)";
                 }}
               >
                 Shop Nail Sets 💅
@@ -204,9 +203,9 @@ export function HomePage({
               <button
                 onClick={() => navigate("/custom-orders")}
                 style={{
-                  background: "rgba(255, 255, 255, 0.08)",
-                  color: "#ffd3ea",
-                  border: "2px solid #ff70a6",
+                  background: "#fff9fb",
+                  color: "#fc6587",
+                  border: "2px solid #fc6587",
                   borderRadius: "30px",
                   padding: "12px 30px",
                   fontSize: "14px",
@@ -215,11 +214,11 @@ export function HomePage({
                   transition: "all 0.3s ease"
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255, 112, 166, 0.2)";
+                  e.currentTarget.style.background = "rgba(252, 101, 135, 0.1)";
                   e.currentTarget.style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
+                  e.currentTarget.style.background = "#fff9fb";
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
@@ -233,10 +232,10 @@ export function HomePage({
       {/* ── Promotional Split Banner ── */}
       <div
         style={{
-          background: "#140620",
+          background: "#fff0f4",
           padding: isMobile ? "28px 16px 20px" : "36px 28px 24px",
-          borderTop: "1px solid rgba(255,112,166,0.15)",
-          borderBottom: "1px solid rgba(255,112,166,0.15)",
+          borderTop: "1px solid rgba(212,84,122,0.08)",
+          borderBottom: "1px solid rgba(212,84,122,0.08)",
         }}
       >
         <div
@@ -257,27 +256,27 @@ export function HomePage({
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              background: "linear-gradient(135deg, #260a3a 0%, #4a154b 100%)",
-              border: "1px solid rgba(255, 112, 166, 0.3)",
+              background: "linear-gradient(135deg, #f9d5e0 0%, #fbc2eb 100%)",
+              border: "none",
               borderRadius: 16,
               padding: isMobile ? "22px 20px" : "28px 26px",
               cursor: "pointer",
-              color: "#e2d4e8",
+              color: "#5c4c54",
               fontFamily: "inherit",
               textAlign: "left",
               position: "relative",
               overflow: "hidden",
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.35)",
+              boxShadow: "0 4px 20px rgba(251, 194, 235, 0.25)",
               transition: "transform 0.25s ease, box-shadow 0.25s ease",
               minHeight: isMobile ? 130 : 150,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-3px)";
-              e.currentTarget.style.boxShadow = "0 8px 30px rgba(176, 38, 255, 0.25)";
+              e.currentTarget.style.boxShadow = "0 8px 30px rgba(251, 194, 235, 0.35)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.35)";
+              e.currentTarget.style.boxShadow = "0 4px 20px rgba(251, 194, 235, 0.25)";
             }}
           >
             <div
@@ -288,7 +287,7 @@ export function HomePage({
                 width: 100,
                 height: 100,
                 borderRadius: "50%",
-                background: "rgba(255,255,255,0.06)",
+                background: "rgba(255,255,255,0.25)",
                 pointerEvents: "none",
               }}
             />
@@ -300,7 +299,7 @@ export function HomePage({
                 width: 70,
                 height: 70,
                 borderRadius: "50%",
-                background: "rgba(255,255,255,0.04)",
+                background: "rgba(255,255,255,0.18)",
                 pointerEvents: "none",
               }}
             />
@@ -308,10 +307,10 @@ export function HomePage({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: isMobile ? 28 : 33,
-                color: "#ffd3ea",
+                color: "#c4597d",
                 margin: "0 0 6px",
                 lineHeight: 1.15,
-                textShadow: "0 0 12px rgba(255, 112, 166, 0.4)",
+                textShadow: "0 1px 6px rgba(0,0,0,0.04)",
                 position: "relative",
                 zIndex: 1,
               }}
@@ -320,7 +319,7 @@ export function HomePage({
             </p>
             <p
               style={{
-                color: "#d8c8df",
+                color: "#5c4c54",
                 margin: "0 0 10px",
                 fontSize: isMobile ? 12 : 13,
                 lineHeight: 1.5,
@@ -333,14 +332,13 @@ export function HomePage({
             <span
               style={{
                 display: "inline-block",
-                background: "rgba(255, 112, 166, 0.2)",
-                border: "1px solid rgba(255, 112, 166, 0.35)",
+                background: "rgba(255,255,255,0.50)",
                 backdropFilter: "blur(6px)",
                 borderRadius: 20,
                 padding: "5px 14px",
                 fontSize: 11,
                 fontWeight: 700,
-                color: "#ff70a6",
+                color: "#ab3a60",
                 position: "relative",
                 zIndex: 1,
               }}
@@ -358,8 +356,8 @@ export function HomePage({
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              background: "linear-gradient(135deg, #331304 0%, #5a1e05 100%)",
-              border: "1px solid rgba(255, 120, 40, 0.35)",
+              background: "#ff8fc7",
+              border: "none",
               borderRadius: 16,
               padding: isMobile ? "22px 20px" : "28px 26px",
               cursor: "pointer",
@@ -368,17 +366,17 @@ export function HomePage({
               textAlign: "left",
               position: "relative",
               overflow: "hidden",
-              boxShadow: "0 4px 20px rgba(0, 0, 0, 0.35)",
+              boxShadow: "0 4px 20px rgba(252, 101, 135, 0.18)",
               transition: "transform 0.25s ease, box-shadow 0.25s ease",
               minHeight: isMobile ? 130 : 150,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-3px)";
-              e.currentTarget.style.boxShadow = "0 8px 30px rgba(255, 120, 40, 0.3)";
+              e.currentTarget.style.boxShadow = "0 8px 30px rgba(252, 101, 135, 0.28)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.35)";
+              e.currentTarget.style.boxShadow = "0 4px 20px rgba(252, 101, 135, 0.18)";
             }}
           >
             <div
@@ -389,7 +387,7 @@ export function HomePage({
                 width: 90,
                 height: 90,
                 borderRadius: "50%",
-                background: "rgba(255,255,255,0.06)",
+                background: "rgba(255,255,255,0.12)",
                 pointerEvents: "none",
               }}
             />
@@ -401,7 +399,7 @@ export function HomePage({
                 width: 60,
                 height: 60,
                 borderRadius: "50%",
-                background: "rgba(255,255,255,0.04)",
+                background: "rgba(255,255,255,0.08)",
                 pointerEvents: "none",
               }}
             />
@@ -409,10 +407,10 @@ export function HomePage({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: isMobile ? 26 : 30,
-                color: "#ffeed8",
+                color: "#fddaf6",
                 margin: "0 0 6px",
                 lineHeight: 1.15,
-                textShadow: "0 0 12px rgba(255, 120, 40, 0.4)",
+                textShadow: "0 1px 6px rgba(0,0,0,0.06)",
                 position: "relative",
                 zIndex: 1,
               }}
@@ -421,7 +419,7 @@ export function HomePage({
             </p>
             <p
               style={{
-                color: "#fed7aa",
+                color: "rgb(181, 88, 140)",
                 margin: "0 0 10px",
                 fontSize: isMobile ? 12 : 13,
                 lineHeight: 1.5,
@@ -434,14 +432,13 @@ export function HomePage({
             <span
               style={{
                 display: "inline-block",
-                background: "rgba(255, 120, 40, 0.2)",
-                border: "1px solid rgba(255, 120, 40, 0.35)",
+                background: "rgba(255,255,255,0.30)",
                 backdropFilter: "blur(6px)",
                 borderRadius: 20,
                 padding: "5px 14px",
                 fontSize: 11,
                 fontWeight: 700,
-                color: "#ff7828",
+                color: "#c4597d",
                 position: "relative",
                 zIndex: 1,
               }}
@@ -451,19 +448,48 @@ export function HomePage({
           </button>
         </div>
 
+        {/* Disclaimer: Only one discount can be applied */}
+        <div
+          style={{
+            maxWidth: 900,
+            margin: "14px auto 0",
+            background: "linear-gradient(135deg, rgba(252,101,135,0.08) 0%, rgba(167,139,250,0.08) 100%)",
+            border: "1px solid rgba(212,84,122,0.12)",
+            borderRadius: 10,
+            padding: "10px 18px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+          }}
+        >
+          <span style={{ fontSize: 16 }}>⚠️</span>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 11,
+              fontWeight: 600,
+              color: "#ae3c6f",
+              textAlign: "center",
+              lineHeight: 1.45,
+            }}
+          >
+            Please note: Only one discount can be applied per order.
+          </p>
+        </div>
       </div>
 
       {/* How It Works Guide Section */}
       <div
         style={{
-          background: "#12051c",
+          background: "#fff0f4",
           padding: "54px 20px 48px",
-          borderTop: "1px solid rgba(255,112,166,0.12)",
-          borderBottom: "1px solid rgba(255,112,166,0.12)"
+          borderTop: "1px solid rgba(212,84,122,0.08)",
+          borderBottom: "1px solid rgba(212,84,122,0.08)"
         }}
       >
         <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
-          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#ff70a6", marginBottom: 28 }}>
+          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fc6587", marginBottom: 28 }}>
             How It Works
           </h3>
 
@@ -498,7 +524,7 @@ export function HomePage({
                     width: 44,
                     height: 44,
                     borderRadius: "50%",
-                    background: "linear-gradient(135deg, #ff7828 0%, #b026ff 100%)",
+                    background: "linear-gradient(135deg, #fc6587 0%, #db2777 100%)",
                     color: "#ffffff",
                     display: "flex",
                     alignItems: "center",
@@ -506,15 +532,15 @@ export function HomePage({
                     fontSize: 18,
                     fontWeight: 700,
                     margin: "0 auto 14px",
-                    boxShadow: "0 4px 14px rgba(255, 120, 40, 0.3)"
+                    boxShadow: "0 4px 14px rgba(219, 39, 119, 0.3)"
                   }}
                 >
                   {item.step}
                 </div>
-                <h4 style={{ color: "#ffffff", fontWeight: 700, fontSize: 15, margin: "0 0 8px" }}>
+                <h4 style={{ color: "#ae3c6f", fontWeight: 700, fontSize: 15, margin: "0 0 8px" }}>
                   {item.title}
                 </h4>
-                <p style={{ color: "#d8c8df", fontSize: 12, lineHeight: 1.5, margin: 0 }}>
+                <p style={{ color: "#4f444a", fontSize: 12, lineHeight: 1.5, margin: 0 }}>
                   {item.desc}
                 </p>
               </div>
@@ -526,16 +552,16 @@ export function HomePage({
       {/* Value Propositions / Why Press-Ons */}
       <div
         style={{
-          background: "#150721",
+          background: "#fff9fb",
           padding: "54px 20px 48px",
-          borderBottom: "1px solid rgba(255,112,166,0.12)"
+          borderBottom: "1px solid rgba(212,84,122,0.08)"
         }}
       >
         <div style={{ maxWidth: 1000, margin: "0 auto", textAlign: "center" }}>
-          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#ff7828", marginBottom: 12 }}>
+          <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 28, color: "#fc6587", marginBottom: 12 }}>
             Why Press-Ons?
           </h3>
-          <p style={{ color: "#d8c8df", fontSize: 13, maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.5 }}>
+          <p style={{ color: "#4f444a", fontSize: 13, maxWidth: 500, margin: "0 auto 36px", lineHeight: 1.5 }}>
             The luxury of salon manicures without the time, expense, or damage.
           </p>
 
@@ -571,11 +597,11 @@ export function HomePage({
               <div
                 key={i}
                 style={{
-                  background: "rgba(28, 12, 44, 0.75)",
+                  background: "#fff0f4",
                   borderRadius: 16,
                   padding: 24,
-                  border: "1px solid rgba(255, 112, 166, 0.2)",
-                  boxShadow: "0 6px 20px rgba(0, 0, 0, 0.3)",
+                  border: "1px solid rgba(212,84,122,0.12)",
+                  boxShadow: "0 4px 15px rgba(212,84,122,0.04)",
                   transition: "transform 0.3s ease",
                   cursor: "default"
                 }}
@@ -587,10 +613,10 @@ export function HomePage({
                 }}
               >
                 <div style={{ fontSize: 32, marginBottom: 12 }}>{feat.icon}</div>
-                <h4 style={{ color: "#ffd3ea", fontWeight: 700, fontSize: 15, margin: "0 0 8px" }}>
+                <h4 style={{ color: "#ae3c6f", fontWeight: 700, fontSize: 15, margin: "0 0 8px" }}>
                   {feat.title}
                 </h4>
-                <p style={{ color: "#d8c8df", fontSize: 12, lineHeight: 1.5, margin: 0 }}>
+                <p style={{ color: "#4f444a", fontSize: 12, lineHeight: 1.5, margin: 0 }}>
                   {feat.desc}
                 </p>
               </div>
@@ -603,8 +629,8 @@ export function HomePage({
       <div
         style={{
           padding: "54px 20px 48px",
-          background: "#0c0314",
-          borderTop: "1px solid rgba(255,112,166,0.12)"
+          background: "#fff9fb",
+          borderTop: "1px solid rgba(212,84,122,0.08)"
         }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -619,10 +645,10 @@ export function HomePage({
             }}
           >
             <div>
-              <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#ff70a6", margin: 0 }}>
+              <h3 style={{ fontFamily: "'Lobster', serif", fontSize: 30, color: "#fc6587", margin: 0 }}>
                 Trending Designs
               </h3>
-              <p style={{ color: "#d8c8df", fontSize: 13, margin: "4px 0 0" }}>
+              <p style={{ color: "#4f444a", fontSize: 13, margin: "4px 0 0" }}>
                 Check out some of our most popular handmade sets.
               </p>
             </div>
@@ -631,7 +657,7 @@ export function HomePage({
               style={{
                 background: "none",
                 border: "none",
-                color: "#ff7828",
+                color: "#fc6587",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
@@ -642,7 +668,7 @@ export function HomePage({
                 borderRadius: 8,
                 transition: "background 0.2s"
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 120, 40, 0.15)")}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#fff0f4")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
             >
               View All Sets 💅
@@ -663,8 +689,8 @@ export function HomePage({
                   key={p.id}
                   onClick={() => openProduct(p)}
                   style={{
-                    background: style ? style.cardGradient : "linear-gradient(135deg, #180928 0%, #300c42 100%)",
-                    border: "1px solid rgba(255, 112, 166, 0.25)",
+                    background: style ? style.cardGradient : "#fc6587",
+                    border: "1px solid rgba(212, 84, 122, 0.18)",
                     borderRadius: 14,
                     overflow: "hidden",
                     textAlign: "left",
@@ -677,7 +703,7 @@ export function HomePage({
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-4px)";
-                    e.currentTarget.style.boxShadow = "0 8px 20px rgba(255, 120, 40, 0.25)";
+                    e.currentTarget.style.boxShadow = "0 8px 20px rgba(252, 101, 135, 0.15)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
@@ -687,12 +713,12 @@ export function HomePage({
                   <ImageWithFallback
                     src={p.image}
                     alt={p.name}
-                    style={{ width: "100%", height: 180, objectFit: "cover", display: "block", background: "#180928" }}
+                    style={{ width: "100%", height: 180, objectFit: "cover", display: "block", background: "#b8395d" }}
                   />
                   <div
                     style={{
                       padding: "8px 10px 10px",
-                      background: style ? style.cardGradient : "linear-gradient(135deg, #180928 0%, #300c42 100%)"
+                      background: style ? style.cardGradient : "#fc6587"
                     }}
                   >
                     {p.collection && style && (
@@ -725,7 +751,7 @@ export function HomePage({
                       style={{
                         margin: "0 0 4px",
                         fontSize: 13,
-                        color: "#ffffff",
+                        color: "#fff9fb",
                         fontWeight: 600,
                         whiteSpace: "nowrap",
                         overflow: "hidden",
@@ -734,7 +760,7 @@ export function HomePage({
                     >
                       {p.name}
                     </p>
-                    <span style={{ color: p.collection ? "#ffd3ea" : "#ff7828", fontWeight: 700, fontSize: 14 }}>
+                    <span style={{ color: p.collection ? "#ffffff" : "#ffd6e9", fontWeight: 700, fontSize: 14 }}>
                       £{p.price.toFixed(2)}
                     </span>
                   </div>
@@ -748,12 +774,10 @@ export function HomePage({
       {/* Custom Orders Bottom Banner */}
       <div
         style={{
-          background: "linear-gradient(135deg, #180928 0%, #3b104f 50%, #ff7828 100%)",
-          borderTop: "1px solid rgba(255, 112, 166, 0.2)",
-          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
+          background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
           padding: "48px 20px",
           textAlign: "center",
-          color: "#ffffff"
+          color: "#1e1b4b"
         }}
       >
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
@@ -763,36 +787,30 @@ export function HomePage({
               fontSize: 32,
               color: "#ffffff",
               margin: "0 0 10px",
-              textShadow: "0 0 16px rgba(255, 120, 40, 0.5)"
+              textShadow: "0 2px 4px rgba(0,0,0,0.1)"
             }}
           >
             Dreaming of a Unique Design? 💭
           </h3>
-          <p style={{ color: "#ffd3ea", fontSize: 14, lineHeight: 1.6, margin: "0 0 24px" }}>
+          <p style={{ color: "#312e81", fontSize: 14, lineHeight: 1.6, margin: "0 0 24px" }}>
             Let's bring your nail art dreams to life! Request a completely custom set. Send us your inspo pics and details, and we'll quote and craft it for you.
           </p>
           <button
             onClick={() => navigate("/custom-orders")}
             style={{
-              background: "#ff7828",
-              color: "#ffffff",
-              border: "1px solid rgba(255, 255, 255, 0.3)",
+              background: "#ffffff",
+              color: "#4338ca",
+              border: "none",
               borderRadius: "30px",
               padding: "12px 28px",
               fontSize: "13px",
               fontWeight: "700",
               cursor: "pointer",
-              boxShadow: "0 4px 15px rgba(255, 120, 40, 0.35)",
-              transition: "all 0.2s ease"
+              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.05)",
+              transition: "transform 0.2s ease"
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "scale(1.03)";
-              e.currentTarget.style.background = "#ffa256";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "scale(1)";
-              e.currentTarget.style.background = "#ff7828";
-            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             Start Custom Order 💅
           </button>

@@ -6,16 +6,16 @@ const HeroShaderBackground = lazy(() => import("./HeroShaderBackground"));
 
 export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boolean }) {
   return (
-    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
       <div 
         style={{ 
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)", 
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)", 
           padding: "36px 20px 28px", 
           textAlign: "center",
-          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
+          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -44,7 +44,7 @@ export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?:
             </h2>
             <p 
               style={{ 
-                color: "#d8c8df", 
+                color: "#4f444a", 
                 margin: 0, 
                 fontSize: 13, 
                 fontWeight: 500,
@@ -61,7 +61,7 @@ export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?:
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "24px 20px", display: "flex", flexDirection: "column", gap: 24, width: "100%", boxSizing: "border-box" }}>
         
         {/* Intro */}
-        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df", textAlign: "center" }}>
+        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a", textAlign: "center" }}>
            Always happy to help! Reach out via Instagram or Email and we'll get back to you as soon as possible
         </p>
 
@@ -105,7 +105,7 @@ export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?:
             </h3>
           </div>
           
-          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
             Send a direct message for the fastest response. Perfect for sizing questions, custom design inquiries, or quick updates on your order.
           </p>
 
@@ -177,7 +177,7 @@ export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?:
             </h3>
           </div>
           
-          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "#4f444a" }}>
             Prefer email? Send a message directly. We aim to reply within 24 hours.
           </p>
 
@@ -220,13 +220,13 @@ export function Contact({ isMobile, isTablet }: { isMobile?: boolean; isTablet?:
         >
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <Clock size={16} style={{ color: "#ffd6e9", marginTop: 2, flexShrink: 0 }} />
-            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df" }}>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a" }}>
               <strong style={{ color: "#fff9fb" }}>Response Times:</strong> We typically respond to Instagram DMs and Emails within 24 hours.
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
             <span style={{ fontSize: 16, flexShrink: 0, marginTop: -2 }}>📏</span>
-            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df" }}>
+            <div style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a" }}>
               <strong style={{ color: "#fff9fb" }}>Nail Sizing:</strong> You will be contacted up to 24 hours after checkout to confirm your sizing. If your Instagram is private, please message @juicegels first!
             </div>
           </div>

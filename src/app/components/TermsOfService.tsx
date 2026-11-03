@@ -13,16 +13,16 @@ export function TermsOfService({
   navigate: (path: string) => void;
 }) {
   return (
-    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
       <div
         style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)",
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)",
           padding: isMobile ? "36px 16px 28px" : "48px 20px 36px",
           textAlign: "center",
-          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
+          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -54,7 +54,7 @@ export function TermsOfService({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#ff7828",
+              color: "#fc6587",
               marginBottom: 4,
             }}
           >
@@ -65,7 +65,7 @@ export function TermsOfService({
               style={{
                 fontFamily: "'Lobster', serif",
                 fontSize: isMobile ? 32 : 40,
-                color: "#ffffff",
+                color: "#3a3035",
                 textShadow: "0 0 16px rgba(255, 120, 40, 0.4)",
                 margin: "0 0 6px",
                 lineHeight: 1.2,
@@ -75,7 +75,7 @@ export function TermsOfService({
             </h2>
             <p
               style={{
-                color: "#ffd3ea",
+                color: "#ffd6e9",
                 margin: 0,
                 fontSize: 13,
                 fontWeight: 500,
@@ -104,7 +104,7 @@ export function TermsOfService({
           style={{
             background: "none",
             border: "none",
-            color: "#ff9f43",
+            color: "#c4597d",
             cursor: "pointer",
             fontWeight: 600,
             fontSize: 14,
@@ -121,13 +121,13 @@ export function TermsOfService({
         {/* Glassmorphism content card */}
         <div
           style={{
-            background: "rgba(28, 12, 44, 0.85)",
+            background: "rgba(255, 255, 255, 0.45)",
             backdropFilter: "blur(12px)",
             borderRadius: 24,
             padding: isMobile ? "24px 20px" : "40px 36px",
             border: "1px solid rgba(255, 112, 166, 0.22)",
             boxShadow: "0 8px 32px rgba(212, 84, 122, 0.06)",
-            color: "#d8c8df",
+            color: "#4f444a",
             lineHeight: 1.7,
             fontSize: 14,
           }}
@@ -137,7 +137,7 @@ export function TermsOfService({
             you agree to comply with and be bound by the following Terms of Service. Please read them carefully.
           </p>
 
-          <hr style={{ border: "none", borderTop: "1px solid rgba(255, 112, 166, 0.2)", margin: "24px 0" }} />
+          <hr style={{ border: "none", borderTop: "1px solid rgba(212, 84, 122, 0.15)", margin: "24px 0" }} />
 
           {/* Section 1 */}
           <div style={{ marginBottom: 32 }}>

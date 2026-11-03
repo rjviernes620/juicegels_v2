@@ -10,16 +10,16 @@ export { TiktokIcon };
 
 export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: boolean }) {
   return (
-    <div style={{ background: "#0c0314", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
+    <div style={{ background: "#ffd2e6", minHeight: "calc(100vh - 50px)", paddingBottom: 60 }}>
       {/* Hero Header Section */}
       <div
         style={{
           position: "relative",
           overflow: "hidden",
-          background: "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)",
+          background: "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 60%, #fdf2f4 100%)",
           padding: "36px 20px 28px",
           textAlign: "center",
-          borderBottom: "1px solid rgba(255, 112, 166, 0.2)",
+          borderBottom: "1px solid rgba(212, 84, 122, 0.18)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -86,7 +86,7 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
             </h2>
             <p
               style={{
-                color: "#d8c8df",
+                color: "#4f444a",
                 margin: 0,
                 fontSize: 13,
                 fontWeight: 500,
@@ -114,13 +114,13 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
           >
             Nails are art in motion 💃
           </h3>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             Your hands are some of the hardest-working parts of our bodies, carrying us through everyday tasks, work, hobbies and the moments that make up our lives. They're also one of the parts of ourselves we see most often.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             There's something special about looking down and being greeted by something beautiful, creative and expressive. Nail art has the power to reflect a mood, complete an outfit, celebrate a moment or simply make an ordinary day feel a little more exciting.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             Juice Gels was created with a simple goal: to make beautiful nails more accessible, flexible and fun.
           </p>
         </div>
@@ -128,23 +128,23 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
         {/* Highlighted box on freedom */}
         <div
           style={{
-            background: "rgba(28, 12, 44, 0.85)",
+            background: "rgba(255, 255, 255, 0.45)",
             borderRadius: 16,
             padding: "20px 18px",
-            border: "1px solid rgba(255, 112, 166, 0.22)",
+            border: "1px solid rgba(255, 255, 255, 0.6)",
             display: "flex",
             flexDirection: "column",
             gap: 12,
-            boxShadow: "0 4px 20px rgba(0,0,0,0.02)"
+            boxShadow: "0 4px 20px rgba(212, 84, 122, 0.05)"
           }}
         >
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#4f444a" }}>
             Not everyone can wear long-term salon nails. Whether it's work, studies, lifestyle or personal preference, many people don't have the freedom to commit to a manicure for weeks at a time. People working in regulated industries deserve the opportunity to enjoy nail art too.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#ff7828", fontWeight: 700 }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#fc6587", fontWeight: 700 }}>
             Press-on nails offer that freedom.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#ffffff", fontWeight: 700 }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#3d1a24", fontWeight: 700 }}>
             That's how Juice Gels was born.
           </p>
         </div>
@@ -161,18 +161,19 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
           >
             Why Juice Gels? 💌
           </h3>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df", fontWeight: 500 }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a", fontWeight: 500 }}>
             Because beauty should be fun, flexible and accessible.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             Whether you're looking for a confidence boost, getting ready for a night out, planning a holiday, dressing for a special occasion or simply obsessed with a new trend you've seen online, Juice Gels gives you the freedom to wear the nails you want, when you want.
           </p>
 
           <div
             style={{
-              background: "rgba(28, 12, 44, 0.85)",
+              background: "rgba(255, 255, 255, 0.35)",
               borderRadius: 14,
               padding: "16px",
+              border: "1px solid rgba(212, 84, 122, 0.18)",
               display: "flex",
               flexDirection: "column",
               gap: 10,
@@ -180,26 +181,26 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
             }}
           >
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 14, color: "#ff7828" }}>🌸</span>
-              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df", fontWeight: 500 }}>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
+              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
                 No expensive salon appointments
               </span>
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 14, color: "#ff7828" }}>🌸</span>
-              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df", fontWeight: 500 }}>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
+              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
                 No long-term commitment
               </span>
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 14, color: "#ff7828" }}>🌸</span>
-              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df", fontWeight: 500 }}>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
+              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
                 Reusable designs to wear, re-wear and collect
               </span>
             </div>
             <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-              <span style={{ fontSize: 14, color: "#ff7828" }}>🌸</span>
-              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#d8c8df", fontWeight: 500 }}>
+              <span style={{ fontSize: 14, color: "#fc6587" }}>🌸</span>
+              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#4f444a", fontWeight: 500 }}>
                 Beautiful nails designed to fit around your life
               </span>
             </div>
@@ -207,20 +208,20 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
         </div>
 
         {/* From AlyJuice */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: "1px solid rgba(255, 112, 166, 0.2)", paddingTop: 20 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: "1px solid rgba(212, 84, 122, 0.18)", paddingTop: 20 }}>
 
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             Every order, message, tag and recommendation means the world.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             Thank you for supporting a business built around creativity, self-expression and the belief that beautiful nails should be accessible to everyone.
           </p>
-          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#d8c8df" }}>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7, color: "#4f444a" }}>
             I can't wait to see how you wear your Juice Gels.
           </p>
 
           <div style={{ marginTop: 10 }}>
-            <p style={{ margin: 0, fontSize: 14, color: "#d8c8df" }}>Love,</p>
+            <p style={{ margin: 0, fontSize: 14, color: "#4f444a" }}>Love,</p>
             <p
               style={{
                 fontFamily: "'Lobster', serif",
@@ -240,8 +241,8 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
           style={{
             marginTop: 16,
             padding: "16px",
-            background: "linear-gradient(135deg, #180928 0%, #2e0d42 100%)",
-            border: "1px solid rgba(255, 112, 166, 0.25)",
+            background: "linear-gradient(135deg, #fce4ea 0%, #ffd6e9 100%)",
+            border: "1px solid rgba(212, 84, 122, 0.18)",
             borderRadius: 16,
             textAlign: "center",
             display: "flex",
@@ -250,7 +251,7 @@ export function About({ isMobile, isTablet }: { isMobile?: boolean; isTablet?: b
             gap: 12,
                       }}
         >
-          <p style={{ margin: 0, fontSize: 12, color: "#d8c8df", fontWeight: 500 }}>
+          <p style={{ margin: 0, fontSize: 12, color: "#4f444a", fontWeight: 500 }}>
             Want to see daily updates & new nail drops?
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>

@@ -24,9 +24,9 @@ export function HeroShaderBackground() {
         cDistance={3.6}
         cPolarAngle={90}
         cameraZoom={1}
-        color1="#ff7828"
-        color2="#9333ea"
-        color3="#ff70a6"
+        color1="#fc6587"
+        color2="#dbadd5"
+        color3="#e1d1e0"
         destination="onCanvas"
         embedMode="off"
         envPreset="city"

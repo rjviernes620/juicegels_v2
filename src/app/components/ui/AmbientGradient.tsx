@@ -21,7 +21,7 @@ export function AmbientGradient({ variant = "brand", style }: AmbientGradientPro
         pointerEvents: "none",
         overflow: "hidden",
         background: isBrand
-          ? "linear-gradient(160deg, #180928 0%, #2e0d42 50%, #0c0314 100%)"
+          ? "linear-gradient(160deg, #f9d5e0 0%, #fce4ea 50%, #fdf2f4 100%)"
           : "linear-gradient(135deg, #ebedff 0%, #f3f2f8 50%, #dbf8ff 100%)",
         ...style,
       }}
@@ -34,7 +34,7 @@ export function AmbientGradient({ variant = "brand", style }: AmbientGradientPro
           width: "75%",
           height: "150%",
           background: isBrand
-            ? "radial-gradient(circle, rgba(255, 120, 40, 0.45) 0%, transparent 65%)"
+            ? "radial-gradient(circle, rgba(252, 101, 135, 0.25) 0%, transparent 65%)"
             : "radial-gradient(circle, rgba(219, 248, 255, 0.6) 0%, transparent 60%)",
           filter: "blur(40px)",
           borderRadius: "50%",
@@ -49,7 +49,7 @@ export function AmbientGradient({ variant = "brand", style }: AmbientGradientPro
           width: "75%",
           height: "150%",
           background: isBrand
-            ? "radial-gradient(circle, rgba(147, 51, 234, 0.5) 0%, rgba(255, 112, 166, 0.35) 50%, transparent 70%)"
+            ? "radial-gradient(circle, rgba(219, 173, 213, 0.35) 0%, rgba(247, 184, 202, 0.25) 50%, transparent 70%)"
             : "radial-gradient(circle, rgba(235, 237, 255, 0.7) 0%, transparent 60%)",
           filter: "blur(40px)",
           borderRadius: "50%",

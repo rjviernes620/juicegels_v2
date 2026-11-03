@@ -71,8 +71,8 @@ function PageLoadingFallback() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#0c0314",
-        color: "#ff70a6",
+        background: "#ffd2e6",
+        color: "#fc6587",
         fontFamily: "'DM Sans', sans-serif"
       }}
     >
@@ -88,8 +88,8 @@ function PageLoadingFallback() {
           style={{
             width: 36,
             height: 36,
-            border: "3px solid rgba(255, 112, 166, 0.2)",
-            borderTopColor: "#ff70a6",
+            border: "3px solid rgba(212, 84, 122, 0.18)",
+            borderTopColor: "#fc6587",
             borderRadius: "50%",
             animation: "spin 0.8s linear infinite"
           }}
@@ -1224,7 +1224,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: isMobile ? 430 : "100%", margin: "0 auto", minHeight: "100vh", background: "#0c0314", display: "flex", flexDirection: "column" }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", maxWidth: isMobile ? 430 : "100%", margin: "0 auto", minHeight: "100vh", background: "#ffd2e6", display: "flex", flexDirection: "column" }}>
       {isMaintenanceActive && (
         <div style={{
           background: "linear-gradient(90deg, #e53e3e 0%, #dd6b20 100%)",
@@ -1257,7 +1257,7 @@ export default function App() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(12, 3, 20, 0.75)",
+            background: "rgba(34, 18, 25, 0.42)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -1269,11 +1269,11 @@ export default function App() {
             style={{
               width: "100%",
               maxWidth: 340,
-              background: "#1c0c2c",
+              background: "#fc6587",
               borderRadius: 18,
               padding: "22px 20px",
-              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.45)",
-              border: "1px solid rgba(255, 112, 166, 0.3)",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.18)",
+              border: "1px solid rgba(212, 84, 122, 0.18)",
               textAlign: "center",
             }}
           >
@@ -1282,16 +1282,16 @@ export default function App() {
                 width: 44,
                 height: 44,
                 borderRadius: "50%",
-                border: "3px solid rgba(255, 112, 166, 0.2)",
-                borderTopColor: "#ff7828",
+                border: "3px solid rgba(212, 84, 122, 0.18)",
+                borderTopColor: "#ffd6e9",
                 margin: "0 auto 14px",
                 animation: "juicegels-spin 1s linear infinite",
               }}
             />
-            <h3 style={{ margin: "0 0 8px", fontFamily: "'Lobster', serif", fontSize: 22, color: "#ffffff" }}>
+            <h3 style={{ margin: "0 0 8px", fontFamily: "'Lobster', serif", fontSize: 22, color: "#fff9fb" }}>
               Redirecting to Stripe
             </h3>
-            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "#d8c8df" }}>
+            <p style={{ margin: 0, fontSize: 13, lineHeight: 1.7, color: "#4f444a" }}>
               You&apos;ll be redirected to Stripe to complete your order. Please wait a moment while we prepare your secure checkout.
             </p>
           </div>
@@ -1328,9 +1328,8 @@ export default function App() {
           width: 280,
           maxWidth: "80%",
           height: "100vh",
-          background: "linear-gradient(180deg, #180928 0%, #0c0314 100%)",
-          borderRight: "1px solid rgba(255, 112, 166, 0.2)",
-          boxShadow: "10px 0 30px rgba(0, 0, 0, 0.5)",
+          background: "#ffd2e6",
+          boxShadow: "10px 0 30px rgba(212, 16, 71, 0.1)",
           transform: menuOpen ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
           zIndex: 100,
@@ -1346,14 +1345,14 @@ export default function App() {
             style={{
               fontFamily: "'Lobster', serif",
               fontSize: 24,
-              color: "#ff70a6"
+              color: "#fc6587"
             }}
           >
             Juice Gels
           </span>
           <button
             onClick={() => setMenuOpen(false)}
-            style={{ background: "none", border: "none", color: "#ffd3ea", cursor: "pointer", padding: 4 }}
+            style={{ background: "none", border: "none", color: "#4f444a", cursor: "pointer", padding: 4 }}
           >
             <X size={22} />
           </button>
@@ -1380,21 +1379,21 @@ export default function App() {
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 112, 166, 0.2)",
+                background: "#e0a2b4",
+                border: "1px solid rgba(212, 84, 122, 0.18)",
                 borderRadius: 12,
                 padding: "12px 14px",
                 textAlign: "left",
-                color: "#ffd3ea",
+                color: "#fff9fb",
                 fontWeight: 600,
                 fontSize: 14,
                 cursor: "pointer",
-                transition: "background 0.2s ease, border-color 0.2s ease",
+                transition: "background 0.2s ease",
                 overflow: "hidden",
                 width: "100%",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255, 120, 40, 0.2)"; e.currentTarget.style.borderColor = "#ff7828"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)"; e.currentTarget.style.borderColor = "rgba(255, 112, 166, 0.2)"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "#ffd6e9"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "#e0a2b4"; }}
             >
               <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{item.label}</span>
@@ -1403,7 +1402,7 @@ export default function App() {
         </nav>
 
         {/* Drawer Footer */}
-        <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 20, borderTop: "1px solid rgba(255, 112, 166, 0.2)" }}>
+        <div style={{ marginTop: "auto", textAlign: "center", paddingTop: 20, borderTop: "1px solid rgba(212, 84, 122, 0.18)" }}>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10, width: "100%" }}>
             <a
@@ -1415,15 +1414,14 @@ export default function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 8,
-                background: "linear-gradient(135deg, #180928 0%, #3b104f 45%, #ff7828 100%)",
-                border: "1px solid rgba(255, 112, 166, 0.35)",
+                background: "#f24e77",
                 color: "#fff",
                 padding: "10px 20px",
                 borderRadius: 24,
                 fontSize: 13,
                 fontWeight: 600,
                 textDecoration: "none",
-                boxShadow: "0 4px 14px rgba(255, 120, 40, 0.2)",
+                boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)",
                 boxSizing: "border-box",
                 width: "100%",
               }}
@@ -1440,15 +1438,14 @@ export default function App() {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 8,
-                background: "linear-gradient(135deg, #180928 0%, #3b104f 45%, #ff7828 100%)",
-                border: "1px solid rgba(255, 112, 166, 0.35)",
+                background: "#f24e77",
                 color: "#fff",
                 padding: "10px 20px",
                 borderRadius: 24,
                 fontSize: 13,
                 fontWeight: 600,
                 textDecoration: "none",
-                boxShadow: "0 4px 14px rgba(255, 120, 40, 0.2)",
+                boxShadow: "0 4px 12px rgba(242, 78, 119, 0.2)",
                 boxSizing: "border-box",
                 width: "100%",
               }}
@@ -1461,7 +1458,7 @@ export default function App() {
       </div>
 
       {/* ── Header ── */}
-      <header style={{ background: "linear-gradient(135deg, #180928 0%, #3b104f 45%, #ff7828 100%)", borderBottom: "1px solid rgba(255, 112, 166, 0.25)", position: "sticky", top: 0, zIndex: 50 }}>
+      <header style={{ background: "#fc6587", borderBottom: "1px solid rgba(212, 84, 122, 0.18)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", maxWidth: 1200, margin: "0 auto", width: "100%", boxSizing: "border-box" }}>
           {isMobile ? (
             <>
@@ -1498,7 +1495,7 @@ export default function App() {
               >
                 <ShoppingBag size={22} style={{ color: "#ffd6e9" }} />
                 {cartCount > 0 && (
-                  <span style={{ position: "absolute", top: -4, right: -4, background: "#ff7828", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
+                  <span style={{ position: "absolute", top: -4, right: -4, background: "#ffd6e9", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
                     {cartCount}
                   </span>
                 )}
@@ -1564,7 +1561,7 @@ export default function App() {
                             left: 6,
                             right: 6,
                             height: 2,
-                            background: "#ff7828",
+                            background: "#ffffff",
                             borderRadius: 1
                           }} />
                         )}
@@ -1589,7 +1586,7 @@ export default function App() {
                 >
                   <ShoppingBag size={22} style={{ color: "#ffd6e9" }} />
                   {cartCount > 0 && (
-                    <span style={{ position: "absolute", top: -4, right: -4, background: "#ff7828", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
+                    <span style={{ position: "absolute", top: -4, right: -4, background: "#ffd6e9", color: "#fff", borderRadius: "50%", width: 17, height: 17, fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
                       {cartCount}
                     </span>
                   )}
@@ -1786,42 +1783,42 @@ export default function App() {
       </Suspense>
 
       {page !== "basket" && (
-        <footer style={{ borderTop: "1px solid rgba(255, 112, 166, 0.2)", marginTop: 28, background: "#08020d" }}>
+        <footer style={{ borderTop: "1px solid rgba(212, 84, 122, 0.18)", marginTop: 28, background: "rgba(255, 255, 255, 0.2)" }}>
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: "28px 16px 40px", textAlign: "center", width: "100%", boxSizing: "border-box" }}>
-            <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#ff70a6", margin: "0 0 8px" }}>Juice Gels</p>
-            <p style={{ fontSize: 12, color: "#d8c8df", margin: "0 0 16px" }}>Handmade with love🌸</p>
+            <p style={{ fontFamily: "'Lobster', serif", fontSize: 32, color: "#f86ca5", margin: "0 0 8px" }}>Juice Gels</p>
+            <p style={{ fontSize: 12, color: "#4f444a", margin: "0 0 16px" }}>Handmade with love🌸</p>
             <div style={{ display: "flex", justifyContent: "center", gap: 10, rowGap: 8, fontSize: 13, alignItems: "center", flexWrap: "wrap", maxWidth: 600, margin: "0 auto" }}>
-              <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#ff9f43", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              <button onClick={() => navigate("/about")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 About Her
               </button>
-              <span style={{ color: "rgba(255, 112, 166, 0.3)", lineHeight: 1 }}>|</span>
-              <button onClick={() => navigate("/faq")} style={{ background: "none", border: "none", color: "#ff9f43", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/faq")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 FAQ
               </button>
-              <span style={{ color: "rgba(255, 112, 166, 0.3)", lineHeight: 1 }}>|</span>
-              <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#ff9f43", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/custom-orders")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 Custom Orders
               </button>
-              <span style={{ color: "rgba(255, 112, 166, 0.3)", lineHeight: 1 }}>|</span>
-              <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "#ff9f43", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/contact")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 Contact Us
               </button>
-              <span style={{ color: "rgba(255, 112, 166, 0.3)", lineHeight: 1 }}>|</span>
-              <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#ff9f43", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/videos")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 Videos
               </button>
-              <span style={{ color: "rgba(255, 112, 166, 0.3)", lineHeight: 1 }}>|</span>
-              <button onClick={() => navigate("/privacy-policy")} style={{ background: "none", border: "none", color: "#ff9f43", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/privacy-policy")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 Privacy Policy
               </button>
-              <span style={{ color: "rgba(255, 112, 166, 0.3)", lineHeight: 1 }}>|</span>
-              <button onClick={() => navigate("/terms-of-service")} style={{ background: "none", border: "none", color: "#ff9f43", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
+              <span style={{ color: "rgba(212, 84, 122, 0.18)", lineHeight: 1 }}>|</span>
+              <button onClick={() => navigate("/terms-of-service")} style={{ background: "none", border: "none", color: "#c4597d", cursor: "pointer", fontWeight: 500, fontSize: 13, textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}>
                 Terms of Service
               </button>
 
             </div>
-            <p style={{ fontSize: 11, color: "rgba(216, 200, 223, 0.6)", marginTop: 24 }}>
-              &copy; {new Date().getFullYear()} Juice Gels. All rights reserved. Website by <a href="https://rjviernes.tech" target="_blank" rel="noopener noreferrer" style={{ color: "#ff70a6", textDecoration: "underline" }}>Roel</a>
+            <p style={{ fontSize: 11, color: "#4f444a", marginTop: 24, opacity: 0.8 }}>
+              &copy; {new Date().getFullYear()} Juice Gels. All rights reserved. Website by <a href="https://rjviernes.tech" target="_blank" rel="noopener noreferrer" style={{ color: "#c4597d", textDecoration: "underline" }}>Roel</a>
             </p>
           </div>
         </footer>
