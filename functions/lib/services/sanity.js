@@ -127,6 +127,9 @@ export async function fetchCatalogProducts() {
     "imageUrl": image.asset->url,
     "image2Url": image2.asset->url,
     "image3Url": image3.asset->url,
+    image { hotspot, crop },
+    image2 { hotspot, crop },
+    image3 { hotspot, crop },
     tags,
     "collection": coalesce(collection->title, *[_type == "collection" && references(^._id) && !(_id in path("drafts.**"))][0].title, collection)
   }`;

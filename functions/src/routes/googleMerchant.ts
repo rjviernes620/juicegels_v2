@@ -44,6 +44,61 @@ function blocksToPlainText(blocks: any): string {
     .trim();
 }
 
+export function formatGoogleMerchantImageUrl(
+  rawUrl?: string,
+  imageObj?: any,
+  width = 500,
+  height = 500
+): string {
+  if (!rawUrl || typeof rawUrl !== "string") return "";
+
+  try {
+    const normalized = rawUrl.startsWith("//") ? `https:${rawUrl}` : rawUrl;
+    const url = new URL(normalized);
+    if (!url.hostname.includes("sanity.io")) {
+      return rawUrl;
+    }
+
+    // Extract image dimensions from filename (e.g. <assetId>-2160x2880.jpg)
+    const match = url.pathname.match(/-(\d+)x(\d+)\.[a-zA-Z0-9]+$/);
+    const imgW = match ? parseInt(match[1], 10) : 0;
+    const imgH = match ? parseInt(match[2], 10) : 0;
+
+    const crop = imageObj?.crop;
+    const hotspot = imageObj?.hotspot;
+
+    if (imgW && imgH && (crop || hotspot)) {
+      const cropLeft = crop ? Math.round(crop.left * imgW) : 0;
+      const cropTop = crop ? Math.round(crop.top * imgH) : 0;
+      const cropRight = crop ? Math.round(crop.right * imgW) : 0;
+      const cropBottom = crop ? Math.round(crop.bottom * imgH) : 0;
+
+      const croppedW = imgW - cropLeft - cropRight;
+      const croppedH = imgH - cropTop - cropBottom;
+
+      if (crop && croppedW > 0 && croppedH > 0) {
+        url.searchParams.set("rect", `${cropLeft},${cropTop},${croppedW},${croppedH}`);
+      }
+
+      if (hotspot && croppedW > 0 && croppedH > 0) {
+        const fpX = crop ? (hotspot.x * imgW - cropLeft) / croppedW : hotspot.x;
+        const fpY = crop ? (hotspot.y * imgH - cropTop) / croppedH : hotspot.y;
+        url.searchParams.set("fp-x", fpX.toFixed(4));
+        url.searchParams.set("fp-y", fpY.toFixed(4));
+        url.searchParams.set("crop", "focalpoint");
+      }
+    }
+
+    url.searchParams.set("w", String(width));
+    url.searchParams.set("h", String(height));
+    url.searchParams.set("fit", "crop");
+
+    return url.toString();
+  } catch {
+    return rawUrl;
+  }
+}
+
 async function handleGoogleMerchantFeed(_req: Request, res: Response): Promise<void> {
   try {
     const products = await fetchCatalogProducts();
@@ -61,9 +116,24 @@ async function handleGoogleMerchantFeed(_req: Request, res: Response): Promise<v
       const rawDesc = blocksToPlainText(p.description);
       const desc = rawDesc && rawDesc.length > 5 ? rawDesc : DEFAULT_FALLBACK_DESCRIPTION;
 
-      const img1 = p.imageUrl || `${FRONTEND_BASE_URL}/images/Nail 2.jpeg`;
-      const img2 = p.image2Url || `${FRONTEND_BASE_URL}/images/coin 2.jpeg`;
-      const img3 = p.image3Url || "";
+      const img1 = formatGoogleMerchantImageUrl(
+        p.imageUrl || `${FRONTEND_BASE_URL}/images/Nail 2.jpeg`,
+        p.image,
+        500,
+        500
+      );
+      const img2 = formatGoogleMerchantImageUrl(
+        p.image2Url || `${FRONTEND_BASE_URL}/images/coin 2.jpeg`,
+        p.image2,
+        500,
+        500
+      );
+      const img3 = formatGoogleMerchantImageUrl(
+        p.image3Url || "",
+        p.image3,
+        500,
+        500
+      );
 
       const isSizeGuide = title.toLowerCase() === "nail sizing guide" || productId === 286;
 
@@ -198,9 +268,24 @@ async function handleGoogleMerchantTsv(_req: Request, res: Response): Promise<vo
       const rawDesc = blocksToPlainText(p.description);
       const desc = rawDesc && rawDesc.length > 5 ? rawDesc : DEFAULT_FALLBACK_DESCRIPTION;
 
-      const img1 = p.imageUrl || `${FRONTEND_BASE_URL}/images/Nail 2.jpeg`;
-      const img2 = p.image2Url || `${FRONTEND_BASE_URL}/images/coin 2.jpeg`;
-      const img3 = p.image3Url || "";
+      const img1 = formatGoogleMerchantImageUrl(
+        p.imageUrl || `${FRONTEND_BASE_URL}/images/Nail 2.jpeg`,
+        p.image,
+        500,
+        500
+      );
+      const img2 = formatGoogleMerchantImageUrl(
+        p.image2Url || `${FRONTEND_BASE_URL}/images/coin 2.jpeg`,
+        p.image2,
+        500,
+        500
+      );
+      const img3 = formatGoogleMerchantImageUrl(
+        p.image3Url || "",
+        p.image3,
+        500,
+        500
+      );
       const additionalImages = [img2, img3].filter(Boolean).join(",");
 
       const isSizeGuide = title.toLowerCase() === "nail sizing guide" || productId === 286;
